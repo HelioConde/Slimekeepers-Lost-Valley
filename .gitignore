@@ -1,0 +1,15 @@
+# Cache gerado pelo Godot
+.godot/
+
+# Segredos e credenciais
+.env
+.env.*
+!.env.example
+gerador
+gerador.*
+slimekeepers--lost-valley
+slimekeepers--lost-valley.*
+
+# Arquivos temporarios do sistema
+Thumbs.db
+.DS_Store
