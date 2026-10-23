@@ -7,11 +7,25 @@ extends Node2D
 @export var map_height: int = 26
 
 @onready var ground: TileMapLayer = $Ground
+@onready var player_camera: Camera2D = $WorldObjects/Player/Camera2D
 
 
 func _ready() -> void:
+    _configure_camera_limits()
     if regenerate_on_start:
         _generate_demo()
+
+
+func _configure_camera_limits() -> void:
+    # O mapa tem 40x26 tiles de 32 px e esta centrado na origem.
+    # Limites ajustados evitam as faixas cinzas vistas ao caminhar nas bordas.
+    var origin_x: int = -int(map_width / 2)
+    var origin_y: int = -int(map_height / 2)
+    player_camera.limit_left = origin_x * 32
+    player_camera.limit_right = (origin_x + map_width) * 32
+    player_camera.limit_top = origin_y * 32
+    player_camera.limit_bottom = (origin_y + map_height) * 32
+    player_camera.reset_smoothing()
 
 
 func _generate_demo() -> void:

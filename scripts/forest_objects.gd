@@ -5,6 +5,7 @@ extends Node2D
 
 @export var populate_on_start: bool = true
 @export var enable_collisions: bool = true
+@export var contact_shadows: bool = true
 
 const TILE_SIZE: int = 32
 const SPRITES: Dictionary = {
@@ -114,6 +115,8 @@ func populate() -> void:
             # Decoracoes rasteiras ficam visualmente sob os pes do jogador.
             entity.z_index = -1
         add_child(entity)
+        if contact_shadows:
+            _add_contact_shadow(entity, object_id, scale_factor)
 
         var sprite: Sprite2D = Sprite2D.new()
         sprite.texture = texture
@@ -141,6 +144,26 @@ func populate() -> void:
         created += 1
     print("Forest demo: %d objetos posicionados." % created)
 
+
+
+func _add_contact_shadow(entity: Node2D, object_id: String, scale_factor: float) -> void:
+    if object_id == "flowers" or object_id == "grass":
+        return
+    var width: float = 13.0
+    if object_id == "bush_large" or object_id == "fallen_log":
+        width = 21.0
+    elif object_id == "rock" or object_id == "stump":
+        width = 10.0
+    var shadow: Polygon2D = Polygon2D.new()
+    shadow.name = "ContactShadow"
+    var points: PackedVector2Array = PackedVector2Array()
+    for i in range(16):
+        var angle: float = TAU * float(i) / 16.0
+        points.append(Vector2(cos(angle) * width * scale_factor, sin(angle) * 4.5 * scale_factor))
+    shadow.polygon = points
+    shadow.position = Vector2(0.0, -1.0)
+    shadow.color = Color(0.08, 0.17, 0.07, 0.20)
+    entity.add_child(shadow)
 
 func _add_footprint_collision(entity: Node2D, object_id: String, scale_factor: float) -> void:
     if object_id != "fallen_log" and not SOLID_RADIUS.has(object_id):

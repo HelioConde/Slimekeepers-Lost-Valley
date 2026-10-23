@@ -6,7 +6,6 @@
 [ext_resource type="Script" path="res://scripts/forest_objects.gd" id="4_objects"]
 
 [node name="ForestMeadowDemo" type="Node2D"]
-y_sort_enabled = true
 script = ExtResource("3_script")
 
 [node name="Ground" type="TileMapLayer" parent="."]
@@ -18,14 +17,22 @@ tile_set = ExtResource("2_tileset")
 y_sort_enabled = true
 script = ExtResource("4_objects")
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="WorldObjects" instance=ExtResource("1_player")]
 position = Vector2(0, 0)
 
 [node name="HUD" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="HelpBackground" type="ColorRect" parent="HUD"]
+offset_right = 714.0
+offset_bottom = 38.0
+mouse_filter = 2
+color = Color(0.04, 0.07, 0.05, 0.72)
 
 [node name="HelpLabel" type="Label" parent="HUD"]
 offset_left = 12.0
-offset_top = 12.0
-offset_right = 1080.0
-offset_bottom = 40.0
+offset_top = 8.0
+offset_right = 702.0
+offset_bottom = 34.0
+theme_override_font_sizes/font_size = 14
 text = "FLORESTA TESTE  |  WASD / SETAS: mover  |  SHIFT: correr  |  ESPACO: dash"
