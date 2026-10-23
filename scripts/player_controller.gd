@@ -14,7 +14,7 @@ const MovementFramesBuilder = preload("res://scripts/movement_animation_library.
 @export_range(10.0, 800.0, 1.0) var dash_speed: float = 315.0
 
 @export_group("Aparencia")
-@export_range(0.5, 1.25, 0.01) var visual_scale: float = 0.68
+@export_range(0.3, 1.25, 0.01) var visual_scale: float = 0.40
 
 @export_group("Resposta do movimento")
 @export_range(50.0, 3000.0, 10.0) var acceleration: float = 900.0
@@ -67,7 +67,7 @@ func _setup_visual_proportions() -> void:
 	if source_shape != null:
 		# Duplica o recurso para evitar modificar a colisao de outras instancias.
 		var local_shape: CircleShape2D = source_shape.duplicate() as CircleShape2D
-		local_shape.radius = maxf(4.5, source_shape.radius * visual_scale)
+		local_shape.radius = maxf(3.0, source_shape.radius * visual_scale)
 		feet_collision.shape = local_shape
 		feet_collision.position = Vector2(0.0, -local_shape.radius)
 
