@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "860409e5-0e5c-4d0f-8d62-eeb9a9568394",
+    "name": "base",
+    "prompt": "tall_grass \u2014 small clump of tall meadow grass for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, soft irregular blades of muted natural green with subtle olive highlights, a few delicate seed heads, readable small walk-through decoration. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, flowers, rocks, characters, text, or external shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "tall_grass_small_clump_of_ta.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:08.037191+00:00"
+}

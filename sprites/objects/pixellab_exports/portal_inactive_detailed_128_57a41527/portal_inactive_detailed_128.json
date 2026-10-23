@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "57a41527-fac2-4300-867d-4a7a237d1255",
+    "name": "base",
+    "prompt": "portal_inactive \u2014 detailed 128x160 pixel art ancient inactive stone portal for a cozy fantasy farming RPG, low top-down perspective, tall broken rune arch, dark empty center with no glow, weathered carved stones, moss and faint cracks, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "portal_inactive_detailed_128.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:35:52.240266+00:00"
+}

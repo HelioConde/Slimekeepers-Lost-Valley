@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "b514ab09-80da-4232-9ff5-b0416e6939dd",
+    "name": "base",
+    "prompt": "fallen_log \u2014 mossy fallen oak log for Slimekeepers: Lost Valley, 96x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, horizontal cut log with warm brown bark, visible circular cut end, small muted natural moss patches and a few tiny leaves. Clear compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, text, or external shadow.",
+    "size": {
+      "width": 96,
+      "height": 96
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "fallen_log_mossy_fallen_oak.png",
+    "cell_size": {
+      "width": 96,
+      "height": 96
+    },
+    "sheet_size": {
+      "width": 96,
+      "height": 96
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:29.184186+00:00"
+}

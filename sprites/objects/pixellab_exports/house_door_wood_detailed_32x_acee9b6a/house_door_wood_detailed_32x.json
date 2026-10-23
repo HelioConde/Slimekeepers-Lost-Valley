@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "acee9b6a-2a64-4d20-b913-f8528a7b562b",
+    "name": "base",
+    "prompt": "house_door_wood \u2014 detailed 32x64 pixel art closed rustic wooden cottage door for a cozy fantasy farming RPG, low top-down perspective, warm planks, dark iron handle and hinges, aligned to the house wall module, transparent background, isolated, no wall, floor, ground or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "house_door_wood_detailed_32x.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:35:40.950766+00:00"
+}

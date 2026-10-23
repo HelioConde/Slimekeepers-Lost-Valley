@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "db5f3507-f8fb-4342-b61d-fbdd0824f0a5",
+    "name": "base",
+    "prompt": "bush_small \u2014 compact leafy forest bush for Slimekeepers: Lost Valley, 64x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, rounded irregular foliage in muted natural greens with a few small leaves, subtle depth, compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, flowers, fruit, characters, or external shadow.",
+    "size": {
+      "width": 96,
+      "height": 96
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "bush_small_compact_leafy_for.png",
+    "cell_size": {
+      "width": 96,
+      "height": 96
+    },
+    "sheet_size": {
+      "width": 96,
+      "height": 96
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:38:51.088933+00:00"
+}

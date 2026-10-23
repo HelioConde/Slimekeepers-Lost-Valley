@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "b012ebcd-3b8a-497d-ba5f-e432f96a0992",
+    "name": "base",
+    "prompt": "wooden_bench \u2014 rustic 64x32 pixel art wooden bench for a cozy fantasy farming RPG, low top-down perspective, warm oak planks, simple sturdy legs, empty seat, compact decorative object, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "wooden_bench_rustic_64x32_pi.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:38:02.736083+00:00"
+}

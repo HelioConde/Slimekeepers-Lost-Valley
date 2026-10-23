@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "61c4985a-6f7e-4ff7-a5f2-0ffba811f2a2",
+    "name": "base",
+    "prompt": "farm_plot_ground_v2 \u2014 seamless 64x64 pixel art patch of freshly tilled brown soil for a cozy fantasy farming RPG, low top-down perspective, flat ground integrated directly into the surrounding terrain, soft irregular edges that blend naturally into grass, subtle furrows and a few tiny early sprouts. No wood, no planks, no fence, no border, no posts, no frame, no raised bed, no detached base, no shadow, transparent background.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "farm_plot_ground_v2_seamless.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:36:34.569570+00:00"
+}

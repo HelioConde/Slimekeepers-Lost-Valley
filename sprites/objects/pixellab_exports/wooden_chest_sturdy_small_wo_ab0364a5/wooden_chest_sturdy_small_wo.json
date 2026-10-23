@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "ab0364a5-3de0-426f-8509-1bdbdd881366",
+    "name": "base",
+    "prompt": "wooden_chest \u2014 sturdy small wooden treasure chest, 48x48 pixel art, low top-down cozy fantasy farming RPG, warm oak planks, dark iron bands and centered lock, closed lid, compact interactive object, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "wooden_chest_sturdy_small_wo.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:38:30.655743+00:00"
+}

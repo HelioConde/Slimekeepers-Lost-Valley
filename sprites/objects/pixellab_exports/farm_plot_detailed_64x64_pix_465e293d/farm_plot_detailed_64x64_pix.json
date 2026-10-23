@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "465e293d-e3c4-487a-a784-834c68883853",
+    "name": "base",
+    "prompt": "farm_plot \u2014 detailed 64x64 pixel art prepared tilled soil bed for a cozy fantasy farming RPG, low top-down perspective, rich brown rows, small green sprouts at varied early growth stages, wooden edge markers, transparent background, isolated, no grass tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "farm_plot_detailed_64x64_pix.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:24.852890+00:00"
+}

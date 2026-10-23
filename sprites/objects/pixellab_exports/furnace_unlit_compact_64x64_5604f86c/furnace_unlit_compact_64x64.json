@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "5604f86c-9c6b-46d5-b907-80fc613151e6",
+    "name": "base",
+    "prompt": "furnace_unlit \u2014 compact 64x64 pixel art stone furnace for a cozy fantasy farming RPG, low top-down perspective, dark gray brickwork, arched firebox opening completely unlit and empty, small chimney, interactive crafting object, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "furnace_unlit_compact_64x64.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:40.930867+00:00"
+}

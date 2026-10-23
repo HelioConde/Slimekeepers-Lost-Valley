@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "c45ab632-8831-459c-9eff-ef56a6ddcc74",
+    "name": "base",
+    "prompt": "campfire_unlit \u2014 compact 64x48 pixel art unlit campfire for a cozy fantasy farming RPG, low top-down perspective, arranged logs and cold gray ash with no flame, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "campfire_unlit_compact_64x48.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:36.935092+00:00"
+}

@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "c6359b49-711b-4970-9f06-041dfecc603b",
+    "name": "base",
+    "prompt": "Object: Object 0 (unknown)",
+    "size": {
+      "width": 28,
+      "height": 53
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "Object_0_copy_4.png",
+    "cell_size": {
+      "width": 28,
+      "height": 53
+    },
+    "sheet_size": {
+      "width": 28,
+      "height": 53
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:32.972589+00:00"
+}

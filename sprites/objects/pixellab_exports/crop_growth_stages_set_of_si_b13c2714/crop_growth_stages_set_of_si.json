@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "b13c2714-90b3-400b-a3ad-1c1a13b5cef8",
+    "name": "base",
+    "prompt": "crop_growth_stages \u2014 set of six distinct 32x32 pixel art vegetable crop sprites for a cozy fantasy farming RPG: tilled seed, tiny sprout, young plant, leafy plant, flowering plant, harvest-ready crop; low top-down perspective, consistent palette and scale, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "crop_growth_stages_set_of_si.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:36:51.039196+00:00"
+}

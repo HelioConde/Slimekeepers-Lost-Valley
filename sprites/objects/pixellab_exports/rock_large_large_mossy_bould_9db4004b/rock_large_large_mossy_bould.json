@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "9db4004b-0b65-4370-9ec1-0c6a1a241c61",
+    "name": "base",
+    "prompt": "rock_large \u2014 large mossy boulder for Slimekeepers: Lost Valley, 96x96 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, rounded natural gray boulder with muted moss-green patches, subtle facets and compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, plants, characters, text, or external shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "rock_large_large_mossy_bould.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:25.453388+00:00"
+}

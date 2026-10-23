@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "77d2f7dd-a466-4615-ae85-d288a32a8fa4",
+    "name": "base",
+    "prompt": "fruit_tree \u2014 detailed 64x96 pixel art apple tree for a cozy fantasy farming RPG, low top-down perspective, leafy rounded canopy, warm brown trunk, visible ripe red apples, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "fruit_tree_detailed_64x96_pi.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:36:54.114782+00:00"
+}

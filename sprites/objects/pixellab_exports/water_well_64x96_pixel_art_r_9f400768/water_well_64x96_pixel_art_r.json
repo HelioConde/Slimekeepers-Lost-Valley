@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "9f400768-f5fd-45ce-90db-33187a26288b",
+    "name": "base",
+    "prompt": "water_well \u2014 64x96 pixel art rustic stone water well for a cozy fantasy farming RPG, low top-down perspective, round gray stone base, wooden roof frame and small crank, no bucket, transparent background, isolated, no ground tile or water.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "water_well_64x96_pixel_art_r.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:12.070567+00:00"
+}
