@@ -1,30 +1,31 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4wnna22fd3yc"]
+[gd_scene format=3 uid="uid://b4wnna22fd3yc"]
 
-[ext_resource type="Script" path="res://scripts/player_controller.gd" id="1"]
+[ext_resource type="Script" uid="uid://dm32bmuq6om82" path="res://scripts/player_controller.gd" id="1"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_erp2m"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_feet"]
 radius = 8.0
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=1589295554]
 collision_layer = 2
-collision_mask = 1
 motion_mode = 1
 script = ExtResource("1")
 walk_speed = 130.0
 run_speed = 200.0
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=620888876]
 texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_erp2m")
 offset = Vector2(0, -24)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=183194554]
 position = Vector2(0, -8)
 shape = SubResource("CircleShape2D_feet")
 
-[node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(2, 2)
+[node name="Camera2D" type="Camera2D" parent="." unique_id=100236917]
+zoom = Vector2(0.9, 0.9)
 process_callback = 0
-position_smoothing_enabled = false
 limit_left = -768
 limit_top = -256
 limit_right = 768

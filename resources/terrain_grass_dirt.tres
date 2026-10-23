@@ -1,6 +1,6 @@
-[gd_resource type="TileSet" load_steps=3 format=3]
+[gd_resource type="TileSet" format=3 uid="uid://cv5ksggdbsus8"]
 
-[ext_resource type="Texture2D" path="res://sprites/tarrain/pixellab-tileset-lush-natural-spring-meadow-grass-for-a-cozy-warm-earthy-brow-godot-b9cd416a.png" id="1_texture"]
+[ext_resource type="Texture2D" uid="uid://dhjm080ihjrt4" path="res://sprites/tarrain/pixellab-tileset-lush-natural-spring-meadow-grass-for-a-cozy-warm-earthy-brow-godot-b9cd416a.png" id="1_texture"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_terrain"]
 texture = ExtResource("1_texture")

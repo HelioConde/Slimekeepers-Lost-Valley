@@ -1,0 +1,52 @@
+{
+  "project": "Slimekeepers: Lost Valley",
+  "style": "detailed handcrafted pixel art, cozy fantasy farming RPG, low top-down perspective, transparent background, 32x32 world grid",
+  "updated_at": "2026-10-23T17:21:00-03:00",
+  "items": [
+    {
+      "id": "house_wall_wood",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-23T17:16:00-03:00",
+      "prompt_requirement": "modular vertical timber-and-plaster wall segment; no floor, roof, window, door, ground or shadow"
+    },
+    {
+      "id": "house_door_wood",
+      "priority": "P0",
+      "size_reference": "32x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-23T17:16:00-03:00",
+      "prompt_requirement": "front-facing rustic wooden door fitted to the wall module; closed state; no wall section, floor, ground or shadow"
+    },
+    {
+      "id": "house_window_wood",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-23T17:16:00-03:00",
+      "prompt_requirement": "small warm wooden framed window fitted to the wall module; no wall section, floor, ground or shadow"
+    },
+    {
+      "id": "house_roof_red_tiles",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "processing",
+      "submitted_at": "2026-10-23T17:21:00-03:00",
+      "prompt_requirement": "modular red clay tile roof segment with readable low top-down angle; no wall, floor, ground or shadow"
+    },
+    {
+      "id": "house_floor_wood",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "processing",
+      "submitted_at": "2026-10-23T17:21:00-03:00",
+      "prompt_requirement": "seamless flat interior wooden plank floor tile; no wall, furniture, border, ground or shadow"
+    }
+  ]
+}
