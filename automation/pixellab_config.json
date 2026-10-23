@@ -1,0 +1,11 @@
+{
+  "character_id": "16659178-dbcc-4966-95eb-221ebad620ba",
+  "max_active_jobs": 4,
+  "max_queued_animations": 3,
+  "max_new_jobs_per_run": 4,
+  "max_cost_per_run_usd": 1.0,
+  "max_total_cost_usd": 20.0,
+  "generation_mode": "custom_animation_v3",
+  "enhance_prompt_with_pixellab_ai": true,
+  "updated_at": "2026-10-21T20:33:00-03:00"
+}
