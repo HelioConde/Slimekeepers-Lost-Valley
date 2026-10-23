@@ -14,7 +14,7 @@ const MovementFramesBuilder = preload("res://scripts/movement_animation_library.
 @export_range(10.0, 800.0, 1.0) var dash_speed: float = 315.0
 
 @export_group("Aparencia")
-@export_range(0.5, 1.25, 0.01) var visual_scale: float = 0.75
+@export_range(0.5, 1.25, 0.01) var visual_scale: float = 0.68
 
 @export_group("Resposta do movimento")
 @export_range(50.0, 3000.0, 10.0) var acceleration: float = 900.0
