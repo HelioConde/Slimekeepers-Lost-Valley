@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="TileSet" path="res://resources/grass_dirt_v3.tres" id="1_tileset"]
+[ext_resource type="Script" path="res://scripts/terrain_demo.gd" id="2_map_script"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+
+[node name="GrassDirtV3_Demo" type="Node2D"]
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_tileset")
+script = ExtResource("2_map_script")
+texture_filter = 1
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(0, 0)

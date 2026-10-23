@@ -1,26 +1,31 @@
-[gd_scene format=3 uid="uid://b4wnna22fd3yc"]
+[gd_scene load_steps=3 format=3 uid="uid://b4wnna22fd3yc"]
 
-[ext_resource type="Script" uid="uid://dm32bmuq6om82" path="res://scripts/player_controller.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player_controller.gd" id="1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_feet"]
 radius = 8.0
 
-[node name="Player" type="CharacterBody2D" unique_id=571105635]
+[node name="Player" type="CharacterBody2D"]
 collision_layer = 2
+collision_mask = 1
 motion_mode = 1
 script = ExtResource("1")
 walk_speed = 130.0
 run_speed = 200.0
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=521357468]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 offset = Vector2(0, -24)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=497094967]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -8)
 shape = SubResource("CircleShape2D_feet")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=566961293]
+[node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2, 2)
-position_smoothing_enabled = true
-position_smoothing_speed = 6.0
+process_callback = 0
+position_smoothing_enabled = false
+limit_left = -768
+limit_top = -256
+limit_right = 768
+limit_bottom = 256
