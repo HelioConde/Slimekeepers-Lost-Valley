@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b4wnna22fd3yc"]
 
 [ext_resource type="Script" uid="uid://dm32bmuq6om82" path="res://scripts/player_controller.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/player_camera.gd" id="2_camera"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_erp2m"]
 
@@ -26,7 +27,8 @@ shape = SubResource("CircleShape2D_feet")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=100236917]
 zoom = Vector2(2, 2)
 process_callback = 0
-limit_left = -768
-limit_top = -256
-limit_right = 768
-limit_bottom = 256
+limit_left = -10000000
+limit_top = -10000000
+limit_right = 10000000
+limit_bottom = 10000000
+script = ExtResource("2_camera")

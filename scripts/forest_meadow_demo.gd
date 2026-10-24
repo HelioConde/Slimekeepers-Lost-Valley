@@ -21,11 +21,11 @@ func _configure_camera_limits() -> void:
     # Limites ajustados evitam as faixas cinzas vistas ao caminhar nas bordas.
     var origin_x: int = -int(map_width / 2)
     var origin_y: int = -int(map_height / 2)
-    player_camera.limit_left = origin_x * 32
-    player_camera.limit_right = (origin_x + map_width) * 32
-    player_camera.limit_top = origin_y * 32
-    player_camera.limit_bottom = (origin_y + map_height) * 32
-    player_camera.reset_smoothing()
+    var bounds := Rect2(
+        Vector2(float(origin_x * 32), float(origin_y * 32)),
+        Vector2(float(map_width * 32), float(map_height * 32))
+    )
+    player_camera.call("configure_world_bounds", bounds)
 
 
 func _generate_demo() -> void:
