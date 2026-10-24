@@ -1,0 +1,68 @@
+name: Importar bestiario do Slime-Harvest
+
+on:
+  push:
+    paths:
+      - .github/workflows/importar_slimes.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copiar_slimes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Slimekeepers Lost Valley
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Baixar somente os sprites do Slime-Harvest
+        shell: bash
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse \
+            https://github.com/HelioConde/Slime-Harvest.git /tmp/slime-harvest
+          git -C /tmp/slime-harvest sparse-checkout set assets/slimes/bestiary
+
+      - name: Copiar spritesheets e animacoes originais das 32 especies
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+
+          source = Path("/tmp/slime-harvest/assets/slimes/bestiary")
+          target = Path("assets/slimes/bestiary")
+          copied = 0
+          for slime_dir in sorted(source.iterdir()):
+              if not slime_dir.is_dir():
+                  continue
+              species = slime_dir.name
+              png = slime_dir / f"{species}.png"
+              frames = slime_dir / f"{species}_frames.tres"
+              if not png.is_file() or not frames.is_file():
+                  raise SystemExit(f"Slime sem arquivos completos: {species}")
+              dest = target / species
+              dest.mkdir(parents=True, exist_ok=True)
+              shutil.copy2(png, dest / png.name)
+              shutil.copy2(frames, dest / frames.name)
+              copied += 1
+          print(f"Especies do Slime-Harvest importadas: {copied}")
+          if copied != 32:
+              raise SystemExit(f"Esperadas 32 especies, encontradas: {copied}")
+          PY
+
+      - name: Registrar assets no repositório
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/slimes/bestiary
+          if git diff --cached --quiet; then
+            echo "Sprites ja estao atualizados."
+            exit 0
+          fi
+          git commit -m "Importa 32 slimes animados do Slime-Harvest"
+          git pull --rebase origin main
+          git push origin HEAD:main

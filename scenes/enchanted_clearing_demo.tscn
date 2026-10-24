@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 [ext_resource type="TileSet" path="res://resources/grass_dirt_v3.tres" id="2_ground"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/basic_tool_system.gd" id="5_tools"]
 [ext_resource type="Script" path="res://scripts/mini_inventory_hud.gd" id="6_hud"]
 [ext_resource type="Script" path="res://scripts/building/house_builder.gd" id="7_builder"]
+[ext_resource type="Script" path="res://scripts/slimes/clearing_slime_population.gd" id="8_slimes"]
 
 
 [node name="EnchantedClearingDemo" type="Node2D"]
@@ -50,3 +51,6 @@ text = "CLAREIRA ENCANTADA | B construir casa (piso automatico) | WASD andar | 1
 [node name="HouseBuilder" type="Node2D" parent="."]
 script = ExtResource("7_builder")
 texture_filter = 1
+
+[node name="SlimePopulation" type="Node" parent="."]
+script = ExtResource("8_slimes")
