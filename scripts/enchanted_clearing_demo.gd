@@ -7,6 +7,8 @@ extends Node2D
 
 const Scales = preload("res://scripts/world_object_scales.gd")
 const ObjectFactory = preload("res://scripts/world_object_factory.gd")
+const Harvestable = preload("res://scripts/harvestable_resource.gd")
+const FarmPlot = preload("res://scripts/clearing_farm_plot.gd")
 
 const TILE: int = 32
 const MAP_COLUMNS: int = 64
@@ -178,6 +180,7 @@ func _place_export(prefix: String, pos: Vector2, solid: bool = false, variant: i
 		return
 	var node: Node2D = ObjectFactory.place(world, folder, pos, solid and allow_collisions, scale_variation)
 	node.name = prefix + "_" + str(_object_count)
+	_register_harvestable(node, prefix)
 	_object_count += 1
 
 
@@ -224,6 +227,8 @@ func _place_legacy_tree(kind: String, pos: Vector2, scale_factor: float) -> void
 		shape.shape = circle
 		shape.position = Vector2(0.0, -7.0 * scale_factor)
 		body.add_child(shape)
+	if kind == "oak_small":
+		_attach_harvestable(holder, "machado", "madeira", 4, 3, "Arvore")
 	_object_count += 1
 
 
@@ -241,10 +246,7 @@ func _build_landmarks() -> void:
 			_place_export("wooden_fence_single", Vector2(float(x), -60.0))
 	_place_export("storage_crate_sturdy", Vector2(-695.0, -220.0), true, 2)
 	_place_export("wooden_barrel_detailed", Vector2(-702.0, -87.0), true, 3)
-	_place_cluster("crop_growth_stages", [
-		Vector2(-620.0, -215.0), Vector2(-556.0, -215.0),
-		Vector2(-620.0, -152.0), Vector2(-556.0, -152.0)
-	], false, 2)
+	_build_interactive_farm()
 
 	# Objetos narrativos: placas, troncos caidos, tocos, pedras e saidas.
 	_place_export("wooden_sign_small", Vector2(460.0, -210.0), false, 4)
@@ -353,7 +355,6 @@ func _ellipse(center: Vector2, radius: Vector2, steps: int = 48, jitter: float =
 func _draw() -> void:
 	_draw_pond()
 	_draw_cliff()
-	_draw_farm_beds()
 	_draw_dock()
 	for pebble in _draw_road_pebbles:
 		draw_rect(Rect2(pebble, Vector2(3.0, 2.0)), Color(0.35, 0.30, 0.17, 0.18), true)
@@ -503,13 +504,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		_wide_view = not _wide_view
 		camera.zoom = Vector2.ONE * (OVERVIEW_ZOOM if _wide_view else VIEW_ZOOM)
 		_update_help()
-	elif key.physical_keycode == KEY_1:
+	elif key.physical_keycode == KEY_F1:
 		_jump_to(Vector2(0.0, 40.0))
-	elif key.physical_keycode == KEY_2:
+	elif key.physical_keycode == KEY_F2:
 		_jump_to(Vector2(-330.0, -126.0))
-	elif key.physical_keycode == KEY_3:
+	elif key.physical_keycode == KEY_F3:
 		_jump_to(Vector2(-350.0, 340.0))
-	elif key.physical_keycode == KEY_4:
+	elif key.physical_keycode == KEY_F4:
 		_jump_to(Vector2(640.0, -120.0))
 
 
@@ -522,4 +523,42 @@ func _jump_to(destination: Vector2) -> void:
 func _update_help() -> void:
 	help_label.text = "CLAREIRA ENCANTADA | WASD/SETAS mover | SHIFT correr | ESPACO dash | TAB: "
 	help_label.text += "voltar ao zoom normal" if _wide_view else "visao geral"
-	help_label.text += "\n1: inicio  2: horta  3: lagoa  4: saida leste"
+	help_label.text += "\n1-4 ferramentas | F usar | E interagir | I mochila | F1-F4 viagem"
+
+
+## Recursos disponiveis para coleta na floresta.
+func _register_harvestable(target: Node2D, prefix: String) -> void:
+	if prefix.begins_with("fallen_log"):
+		_attach_harvestable(target, "machado", "madeira", 3, 2, "Tronco")
+	elif prefix.begins_with("tree_stump"):
+		_attach_harvestable(target, "machado", "madeira", 2, 2, "Toco")
+	elif prefix.begins_with("rock_large"):
+		_attach_harvestable(target, "picareta", "pedra", 3, 3, "Pedra grande")
+	elif prefix.begins_with("rock_small"):
+		_attach_harvestable(target, "picareta", "pedra", 1, 2, "Pedra")
+	elif prefix.begins_with("bush_small"):
+		_attach_harvestable(target, "mao", "fibra", 2, 1, "Arbusto")
+	elif prefix.begins_with("mushroom_cluster"):
+		_attach_harvestable(target, "mao", "cogumelos", 1, 1, "Cogumelos")
+
+
+func _attach_harvestable(target: Node2D, tool_id: String, reward: String, amount: int, hits: int, title: String) -> void:
+	var component: Node = Harvestable.new()
+	component.call("configure", tool_id, reward, amount, hits, title)
+	component.name = "RecursoColetavel"
+	target.add_child(component)
+
+
+func _build_interactive_farm() -> void:
+	var beds: Array[Vector2] = [
+		Vector2(-620.0, -215.0), Vector2(-556.0, -215.0),
+		Vector2(-620.0, -152.0), Vector2(-556.0, -152.0)
+	]
+	var states: Array[int] = [0, 1, 2, 4]
+	for i in range(beds.size()):
+		var plot: Node2D = FarmPlot.new() as Node2D
+		plot.name = "Canteiro_%d" % (i + 1)
+		plot.position = beds[i]
+		plot.z_index = -1
+		plot.set("initial_state", states[i])
+		world.add_child(plot)

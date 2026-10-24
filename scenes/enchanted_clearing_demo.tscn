@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 [ext_resource type="TileSet" path="res://resources/grass_dirt_v3.tres" id="2_ground"]
@@ -12,14 +12,25 @@ z_index = -20
 texture_filter = 1
 tile_set = ExtResource("2_ground")
 
+[ext_resource type="Script" path="res://scripts/basic_inventory.gd" id="4_inventory"]
+[ext_resource type="Script" path="res://scripts/basic_tool_system.gd" id="5_tools"]
+[ext_resource type="Script" path="res://scripts/mini_inventory_hud.gd" id="6_hud"]
+
 [node name="WorldObjects" type="Node2D" parent="."]
 y_sort_enabled = true
 
 [node name="Player" parent="WorldObjects" instance=ExtResource("1_player")]
 position = Vector2(0, 40)
 
+[node name="ToolSystem" type="Node2D" parent="WorldObjects/Player"]
+script = ExtResource("5_tools")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("4_inventory")
+
 [node name="HUD" type="CanvasLayer" parent="."]
 layer = 10
+script = ExtResource("6_hud")
 
 [node name="HelpBackground" type="ColorRect" parent="HUD"]
 offset_right = 1260.0
@@ -33,4 +44,4 @@ offset_top = 9.0
 offset_right = 1250.0
 offset_bottom = 58.0
 theme_override_font_sizes/font_size = 14
-text = "CLAREIRA ENCANTADA  |  WASD: mover  |  SHIFT: correr  |  ESPACO: dash  |  TAB: visao geral"
+text = "CLAREIRA ENCANTADA | WASD andar | SHIFT correr | ESPACO dash | F/clique ferramenta | E interagir | I mochila | TAB zoom"
