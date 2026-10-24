@@ -3,6 +3,10 @@
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
 [ext_resource type="TileSet" path="res://resources/grass_dirt_v3.tres" id="2_ground"]
 [ext_resource type="Script" path="res://scripts/enchanted_clearing_demo.gd" id="3_script"]
+[ext_resource type="Script" path="res://scripts/basic_inventory.gd" id="4_inventory"]
+[ext_resource type="Script" path="res://scripts/basic_tool_system.gd" id="5_tools"]
+[ext_resource type="Script" path="res://scripts/mini_inventory_hud.gd" id="6_hud"]
+
 
 [node name="EnchantedClearingDemo" type="Node2D"]
 script = ExtResource("3_script")
@@ -11,10 +15,6 @@ script = ExtResource("3_script")
 z_index = -20
 texture_filter = 1
 tile_set = ExtResource("2_ground")
-
-[ext_resource type="Script" path="res://scripts/basic_inventory.gd" id="4_inventory"]
-[ext_resource type="Script" path="res://scripts/basic_tool_system.gd" id="5_tools"]
-[ext_resource type="Script" path="res://scripts/mini_inventory_hud.gd" id="6_hud"]
 
 [node name="WorldObjects" type="Node2D" parent="."]
 y_sort_enabled = true
