@@ -29,6 +29,7 @@ const FALLBACK: Array[Color] = [
 var floor_layer: TileMapLayer
 var wall_layer: TileMapLayer
 var roof_layer: TileMapLayer
+var roof_sprite: Sprite2D
 var front_layer: TileMapLayer
 var openings_layer: TileMapLayer
 var collisions: Node2D
@@ -91,6 +92,15 @@ func _build_tileset_and_layers() -> void:
 	wall_layer = _make_layer("AutomaticWalls", 7, tiles)
 	openings_layer = _make_layer("AutomaticDoorsAndWindows", 8, tiles)
 	roof_layer = _make_layer("AutomaticRoof", 20, tiles)
+	# O asset PixelLab house_roof_red_tiles e um TELHADO completo,
+	# nao um tile repetivel. Usamos uma unica imagem para cada casa.
+	roof_sprite = Sprite2D.new()
+	roof_sprite.name = "CompleteRoof_PixelLab"
+	roof_sprite.texture = _load_raw_tile_texture(TILE_PREFIX[2])
+	roof_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	roof_sprite.z_index = 20
+	roof_sprite.visible = false
+	add_child(roof_sprite)
 	front_layer = _make_layer("AutomaticFrontFacade", 21, tiles)
 	collisions = Node2D.new()
 	collisions.name = "GeneratedWallCollisions"
@@ -134,6 +144,19 @@ func _load_tile_texture(prefix: String, fallback_color: Color) -> Texture2D:
 	var transparent_image: Image = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
 	transparent_image.fill(Color.TRANSPARENT)
 	return ImageTexture.create_from_image(transparent_image)
+
+
+func _load_raw_tile_texture(prefix: String) -> Texture2D:
+	# Preserva o desenho original: sem esticar o sprite para cada tile.
+	var dirs: PackedStringArray = DirAccess.get_directories_at(Scales.ROOT)
+	dirs.sort()
+	for folder in dirs:
+		if folder.begins_with(prefix):
+			var tex: Texture2D = Scales.preview_texture(Scales.ROOT.path_join(folder))
+			if tex != null and Scales.visible_rect(tex).size != Vector2i.ZERO:
+				return tex
+	push_warning("Telhado real PixelLab nao encontrado: " + prefix)
+	return null
 
 
 func _create_hud() -> void:
@@ -475,9 +498,8 @@ func _rebuild() -> void:
 	for key in walls:
 		var cell: Vector2i = key
 		wall_layer.set_cell(cell, 1, Vector2i.ZERO)
-	for key in roofs:
-		var cell: Vector2i = key
-		roof_layer.set_cell(cell, 2, Vector2i.ZERO)
+	# Nao repetir roof_tile sobre cada celula: gera o mosaico errado.
+	_update_complete_roof()
 	for key in windows:
 		var cell: Vector2i = key
 		openings_layer.set_cell(cell, 4, Vector2i.ZERO)
@@ -517,12 +539,51 @@ func _rebuild_wall_collisions() -> void:
 		body.add_child(hitbox)
 
 
-func _update_roof_visibility() -> void:
-	if roof_layer == null:
+## Renderiza uma UNICA cobertura verdadeira do pack PixelLab.
+## O telhado acompanha o retangulo que envolve o contorno da casa;
+## assim uma casa ampliada nao vira dezenas de mini-telhados repetidos.
+func _update_complete_roof() -> void:
+	if roof_sprite == null:
 		return
+	roof_sprite.visible = false
+	if roofs.is_empty() or roof_sprite.texture == null:
+		return
+	var min_cell := Vector2i(2147483647, 2147483647)
+	var max_cell := Vector2i(-2147483647, -2147483647)
+	for key in roofs:
+		var cell: Vector2i = key
+		min_cell.x = mini(min_cell.x, cell.x)
+		min_cell.y = mini(min_cell.y, cell.y)
+		max_cell.x = maxi(max_cell.x, cell.x)
+		max_cell.y = maxi(max_cell.y, cell.y)
+	var rect: Rect2i = Scales.visible_rect(roof_sprite.texture)
+	if rect.size == Vector2i.ZERO:
+		return
+	var target_size := Vector2(
+		float((max_cell.x - min_cell.x + 1) * TILE),
+		float((max_cell.y - min_cell.y + 1) * TILE)
+	)
+	var first_center: Vector2 = _cell_world(min_cell)
+	var last_center: Vector2 = _cell_world(max_cell)
+	roof_sprite.position = to_local((first_center + last_center) * 0.5)
+	roof_sprite.scale = Vector2(
+		target_size.x / float(rect.size.x),
+		target_size.y / float(rect.size.y)
+	)
+	var tex_size: Vector2 = roof_sprite.texture.get_size()
+	var art_mid := Vector2(rect.position) + Vector2(rect.size) * 0.5
+	roof_sprite.offset = tex_size * 0.5 - art_mid
+	roof_sprite.visible = true
+
+
+func _update_roof_visibility() -> void:
+	if roof_layer == null or roof_sprite == null:
+		return
+	# A camada antiga permanece vazia para preservar compatibilidade.
+	roof_layer.visible = false
 	var player_inside: bool = floors.has(_player_cell())
-	roof_layer.visible = not roof_hidden and (building or not player_inside)
-	roof_layer.modulate.a = roof_opacity_in_build if building else 1.0
+	roof_sprite.visible = not roofs.is_empty() and roof_sprite.texture != null and not roof_hidden and (building or not player_inside)
+	roof_sprite.modulate.a = roof_opacity_in_build if building else 1.0
 
 
 func _remember() -> void:

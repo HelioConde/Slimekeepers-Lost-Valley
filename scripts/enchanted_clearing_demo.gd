@@ -427,7 +427,9 @@ func _setup_camera() -> void:
 		Vector2(float(MAP_COLUMNS * TILE), float(MAP_ROWS * TILE))
 	)
 	camera.call("configure_world_bounds", map_rect)
-	camera.call("reset_to_player_view")
+	# Respeita o zoom, o offset e o seguimento salvos em scenes/player.tscn.
+	# Somente a Camera2D do Player e ativada. O modo geral e temporario.
+	camera.enabled = true
 	camera.make_current()
 
 
@@ -435,14 +437,19 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey):
 		return
 	var key: InputEventKey = event as InputEventKey
-	if not key.pressed or key.echo:
-		return
 	if key.physical_keycode == KEY_TAB:
-		_wide_view = not _wide_view
-		# Visao geral sempre relativa ao zoom original do Player.
+		# Segurar TAB mostra a area; soltar restaura exatamente
+		# a configuracao da Camera2D do Player.
+		if key.echo:
+			return
+		_wide_view = key.pressed
 		camera.call("set_overview_enabled", _wide_view)
 		_update_help()
-	elif key.physical_keycode == KEY_F1:
+		get_viewport().set_input_as_handled()
+		return
+	if not key.pressed or key.echo:
+		return
+	if key.physical_keycode == KEY_F1:
 		_jump_to(Vector2(0.0, 40.0))
 	elif key.physical_keycode == KEY_F2:
 		_jump_to(Vector2(-330.0, -126.0))
@@ -460,7 +467,7 @@ func _jump_to(destination: Vector2) -> void:
 
 func _update_help() -> void:
 	help_label.text = "CLAREIRA ENCANTADA | WASD/SETAS mover | SHIFT correr | ESPACO dash | TAB: "
-	help_label.text += "voltar ao zoom normal" if _wide_view else "visao geral"
+	help_label.text += "solte para zoom do Player" if _wide_view else "segurar para visao geral"
 	help_label.text += "\n1-7 ferramentas | F usar | E interagir | I mochila | F1-F4 viagem"
 
 
