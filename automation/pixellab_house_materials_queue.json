@@ -1,7 +1,7 @@
 {
   "project": "Slimekeepers: Lost Valley",
   "style": "detailed handcrafted pixel art, cozy fantasy farming RPG, low top-down perspective, transparent background, 32x32 world grid",
-  "updated_at": "2026-10-23T17:21:00-03:00",
+  "updated_at": "2026-10-24T02:51:18-03:00",
   "items": [
     {
       "id": "house_wall_wood",
@@ -35,7 +35,7 @@
       "priority": "P0",
       "size_reference": "64x64",
       "generated_size": "48x48",
-      "status": "processing",
+      "status": "generated_pending_review",
       "submitted_at": "2026-10-23T17:21:00-03:00",
       "prompt_requirement": "modular red clay tile roof segment with readable low top-down angle; no wall, floor, ground or shadow"
     },
@@ -44,9 +44,416 @@
       "priority": "P0",
       "size_reference": "32x32",
       "generated_size": "48x48",
-      "status": "processing",
+      "status": "generated_pending_review",
       "submitted_at": "2026-10-23T17:21:00-03:00",
       "prompt_requirement": "seamless flat interior wooden plank floor tile; no wall, furniture, border, ground or shadow"
+    },
+    {
+      "id": "house_floor_stone",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "seamless flat stone interior floor tile"
+    },
+    {
+      "id": "house_floor_terracotta",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "seamless flat terracotta interior floor tile"
+    },
+    {
+      "id": "house_floor_mosaic",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "seamless flat mosaic interior floor tile"
+    },
+    {
+      "id": "house_floor_darkwood",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "seamless flat dark-wood interior floor tile"
+    },
+    {
+      "id": "house_foundation_stone",
+      "priority": "P0",
+      "size_reference": "64x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "modular fieldstone house foundation"
+    },
+    {
+      "id": "house_chimney_brick",
+      "priority": "P0",
+      "size_reference": "32x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "cozy modular brick chimney"
+    },
+    {
+      "id": "house_window_shutters",
+      "priority": "P0",
+      "size_reference": "48x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "prompt_requirement": "wooden window shutters compatible with the cottage window"
+    },
+    {
+      "id": "house_wall_stone_plaster",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:36:17-03:00",
+      "prompt_requirement": "modular cottage wall with fieldstone lower half and cream plaster upper half"
+    },
+    {
+      "id": "house_wall_timber_dark",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:36:17-03:00",
+      "prompt_requirement": "modular dark timber and muted sage plaster cottage wall"
+    },
+    {
+      "id": "house_door_roundtop",
+      "priority": "P0",
+      "size_reference": "32x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:36:17-03:00",
+      "prompt_requirement": "closed round-top rustic honey-wood cottage door"
+    },
+    {
+      "id": "house_window_roundtop",
+      "priority": "P0",
+      "size_reference": "32x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:41:17-03:00",
+      "prompt_requirement": "closed round-top oak cottage window with pale blue glass"
+    },
+    {
+      "id": "house_roof_ridge_red",
+      "priority": "P0",
+      "size_reference": "64x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:41:17-03:00",
+      "prompt_requirement": "modular red clay tile roof ridge with tileable horizontal edges"
+    },
+    {
+      "id": "house_roof_thatch",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:41:17-03:00",
+      "prompt_requirement": "modular golden straw thatch roof segment with natural edge"
+    },
+    {
+      "id": "house_trim_wood",
+      "priority": "P0",
+      "size_reference": "64x16",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:46:17-03:00",
+      "prompt_requirement": "modular carved honey-oak cottage wall trim with tileable horizontal edges"
+    },
+    {
+      "id": "house_stairs_wood",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:46:17-03:00",
+      "prompt_requirement": "short three-step rustic honey-wood cottage stair module"
+    },
+    {
+      "id": "house_porch_wood",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:46:17-03:00",
+      "prompt_requirement": "small honey-wood cottage porch platform with posts and low railing"
+    },
+    {
+      "id": "house_fence_wood_straight",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:51:17-03:00",
+      "prompt_requirement": "rustic honey-wood picket fence straight segment with tileable horizontal edges"
+    },
+    {
+      "id": "house_fence_gate_wood",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:51:17-03:00",
+      "prompt_requirement": "closed rustic honey-wood picket fence gate with iron latch"
+    },
+    {
+      "id": "house_fence_wood_corner",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:51:17-03:00",
+      "prompt_requirement": "rustic honey-wood picket fence ninety-degree corner segment"
+    },
+    {
+      "id": "house_fence_wood_end",
+      "priority": "P0",
+      "size_reference": "32x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:56:17-03:00",
+      "prompt_requirement": "rustic honey-wood picket fence end cap with terminal post"
+    },
+    {
+      "id": "house_fence_wood_post",
+      "priority": "P0",
+      "size_reference": "32x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:56:17-03:00",
+      "prompt_requirement": "freestanding rustic honey-wood fence post with cap and iron band"
+    },
+    {
+      "id": "house_fence_wood_tjunction",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T01:56:17-03:00",
+      "prompt_requirement": "rustic honey-wood picket fence T-junction matching the modular set"
+    },
+    {
+      "id": "house_wall_wood_corner",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:01:17-03:00",
+      "prompt_requirement": "honey-timber and cream-plaster cottage outside wall corner"
+    },
+    {
+      "id": "house_wall_timber_half",
+      "priority": "P0",
+      "size_reference": "64x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:01:17-03:00",
+      "prompt_requirement": "low honey-timber and cream-plaster wall segment with tileable edges"
+    },
+    {
+      "id": "house_wall_stone_corner",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:01:17-03:00",
+      "prompt_requirement": "warm fieldstone and cream-plaster cottage outside wall corner"
+    },
+    {
+      "id": "house_door_stone_arch",
+      "priority": "P0",
+      "size_reference": "48x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:06:17-03:00",
+      "prompt_requirement": "closed dark-oak cottage door module with a narrow warm fieldstone arch trim"
+    },
+    {
+      "id": "house_door_double_wood",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:06:17-03:00",
+      "prompt_requirement": "closed honey-wood double cottage doors with iron hinges and paired handles"
+    },
+    {
+      "id": "house_door_arched_dark",
+      "priority": "P0",
+      "size_reference": "32x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:06:17-03:00",
+      "prompt_requirement": "closed dark-oak arched cottage door with iron strap hinges and brass handle"
+    },
+    {
+      "id": "house_window_stone_arch",
+      "priority": "P0",
+      "size_reference": "48x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:11:17-03:00",
+      "prompt_requirement": "closed dark-oak cottage window with pale blue glass and a narrow warm fieldstone arch trim"
+    },
+    {
+      "id": "house_window_double_wood",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:11:17-03:00",
+      "prompt_requirement": "wide honey-oak double-pane cottage window with central mullion and pale blue glass"
+    },
+    {
+      "id": "house_shutters_sage_open",
+      "priority": "P0",
+      "size_reference": "48x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:11:17-03:00",
+      "prompt_requirement": "pair of open muted-sage wooden shutters with iron hinges, compatible with cottage windows"
+    },
+    {
+      "id": "house_roof_blue_slates",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:16:17-03:00",
+      "prompt_requirement": "modular dark blue-slate cottage roof segment with subtle moss"
+    },
+    {
+      "id": "house_roof_ridge_blue_slates",
+      "priority": "P0",
+      "size_reference": "64x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:16:17-03:00",
+      "prompt_requirement": "modular dark blue-slate roof ridge with tileable horizontal edges"
+    },
+    {
+      "id": "house_roof_eave_red",
+      "priority": "P0",
+      "size_reference": "64x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:16:17-03:00",
+      "prompt_requirement": "modular red clay-tile roof eave with honey-oak fascia and tileable horizontal edges"
+    },
+    {
+      "id": "house_floor_flagstone",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:21:17-03:00",
+      "prompt_requirement": "seamless flat warm-gray flagstone floor tile with subtle moss and fine grout"
+    },
+    {
+      "id": "house_floor_herringbone_wood",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:21:17-03:00",
+      "prompt_requirement": "seamless flat honey-oak herringbone parquet floor tile"
+    },
+    {
+      "id": "house_floor_cobble_warm",
+      "priority": "P0",
+      "size_reference": "32x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:21:17-03:00",
+      "prompt_requirement": "seamless flat warm cobblestone interior floor tile with small rounded cobbles"
+    },
+    {
+      "id": "house_foundation_stone_corner",
+      "priority": "P0",
+      "size_reference": "64x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:26:18-03:00",
+      "prompt_requirement": "modular warm fieldstone cottage foundation outside corner with moss in joints"
+    },
+    {
+      "id": "house_chimney_stone",
+      "priority": "P0",
+      "size_reference": "32x64",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:31:18-03:00",
+      "prompt_requirement": "modular warm fieldstone cottage chimney with a small dark cap and subtle moss"
+    },
+    {
+      "id": "house_trim_stone",
+      "priority": "P0",
+      "size_reference": "64x16",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:41:18-03:00",
+      "prompt_requirement": "modular warm fieldstone wall trim band with subtle moss and tileable horizontal edges"
+    },
+    {
+      "id": "house_stairs_stone",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:46:18-03:00",
+      "prompt_requirement": "short three-step warm fieldstone cottage stair module with subtle moss"
+    },
+    {
+      "id": "house_porch_stone",
+      "priority": "P0",
+      "size_reference": "64x48",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:46:18-03:00",
+      "prompt_requirement": "small warm fieldstone cottage porch platform with two low stone posts"
+    },
+    {
+      "id": "house_fence_stone_low",
+      "priority": "P0",
+      "size_reference": "64x32",
+      "generated_size": "48x48",
+      "status": "generated_pending_review",
+      "submitted_at": "2026-10-24T02:46:18-03:00",
+      "prompt_requirement": "low warm fieldstone garden boundary wall with subtle moss and tileable horizontal edges"
+    },
+    {
+      "id": "house_fence_stone_corner",
+      "priority": "P0",
+      "size_reference": "48x48",
+      "generated_size": "48x48",
+      "status": "processing",
+      "submitted_at": "2026-10-24T02:51:18-03:00",
+      "prompt_requirement": "low warm fieldstone garden boundary outside corner with subtle moss and tileable edges"
+    },
+    {
+      "id": "house_fence_stone_gate",
+      "priority": "P0",
+      "size_reference": "48x48",
+      "generated_size": "48x48",
+      "status": "processing",
+      "submitted_at": "2026-10-24T02:51:18-03:00",
+      "prompt_requirement": "short rustic oak garden gate set between low warm fieldstone posts with subtle moss"
+    },
+    {
+      "id": "house_fence_stone_post",
+      "priority": "P0",
+      "size_reference": "32x48",
+      "generated_size": "48x48",
+      "status": "processing",
+      "submitted_at": "2026-10-24T02:51:18-03:00",
+      "prompt_requirement": "single low warm fieldstone garden boundary post with a weathered cap and subtle moss"
     }
   ]
 }

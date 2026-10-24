@@ -1,15 +1,14 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://bi8obbl3of0i1"]
 
-[ext_resource type="TileSet" path="res://resources/grass_dirt_v3.tres" id="1_tileset"]
-[ext_resource type="Script" path="res://scripts/terrain_demo.gd" id="2_map_script"]
-[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="TileSet" uid="uid://bimhj72kjsvxn" path="res://resources/grass_dirt_v3.tres" id="1_tileset"]
+[ext_resource type="Script" uid="uid://cp1dew0vfmbib" path="res://scripts/terrain_demo.gd" id="2_map_script"]
+[ext_resource type="PackedScene" uid="uid://b4wnna22fd3yc" path="res://scenes/player.tscn" id="3_player"]
 
-[node name="GrassDirtV3_Demo" type="Node2D"]
+[node name="GrassDirtV3_Demo" type="Node2D" unique_id=762316869]
 
-[node name="Terrain" type="TileMapLayer" parent="."]
+[node name="Terrain" type="TileMapLayer" parent="." unique_id=1243670746]
+texture_filter = 1
 tile_set = ExtResource("1_tileset")
 script = ExtResource("2_map_script")
-texture_filter = 1
 
-[node name="Player" parent="." instance=ExtResource("3_player")]
-position = Vector2(0, 0)
+[node name="Player" parent="." unique_id=655058915 instance=ExtResource("3_player")]
