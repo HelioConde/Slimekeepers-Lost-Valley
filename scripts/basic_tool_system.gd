@@ -1,10 +1,10 @@
 extends Node2D
-## Controle: 1-4 selecionam, F ou clique usa a ferramenta, E interage.
+## Controle: 1-7 selecionam, F ou clique usa a ferramenta, E interage.
 signal selected_tool_changed(index: int)
 signal feedback(message: String)
 
-const TOOL_IDS: Array[String] = ["machado", "picareta", "enxada", "regador"]
-const TOOL_LABELS: Array[String] = ["MACHADO", "PICARETA", "ENXADA", "REGADOR"]
+const TOOL_IDS: Array[String] = ["machado", "picareta", "enxada", "regador", "foice", "pa", "pesca"]
+const TOOL_LABELS: Array[String] = ["MACHADO", "PICARETA", "ENXADA", "REGADOR", "FOICE", "PA", "PESCA"]
 const COLORS: Array[Color] = [
 	Color("#d5b080"), Color("#a8bec6"), Color("#c1a66e"), Color("#69b6cf")
 ]
@@ -28,7 +28,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var key: InputEventKey = event as InputEventKey
 		if not key.pressed or key.echo:
 			return
-		if key.physical_keycode >= KEY_1 and key.physical_keycode <= KEY_4:
+		if key.physical_keycode >= KEY_1 and key.physical_keycode <= KEY_7:
 			select_tool(key.physical_keycode - KEY_1)
 			get_viewport().set_input_as_handled()
 		elif key.physical_keycode == KEY_F:

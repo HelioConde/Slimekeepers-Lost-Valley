@@ -463,7 +463,7 @@ func _jump_to(destination: Vector2) -> void:
 func _update_help() -> void:
 	help_label.text = "CLAREIRA ENCANTADA | WASD/SETAS mover | SHIFT correr | ESPACO dash | TAB: "
 	help_label.text += "voltar ao zoom normal" if _wide_view else "visao geral"
-	help_label.text += "\n1-4 ferramentas | F usar | E interagir | I mochila | F1-F4 viagem"
+	help_label.text += "\n1-7 ferramentas | F usar | E interagir | I mochila | F1-F4 viagem"
 
 
 ## Recursos disponiveis para coleta na floresta.

@@ -8,7 +8,7 @@
 
 ## Personagem
 - O controlador em `scripts/player_controller.gd` reproduz as animacoes da PixelLab para: **machado, picareta, enxada, regador, foice, pa, vara de pesca e interagir**, buscando as sequencias originais em `sprites/`.
-- Ferramentas selecionadas com teclas 1-4 e usadas com **F** ou clique esquerdo, na `enchanted_clearing_demo.tscn`.
+- Ferramentas selecionadas com teclas **1-7** (machado, picareta, enxada, regador, foice, pa e pesca) e usadas com **F** ou clique esquerdo, na `enchanted_clearing_demo.tscn`. Foice, pa e pesca atualmente executam apenas a animacao visual, sem efeito de jogo.
 - **E** interage e toca o clip de interacao quando ha alvo.
 - O efeito provisório de arco desenhado foi removido; as animacoes sao as reais do personagem.
 

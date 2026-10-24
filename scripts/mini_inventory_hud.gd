@@ -1,6 +1,6 @@
 extends CanvasLayer
 ## Mini HUD com hotbar, bolsa e aviso de interacao.
-const TOOL_NAMES: Array[String] = ["MACHADO", "PICARETA", "ENXADA", "REGADOR"]
+const TOOL_NAMES: Array[String] = ["MACHADO", "PICARETA", "ENXADA", "REGADOR", "FOICE", "PA", "PESCA"]
 const INVENTORY_ROWS: Array[String] = [
 	"madeira", "pedra", "fibra", "sementes", "colheita", "cogumelos"
 ]
@@ -42,8 +42,8 @@ func _make_interface() -> void:
 	hotbar.anchor_right = 0.5
 	hotbar.anchor_top = 1.0
 	hotbar.anchor_bottom = 1.0
-	hotbar.offset_left = -284.0
-	hotbar.offset_right = 284.0
+	hotbar.offset_left = -389.0
+	hotbar.offset_right = 389.0
 	hotbar.offset_top = -80.0
 	hotbar.offset_bottom = -12.0
 	hotbar.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -51,9 +51,9 @@ func _make_interface() -> void:
 	var hbox := HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 6)
 	hotbar.add_child(hbox)
-	for i in range(4):
+	for i in range(TOOL_NAMES.size()):
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(135.0, 54.0)
+		button.custom_minimum_size = Vector2(100.0, 54.0)
 		button.focus_mode = Control.FOCUS_NONE
 		button.pressed.connect(_click_tool.bind(i))
 		hbox.add_child(button)
