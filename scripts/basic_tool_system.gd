@@ -15,14 +15,9 @@ const COOLDOWN: float = 0.36
 @onready var inventory: Node = get_node("../../../Inventory")
 var selected_index: int = 0
 var _cooldown_left: float = 0.0
-var _swing_left: float = 0.0
-var _effect_direction: Vector2 = Vector2.DOWN
 
 func _process(delta: float) -> void:
 	_cooldown_left = maxf(0.0, _cooldown_left - delta)
-	if _swing_left > 0.0:
-		_swing_left = maxf(0.0, _swing_left - delta)
-		queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
 	# A ferramenta equipada nao deve agir enquanto o editor da casa usa o mouse.
@@ -59,9 +54,8 @@ func use_selected_tool() -> void:
 	if _cooldown_left > 0.0:
 		return
 	_cooldown_left = COOLDOWN
-	_effect_direction = _facing_vector()
-	_swing_left = 0.18
-	queue_redraw()
+	if character.has_method("play_tool_animation"):
+		character.call("play_tool_animation", TOOL_IDS[selected_index])
 	var target: Node = _nearest_target(TOOL_IDS[selected_index], false)
 	if target == null:
 		feedback.emit("Chegue mais perto e olhe para o alvo")
@@ -76,6 +70,8 @@ func interact() -> void:
 		feedback.emit("Nada para interagir aqui")
 		return
 	_cooldown_left = COOLDOWN
+	if character.has_method("play_tool_animation"):
+		character.call("play_tool_animation", "interact")
 	feedback.emit(String(target.call("interact_action", inventory)))
 
 func _nearest_target(tool_id: String, for_interaction: bool) -> Node:
@@ -120,11 +116,3 @@ func _facing_vector() -> Vector2:
 		"north-west": return Vector2(-1, -1).normalized()
 	return Vector2.DOWN
 
-func _draw() -> void:
-	if _swing_left <= 0.0:
-		return
-	var angle: float = _effect_direction.angle()
-	var color: Color = COLORS[selected_index]
-	color.a = _swing_left / 0.18
-	draw_arc(_effect_direction * 21.0 + Vector2(0, -9), 14.0,
-		angle - 0.9, angle + 0.9, 10, color, 3.0, true)

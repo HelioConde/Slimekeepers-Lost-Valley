@@ -38,6 +38,8 @@ var movement_locked: bool = false
 var _dash_time: float = 0.0
 var _cooldown_time: float = 0.0
 var _dash_vector: Vector2 = Vector2.DOWN
+var _tool_animation: String = ""
+var _tool_time_left: float = 0.0
 
 
 func _ready() -> void:
@@ -73,6 +75,14 @@ func _setup_visual_proportions() -> void:
 
 func _physics_process(delta: float) -> void:
 	_cooldown_time = maxf(0.0, _cooldown_time - delta)
+	if _tool_time_left > 0.0:
+		_tool_time_left = maxf(0.0, _tool_time_left - delta)
+		velocity = Vector2.ZERO
+		motion_state = "tool"
+		if _tool_time_left <= 0.0:
+			_tool_animation = ""
+			_set_animation("idle")
+		return
 
 	var input_dir := Vector2.ZERO
 	if not movement_locked:
@@ -131,6 +141,30 @@ func set_movement_locked(locked: bool) -> void:
 	movement_locked = locked
 	if locked:
 		_dash_time = 0.0
+
+
+## Reproduz a animacao PixelLab correspondente a ferramenta e direcao atuais.
+## Invocada pelo BasicToolSystem ao usar F/clique, ou ao interagir.
+func play_tool_animation(tool_id: String) -> void:
+	var type_id: String = tool_id
+	match tool_id:
+		"machado": type_id = "axe"
+		"picareta": type_id = "pickaxe"
+		"enxada": type_id = "hoe"
+		"regador": type_id = "watering"
+		"foice", "colheita": type_id = "scythe"
+		"pa": type_id = "shovel"
+		"pesca": type_id = "fishing"
+	var animation: String = "tool_%s_%s" % [type_id, facing]
+	if not sprite.sprite_frames.has_animation(animation):
+		return
+	var frames: SpriteFrames = sprite.sprite_frames
+	_tool_animation = animation
+	_tool_time_left = float(frames.get_frame_count(animation)) / maxf(1.0, frames.get_animation_speed(animation))
+	_dash_time = 0.0
+	velocity = Vector2.ZERO
+	sprite.play(animation)
+	motion_state_changed.emit("tool_" + type_id, facing)
 
 
 func get_dash_ready() -> bool:

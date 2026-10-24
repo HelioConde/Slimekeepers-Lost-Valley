@@ -19,6 +19,11 @@ const VIEW_ZOOM: float = 1.0
 const OVERVIEW_ZOOM: float = 0.65
 const POND_CENTER: Vector2 = Vector2(-690.0, 285.0)
 const POND_RADIUS: Vector2 = Vector2(264.0, 218.0)
+const BRIDGE_CENTER: Vector2 = Vector2(-480.0, 335.0)
+const WATER_TILE_SIZE: int = 16
+# Sprite Sprout Lands privado: extrair do ZIP original na pasta local abaixo.
+# NAO enviar a imagem ao GitHub: o Free Basic Pack proibe redistribuicao.
+const WATER_TEXTURE: String = "res://assets/local_sprout/Water.png"
 
 # Godot atlas: corner bits TL=1, TR=2, BR=4, BL=8.
 const CORNER_ATLAS = [
@@ -48,7 +53,6 @@ const OLD_TREES: Dictionary = {
 
 var _segments: Array[Dictionary] = []
 var _object_folders: Array[String] = []
-var _draw_road_pebbles: PackedVector2Array = PackedVector2Array()
 var _wide_view: bool = false
 var _legacy_index: int = 0
 var _object_count: int = 0
@@ -60,7 +64,7 @@ func _ready() -> void:
 	_register_roads()
 	_scan_exported_objects()
 	_paint_terrain()
-	_prepare_road_details()
+	_create_water_tiles()
 	_build_landmarks()
 	_build_woods()
 	if enable_decorations:
@@ -69,7 +73,6 @@ func _ready() -> void:
 		_build_pond_collision()
 		_add_world_edges()
 	_setup_camera()
-	queue_redraw()
 	print("Clareira Encantada: %d objetos montados." % _object_count)
 
 
@@ -134,16 +137,6 @@ func _paint_terrain() -> void:
 			elif mask == 15 and variation < 3:
 				atlas = Vector2i(4 + variation, 2)
 			ground.set_cell(Vector2i(x, y), 0, atlas)
-
-
-func _prepare_road_details() -> void:
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 773923
-	_draw_road_pebbles.clear()
-	for i in range(1500):
-		var pt := Vector2(rng.randf_range(-1010.0, 1010.0), rng.randf_range(-645.0, 645.0))
-		if _is_road(pt):
-			_draw_road_pebbles.append(pt)
 
 
 func _scan_exported_objects() -> void:
@@ -266,8 +259,8 @@ func _build_landmarks() -> void:
 		Vector2(820.0, -290.0), Vector2(-200.0, 510.0)
 	], true, 5)
 
-	# Ponto de pesca na margem do lago. A doca e desenhada sobre a agua.
-	_place_export("wooden_bridge", Vector2(-506.0, 355.0), false, 6)
+	# Ponte pronta da PixelLab. Nao desenhar doca ou tabuas com formas.
+	_place_export("wooden_bridge", BRIDGE_CENTER, false, 6, 1.85)
 
 
 func _build_woods() -> void:
@@ -342,121 +335,68 @@ func _inside_water(p: Vector2, radius_factor: float = 1.0) -> bool:
 	return dx * dx + dy * dy <= 1.0
 
 
-func _ellipse(center: Vector2, radius: Vector2, steps: int = 48, jitter: float = 0.0) -> PackedVector2Array:
-	var result := PackedVector2Array()
-	for i in range(steps):
-		var angle: float = float(i) * TAU / float(steps)
-		var wobble: float = 1.0 + sin(float(i) * 2.7) * jitter
-		var point: Vector2 = center + Vector2(cos(angle) * radius.x * wobble, sin(angle) * radius.y * wobble)
-		result.append(Vector2(roundf(point.x / 4.0) * 4.0, roundf(point.y / 4.0) * 4.0))
-	return result
+## A lagoa e formada EXCLUSIVAMENTE pelos tiles reais Sprout Lands.
+## Nenhuma borda, tabua, pedra, agua ou barranco e desenhado com shapes.
+func _create_water_tiles() -> void:
+	var texture: Texture2D = load(WATER_TEXTURE) as Texture2D
+	if texture == null:
+		push_warning("Agua do pack Sprout Lands ausente. Copie Water.png do ZIP original para assets/local_sprout/ (sem publicar no GitHub)")
+		return
+	var tileset := TileSet.new()
+	tileset.tile_size = Vector2i(WATER_TILE_SIZE, WATER_TILE_SIZE)
+	var source := TileSetAtlasSource.new()
+	source.texture = texture
+	source.texture_region_size = Vector2i(WATER_TILE_SIZE, WATER_TILE_SIZE)
+	source.create_tile(Vector2i.ZERO)
+	tileset.add_source(source, 0)
+	var water := TileMapLayer.new()
+	water.name = "PondWater_SproutLands"
+	water.tile_set = tileset
+	water.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	water.z_index = -19
+	water.modulate = Color(0.42, 0.73, 0.80, 1.0)
+	add_child(water)
+	for y in range(-41, 42):
+		for x in range(-71, -22):
+			var pos := Vector2(float(x * WATER_TILE_SIZE + 8), float(y * WATER_TILE_SIZE + 8))
+			if _inside_water(pos, 1.0):
+				water.set_cell(Vector2i(x, y), 0, Vector2i.ZERO)
 
 
-func _draw() -> void:
-	_draw_pond()
-	_draw_cliff()
-	_draw_dock()
-	for pebble in _draw_road_pebbles:
-		draw_rect(Rect2(pebble, Vector2(3.0, 2.0)), Color(0.35, 0.30, 0.17, 0.18), true)
-
-
-func _draw_pond() -> void:
-	var shore: PackedVector2Array = _ellipse(POND_CENTER, POND_RADIUS + Vector2(28.0, 25.0), 56, 0.027)
-	var border: PackedVector2Array = _ellipse(POND_CENTER, POND_RADIUS + Vector2(10.0, 12.0), 56, 0.028)
-	var water: PackedVector2Array = _ellipse(POND_CENTER, POND_RADIUS, 56, 0.028)
-	draw_colored_polygon(shore, Color("#7b8747"))
-	draw_colored_polygon(border, Color("#6c7940"))
-	draw_colored_polygon(water, Color("#286e82"))
-	draw_colored_polygon(_ellipse(POND_CENTER + Vector2(-30.0, 24.0), POND_RADIUS * 0.77, 48, 0.026), Color("#2d7e90"))
-	draw_colored_polygon(_ellipse(POND_CENTER + Vector2(-37.0, 37.0), POND_RADIUS * 0.53, 48, 0.035), Color("#378a94"))
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 75512
-	for i in range(86):
-		var p := Vector2(
-			rng.randf_range(POND_CENTER.x - POND_RADIUS.x, POND_CENTER.x + POND_RADIUS.x),
-			rng.randf_range(POND_CENTER.y - POND_RADIUS.y, POND_CENTER.y + POND_RADIUS.y)
-		)
-		if not _inside_water(p, 0.89):
-			continue
-		if i % 6 == 0:
-			draw_circle(p, 5.0, Color("#6fa74a"))
-			draw_circle(p + Vector2(2.0, -1.0), 2.0, Color("#9cc26a"))
-		else:
-			draw_line(p, p + Vector2(float(i % 3 + 3), 0.0), Color("#72aeb0"), 1.0)
-	# Tufos de junco na orla para integrar visualmente a agua ao gramado.
-	for i in range(32):
-		var a: float = float(i) * TAU / 32.0
-		var base := POND_CENTER + Vector2(cos(a) * POND_RADIUS.x, sin(a) * POND_RADIUS.y)
-		if base.x > -510.0 and base.y > 240.0 and base.y < 405.0:
-			continue
-		for j in range(3):
-			var origin := base + Vector2(float(j * 5), 0.0)
-			draw_line(origin, origin + Vector2(float(j - 1) * 4.0, -float(12 + (i + j) % 12)), Color("#3f7742"), 2.0)
-			if j == 1 and i % 3 == 0:
-				draw_rect(Rect2(origin + Vector2(-4.0, -21.0), Vector2(3.0, 8.0)), Color("#947848"))
-
-
-func _draw_cliff() -> void:
-	# Canteiro elevado e afloramento no canto superior direito.
-	var earth := PackedVector2Array([
-		Vector2(690.0, -630.0), Vector2(980.0, -630.0),
-		Vector2(980.0, -375.0), Vector2(925.0, -375.0),
-		Vector2(925.0, -332.0), Vector2(750.0, -332.0),
-		Vector2(750.0, -378.0), Vector2(690.0, -378.0)
-	])
-	draw_colored_polygon(earth, Color("#70523a"))
-	for i in range(12):
-		var x: float = 750.0 + float(i % 6) * 33.0
-		var y: float = -370.0 + float(i / 6) * 26.0
-		draw_line(Vector2(x, y), Vector2(x + 14.0, y + 2.0), Color("#4e3b30"), 3.0)
-	var grass_top := PackedVector2Array([
-		Vector2(692.0, -640.0), Vector2(990.0, -640.0),
-		Vector2(990.0, -407.0), Vector2(908.0, -407.0),
-		Vector2(908.0, -375.0), Vector2(778.0, -375.0),
-		Vector2(778.0, -409.0), Vector2(692.0, -409.0)
-	])
-	draw_colored_polygon(grass_top, Color("#668740"))
-	draw_polyline(grass_top, Color("#98a95d"), 5.0)
-
-
-func _draw_farm_beds() -> void:
-	var garden: Array[Vector2] = [
-		Vector2(-620.0, -215.0), Vector2(-556.0, -215.0),
-		Vector2(-620.0, -152.0), Vector2(-556.0, -152.0)
-	]
-	for plot_center in garden:
-		var area := Rect2(plot_center - Vector2(27.0, 21.0), Vector2(54.0, 42.0))
-		draw_rect(area.grow(4.0), Color("#657639"))
-		draw_rect(area, Color("#66472e"))
-		draw_rect(area.grow(-3.0), Color("#806040"), false, 2.0)
-		for i in range(5):
-			var px: float = area.position.x + 7.0 + float(i * 9)
-			var py: float = area.position.y + 9.0 + float(i % 3) * 8.0
-			draw_rect(Rect2(px, py, 5.0, 2.0), Color("#9b7146"))
-
-
-func _draw_dock() -> void:
-	var deck := Rect2(-584.0, 305.0, 134.0, 46.0)
-	draw_rect(deck.grow(5.0), Color("#3b2b24"))
-	draw_rect(deck, Color("#8a5935"))
-	for i in range(8):
-		var x: float = -581.0 + float(i * 17)
-		draw_line(Vector2(x, 310.0), Vector2(x, 346.0), Color("#b47b4c"), 3.0)
-		draw_line(Vector2(x + 4.0, 309.0), Vector2(x + 4.0, 347.0), Color("#5b3e2b"), 1.0)
-	for p in [Vector2(-575.0, 306.0), Vector2(-575.0, 353.0), Vector2(-459.0, 306.0), Vector2(-459.0, 353.0)]:
-		draw_rect(Rect2(p - Vector2(5.0, 8.0), Vector2(10.0, 20.0)), Color("#68462e"))
-		draw_rect(Rect2(p - Vector2(4.0, 8.0), Vector2(8.0, 5.0)), Color("#bd8b58"))
-
-
+## Barreiras por faixas de tiles, deixando passagem sobre a ponte real.
 func _build_pond_collision() -> void:
 	var body := StaticBody2D.new()
 	body.name = "PondCollision"
 	body.collision_layer = 1
 	body.collision_mask = 0
 	add_child(body)
-	var collision := CollisionPolygon2D.new()
-	collision.polygon = _ellipse(POND_CENTER, POND_RADIUS * 0.94, 32)
-	body.add_child(collision)
+	for y in range(-41, 42):
+		var spans: Array[Vector2i] = []
+		var start_x: int = -9999
+		var last_x: int = -9999
+		for x in range(-71, -21):
+			var p := Vector2(float(x * WATER_TILE_SIZE + 8), float(y * WATER_TILE_SIZE + 8))
+			var water_cell: bool = _inside_water(p, 1.0)
+			# Corredor de passagem no acesso a ponte da costa leste.
+			var bridge_corridor: bool = p.y >= 304.0 and p.y <= 351.0 and p.x >= -565.0
+			var blocked: bool = water_cell and not bridge_corridor
+			if blocked:
+				if start_x == -9999:
+					start_x = x
+				last_x = x
+			elif start_x != -9999:
+				spans.append(Vector2i(start_x, last_x))
+				start_x = -9999
+		if start_x != -9999:
+			spans.append(Vector2i(start_x, last_x))
+		for span in spans:
+			var shape := RectangleShape2D.new()
+			var width_cells: int = span.y - span.x + 1
+			shape.size = Vector2(float(width_cells * WATER_TILE_SIZE), float(WATER_TILE_SIZE))
+			var hitbox := CollisionShape2D.new()
+			hitbox.shape = shape
+			hitbox.position = Vector2(float((span.x + span.y + 1) * WATER_TILE_SIZE) * 0.5, float(y * WATER_TILE_SIZE + 8))
+			body.add_child(hitbox)
 
 
 func _add_world_edges() -> void:

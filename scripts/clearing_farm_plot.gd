@@ -1,4 +1,11 @@
 extends Node2D
+## Usa os sprites PixelLab existentes, sem pintura manual de canteiros.
+const Scales = preload("res://scripts/world_object_scales.gd")
+const SOIL_PREFIX: String = "farm_plot_ground_v2_seamless"
+const BED_PREFIX: String = "farm_plot_detailed"
+const CROP_PREFIX: String = "crop_growth_stages"
+var soil_sprite: Sprite2D
+var plant_sprite: Sprite2D
 ## Canteiro da clareira: enxada > E plantar > regador > E colher.
 enum State { GRAMA, PREPARADO, PLANTADO, REGADO, PRONTO }
 
@@ -13,7 +20,8 @@ func _ready() -> void:
 	set_process(state == State.REGADO)
 	if state == State.REGADO:
 		growth_remaining = growth_seconds
-	queue_redraw()
+	_initialize_visuals()
+	_sync_visuals()
 
 func _process(delta: float) -> void:
 	if state != State.REGADO:
@@ -22,7 +30,7 @@ func _process(delta: float) -> void:
 	if growth_remaining <= 0.0:
 		state = State.PRONTO
 		set_process(false)
-		queue_redraw()
+		_sync_visuals()
 
 func target_world_position() -> Vector2:
 	return global_position
@@ -35,7 +43,7 @@ func tool_action(tool_id: String, _bag: Node) -> String:
 		if state != State.GRAMA:
 			return "Solo ja preparado"
 		state = State.PREPARADO
-		queue_redraw()
+		_sync_visuals()
 		return "Solo preparado! Pressione E para plantar"
 	if tool_id == "regador":
 		if state != State.PLANTADO:
@@ -43,7 +51,7 @@ func tool_action(tool_id: String, _bag: Node) -> String:
 		state = State.REGADO
 		growth_remaining = growth_seconds
 		set_process(true)
-		queue_redraw()
+		_sync_visuals()
 		return "Canteiro regado! Aguarde crescer"
 	return "Ferramenta incorreta para este solo"
 
@@ -55,7 +63,7 @@ func interact_action(bag: Node) -> String:
 		if not bool(bag.call("take_item", "sementes", 1)):
 			return "Sem sementes na mochila"
 		state = State.PLANTADO
-		queue_redraw()
+		_sync_visuals()
 		return "-1 semente | Agora regue"
 	if state == State.PRONTO:
 		if int(bag.call("quantity", "colheita")) > 97:
@@ -63,38 +71,63 @@ func interact_action(bag: Node) -> String:
 		bag.call("add_item", "colheita", 2)
 		bag.call("add_item", "sementes", 1)
 		state = State.PREPARADO
-		queue_redraw()
+		_sync_visuals()
 		return "+2 colheitas e +1 semente"
 	return "Este canteiro ainda nao pode ser colhido"
 
-func _draw() -> void:
-	var rect := Rect2(Vector2(-27.0, -21.0), Vector2(54.0, 42.0))
-	draw_rect(rect.grow(3.0), Color("#79914c"))
-	if state == State.GRAMA:
-		draw_rect(rect, Color("#648a40"))
-		for i in range(8):
-			var gx: float = -20.0 + float((i * 11) % 40)
-			var gy: float = -15.0 + float((i * 7) % 28)
-			draw_line(Vector2(gx, gy), Vector2(gx + 3.0, gy - 6.0), Color("#9ab45a"), 2.0)
-		return
-	draw_rect(rect, Color("#67432d"))
-	draw_rect(rect.grow(-3.0), Color("#916541"), false, 2.0)
-	for i in range(4):
-		var y: float = -13.0 + float(i) * 9.0
-		draw_line(Vector2(-21.0, y), Vector2(21.0, y), Color("#503421"), 2.0)
-	if state == State.PREPARADO:
-		return
-	if state == State.REGADO:
-		draw_rect(rect.grow(-4.0), Color(0.2, 0.3, 0.5, 0.18))
-	var leaf_scale: float = 0.7 if state == State.PLANTADO else (1.35 if state == State.PRONTO else 1.0)
-	for point in [Vector2(-12.0, -7.0), Vector2(12.0, -7.0), Vector2(-12.0, 10.0), Vector2(12.0, 10.0)]:
-		_draw_crop(point, leaf_scale)
+func _find_variant(prefix: String, variant: int = 0) -> Texture2D:
+	var folders: PackedStringArray = DirAccess.get_directories_at(Scales.ROOT)
+	folders.sort()
+	var matches: Array[String] = []
+	for folder in folders:
+		if folder.begins_with(prefix):
+			matches.append(folder)
+	if matches.is_empty():
+		push_warning("Sprite PixelLab nao encontrado: " + prefix)
+		return null
+	return Scales.preview_texture(Scales.ROOT.path_join(matches[posmod(variant, matches.size())]))
 
-func _draw_crop(center: Vector2, size: float) -> void:
-	var leaf_color := Color("#67a94e") if state != State.PRONTO else Color("#91ca53")
-	var offset: float = 6.0 * size
-	draw_line(center + Vector2(0.0, 3.0), center + Vector2(0.0, -offset), Color("#345c2d"), 2.0)
-	draw_circle(center + Vector2(-offset * 0.60, -offset * 0.55), 3.4 * size, leaf_color)
-	draw_circle(center + Vector2(offset * 0.60, -offset * 0.65), 3.4 * size, leaf_color)
-	if state == State.PRONTO:
-		draw_circle(center + Vector2(0.0, -5.0), 3.2, Color("#e6a44d"))
+
+func _initialize_visuals() -> void:
+	soil_sprite = Sprite2D.new()
+	soil_sprite.name = "CanteiroPixelLab"
+	soil_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	soil_sprite.z_index = -2
+	add_child(soil_sprite)
+	plant_sprite = Sprite2D.new()
+	plant_sprite.name = "PlantacaoPixelLab"
+	plant_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	plant_sprite.z_index = -1
+	add_child(plant_sprite)
+
+
+func _set_art(sprite: Sprite2D, texture: Texture2D, scale_id: String) -> void:
+	sprite.texture = texture
+	if texture == null:
+		return
+	sprite.scale = Vector2.ONE * Scales.scale_for(scale_id, texture)
+	sprite.offset = Scales.anchor_offset(texture)
+
+
+func _sync_visuals() -> void:
+	if soil_sprite == null or plant_sprite == null:
+		return
+	soil_sprite.visible = state != State.GRAMA
+	plant_sprite.visible = state == State.PLANTADO or state == State.REGADO or state == State.PRONTO
+	if not soil_sprite.visible:
+		soil_sprite.texture = null
+		plant_sprite.texture = null
+		return
+	var soil: Texture2D = _find_variant(SOIL_PREFIX, 0) if state == State.PREPARADO else _find_variant(BED_PREFIX, 0)
+	_set_art(soil_sprite, soil, "farm_plot_detailed" if state != State.PREPARADO else "farm_plot_ground")
+	if plant_sprite.visible:
+		var stage: int = 2
+		if state == State.REGADO:
+			stage = 8
+		elif state == State.PRONTO:
+			stage = 14
+		_set_art(plant_sprite, _find_variant(CROP_PREFIX, stage), CROP_PREFIX)
+	else:
+		plant_sprite.texture = null
+
+

@@ -130,13 +130,10 @@ func _load_tile_texture(prefix: String, fallback_color: Color) -> Texture2D:
 		scaled.convert(Image.FORMAT_RGBA8)
 		scaled.resize(TILE, TILE, Image.INTERPOLATE_NEAREST)
 		return ImageTexture.create_from_image(scaled)
-	push_warning("Construtor sem modulo PixelLab: " + prefix)
-	var fallback_image: Image = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
-	fallback_image.fill(fallback_color)
-	for px in range(TILE):
-		fallback_image.set_pixel(px, 0, fallback_color.lightened(0.2))
-		fallback_image.set_pixel(px, TILE - 1, fallback_color.darkened(0.25))
-	return ImageTexture.create_from_image(fallback_image)
+	push_error("Modulo real PixelLab ausente: " + prefix)
+	var transparent_image: Image = Image.create(TILE, TILE, false, Image.FORMAT_RGBA8)
+	transparent_image.fill(Color.TRANSPARENT)
+	return ImageTexture.create_from_image(transparent_image)
 
 
 func _create_hud() -> void:

@@ -13,3 +13,6 @@ slimekeepers--lost-valley.*
 # Arquivos temporarios do sistema
 Thumbs.db
 .DS_Store
+
+# Assets Sprout Lands Free Basic: somente uso local; proibido redistribuir
+/assets/local_sprout/

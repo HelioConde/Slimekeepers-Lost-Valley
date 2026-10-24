@@ -55,6 +55,7 @@ func make_sprite_frames() -> SpriteFrames:
 			frames.set_animation_loop(animation_name, true)
 			for texture in textures:
 				frames.add_frame(animation_name, texture)
+	_add_tool_animations(frames)
 	return frames
 
 
@@ -159,3 +160,55 @@ func _get_frame_paths(state: String, direction: String) -> Array[String]:
 		if file_name.begins_with("frame_") and file_name.ends_with(".png"):
 			paths.append(selected + "/" + file_name)
 	return paths
+
+## Sequencias de acao verdadeiras exportadas da PixelLab, preservadas em 8 direcoes.
+## Se algum angulo nao foi exportado, essa direcao nao recebe animacao inventada.
+const TOOL_ACTIONS: Dictionary = {
+	"axe": {"folder": "Create_an_Axe_Equipp", "preferred": "The_adventurer_lifts"},
+	"pickaxe": {"folder": "Create_a_Pickaxe_Equ", "preferred": "The_adventurer_grips"},
+	"hoe": {"folder": "Create_a_Hoe_Equippe", "preferred": "The_adventurer_grips"},
+	"watering": {"folder": "Create_a_Watering_Ca", "preferred": "The_character_lifts"},
+	"scythe": {"folder": "Create_a_Scythe_Equi", "preferred": "The_character_pulls"},
+	"shovel": {"folder": "Create_a_Shovel_Equi", "preferred": "The_adventurer_grips"},
+	"fishing": {"folder": "Create_a_Fishing_Rod", "preferred": "The_adventurer_rhythmically"},
+	"interact": {"folder": "Idle", "preferred": "The_character_performs_a_gentle_interaction_gestur"}
+}
+
+func _add_tool_animations(frames: SpriteFrames) -> void:
+	for key in TOOL_ACTIONS:
+		var spec: Dictionary = TOOL_ACTIONS[key]
+		var root: String = "res://sprites/" + String(spec["folder"]) + "/animations"
+		if not DirAccess.dir_exists_absolute(root):
+			push_warning("Animacao de ferramenta nao encontrada: " + root)
+			continue
+		var clips: PackedStringArray = DirAccess.get_directories_at(root)
+		clips.sort()
+		var preferred: String = String(spec["preferred"])
+		var ordered: Array[String] = []
+		for clip in clips:
+			if clip.begins_with(preferred):
+				ordered.append(clip)
+		for clip in clips:
+			if not clip.begins_with(preferred):
+				ordered.append(clip)
+		for direction in DIRECTIONS:
+			var paths: Array[String] = []
+			for clip in ordered:
+				var dir: String = root.path_join(clip).path_join(direction)
+				if not DirAccess.dir_exists_absolute(dir):
+					continue
+				var file_names: PackedStringArray = DirAccess.get_files_at(dir)
+				file_names.sort()
+				for file_name in file_names:
+					if file_name.begins_with("frame_") and file_name.ends_with(".png"):
+						paths.append(dir.path_join(file_name))
+				if not paths.is_empty():
+					break
+			if paths.is_empty():
+				continue
+			var animation: String = "tool_%s_%s" % [String(key), direction]
+			frames.add_animation(animation)
+			frames.set_animation_speed(animation, 12.0)
+			frames.set_animation_loop(animation, false)
+			for texture in _load_textures(paths):
+				frames.add_frame(animation, texture)
