@@ -15,8 +15,7 @@ const MAP_COLUMNS: int = 64
 const MAP_ROWS: int = 42
 const MIN_X: int = -32
 const MIN_Y: int = -21
-const VIEW_ZOOM: float = 1.0
-const OVERVIEW_ZOOM: float = 0.65
+const OVERVIEW_ZOOM_FACTOR: float = 0.65
 const POND_CENTER: Vector2 = Vector2(-690.0, 285.0)
 const POND_RADIUS: Vector2 = Vector2(264.0, 218.0)
 const BRIDGE_CENTER: Vector2 = Vector2(-480.0, 335.0)
@@ -54,6 +53,7 @@ const OLD_TREES: Dictionary = {
 var _segments: Array[Dictionary] = []
 var _object_folders: Array[String] = []
 var _wide_view: bool = false
+var _player_camera_zoom: Vector2 = Vector2.ONE
 var _legacy_index: int = 0
 var _object_count: int = 0
 
@@ -422,14 +422,14 @@ func _add_wall(center: Vector2, size: Vector2) -> void:
 
 
 func _setup_camera() -> void:
+	# O zoom, suavizacao e offset sao definidos em scenes/player.tscn.
+	# A cena apenas expande os limites para o tamanho real da clareira.
+	_player_camera_zoom = camera.zoom
 	camera.enabled = true
-	camera.zoom = Vector2.ONE * VIEW_ZOOM
 	camera.limit_left = MIN_X * TILE
 	camera.limit_top = MIN_Y * TILE
 	camera.limit_right = (MIN_X + MAP_COLUMNS) * TILE
 	camera.limit_bottom = (MIN_Y + MAP_ROWS) * TILE
-	camera.position_smoothing_enabled = true
-	camera.position_smoothing_speed = 7.0
 	camera.make_current()
 	camera.reset_smoothing()
 
@@ -442,7 +442,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if key.physical_keycode == KEY_TAB:
 		_wide_view = not _wide_view
-		camera.zoom = Vector2.ONE * (OVERVIEW_ZOOM if _wide_view else VIEW_ZOOM)
+		# TAB aplica um zoom relativo; ao voltar, restaura o valor do Player.
+		camera.zoom = _player_camera_zoom * OVERVIEW_ZOOM_FACTOR if _wide_view else _player_camera_zoom
 		_update_help()
 	elif key.physical_keycode == KEY_F1:
 		_jump_to(Vector2(0.0, 40.0))

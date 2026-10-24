@@ -1,9 +1,6 @@
 extends Node2D
-<<<<<<< HEAD
 
 const Scales = preload("res://scripts/world_object_scales.gd")
-=======
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 ## Cenario-vitrine com comparacao individual de escala para todos os PNGs.
 ## O player 0.40 e mostrado ao lado de cada objeto como referencia visual.
 ## O personagem de verdade continua movendo com a Camera2D.
@@ -26,14 +23,8 @@ const SECTOR_COLORS = [
 ]
 
 @export var show_object_names: bool = true
-<<<<<<< HEAD
-=======
-@export_range(0.6, 3.0, 0.05) var maximum_preview_scale: float = 1.5
-@export_range(0.40, 1.40, 0.05) var non_tree_scale: float = 1.0
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 @export var show_player_reference: bool = true
 @export var show_height_comparison: bool = true
-@export_range(0.5, 2.0, 0.05) var initial_camera_zoom: float = 1.1
 
 @onready var catalog_objects: Node2D = $CatalogObjects
 @onready var player: CharacterBody2D = $CatalogObjects/Player
@@ -51,11 +42,7 @@ var _bounds: Rect2 = Rect2()
 func _ready() -> void:
 	var items: Array[Dictionary] = _read_exported_objects()
 	_total_items = items.size()
-<<<<<<< HEAD
 	_character_height = Scales.REFERENCE_PLAYER_HEIGHT
-=======
-	_character_height = _get_player_visual_height()
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 	_build_sector_layout(items)
 	_create_object_displays()
 	_configure_player_camera()
@@ -122,19 +109,9 @@ func _read_exported_objects() -> Array[Dictionary]:
 
 	for folder_name in folders:
 		var folder: String = "%s/%s" % [EXPORT_ROOT, folder_name]
-<<<<<<< HEAD
 		var texture: Texture2D = Scales.preview_texture(folder)
 		if texture == null:
 			continue
-=======
-		var png_path: String = _find_file(folder, "png")
-		if png_path.is_empty():
-			continue
-		var atlas: Texture2D = load(png_path) as Texture2D
-		if atlas == null:
-			continue
-		var texture: Texture2D = _preview_from_spritesheet(atlas, _find_file(folder, "json"))
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 		items.append({
 			"id": folder_name,
 			"name": _friendly_name(folder_name),
@@ -144,45 +121,6 @@ func _read_exported_objects() -> Array[Dictionary]:
 	return items
 
 
-<<<<<<< HEAD
-=======
-func _find_file(folder: String, ext: String) -> String:
-	var files: PackedStringArray = DirAccess.get_files_at(folder)
-	files.sort()
-	for filename in files:
-		if filename.to_lower().ends_with("." + ext):
-			return folder.path_join(filename)
-	return ""
-
-
-func _preview_from_spritesheet(atlas: Texture2D, json_path: String) -> Texture2D:
-	# A exportacao da API pode conter diversas direcoes na mesma imagem.
-	# Exibimos a PRIMEIRA CELULA, nao a folha inteira reduzida.
-	if json_path.is_empty():
-		return atlas
-	var file: FileAccess = FileAccess.open(json_path, FileAccess.READ)
-	if file == null:
-		return atlas
-	var parsed: Variant = JSON.parse_string(file.get_as_text())
-	if not (parsed is Dictionary):
-		return atlas
-	var metadata: Dictionary = parsed
-	var sheet: Dictionary = metadata.get("spritesheet", {})
-	var cell: Dictionary = sheet.get("cell_size", {})
-	var cw: int = int(cell.get("width", 0))
-	var ch: int = int(cell.get("height", 0))
-	if cw <= 0 or ch <= 0:
-		return atlas
-	var tex_size: Vector2 = atlas.get_size()
-	if cw > int(tex_size.x) or ch > int(tex_size.y):
-		return atlas
-	var preview := AtlasTexture.new()
-	preview.atlas = atlas
-	preview.region = Rect2(0.0, 0.0, float(cw), float(ch))
-	return preview
-
-
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 func _friendly_name(folder_name: String) -> String:
 	var parts: PackedStringArray = folder_name.split("_")
 	if parts.size() >= 2:
@@ -255,142 +193,10 @@ func _build_sector_layout(items: Array[Dictionary]) -> void:
 		_bounds = Rect2(Vector2.ZERO, Vector2(1280.0, 800.0))
 
 
-<<<<<<< HEAD
 ## Cada sprite usa a mesma escala persistente do mundo.
 func _preview_scale(item: Dictionary, texture: Texture2D) -> Vector2:
 	var id: String = String(item["id"])
 	return Vector2.ONE * Scales.scale_for(id, texture, _character_height)
-=======
-## Referencia real: altura visivel do personagem, ja com visual_scale = 0.40.
-## Evita comparar os objetos com o tamanho (128x128) da folha original.
-func _get_player_visual_height() -> float:
-	var character_sprite: AnimatedSprite2D = player.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
-	if character_sprite == null:
-		return 42.0
-	var frames: SpriteFrames = character_sprite.sprite_frames
-	if frames == null or not frames.has_animation(character_sprite.animation):
-		return 42.0
-	if frames.get_frame_count(character_sprite.animation) == 0:
-		return 42.0
-	var character_tex: Texture2D = frames.get_frame_texture(character_sprite.animation, 0)
-	if character_tex == null:
-		return 42.0
-	var image: Image = character_tex.get_image()
-	if image == null or image.is_empty():
-		return 42.0
-	var used: Rect2i = image.get_used_rect()
-	if used.size.y == 0:
-		return 42.0
-	return clampf(float(used.size.y) * absf(character_sprite.scale.y), 28.0, 70.0)
-
-
-## Somente arvores em pe preservam a escala atual, que ja foi aprovada.
-## Tocos e troncos sao recursos baixos e devem ser menores que o personagem.
-func _is_standing_tree(object_id: String) -> bool:
-	var name: String = object_id.to_lower()
-	if _has_keyword(name, ["stump", "log", "fallen", "firewood", "branch", "house", "roof", "woodpile"]):
-		return false
-	return _has_keyword(name, ["tree", "oak", "pine", "palm", "willow", "birch", "spruce", "fir_"])
-
-
-## Medidas relativas a ALTURA VISIVEL do protagonista (visual_scale=0.40).
-## Ajustes baseados nas capturas do catalogo: as arvores em pe ficam INTACTAS.
-## A prioridade dos testes importa (canteiro antes de crop; tronco antes de tree).
-func _object_height_ratio(object_id: String) -> float:
-	var name: String = object_id.to_lower()
-	# Troncos caidos e tocos: aproximadamente 15 a 25% menores que antes.
-	if _has_keyword(name, ["fallen_log", "fallen_trunk", "fallen_tree", "timber_log", "woodpile", "firewood"]):
-		return 0.42
-	if _has_keyword(name, ["stump", "tree_stump", "trunk", "log", "branch"]):
-		return 0.48
-	# Terra, canteiros e fases de plantio: abaixo da altura do joelho.
-	if _has_keyword(name, ["farm_plot_ground", "tilled_soil", "soil_patch", "dirt_patch", "ground_v2", "floor_tile", "house_floor"]):
-		return 0.33
-	if _has_keyword(name, ["farm_plot", "planting_bed", "garden_bed", "raised_bed"]):
-		return 0.44
-	if _has_keyword(name, ["crop_growth", "crop_stage", "seedling", "sprout", "seed_", "seedbed"]):
-		return 0.27
-	if _has_keyword(name, ["crop", "wheat", "corn", "pumpkin", "vegetable", "fruit_bush"]):
-		return 0.38
-	if _has_keyword(name, ["grass", "flower", "wildflower", "fern", "weed", "herb"]):
-		return 0.40
-	if _has_keyword(name, ["mushroom", "fungus"]):
-		return 0.34
-	if _has_keyword(name, ["bush_small", "shrub_small", "flower_bush"]):
-		return 0.48
-	if _has_keyword(name, ["bush", "shrub", "hedge", "plant"]):
-		return 0.66
-	# Objetos pequenos de uso/interacao, comparados diretamente a cintura do heroi.
-	if _has_keyword(name, ["campfire", "bonfire", "firepit", "fire_place"]):
-		return 0.42
-	if _has_keyword(name, ["flame", "fireball", "smoke", "spark"]):
-		return 0.40
-	if _has_keyword(name, ["storage_crate", "crate", "barrel", "chest", "box", "bucket", "pot", "sign", "lantern"]):
-		return 0.58
-	if _has_keyword(name, ["fence", "bench", "chair", "table", "cart", "wooden_bridge"]):
-		return 0.60
-	if _has_keyword(name, ["rock_small", "pebble", "gem_small", "ore_small"]):
-		return 0.48
-	if _has_keyword(name, ["rock_large", "boulder", "crystal_large"]):
-		return 0.97
-	if _has_keyword(name, ["rock", "ore", "mineral", "gem", "crystal", "stone"]):
-		return 0.60
-	# Componentes de construcoes, sem encolher portais/edificios completos.
-	if _has_keyword(name, ["house_window", "house_floor", "house_wall", "floor", "tile", "path", "soil", "plot", "cobble"]):
-		return 0.50
-	if _has_keyword(name, ["house_door", "door", "gate"]):
-		return 0.82
-	if _has_keyword(name, ["house_roof", "roof", "wall", "bridge", "shed", "well", "furnace", "workbench"]):
-		return 0.97
-	if _has_keyword(name, ["house", "building", "temple"]):
-		return 1.90
-	if _has_keyword(name, ["altar", "statue", "ruin", "portal", "monument", "shrine", "totem"]):
-		return 1.22
-	return 0.67
-
-
-## Largura permitida como multiplo da ALTURA DO OBJETO, para troncos compridos
-## manterem o formato sem ficarem desproporcionalmente largos.
-func _object_width_ratio(object_id: String) -> float:
-	var name: String = object_id.to_lower()
-	if _has_keyword(name, ["fallen_log", "fallen_trunk", "fallen_tree", "timber_log", "firewood", "woodpile"]):
-		return 2.75
-	if _has_keyword(name, ["farm_plot", "soil", "floor", "ground", "crop"]):
-		return 2.0
-	if _has_keyword(name, ["bridge", "fence", "wall", "roof", "house", "bench", "table"]):
-		return 2.55
-	if _has_keyword(name, ["bush", "shrub", "flower", "grass", "plant", "campfire", "firepit", "rock"]):
-		return 1.85
-	return 1.95
-
-
-func _visible_rect(texture: Texture2D) -> Rect2i:
-	# Uma textura pode ter uma area transparente extensa; use os pixels
-	# ocupados, em vez das dimensoes da imagem original.
-	var size: Vector2 = texture.get_size()
-	var fallback := Rect2i(Vector2i.ZERO, Vector2i(int(size.x), int(size.y)))
-	var image: Image = texture.get_image()
-	if image == null or image.is_empty():
-		return fallback
-	var used: Rect2i = image.get_used_rect()
-	return fallback if used.size.x == 0 or used.size.y == 0 else used
-
-
-func _preview_scale(item: Dictionary, texture: Texture2D) -> Vector2:
-	var size: Vector2 = texture.get_size()
-	var fit: float = minf((CELL_W - 28.0) / maxf(1.0, size.x), (CELL_H - 58.0) / maxf(1.0, size.y))
-	var scale_factor: float = minf(maximum_preview_scale, fit)
-	var object_id: String = String(item["id"])
-	if not _is_standing_tree(object_id):
-		var used: Rect2i = _visible_rect(texture)
-		var visible_size := Vector2(used.size)
-		var budget_height: float = _character_height * _object_height_ratio(object_id)
-		var budget_width: float = budget_height * _object_width_ratio(object_id)
-		scale_factor = minf(scale_factor, budget_height / maxf(1.0, visible_size.y))
-		scale_factor = minf(scale_factor, budget_width / maxf(1.0, visible_size.x))
-		scale_factor *= non_tree_scale
-	return Vector2.ONE * maxf(0.03, scale_factor)
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 
 
 func _add_player_reference(holder: Node2D) -> void:
@@ -445,17 +251,8 @@ func _create_object_displays() -> void:
 			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 			sprite.scale = _preview_scale(item, texture)
 			# Ajusta o ponto de apoio real em vez do fundo transparente do PNG.
-<<<<<<< HEAD
 			var used: Rect2i = Scales.visible_rect(texture)
 			sprite.offset = Scales.anchor_offset(texture)
-=======
-			var tex_size: Vector2 = texture.get_size()
-			var used: Rect2i = _visible_rect(texture)
-			sprite.offset = Vector2(
-				tex_size.x * 0.5 - (float(used.position.x) + float(used.size.x) * 0.5),
-				tex_size.y * 0.5 - float(used.end.y)
-			)
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
 			sprite.position = Vector2(26.0, 0.0)
 			holder.add_child(sprite)
 			var scaled_height: float = float(used.size.y) * sprite.scale.y
@@ -468,11 +265,9 @@ func _create_object_displays() -> void:
 
 
 func _configure_player_camera() -> void:
-	# Esses limites substituem os limites pequenos herdados do mapa da floresta.
+	# A camera do Player define zoom, suavizacao, offset e seguimento.
+	# Este mapa so define o retangulo de navegacao necessario para o catalogo.
 	player_camera.enabled = true
-	player_camera.zoom = Vector2.ONE * initial_camera_zoom
-	player_camera.position_smoothing_enabled = true
-	player_camera.position_smoothing_speed = 9.0
 	player_camera.limit_left = int(_bounds.position.x)
 	player_camera.limit_top = int(_bounds.position.y)
 	player_camera.limit_right = int(_bounds.end.x)
@@ -568,8 +363,4 @@ func _refresh_hud(force: bool) -> void:
 		name = String(_sectors[current]["title"])
 		count = int(_sectors[current]["count"])
 	help_label.text = "CATALOGO PIXELLAB  |  %d objetos  |  Setor %d/%d: %s (%d)\n" % [_total_items, current + 1, _sectors.size(), name, count]
-<<<<<<< HEAD
 	help_label.text += "WASD/SETAS mover  •  SHIFT correr  •  ESPACO dash  •  1–7 setor  •  PgUp/PgDn proximo  •  Roda/+/- zoom"
-=======
-	help_label.text += "WASD/SETAS mover  •  SHIFT correr  •  ESPACO dash  •  1–7 setor  •  PgUp/PgDn proximo  •  Roda/+/- zoom"
->>>>>>> d8e6de3 (Adiciona exportacao completa dos objetos PixelLab)
