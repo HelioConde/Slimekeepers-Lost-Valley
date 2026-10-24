@@ -24,7 +24,7 @@ position = Vector2(0, -8)
 shape = SubResource("CircleShape2D_feet")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=100236917]
-zoom = Vector2(1.5, 1.5)
+zoom = Vector2(2, 2)
 process_callback = 0
 limit_left = -768
 limit_top = -256
