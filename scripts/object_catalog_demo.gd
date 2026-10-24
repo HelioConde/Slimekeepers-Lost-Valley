@@ -1,0 +1,371 @@
+extends Node2D
+## Cenario-vitrine com comparacao individual de escala para todos os PNGs.
+## O player 0.40 e mostrado ao lado de cada objeto como referencia visual.
+## O personagem de verdade continua movendo com a Camera2D.
+
+const Scales = preload("res://scripts/world_object_scales.gd")
+const EXPORT_ROOT: String = "res://sprites/objects/pixellab_exports"
+const COLS: int = 8
+const CELL_W: float = 170.0
+const CELL_H: float = 160.0
+const SIDE_PADDING: float = 130.0
+const HEADER_HEIGHT: float = 115.0
+const SECTION_GAP: float = 105.0
+const FOOTER_HEIGHT: float = 55.0
+const SECTOR_ORDER = [
+	"Floresta", "Mineracao", "Fazenda", "Construcoes",
+	"Ruinas e Magia", "Efeitos", "Diversos"
+]
+const SECTOR_COLORS = [
+	"314e35", "41454b", "645637", "574738",
+	"423954", "573f42", "394947"
+]
+
+@export var show_object_names: bool = true
+@export_range(0.40, 1.40, 0.05) var preview_only_non_tree_scale: float = 1.0
+@export var show_player_reference: bool = true
+@export var show_height_comparison: bool = true
+@export_range(0.5, 2.0, 0.05) var initial_camera_zoom: float = 1.1
+
+@onready var catalog_objects: Node2D = $CatalogObjects
+@onready var player: CharacterBody2D = $CatalogObjects/Player
+@onready var player_camera: Camera2D = $CatalogObjects/Player/Camera2D
+@onready var help_label: Label = $HUD/HelpLabel
+
+var _sectors: Array[Dictionary] = []
+var _labels: Array[Dictionary] = []
+var _last_sector_index: int = -1
+var _total_items: int = 0
+var _character_height: float = Scales.REFERENCE_PLAYER_HEIGHT
+var _bounds: Rect2 = Rect2()
+
+
+func _ready() -> void:
+	var items: Array[Dictionary] = _read_exported_objects()
+	_total_items = items.size()
+	_character_height = Scales.REFERENCE_PLAYER_HEIGHT
+	_build_sector_layout(items)
+	_create_object_displays()
+	_configure_player_camera()
+	_create_border_colliders()
+	_refresh_hud(true)
+	queue_redraw()
+
+
+func _process(_delta: float) -> void:
+	_refresh_hud(false)
+
+
+func _draw() -> void:
+	# Piso por setor, faixas das fileiras e caminho aberto para explorar andando.
+	for i in range(_sectors.size()):
+		var sector: Dictionary = _sectors[i]
+		var rect: Rect2 = sector["rect"]
+		var color: Color = sector["color"]
+		draw_rect(rect, color, true)
+		draw_rect(rect, color.lightened(0.13), false, 3.0)
+		var path_rect := Rect2(rect.position + Vector2(24.0, HEADER_HEIGHT), Vector2(82.0, rect.size.y - HEADER_HEIGHT - 15.0))
+		draw_rect(path_rect, color.lightened(0.06), true)
+		_draw_text(String(sector["title"]), rect.position + Vector2(22.0, 38.0), 27, Color.WHITE)
+		_draw_text("%d objetos  |  SETOR %d" % [int(sector["count"]), i + 1], rect.position + Vector2(24.0, 64.0), 15, Color(0.85, 0.94, 0.86))
+		draw_line(rect.position + Vector2(20.0, 79.0), Vector2(rect.end.x - 20.0, rect.position.y + 79.0), Color(1, 1, 1, 0.18), 2.0)
+		# Marcadores discretos das fileiras.
+		for row in range(int(sector["rows"])):
+			var marker_y: float = rect.position.y + HEADER_HEIGHT + float(row) * CELL_H + 62.0
+			draw_circle(Vector2(rect.position.x + 64.0, marker_y), 4.0, Color(0.94, 0.90, 0.72, 0.65))
+
+	if show_object_names:
+		for entry in _labels:
+			var label_pos: Vector2 = entry["position"]
+			var label_text: String = entry["text"]
+			_draw_text(label_text, label_pos, 12, Color(0.96, 0.97, 0.93), CELL_W - 15.0)
+			if show_height_comparison:
+				_draw_text(String(entry["comparison"]), label_pos + Vector2(0.0, 16.0), 10, Color(0.8, 0.9, 0.8, 0.8), CELL_W - 15.0)
+
+
+func _draw_text(message: String, pos: Vector2, font_size: int, color: Color, max_width: float = -1.0) -> void:
+	var font: Font = ThemeDB.fallback_font
+	if font == null:
+		return
+	draw_string(font, pos, message, HORIZONTAL_ALIGNMENT_LEFT, max_width, font_size, color)
+
+
+func _read_exported_objects() -> Array[Dictionary]:
+	var items: Array[Dictionary] = []
+	var dir: DirAccess = DirAccess.open(EXPORT_ROOT)
+	if dir == null:
+		push_warning("PixelLab: pasta de objetos ausente: %s" % EXPORT_ROOT)
+		return items
+
+	var folders: Array[String] = []
+	dir.list_dir_begin()
+	while true:
+		var name: String = dir.get_next()
+		if name.is_empty():
+			break
+		if not name.begins_with(".") and dir.current_is_dir():
+			folders.append(name)
+	dir.list_dir_end()
+	folders.sort()
+
+	for folder_name in folders:
+		var folder: String = "%s/%s" % [EXPORT_ROOT, folder_name]
+		var texture: Texture2D = Scales.preview_texture(folder)
+		if texture == null:
+			continue
+		items.append({
+			"id": folder_name,
+			"name": _friendly_name(folder_name),
+			"sector": _sector_for_name(folder_name),
+			"texture": texture,
+		})
+	return items
+
+
+func _friendly_name(folder_name: String) -> String:
+	var parts: PackedStringArray = folder_name.split("_")
+	if parts.size() >= 2:
+		var tail: String = parts[parts.size() - 1]
+		if tail.length() == 8 and tail.is_valid_hex_number(false):
+			parts.remove_at(parts.size() - 1)
+	var label: String = " ".join(parts)
+	if label.length() > 25:
+		label = label.substr(0, 24) + "…"
+	return label
+
+
+func _sector_for_name(folder_name: String) -> int:
+	var name: String = folder_name.to_lower()
+	# Construcoes primeiro para impedir "stone" em house_floor_stone ir para Mineracao.
+	if _has_keyword(name, ["house", "roof", "wall", "door", "window", "floor", "fence", "bench", "barrel", "crate", "bridge", "well", "furnace", "workbench", "gate", "cart", "shed", "table", "chair"]):
+		return 3
+	if _has_keyword(name, ["ancient", "altar", "ruins", "ruin", "statue", "portal", "rune", "magic", "shrine", "totem", "monument", "temple"]):
+		return 4
+	if _has_keyword(name, ["tree", "oak", "pine", "bush", "flower", "grass", "mushroom", "stump", "log", "leaf", "plant", "vine", "shrub", "fern"]):
+		return 0
+	if _has_keyword(name, ["rock", "ore", "crystal", "mineral", "stone", "boulder", "cave", "gem"]):
+		return 1
+	if _has_keyword(name, ["farm", "crop", "seed", "soil", "plot", "sprout", "wheat", "corn", "pumpkin", "watering", "field", "hay"]):
+		return 2
+	if _has_keyword(name, ["fire", "torch", "ember", "waterfall", "ripple", "fountain", "wisp", "flame", "glow", "spark", "fireball", "fx", "effect", "smoke"]):
+		return 5
+	return 6
+
+
+func _has_keyword(haystack: String, keywords: Array) -> bool:
+	for keyword in keywords:
+		if haystack.contains(keyword):
+			return true
+	return false
+
+
+func _build_sector_layout(items: Array[Dictionary]) -> void:
+	_sectors.clear()
+	var groups: Array = []
+	for i in range(SECTOR_ORDER.size()):
+		groups.append([])
+	for item in items:
+		var category: int = item["sector"]
+		groups[category].append(item)
+
+	var world_y: float = 0.0
+	var world_width: float = SIDE_PADDING * 2.0 + float(COLS) * CELL_W
+	for i in range(SECTOR_ORDER.size()):
+		var entries: Array = groups[i]
+		if entries.is_empty():
+			continue
+		entries.sort_custom(func(a: Variant, b: Variant) -> bool: return String(a["name"]) < String(b["name"]))
+		var rows: int = ceili(float(entries.size()) / float(COLS))
+		var sector_height: float = HEADER_HEIGHT + float(rows) * CELL_H + FOOTER_HEIGHT
+		var sector_rect := Rect2(0.0, world_y, world_width, sector_height)
+		_sectors.append({
+			"title": SECTOR_ORDER[i],
+			"color": Color(SECTOR_COLORS[i]),
+			"rect": sector_rect,
+			"rows": rows,
+			"count": entries.size(),
+			"items": entries,
+		})
+		world_y += sector_height + SECTION_GAP
+	if not _sectors.is_empty():
+		var final_rect: Rect2 = _sectors[_sectors.size() - 1]["rect"]
+		_bounds = Rect2(Vector2.ZERO, Vector2(world_width, final_rect.end.y))
+	else:
+		_bounds = Rect2(Vector2.ZERO, Vector2(1280.0, 800.0))
+
+
+func _preview_scale(item: Dictionary, texture: Texture2D) -> Vector2:
+	var id: String = String(item["id"])
+	var scale_value: float = Scales.scale_for(id, texture, _character_height)
+	if not Scales.is_standing_tree(id):
+		scale_value *= preview_only_non_tree_scale
+	return Vector2.ONE * scale_value
+
+
+func _add_player_reference(holder: Node2D) -> void:
+	if not show_player_reference:
+		return
+	var original: AnimatedSprite2D = player.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if original == null or original.sprite_frames == null:
+		return
+	var animation: StringName = &"idle_south"
+	if not original.sprite_frames.has_animation(animation):
+		animation = original.animation
+	if not original.sprite_frames.has_animation(animation):
+		return
+	var reference_texture: Texture2D = original.sprite_frames.get_frame_texture(animation, 0)
+	if reference_texture == null:
+		return
+	var reference: Sprite2D = Sprite2D.new()
+	reference.name = "ComparacaoPlayer40"
+	reference.texture = reference_texture
+	reference.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	reference.scale = original.scale
+	reference.offset = original.offset
+	reference.position = Vector2(-54.0, 0.0)
+	reference.modulate = Color(0.87, 1.0, 0.9, 0.54)
+	holder.add_child(reference)
+
+
+func _create_object_displays() -> void:
+	_labels.clear()
+	for sector in _sectors:
+		var entries: Array = sector["items"]
+		var rect: Rect2 = sector["rect"]
+		for i in range(entries.size()):
+			var item: Dictionary = entries[i]
+			var col: int = i % COLS
+			var row: int = i / COLS
+			var position: Vector2 = Vector2(
+				SIDE_PADDING + float(col) * CELL_W + CELL_W * 0.5,
+				rect.position.y + HEADER_HEIGHT + float(row) * CELL_H + 82.0
+			)
+			var holder: Node2D = Node2D.new()
+			holder.name = String(item["id"])
+			holder.position = position
+			catalog_objects.add_child(holder)
+			# O player duplicado e somente uma referencia VISUAL, sem colisao
+			# ou scripts de movimento. O verdadeiro Player segue exploravel.
+			_add_player_reference(holder)
+
+			var sprite: Sprite2D = Sprite2D.new()
+			var texture: Texture2D = item["texture"] as Texture2D
+			sprite.texture = texture
+			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			sprite.scale = _preview_scale(item, texture)
+			# Ajusta o ponto de apoio real em vez do fundo transparente do PNG.
+			var used: Rect2i = Scales.visible_rect(texture)
+			sprite.offset = Scales.anchor_offset(texture)
+			sprite.position = Vector2(26.0, 0.0)
+			holder.add_child(sprite)
+			var scaled_height: float = float(used.size.y) * sprite.scale.y
+			var pct: int = roundi(100.0 * scaled_height / maxf(1.0, _character_height))
+			_labels.append({
+				"text": String(item["name"]),
+				"comparison": "Altura %d%% do player" % pct,
+				"position": position + Vector2(-CELL_W * 0.45, 29.0),
+			})
+
+
+func _configure_player_camera() -> void:
+	# Esses limites substituem os limites pequenos herdados do mapa da floresta.
+	player_camera.enabled = true
+	player_camera.zoom = Vector2.ONE * initial_camera_zoom
+	player_camera.position_smoothing_enabled = true
+	player_camera.position_smoothing_speed = 9.0
+	player_camera.limit_left = int(_bounds.position.x)
+	player_camera.limit_top = int(_bounds.position.y)
+	player_camera.limit_right = int(_bounds.end.x)
+	player_camera.limit_bottom = int(_bounds.end.y)
+	player_camera.make_current()
+	if not _sectors.is_empty():
+		_teleport_to_sector(0)
+
+
+func _create_border_colliders() -> void:
+	# Sem colisao nos expositores: o player caminha livremente para observar.
+	# Barreiras invisiveis somente nos limites externos para nao sair do mapa.
+	var w: float = _bounds.size.x
+	var h: float = _bounds.size.y
+	_add_border(Vector2(-24.0, h * 0.5), Vector2(48.0, h + 96.0))
+	_add_border(Vector2(w + 24.0, h * 0.5), Vector2(48.0, h + 96.0))
+	_add_border(Vector2(w * 0.5, -24.0), Vector2(w + 96.0, 48.0))
+	_add_border(Vector2(w * 0.5, h + 24.0), Vector2(w + 96.0, 48.0))
+
+
+func _add_border(center: Vector2, extent: Vector2) -> void:
+	var body := StaticBody2D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	body.position = center
+	var shape := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = extent
+	shape.shape = rectangle
+	body.add_child(shape)
+	add_child(body)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event
+		if mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_adjust_zoom(0.1)
+		elif mouse_event.pressed and mouse_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_adjust_zoom(-0.1)
+	elif event is InputEventKey:
+		var key_event: InputEventKey = event
+		if not key_event.pressed or key_event.echo:
+			return
+		var key_code: int = key_event.physical_keycode
+		if key_code >= KEY_1 and key_code <= KEY_7:
+			_teleport_to_sector(key_code - KEY_1)
+		elif key_code == KEY_PAGEUP:
+			_teleport_to_sector(maxi(0, _find_current_sector() - 1))
+		elif key_code == KEY_PAGEDOWN:
+			_teleport_to_sector(mini(_sectors.size() - 1, _find_current_sector() + 1))
+		elif key_code == KEY_EQUAL or key_code == KEY_KP_ADD:
+			_adjust_zoom(0.1)
+		elif key_code == KEY_MINUS or key_code == KEY_KP_SUBTRACT:
+			_adjust_zoom(-0.1)
+
+
+func _adjust_zoom(diff: float) -> void:
+	var next_zoom: float = clampf(player_camera.zoom.x + diff, 0.6, 2.0)
+	player_camera.zoom = Vector2.ONE * next_zoom
+	_refresh_hud(true)
+
+
+func _teleport_to_sector(index: int) -> void:
+	if index < 0 or index >= _sectors.size():
+		return
+	var sector_rect: Rect2 = _sectors[index]["rect"]
+	player.global_position = Vector2(71.0, sector_rect.position.y + HEADER_HEIGHT + 85.0)
+	player.velocity = Vector2.ZERO
+	player_camera.reset_smoothing()
+	_refresh_hud(true)
+
+
+func _find_current_sector() -> int:
+	if _sectors.is_empty():
+		return -1
+	var y: float = player.global_position.y
+	for i in range(_sectors.size()):
+		var sector_rect: Rect2 = _sectors[i]["rect"]
+		if y <= sector_rect.end.y + SECTION_GAP * 0.5:
+			return i
+	return _sectors.size() - 1
+
+
+func _refresh_hud(force: bool) -> void:
+	var current: int = _find_current_sector()
+	if current == _last_sector_index and not force:
+		return
+	_last_sector_index = current
+	var name: String = "Catalogo vazio"
+	var count: int = 0
+	if current >= 0:
+		name = String(_sectors[current]["title"])
+		count = int(_sectors[current]["count"])
+	help_label.text = "CATALOGO PIXELLAB  |  %d objetos  |  Setor %d/%d: %s (%d)\n" % [_total_items, current + 1, _sectors.size(), name, count]
+	help_label.text += "WASD/SETAS mover  •  SHIFT correr  •  ESPACO dash  •  1–7 setor  •  PgUp/PgDn proximo  •  Roda/+/- zoom"
