@@ -1,4 +1,6 @@
 extends Node2D
+
+const Scales = preload("res://scripts/world_object_scales.gd")
 ## Objetos decorativos e solidos no mapa de teste Meadow & Forest.
 ## Usa sprites PixelLab ja exportados: nenhum PNG e alterado.
 ## Todos os objetos usam origem no ponto de contato com o solo para Y-sorting.
@@ -110,7 +112,10 @@ func populate() -> void:
             float(cell_x * TILE_SIZE) + float(TILE_SIZE) * 0.5,
             float(cell_y * TILE_SIZE) + float(TILE_SIZE) * 0.5
         )
-        var scale_factor: float = float(item.get("size", 1.0))
+        # Variacao original e preservada; so arvores em pe usam
+        # a escala fixa escolhida manualmente para a floresta.
+        var variation: float = float(item.get("size", 1.0))
+        var scale_factor: float = variation if Scales.is_standing_tree(object_id) else Scales.scale_for(object_id, texture) * variation
         if object_id == "grass" or object_id == "flowers":
             # Decoracoes rasteiras ficam visualmente sob os pes do jogador.
             entity.z_index = -1
@@ -125,18 +130,7 @@ func populate() -> void:
         sprite.flip_h = bool(item.get("flip", false))
         # Alinha a base visivel da arte ao ponto (0, 0) do objeto, mesmo
         # quando a PixelLab deixa margens transparentes no canvas.
-        var art_bounds: Rect2i = Rect2i(Vector2i.ZERO, texture.get_size())
-        var image_data: Image = texture.get_image()
-        if image_data != null and not image_data.is_empty():
-            var used_rect: Rect2i = image_data.get_used_rect()
-            if used_rect.size != Vector2i.ZERO:
-                art_bounds = used_rect
-        var canvas_size: Vector2 = Vector2(texture.get_size())
-        var art_center_x: float = float(art_bounds.position.x) + float(art_bounds.size.x) * 0.5
-        sprite.offset = Vector2(
-            canvas_size.x * 0.5 - art_center_x,
-            canvas_size.y * 0.5 - float(art_bounds.end.y)
-        )
+        sprite.offset = Scales.anchor_offset(texture)
         entity.add_child(sprite)
 
         if enable_collisions:

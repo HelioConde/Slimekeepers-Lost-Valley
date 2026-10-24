@@ -1,11 +1,20 @@
-[gd_scene load_steps=2 format=3]
-[ext_resource type="Script" path="res://scripts/world_object.gd" id="1"]
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world_object.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="footprint"]
+size = Vector2(8, 6)
+
 [node name="WorldObject" type="Node2D"]
-script = ExtResource("1")
+script = ExtResource("1_script")
+
 [node name="Artwork" type="Sprite2D" parent="."]
 texture_filter = 1
+
 [node name="SolidBody" type="StaticBody2D" parent="."]
 collision_layer = 1
 collision_mask = 0
+
 [node name="Footprint" type="CollisionShape2D" parent="SolidBody"]
+shape = SubResource("footprint")
 disabled = true

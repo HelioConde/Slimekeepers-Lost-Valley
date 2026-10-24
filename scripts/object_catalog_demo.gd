@@ -1,9 +1,10 @@
 extends Node2D
+
+const Scales = preload("res://scripts/world_object_scales.gd")
 ## Cenario-vitrine com comparacao individual de escala para todos os PNGs.
 ## O player 0.40 e mostrado ao lado de cada objeto como referencia visual.
 ## O personagem de verdade continua movendo com a Camera2D.
 
-const Scales = preload("res://scripts/world_object_scales.gd")
 const EXPORT_ROOT: String = "res://sprites/objects/pixellab_exports"
 const COLS: int = 8
 const CELL_W: float = 170.0
@@ -22,7 +23,6 @@ const SECTOR_COLORS = [
 ]
 
 @export var show_object_names: bool = true
-@export_range(0.40, 1.40, 0.05) var preview_only_non_tree_scale: float = 1.0
 @export var show_player_reference: bool = true
 @export var show_height_comparison: bool = true
 @export_range(0.5, 2.0, 0.05) var initial_camera_zoom: float = 1.1
@@ -36,7 +36,7 @@ var _sectors: Array[Dictionary] = []
 var _labels: Array[Dictionary] = []
 var _last_sector_index: int = -1
 var _total_items: int = 0
-var _character_height: float = Scales.REFERENCE_PLAYER_HEIGHT
+var _character_height: float = 42.0
 var _bounds: Rect2 = Rect2()
 
 
@@ -194,12 +194,10 @@ func _build_sector_layout(items: Array[Dictionary]) -> void:
 		_bounds = Rect2(Vector2.ZERO, Vector2(1280.0, 800.0))
 
 
+## Cada sprite usa a mesma escala persistente do mundo.
 func _preview_scale(item: Dictionary, texture: Texture2D) -> Vector2:
 	var id: String = String(item["id"])
-	var scale_value: float = Scales.scale_for(id, texture, _character_height)
-	if not Scales.is_standing_tree(id):
-		scale_value *= preview_only_non_tree_scale
-	return Vector2.ONE * scale_value
+	return Vector2.ONE * Scales.scale_for(id, texture, _character_height)
 
 
 func _add_player_reference(holder: Node2D) -> void:
