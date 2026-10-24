@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="TileSet" path="res://resources/grass_dirt_v3.tres" id="2_ground"]
+[ext_resource type="Script" path="res://scripts/enchanted_clearing_demo.gd" id="3_script"]
+
+[node name="EnchantedClearingDemo" type="Node2D"]
+script = ExtResource("3_script")
+
+[node name="Ground" type="TileMapLayer" parent="."]
+z_index = -20
+texture_filter = 1
+tile_set = ExtResource("2_ground")
+
+[node name="WorldObjects" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="WorldObjects" instance=ExtResource("1_player")]
+position = Vector2(0, 40)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="HelpBackground" type="ColorRect" parent="HUD"]
+offset_right = 1260.0
+offset_bottom = 66.0
+mouse_filter = 2
+color = Color(0.055, 0.092, 0.052, 0.72)
+
+[node name="HelpLabel" type="Label" parent="HUD"]
+offset_left = 14.0
+offset_top = 9.0
+offset_right = 1250.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 14
+text = "CLAREIRA ENCANTADA  |  WASD: mover  |  SHIFT: correr  |  ESPACO: dash  |  TAB: visao geral"
