@@ -4,7 +4,7 @@ signal inventory_changed
 
 const STACK_LIMIT: int = 99
 var counts: Dictionary = {
-	"madeira": 0, "pedra": 0, "fibra": 0,
+	"madeira": 25, "pedra": 0, "fibra": 0,
 	"sementes": 8, "colheita": 0, "cogumelos": 0
 }
 

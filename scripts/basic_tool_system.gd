@@ -25,6 +25,10 @@ func _process(delta: float) -> void:
 		queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
+	# A ferramenta equipada nao deve agir enquanto o editor da casa usa o mouse.
+	var house: Node = get_tree().get_first_node_in_group("slv_house_builder")
+	if house != null and bool(house.call("is_building")):
+		return
 	if event is InputEventKey:
 		var key: InputEventKey = event as InputEventKey
 		if not key.pressed or key.echo:
