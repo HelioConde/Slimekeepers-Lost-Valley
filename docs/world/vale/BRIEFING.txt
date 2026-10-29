@@ -1,0 +1,253 @@
+Mapa 2: Vale das Nascentes
+Você é um desenvolvedor sênior especializado em Godot 4, GDScript, jogos 2D top-down, TileMapLayer, level design, pixel art, design ambiental, colisão, transições entre mapas e otimização de cenários jogáveis.
+
+Sua tarefa é criar a segunda grande região explorável de Slimekeepers: Lost Valley, chamada:
+Mapa 2 — Vale das Nascentes
+1. Contexto do mapa
+O jogo Slimekeepers: Lost Valley é um jogo 2D top-down de exploração, agricultura e amizade com slimes.
+
+O Mapa 1 é a Clareira do Despertar, uma área de floresta densa que funciona como região inicial.
+
+O Mapa 2 deve ser a primeira região temática importante do mundo e será dedicado à água, às nascentes e aos slimes aquáticos.
+2. Localização no mundo
+O Mapa 2 deve representar a região localizada na parte de baixo do mapa central / ilha principal.
+
+Essa área precisa parecer uma região naturalmente mais úmida, baixa e fértil, como se toda a água das partes mais altas da ilha escoasse para lá.
+Importante:
+- Essa região deve parecer parte natural da Ilha Verde.
+- Ela deve transmitir a sensação de que a água nasce, corre e se espalha por essa área.
+- O mapa precisa parecer um berçário natural dos slimes de água.
+3. Conceito principal
+O Vale das Nascentes deve ser uma região muito mais carregada em água do que o mapa anterior.
+A ideia central é:
+- várias nascentes naturais brotando do solo e das rochas,
+- riachos interligando áreas do mapa,
+- pequenas cachoeiras,
+- lagoas cristalinas,
+- trechos de alagado leve / brejo suave,
+- muita vegetação úmida,
+- áreas onde o jogador percebe claramente que a água domina o ambiente.
+Esse mapa será a casa dos slimes de água ou criaturas muito próximas desse ecossistema.
+4. Identidade visual do mapa
+O Vale das Nascentes deve ser claramente diferente do Mapa 1.
+Mapa 1:
+- floresta densa,
+- clareira central,
+- foco em mata fechada,
+- caminhos de terra,
+- atmosfera de início de jornada.
+Mapa 2:
+- ambiente mais úmido e aberto,
+- forte presença de água,
+- múltiplos corpos d’água,
+- vegetação aquática e de margem,
+- sensação de vida fluindo,
+- ambiente calmo, refrescante e mágico.
+Direção artística:
+- top-down 2D,
+- pixel art coerente com o projeto,
+- cores vibrantes, mas naturais,
+- forte presença de azuis, verdes úmidos e tons claros,
+- água visualmente bonita e convidativa,
+- atmosfera acolhedora, mágica e serena.
+5. Estrutura geral do mapa
+Use como base um mapa de aproximadamente 100 x 100 tiles (ou ajuste conforme a escala já usada no projeto).
+
+O mapa deve ser dividido em zonas funcionais, mas parecer um cenário natural contínuo.
+O mapa deve incluir:
+Zona A — Entrada Norte
+A conexão com o mapa anterior ou com a rota que vem da parte central da ilha.
+Requisitos:
+- a entrada deve ficar na parte superior do mapa,
+- o jogador chega vindo da região mais central da ilha,
+- trilha suave descendo em direção ao vale,
+- vegetação vai ficando gradualmente mais úmida,
+- primeiros sinais de água aparecendo ao longo da descida.
+Essa transição deve mostrar que o jogador está saindo da floresta e entrando em uma área dominada por nascentes.
+Zona B — Nascentes Centrais
+Essa é a principal identidade do mapa.
+Requisitos:
+- várias fontes de água brotando de pedras, morros baixos ou rachaduras naturais,
+- pequenos cursos d’água nascendo ali,
+- pedras cobertas de musgo,
+- vegetação de margem,
+- pequenas poças cristalinas.
+Essa área deve ser o coração visual do mapa.
+
+Ela precisa parecer mágica, viva e essencial para o ecossistema local.
+Zona C — Lagoas dos Slimes de Água
+A principal região onde os slimes aquáticos viverão.
+Requisitos:
+- uma ou mais lagoas médias,
+- margens acessíveis ao jogador,
+- pequenas ilhotas ou pedras no interior,
+- áreas rasas e áreas mais profundas,
+- espaço visualmente adequado para futuros slimes de água,
+- ambiente bonito e claramente habitável.
+Se houver sistema de spawn pronto, reserve pontos apropriados para:
+- slimes de água,
+- slimes úmidos / gelatinosos,
+- criaturas similares ligadas à água.
+Se esse sistema ainda não estiver pronto, apenas prepare os pontos de spawn.
+Zona D — Jardim Úmido
+Uma região com vegetação abundante próxima da água.
+Incluir:
+- flores silvestres,
+- samambaias,
+- juncos,
+- plantas aquáticas,
+- capim alto de margem,
+- pequenos arbustos,
+- cogumelos em áreas sombreadas,
+- árvores adaptadas à umidade.
+Essa área deve ser rica visualmente e agradável de explorar.
+Zona E — Pequenas Cachoeiras e Canais
+Uma região com movimento de água mais evidente.
+Requisitos:
+- pequenas quedas d’água,
+- canais estreitos conectando lagoas,
+- córregos sinuosos,
+- pedras moldadas pela água,
+- pontos de travessia com pequenas pontes ou passagens naturais, se necessário.
+A água deve parecer parte da navegação visual do mapa, não apenas decoração.
+Zona F — Brejo Leve / Área Alagada
+Uma área opcional, mas desejável, para trazer variedade.
+Características:
+- solo mais encharcado,
+- poças rasas,
+- vegetação baixa,
+- plantas de água,
+- sensação de terreno úmido e macio,
+- ainda navegável em partes.
+Evite fazer um pântano sombrio pesado demais.
+Essa área deve continuar coerente com a estética acolhedora do jogo.
+Zona G — Saída Sul ou Leste
+Uma área reservada para futura continuação do mundo.
+Requisitos:
+- preparar um ponto claro de transição para o futuro Mapa 3,
+- não implementar o próximo mapa agora,
+- apenas deixar a saída natural, como uma trilha, ponte, vale ou passagem fluvial.
+6. Água como elemento dominante
+Regra principal:
+Este mapa deve ser muito mais pesado em água do que qualquer outro mapa inicial.
+
+A água precisa ser um dos protagonistas do cenário.
+Incluir:
+- nascentes,
+- riachos,
+- lagoas,
+- córregos,
+- canais,
+- cachoeiras pequenas,
+- poças,
+- margens úmidas,
+- vegetação aquática.
+A água deve:
+- estruturar a composição do mapa,
+- influenciar os caminhos,
+- definir onde os slimes aquáticos vivem,
+- enriquecer a exploração,
+- ajudar a criar identidade única.
+Evitar:
+- mapa excessivamente seco,
+- água aparecendo só em uma parte,
+- apenas um lago isolado sem conexão com o resto,
+- transformar o mapa em um corredor com um rio simples.
+7. Vegetação e elementos ambientais
+Use assets existentes da pasta:
+
+C:\Slimekeepers_Lost_Valley_v0_1\assets
+
+Priorize sempre o reaproveitamento.
+Vegetação recomendada:
+- árvores médias e grandes,
+- árvores com margem de rio,
+- arbustos,
+- samambaias,
+- flores,
+- juncos,
+- grama alta,
+- plantas aquáticas,
+- vitórias-régias, se existirem,
+- cogumelos em áreas úmidas,
+- pedras com musgo,
+- troncos úmidos,
+- raízes aparentes.
+Distribuição:
+- mais aberta que o Mapa 1,
+- porém ainda orgânica,
+- com clareiras úmidas,
+- bordas de água bem detalhadas,
+- regiões de navegação claras.
+8. Jogabilidade e circulação
+O mapa precisa ser bonito, mas também funcional.
+O jogador deve conseguir:
+- entrar pela parte de cima,
+- explorar o vale sem confusão,
+- contornar lagoas e riachos,
+- reconhecer pontos importantes,
+- perceber naturalmente onde vivem os slimes de água.
+Caminhos:
+- menos foco em trilhas de terra seca,
+- mais foco em circulação entre água e vegetação,
+- caminhos naturais acompanhando margens, pedras e pequenos desníveis.
+9. Colisão e navegação
+Requisitos:
+- água profunda deve bloquear o jogador,
+- margens rasas podem ser apenas decorativas ou parcialmente acessíveis, conforme o sistema atual,
+- árvores grandes, rochas e obstáculos devem possuir colisão,
+- vegetação baixa e flores não devem bloquear,
+- evitar colisões invisíveis injustas,
+- reservar espaço suficiente para futuros slimes se movimentarem.
+10. Estrutura técnica sugerida
+Se a arquitetura atual permitir, organize algo como:
+ValeDasNascentes (Node2D)
+├── Ground
+├── GroundDetails
+├── Water
+├── WaterDecorations
+├── LowVegetation
+├── Obstacles
+├── TreesBack
+├── TreesFront
+├── Decorations
+├── SpawnPoints
+├── SlimeSpawnPoints
+└── Transitions
+
+Adapte conforme o projeto real, sem quebrar a arquitetura existente.
+11. Uso do PixelLab
+Se faltarem sprites adequados para:
+- nascentes,
+- variações de água,
+- margens,
+- plantas aquáticas,
+- pedras musgosas,
+- detalhes úmidos,
+você pode gerar novos assets no PixelLab.
+Regras:
+- manter o estilo dos assets do projeto,
+- usar pixel art limpa,
+- respeitar escala,
+- fundo transparente,
+- não inventar arquivos se não puder gerá-los,
+- documentar claramente o que foi criado.
+12. Resultado esperado
+Ao final, o Mapa 2 deve:
+1. representar a região inferior da ilha principal,
+2. ser claramente uma região de águas e nascentes,
+3. parecer o habitat natural dos slimes de água,
+4. ter mais água do que o mapa anterior,
+5. possuir lagoas, riachos, nascentes e pequenas cachoeiras,
+6. manter navegação clara,
+7. ser visualmente bonito e coerente,
+8. estar preparado para receber slimes aquáticos futuramente.
+13. Entrega
+Ao concluir:
+- informe os arquivos criados ou modificados,
+- informe quais assets existentes foram usados,
+- informe quais novos assets foram gerados,
+- explique como a água foi estruturada no mapa,
+- indique onde foram reservados os spawns dos slimes de água,
+- descreva o que ainda pode ser expandido no futuro.
+Prioridade máxima: fazer do Vale das Nascentes uma região marcada pela água, com forte identidade própria e habitat ideal para slimes aquáticos.

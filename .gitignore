@@ -1,0 +1,10 @@
+.godot/
+.DS_Store
+Thumbs.db
+*.tmp
+*.translation
+.env
+.env.*
+!.env.example
+node_modules/
+assets/local_sprout/

@@ -1,0 +1,67 @@
+[
+  {
+    "source": "02_Casa\\floreira_02.png",
+    "destination": "assets\\menu\\provided\\flower_box.png",
+    "sha256": "63D94BCB98A27646E50674508C3FE8742C790D4AE634DF976B5891F19E3FFC24"
+  },
+  {
+    "source": "04_Agua_Cachoeiras\\cachoeira_grande_com_lago.png",
+    "destination": "assets\\menu\\provided\\waterfall.png",
+    "sha256": "618DA6AA9020FEC61FDF80FCA3836B6F2BDD3B54336F1B47EB375AE7B96B0133"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\flor_vaso_amarela.png",
+    "destination": "assets\\menu\\provided\\sunflowers.png",
+    "sha256": "A1DAE72D08330BB0DF2963EDC91938BB3BC8DBACB1174FD085D9E4C4E324245D"
+  },
+  {
+    "source": "02_Casa\\casa_principal.png",
+    "destination": "assets\\menu\\provided\\cottage.png",
+    "sha256": "0A0E0474B0B8FD64000C8838A97A9B67BBFEF553D41741FB0012000168447E09"
+  },
+  {
+    "source": "03_Arvores\\arvore_verde_grande.png",
+    "destination": "assets\\menu\\provided\\tree_large.png",
+    "sha256": "B8E6C5CD173732ADEA0B933440BA35997683C30D74A0C356550234E62F4F58D1"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\espantalho.png",
+    "destination": "assets\\menu\\provided\\scarecrow.png",
+    "sha256": "E1DBBB4F349223F73537F14FDA141A3C6EB8A69BE47E9A8EA5376DD9745CD320"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\canteiro_mudas.png",
+    "destination": "assets\\menu\\provided\\seedlings.png",
+    "sha256": "6636FD8311E618DF33297C69AD5AF70004B1F6C6D11B55347298DC054532F680"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\canteiro_brotos.png",
+    "destination": "assets\\menu\\provided\\sprouts.png",
+    "sha256": "18CBB1EB0A79E5BA2863C3B991B59626E3EE2863571AC9D27E9DDA609740DF4C"
+  },
+  {
+    "source": "03_Arvores\\arbusto_medio.png",
+    "destination": "assets\\menu\\provided\\bush.png",
+    "sha256": "0F96911CEF6BCB7EA2B5985B9709B89CEE4DDFC9F496C0FD5807DF027AD63DEB"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\canteiro_hortalicas.png",
+    "destination": "assets\\menu\\provided\\vegetables.png",
+    "sha256": "7727AF1FA2EA30B2F33E9E1B644F60A34807BAE4A86F3EE7D0BBBA1D20CEB86A"
+  },
+  {
+    "source": "03_Arvores\\arvore_verde_media.png",
+    "destination": "assets\\menu\\provided\\tree_medium.png",
+    "sha256": "5E53BA2461C9A5074A8A46CB07C0F9F6AB12CCC6DB9537ECEE0FA20D1E810584"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\cerca_longa.png",
+    "destination": "assets\\menu\\provided\\fence.png",
+    "sha256": "D6A161C470AD7598EE9F181650C39CD32D6F3DFF0730579EC6BE783F083729E5"
+  },
+  {
+    "source": "01_Fundos\\vale_cenario_16x9.png",
+    "destination": "assets\\menu\\provided\\valley_distance.png",
+    "sha256": "6083A6BD84335BF5E62F6B14D110B60CC7C4193074E43F615800F1F68873FA65"
+  }
+]

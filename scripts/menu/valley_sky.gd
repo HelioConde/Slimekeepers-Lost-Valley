@@ -1,0 +1,373 @@
+extends Node2D
+## Distant environment layer; the farm, actors and UI remain independent.
+## The procedural vista is retained as an alternate art direction.
+
+@export var reduce_motion := false
+@export var use_illustrated_distance := true
+var _shapes: Array[Dictionary] = []
+var _rng := RandomNumberGenerator.new()
+var _oak: Texture2D
+var _oak_region := Rect2()
+var _waterfall: Texture2D
+
+func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	if use_illustrated_distance:
+		_rect(Rect2(-160,-80,1600,880),Color("#6ca8ce"))
+		var distance := Sprite2D.new()
+		distance.name = "DistantValley"
+		distance.texture = load("res://assets/menu/provided/valley_distance.png")
+		distance.centered = false
+		distance.position = Vector2(-4,0)
+		distance.scale = Vector2(2,2)
+		add_child(distance)
+		var flow := IllustratedWater.new()
+		flow.reduce_motion = reduce_motion
+		add_child(flow)
+		return
+	_rng.seed = 25012026
+	_waterfall = load("res://assets/menu/provided/waterfall.png") as Texture2D
+	if ResourceLoader.exists("res://assets/menu/environment/oak.png"):
+		_oak = load("res://assets/menu/environment/oak.png") as Texture2D
+		_oak_region = Rect2(_oak.get_image().get_used_rect())
+	_build_sky()
+	_build_peaks()
+	_build_valley()
+	_build_escarpments()
+	_build_wooded_banks()
+	_build_near_hills()
+	var water := DistantWater.new()
+	water.reduce_motion = reduce_motion
+	water.z_index = 1
+	add_child(water)
+	_make_cloud(Vector2(95, 112), 1.0, 0.0)
+	_make_cloud(Vector2(1135, 112), 1.2, 2.0)
+	_make_cloud(Vector2(906, 75), 0.65, 4.0)
+	queue_redraw()
+
+func _rect(rect: Rect2, color: Color) -> void:
+	var snapped := Rect2((rect.position / 2.0).round() * 2.0, (rect.size / 2.0).ceil() * 2.0)
+	_shapes.append({"rect": snapped, "color": color})
+
+func _poly(vertices: PackedVector2Array, color: Color) -> void:
+	var snapped := PackedVector2Array()
+	for vertex in vertices:
+		snapped.append((vertex / 2.0).round() * 2.0)
+	_shapes.append({"polygon": snapped, "color": color})
+
+func _build_sky() -> void:
+	# Discrete colour bands, no image filtering or blurred gradient texture.
+	var upper := Color("#78a7dc")
+	var lower := Color("#f4dda5")
+	for y in range(-80, 720, 4):
+		var blend := clampf(float(y + 40) / 420.0, 0.0, 1.0)
+		_rect(Rect2(-160, y, 1600, 4), upper.lerp(lower, blend))
+	var sun := PackedVector2Array()
+	for index in range(24):
+		var point := Vector2(966, 184) + Vector2.from_angle(float(index) / 24.0 * TAU) * 34.0
+		sun.append((point / 2.0).round() * 2.0)
+	_poly(sun, Color("#fff2ba"))
+	# Thin peach cirrus well away from the title's central silhouette.
+	for index in range(14):
+		var x := _rng.randi_range(730, 1150)
+		var y := _rng.randi_range(40, 130)
+		_rect(Rect2(x, y, _rng.randi_range(8, 28), 2), Color("#f7ddb8"))
+
+func _build_peaks() -> void:
+	_mountain(PackedVector2Array([Vector2(-80, 296), Vector2(88, 236), Vector2(130, 246),
+		Vector2(236, 166), Vector2(280, 205), Vector2(322, 212), Vector2(400, 252),
+		Vector2(468, 237), Vector2(550, 262), Vector2(650, 245), Vector2(743, 269),
+		Vector2(816, 251), Vector2(903, 246), Vector2(1000, 188), Vector2(1044, 225),
+		Vector2(1101, 242), Vector2(1168, 178), Vector2(1201, 210), Vector2(1234, 218), Vector2(1360, 285)]),
+		Color("#9baec9"), 398.0, 3.5)
+	_mountain(PackedVector2Array([Vector2(-70, 328), Vector2(52, 282), Vector2(108, 293),
+		Vector2(199, 254), Vector2(255, 274), Vector2(346, 249), Vector2(398, 269),
+		Vector2(469, 263), Vector2(538, 285), Vector2(588, 280), Vector2(667, 297),
+		Vector2(756, 276), Vector2(811, 286), Vector2(896, 270), Vector2(944, 277),
+		Vector2(1020, 252), Vector2(1086, 273), Vector2(1142, 259), Vector2(1221, 275), Vector2(1380, 313)]),
+		Color("#7899ac"), 433.0, 4.0)
+	# Staggered wooded shoulders cross the slopes rather than forming one tree row.
+	for layer in range(3):
+		var dark := Color("#608e96").lerp(Color("#557f76"), float(layer) / 3.0)
+		var light := Color("#98b6a2").lerp(Color("#85ac82"), float(layer) / 3.0)
+		for x in range(-20, 1310, 9):
+			var y := 303.0 + layer * 20.0 + sin(float(x) * 0.012 + layer) * 19.0 + sin(float(x) * 0.041) * 5.0
+			_tree(Vector2(x, y), 11 + layer * 3 + posmod(x, 5), dark, light)
+
+func _mountain(ridge: PackedVector2Array, color: Color, bottom: float, roughness: float) -> void:
+	var outline := PackedVector2Array()
+	for section in range(ridge.size() - 1):
+		var a := ridge[section]
+		var b := ridge[section + 1]
+		var steps := maxi(1, int((b.x - a.x) / 6.0))
+		for step in range(steps):
+			var point := a.lerp(b, float(step) / steps)
+			point.y += sin(point.x * 0.39) * roughness + sin(point.x * 0.14) * roughness
+			outline.append(point)
+	outline.append(ridge[-1])
+	outline.append(Vector2(ridge[-1].x, bottom))
+	outline.append(Vector2(ridge[0].x, bottom))
+	_poly(outline, color)
+	# Shadow facets follow individual summits; clipped shale accents break flat faces.
+	for index in range(1, ridge.size() - 1):
+		var peak := ridge[index]
+		if peak.y > ridge[index - 1].y or peak.y > ridge[index + 1].y:
+			continue
+		var facet := PackedVector2Array([peak, peak + Vector2(-12, 36), peak + Vector2(4, 32),
+			peak + Vector2(-16, 68), peak + Vector2(-4, 66), peak + Vector2(-34, 110),
+			peak + Vector2(-76, 113), ridge[index - 1]])
+		_poly(facet, color.darkened(0.12))
+	for index in range(370):
+		var p := Vector2(_rng.randi_range(int(ridge[0].x), int(ridge[-1].x)), _rng.randi_range(160, int(bottom)))
+		if Geometry2D.is_point_in_polygon(p, outline) and Geometry2D.is_point_in_polygon(p + Vector2(10, 4), outline):
+			var shade := color.lightened(0.06) if index % 3 == 0 else color.darkened(0.06)
+			_rect(Rect2(p, Vector2(4 + index % 8, 2)), shade)
+
+func _build_valley() -> void:
+	_poly(PackedVector2Array([
+		Vector2(-40, 360), Vector2(124, 333), Vector2(250, 361), Vector2(388, 339),
+		Vector2(520, 367), Vector2(642, 350), Vector2(752, 378), Vector2(882, 353),
+		Vector2(1024, 376), Vector2(1164, 332), Vector2(1320, 359), Vector2(1320, 620), Vector2(-40, 620)
+	]), Color("#77a175"))
+	for index in range(550):
+		var x := _rng.randi_range(0, 1280)
+		var y := _rng.randi_range(356, 530)
+		var shade := Color("#96b77a") if index % 4 == 0 else Color("#62966c")
+		_rect(Rect2(x - posmod(x, 2), y - posmod(y, 2), _rng.randi_range(2, 6) * 2, 2), shade)
+	# Distant fields are tiny strips following the contours, not a top-down map.
+	for band in range(4):
+		var y := 379 + band * 9
+		_rect(Rect2(560 + band * 14, y, 205 - band * 26, 3), Color("#b3c283"))
+	for index in range(100):
+		var x := _rng.randi_range(280, 1120)
+		var y := _rng.randi_range(350, 480)
+		_tree(Vector2(x, y), _rng.randi_range(8, 18), Color("#447d67"), Color("#7aa774"))
+	# A lake recedes toward the central notch, broadening toward the viewer.
+	_poly(PackedVector2Array([
+		Vector2(852, 415), Vector2(914, 416), Vector2(906, 442), Vector2(962, 453),
+		Vector2(982, 482), Vector2(927, 505), Vector2(1006, 533), Vector2(1048, 587),
+		Vector2(832, 619), Vector2(742, 584), Vector2(820, 558), Vector2(878, 530),
+		Vector2(832, 504), Vector2(889, 482), Vector2(862, 459), Vector2(870, 439)
+	]), Color("#6aa5b4"))
+	_poly(PackedVector2Array([
+		Vector2(870, 421), Vector2(901, 423), Vector2(892, 446), Vector2(941, 460),
+		Vector2(956, 481), Vector2(905, 505), Vector2(984, 539), Vector2(1006, 577),
+		Vector2(846, 598), Vector2(793, 582), Vector2(898, 537), Vector2(861, 505),
+		Vector2(916, 480), Vector2(884, 458), Vector2(888, 438)
+	]), Color("#8ec6cf"))
+
+func _build_escarpments() -> void:
+	_cliff(PackedVector2Array([
+		Vector2(0, 258), Vector2(64, 241), Vector2(134, 248), Vector2(197, 232),
+		Vector2(227, 251), Vector2(229, 359), Vector2(160, 382), Vector2(101, 354), Vector2(0, 392)
+	]), Color("#71848f"))
+	_cliff(PackedVector2Array([
+		Vector2(1004, 310), Vector2(1040, 299), Vector2(1097, 305), Vector2(1136, 286),
+		Vector2(1199, 291), Vector2(1228, 281), Vector2(1320, 297), Vector2(1320, 483),
+		Vector2(1190, 469), Vector2(1148, 408), Vector2(1088, 425), Vector2(1024, 396)
+	]), Color("#6b8289"))
+	# Individual waterfall and its rocky banks, never the precomposed backdrop.
+	_poly(PackedVector2Array([Vector2(746,445),Vector2(906,443),Vector2(931,455),Vector2(945,480),Vector2(920,500),Vector2(862,504),Vector2(807,496),Vector2(771,486),Vector2(749,473)]),Color("#658f72"))
+	_poly(PackedVector2Array([Vector2(754,449),Vector2(902,449),Vector2(920,461),Vector2(938,479),Vector2(918,494),Vector2(862,497),Vector2(811,491),Vector2(776,483),Vector2(758,472)]),Color("#3c9cbb"))
+	_shapes.append({"waterfall":true,"rect":Rect2(754,344,164,127)})
+	# Foreground banks hide the straight cutout edge and connect the basin to the river.
+	_poly(PackedVector2Array([Vector2(742,458),Vector2(756,454),Vector2(766,468),Vector2(784,472),Vector2(794,483),Vector2(772,486),Vector2(746,476)]),Color("#6a9870"))
+	_poly(PackedVector2Array([Vector2(898,470),Vector2(914,460),Vector2(928,465),Vector2(930,476),Vector2(916,481)]),Color("#6a9870"))
+	for stone in [Vector2(766,478),Vector2(914,476)]:
+		_shapes.append({"bank_stone":true,"rect":Rect2(stone-Vector2(12,16),Vector2(24,24))})
+	for index in range(7):
+		_rect(Rect2(794+index*15,478+posmod(index*3,8),12,2),Color("#91d4df"))
+	# Forests spill over the shelves. Height and colour vary with distance.
+	for x in range(1026, 1310, 13):
+		var y := 311.0 - sin(x * 0.019) * 14.0
+		_tree(Vector2(x, y), 22 + posmod(x, 19), Color("#3f7461"), Color("#82a25f"))
+	for x in range(12, 212, 14):
+		_tree(Vector2(x, 249.0 + sin(x * 0.017) * 8.0), 16 + posmod(x, 16), Color("#537f69"), Color("#91ad70"))
+
+func _cliff(outline: PackedVector2Array, color: Color) -> void:
+	_poly(outline, color)
+	var bounds := Rect2(outline[0], Vector2.ZERO)
+	for point in outline:
+		bounds = bounds.expand(point)
+	for index in range(160):
+		var point := Vector2(_rng.randi_range(int(bounds.position.x), int(bounds.end.x)), _rng.randi_range(int(bounds.position.y), int(bounds.end.y)))
+		if not Geometry2D.is_point_in_polygon(point, outline):
+			continue
+		var width := _rng.randi_range(1, 4) * 2
+		var height := _rng.randi_range(3, 11) * 2
+		var corners := [point + Vector2(width, 0), point + Vector2(0, height), point + Vector2(width, height)]
+		var inside := true
+		for corner in corners:
+			if not Geometry2D.is_point_in_polygon(corner, outline):
+				inside = false
+		if inside:
+			var shade := color.lightened(0.13) if index % 3 == 0 else color.darkened(0.15)
+			_rect(Rect2((point / 2.0).floor() * 2.0, Vector2(width, height)), shade)
+
+func _build_near_hills() -> void:
+	_poly(PackedVector2Array([
+		Vector2(-40, 464), Vector2(110, 408), Vector2(215, 420), Vector2(324, 393),
+		Vector2(397, 443), Vector2(514, 471), Vector2(615, 500), Vector2(718, 535),
+		Vector2(776, 600), Vector2(770, 750), Vector2(-40, 750)
+	]), Color("#4b8057"))
+	_poly(PackedVector2Array([
+		Vector2(1077, 441), Vector2(1168, 406), Vector2(1320, 433), Vector2(1320, 750),
+		Vector2(1030, 750), Vector2(999, 625), Vector2(1034, 535)
+	]), Color("#396b50"))
+	for index in range(180):
+		var x := _rng.randi_range(-50, 1320)
+		var ridge := 447.0 + float(x) * 0.16 if x < 760 else 490.0
+		if x > 760 and x < 1050:
+			continue
+		var y := ridge + _rng.randf_range(-20.0, 150.0)
+		_tree(Vector2(x, y), _rng.randi_range(20, 47), Color("#315f45"), Color("#6c984f"))
+	# Middle-ground grassy apron, to be occluded by the real foreground farm.
+	_poly(PackedVector2Array([
+		Vector2(-80, 603), Vector2(161, 580), Vector2(326, 584), Vector2(507, 615),
+		Vector2(677, 613), Vector2(839, 643), Vector2(1024, 656), Vector2(1320, 637),
+		Vector2(1320, 800), Vector2(-80, 800)
+	]), Color("#7e9a4c"))
+	for index in range(500):
+		var x := _rng.randi_range(-20, 1300)
+		var y := _rng.randi_range(650, 780)
+		_rect(Rect2(x, y, _rng.randi_range(1, 4) * 2, 2), Color("#a1b958") if index % 3 == 0 else Color("#5f8847"))
+
+func _build_wooded_banks() -> void:
+	# Reuse the oak silhouette as tightly grouped woodland, with distance tint.
+	# Sampling is nearest; no generated background or modified source texture.
+	if _oak == null: return
+	for cluster in [Vector2(430,378),Vector2(541,439),Vector2(640,420),Vector2(963,355),Vector2(1116,466)]:
+		for i in range(16):
+			var x: float = cluster.x + _rng.randi_range(-52,52)
+			var y: float = cluster.y + _rng.randi_range(-12,28)
+			var factor := 0.5 if cluster.y > 410 else 0.25
+			var dimensions := _oak.get_size()*factor
+			_shapes.append({"texture":true,"rect":Rect2(Vector2(x-dimensions.x/2,y-dimensions.y).round(),dimensions),"color":Color(1,1,1,0.4 if factor==0.25 else 0.68)})
+
+func _tree(foot: Vector2, height: int, dark: Color, light: Color) -> void:
+	var x := roundf(foot.x / 2.0) * 2.0
+	var y := roundf(foot.y / 2.0) * 2.0
+	var width := float(height) * 0.48
+	_rect(Rect2(x - 1, y - height * 0.4, 2, height * 0.4), dark.darkened(0.2))
+	# Three pixel-cluster lobes instead of a repeated triangle silhouette.
+	_poly(PackedVector2Array([
+		Vector2(x - width, y - height * 0.25), Vector2(x - width, y - height * 0.56),
+		Vector2(x - width * 0.52, y - height * 0.56), Vector2(x - width * 0.52, y - height * 0.86),
+		Vector2(x - width * 0.12, y - height * 0.86), Vector2(x - width * 0.12, y - height),
+		Vector2(x + width * 0.40, y - height), Vector2(x + width * 0.40, y - height * 0.78),
+		Vector2(x + width * 0.80, y - height * 0.78), Vector2(x + width * 0.80, y - height * 0.52),
+		Vector2(x + width, y - height * 0.52), Vector2(x + width, y - height * 0.25)
+	]), dark)
+	_rect(Rect2(x - width * 0.45, y - height * 0.86, maxf(2, width * 0.65), maxf(2, height * 0.12)), light)
+	_rect(Rect2(x - width * 0.85, y - height * 0.53, maxf(2, width * 0.75), maxf(2, height * 0.13)), light.darkened(0.06))
+	if height > 22:
+		for index in range(5):
+			var xx := x + _rng.randf_range(-width * 0.7, width * 0.6)
+			var yy := y - _rng.randf_range(height * 0.3, height * 0.8)
+			_rect(Rect2(roundf(xx / 2) * 2, roundf(yy / 2) * 2, 2, 2), light)
+
+func _make_cloud(at: Vector2, _cloud_scale: float, phase: float) -> void:
+	var cloud := Cloud.new()
+	cloud.position = at
+	cloud.scale = Vector2.ONE
+	cloud.origin = at
+	cloud.phase = phase
+	cloud.reduce_motion = reduce_motion
+	cloud.z_index = -1
+	# Clouds must appear above sky but behind mountains: rendered within own layer.
+	cloud.z_index = 0
+	add_child(cloud)
+
+func _draw() -> void:
+	for shape in _shapes:
+		if shape.has("waterfall"):
+			draw_texture_rect(_waterfall,shape.rect,false)
+		elif shape.has("bank_stone"):
+			draw_texture_rect(preload("res://assets/menu/environment/stone.png"),shape.rect,false)
+		elif shape.has("texture"):
+			draw_texture_rect(_oak,shape.rect,false,shape.color)
+		elif shape.has("rect"):
+			draw_rect(shape["rect"], shape["color"])
+		else:
+			draw_colored_polygon(shape["polygon"], shape["color"])
+
+class Cloud extends Node2D:
+	var origin := Vector2.ZERO
+	var phase := 0.0
+	var reduce_motion := false
+	var age := 0.0
+	func _process(delta: float) -> void:
+		if reduce_motion:
+			return
+		age += delta
+		position.x = origin.x + roundf(sin(age * 0.035 + phase) * 7.0)
+	func _draw() -> void:
+		var base := Color("#f4d4bb")
+		var top := Color("#ffe8c4")
+		draw_rect(Rect2(-56, 16, 124, 10), base)
+		draw_rect(Rect2(-44, 4, 100, 20), base)
+		draw_rect(Rect2(-28, -12, 58, 34), top)
+		draw_rect(Rect2(-16, -20, 32, 12), top)
+		draw_rect(Rect2(26, -2, 24, 16), top)
+		draw_rect(Rect2(-50, 12, 20, 10), top)
+		draw_rect(Rect2(62, 22, 24, 4), base)
+
+class DistantWater extends Node2D:
+	var lake_outline := PackedVector2Array([
+		Vector2(852, 415), Vector2(914, 416), Vector2(906, 442), Vector2(962, 453),
+		Vector2(982, 482), Vector2(927, 505), Vector2(1006, 533), Vector2(1048, 587),
+		Vector2(832, 619), Vector2(742, 584), Vector2(820, 558), Vector2(878, 530),
+		Vector2(832, 504), Vector2(889, 482), Vector2(862, 459), Vector2(870, 439)])
+	var reduce_motion := false
+	var age := 0.0
+	var _frame := -1
+	func _process(delta: float) -> void:
+		if reduce_motion:
+			return
+		age += delta
+		var frame := int(age * 8.0)
+		if frame != _frame:
+			_frame = frame
+			queue_redraw()
+	func _draw() -> void:
+		_fall(Rect2(1091, 311, 22, 113), 1)
+		# Small animated highlights stay within the provided waterfall's curtain.
+		for i in range(6):
+			var y := 378 + posmod(i*9+int(age*16),58)
+			draw_rect(Rect2(823+posmod(i*11,35),y,1,5),Color(0.85,0.98,1,0.25))
+		for index in range(44):
+			var y := 447 + posmod(index * 13, 152)
+			var x := 898.0 + sin(float(y) * 0.043) * 34.0 + float(posmod(index * 7, 24))
+			var offset := float(posmod(index + _frame, 4) * 2)
+			var point := Vector2(roundf(x / 2) * 2 + offset, y)
+			if Geometry2D.is_point_in_polygon(point, lake_outline) and Geometry2D.is_point_in_polygon(point + Vector2(12, 2), lake_outline):
+				draw_rect(Rect2(point, Vector2(4 + index % 8, 2)), Color(0.83, 0.94, 0.91, 0.48))
+	func _fall(rect: Rect2, seed: int) -> void:
+		draw_rect(rect, Color("#79b7cd"))
+		draw_rect(Rect2(rect.position + Vector2(4, 0), Vector2(rect.size.x - 8, rect.size.y)), Color("#b0d4e1"))
+		for index in range(12):
+			var y := posmod(index * 13 + int(age * 20) + seed * 7, int(rect.size.y) - 8)
+			var x := 2 + posmod(index * 7, int(rect.size.x) - 4)
+			draw_rect(Rect2(rect.position + Vector2(x, y), Vector2(2, 8)), Color("#d3eef0"))
+		draw_rect(Rect2(rect.position.x - 6, rect.end.y - 4, rect.size.x + 14, 6), Color("#d2e8df"))
+		draw_rect(Rect2(rect.position.x - 12, rect.end.y + 2, rect.size.x + 26, 2), Color("#adcdd1"))
+
+class IllustratedWater extends Node2D:
+	var reduce_motion := false
+	var age := 0.0
+	var _last_frame := -1
+	func _process(delta: float) -> void:
+		if reduce_motion: return
+		age += delta
+		var frame := int(age*8)
+		if frame != _last_frame:
+			_last_frame = frame
+			queue_redraw()
+	func _draw() -> void:
+		# Fine glints align to the distant curtains; no displacement of the landscape.
+		for i in range(15):
+			var y := 286+posmod(i*17+int(age*26),161)
+			draw_rect(Rect2(959+posmod(i*13,69),y,2,6),Color(0.86,0.99,1,0.25))
+		for i in range(7):
+			var y := 410+posmod(i*11+int(age*22),62)
+			draw_rect(Rect2(759+posmod(i*7,46),y,2,4),Color(0.86,0.99,1,0.2))

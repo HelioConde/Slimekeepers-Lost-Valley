@@ -1,0 +1,154 @@
+extends RefCounted
+## Incremental addition; keeps authored forest, trails and solids.
+const POSITION := Vector2(1785,1465)
+const PATCH := Rect2(1670,1290,230,240)
+const ENV := "res://assets/menu/environment/"
+var root: Node2D
+
+func apply(scene: Node2D) -> void:
+	root = scene
+	for prop: Node2D in scene.get_node("Decorations").get_children():
+		var delta := prop.position-POSITION
+		if not prop.has_node("SolidBase") and absf(delta.x)<100 and absf(delta.y)<65:
+			prop.position.x = POSITION.x + (123 if delta.x>=0 else -123)
+	if scene.has_node("NaturalSpring"):
+		_ground_source(scene.get_node("NaturalSpring"))
+		return
+	for layer_name in ["VegetationLow","GroundDetails"]:
+		var layer: TileMapLayer = scene.get_node(layer_name)
+		for cell in layer.get_used_cells():
+			if PATCH.has_point(layer.map_to_local(cell)):
+				layer.erase_cell(cell)
+	var accents := scene.get_node_or_null("WoodlandDetails")
+	if accents != null:
+		for plant: Node2D in accents.get_children():
+			if PATCH.has_point(plant.position):
+				accents.remove_child(plant)
+				plant.free()
+	var spring := Node2D.new()
+	spring.name = "NaturalSpring"
+	spring.position = POSITION
+	spring.y_sort_enabled = true
+	spring.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	spring.set_script(load("res://scripts/world/spring_source.gd"))
+	_add(scene,spring)
+	var pool := Node2D.new()
+	pool.name = "Pool"
+	pool.z_index = -8
+	_add(spring,pool)
+	_polygon(pool,"BankShadow",_outline(Vector2(96,56)),Color("4e6548"))
+	_polygon(pool,"StoneBank",_outline(Vector2(92,52)),Color("a4aa78"))
+	_polygon(pool,"WetBank",_outline(Vector2(86,47)),Color("568a7b"))
+	var water := _polygon(pool,"Water",_outline(Vector2(81,43)),Color.WHITE)
+	var material_ := ShaderMaterial.new()
+	material_.shader = load("res://scripts/world/spring_water.gdshader")
+	material_.resource_local_to_scene = true
+	water.material = material_
+	var foam := Line2D.new()
+	foam.name = "FallFoam"
+	foam.points = PackedVector2Array([Vector2(-42,-20),Vector2(-34,-18),Vector2(-22,-20),Vector2(-12,-17),Vector2(-2,-18)])
+	foam.width = 2
+	foam.default_color = Color("c5f8df")
+	_add(pool,foam)
+	var water_body := StaticBody2D.new()
+	water_body.name = "WaterCollision"
+	water_body.collision_layer = 2
+	water_body.collision_mask = 1
+	_add(spring,water_body)
+	var collision := CollisionPolygon2D.new()
+	collision.polygon = water.polygon
+	_add(water_body,collision)
+	var fall := Node2D.new()
+	fall.name = "RockSpring"
+	fall.position = Vector2(-24,-18)
+	_add(spring,fall)
+	for entry in [[Vector2(-78,-21),"stone.png"],[Vector2(72,-14),"stone.png"],[Vector2(52,44),"stone.png"],[Vector2(-56,54),"grass.png"],[Vector2(78,35),"grass.png"],[Vector2(80,-41),"flowers.png"]]:
+		_sprite(pool,ENV+entry[1],entry[0])
+	var point := Marker2D.new()
+	point.name = "InteractionPoint"
+	point.position = Vector2(-110,20)
+	_add(spring,point)
+	_ground_source(spring)
+
+func _ground_source(spring: Node2D) -> void:
+	var outcrop: Node2D = spring.get_node("RockSpring")
+	if outcrop.get_meta("grounded_source_version",0) == 2:
+		return
+	# Replace the isolated tall waterfall with a low, rooted rock seep.
+	for child in outcrop.get_children():
+		outcrop.remove_child(child)
+		child.free()
+	outcrop.position = Vector2(-24,-33)
+	outcrop.set_meta("grounded_source_version",2)
+	var pool: Node2D = spring.get_node("Pool")
+	var previous_soil := pool.get_node_or_null("DampEarth")
+	if previous_soil != null:
+		pool.remove_child(previous_soil)
+		previous_soil.free()
+	var soil := _polygon(pool,"DampEarth",_outline(Vector2(74,31)),Color("7a8050"))
+	soil.position = Vector2(-22,-51)
+	pool.move_child(soil,0)
+	var soil_material := ShaderMaterial.new()
+	soil_material.shader = load("res://scripts/world/forest_surface.gdshader")
+	soil_material.set_shader_parameter("terrain_atlas",load("res://assets/tilesets/grass_dirt_v3_32x32.png"))
+	soil_material.set_shader_parameter("atlas_origin",Vector2(224,32))
+	soil_material.set_shader_parameter("texture_strength",0.35)
+	soil.material = soil_material
+	var bank: Polygon2D = pool.get_node("StoneBank")
+	bank.color = Color("909471")
+	bank.material = soil_material
+	# Shared original stone sprites at integer scale: varied silhouettes, no PNG edits.
+	_sprite(outcrop,ENV+"stone.png",Vector2(-12,-20),2).modulate = Color(0.83,0.95,0.83)
+	_sprite(outcrop,ENV+"stone.png",Vector2(-39,-1),2).modulate = Color(0.93,1.0,0.87)
+	_sprite(outcrop,ENV+"stone.png",Vector2(22,1),2)
+	_sprite(outcrop,ENV+"stone.png",Vector2(-53,6))
+	_sprite(outcrop,ENV+"stone.png",Vector2(46,2))
+	_polygon(outcrop,"SourceFissure",PackedVector2Array([Vector2(-8,-22),Vector2(3,-23),Vector2(6,-18),Vector2(3,-12),Vector2(-6,-11),Vector2(-10,-16)]),Color("263f40"))
+	_polygon(outcrop,"WetRock",PackedVector2Array([Vector2(-6,-17),Vector2(3,-17),Vector2(3,-6),Vector2(6,2),Vector2(2,6),Vector2(-7,3),Vector2(-8,-5)]),Color("416b65"))
+	var trickle := _polygon(outcrop,"Trickle",PackedVector2Array([Vector2(-4,-16),Vector2(0,-16),Vector2(1,-8),Vector2(0,-3),Vector2(4,2),Vector2(-5,3),Vector2(-4,-5)]),Color.WHITE)
+	var flowing := ShaderMaterial.new()
+	flowing.resource_local_to_scene = true
+	flowing.shader = load("res://scripts/world/spring_trickle.gdshader")
+	trickle.material = flowing
+	var foam: Line2D = pool.get_node("FallFoam")
+	foam.points = PackedVector2Array([Vector2(-34,-30),Vector2(-30,-27),Vector2(-24,-28),Vector2(-19,-27),Vector2(-15,-30)])
+	for entry in [[Vector2(-48,-31),"res://assets/world/forest/fern.png"],[Vector2(37,-25),ENV+"grass.png"],[Vector2(-68,-4),ENV+"grass.png"]]:
+		_sprite(outcrop,entry[1],entry[0])
+	var body := StaticBody2D.new()
+	body.name = "RockCollision"
+	body.collision_layer = 2
+	body.collision_mask = 1
+	_add(outcrop,body)
+	var shape := CollisionPolygon2D.new()
+	shape.polygon = PackedVector2Array([Vector2(-63,-12),Vector2(-48,-28),Vector2(-20,-35),Vector2(24,-29),Vector2(59,-11),Vector2(54,4),Vector2(-52,7)])
+	_add(body,shape)
+
+func _outline(radius: Vector2) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for i in 40:
+		var angle := TAU*i/40.0
+		var irregular := 1+sin(angle*3+0.4)*0.08+cos(angle*5)*0.035
+		points.append((Vector2.from_angle(angle)*radius*irregular/2).round()*2)
+	return points
+
+func _polygon(parent: Node,label: String,points: PackedVector2Array,color: Color) -> Polygon2D:
+	var node := Polygon2D.new()
+	node.name = label
+	node.polygon = points
+	node.color = color
+	_add(parent,node)
+	return node
+
+func _sprite(parent: Node,path: String,at: Vector2,size_scale: int = 1) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = load(path)
+	var bounds := sprite.texture.get_image().get_used_rect()
+	sprite.position = at
+	sprite.scale = Vector2.ONE*size_scale
+	sprite.offset = sprite.texture.get_size()*0.5-Vector2(bounds.position.x+bounds.size.x*0.5,bounds.end.y)
+	_add(parent,sprite)
+	return sprite
+
+func _add(parent: Node,child: Node) -> void:
+	parent.add_child(child)
+	child.owner = root

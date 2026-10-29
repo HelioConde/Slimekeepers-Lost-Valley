@@ -1,0 +1,54 @@
+extends RefCounted
+## Shared deterministic geometry. All positions are world pixels; one tile is 32 px.
+const TILE_SIZE := 32
+const MAP_TILES := Vector2i(100, 100)
+const WORLD_SIZE := Vector2(3200, 3200)
+const SPAWN := Vector2(1600, 1600)
+const SEED := 261026
+const SLIME_POSITIONS := [Vector2(1405, 1620), Vector2(1810, 1550), Vector2(1580, 1740)]
+const POCKETS := [Vector2(960, 1190), Vector2(2300, 1160), Vector2(2160, 2460)]
+
+static func trails() -> Dictionary:
+	var routes: Dictionary = {
+		"North": _curve([SPAWN, Vector2(1510, 1230), Vector2(1740, 890), Vector2(1590, 510), Vector2(1670, -60)]),
+		"East": _curve([SPAWN, Vector2(1970, 1680), Vector2(2290, 1530), Vector2(2690, 1670), Vector2(3260, 1550)]),
+		"South": _curve([SPAWN, Vector2(1510, 1950), Vector2(1740, 2310), Vector2(1530, 2730), Vector2(1620, 3260)]),
+		"WestGrove": _curve([Vector2(1510, 1230), Vector2(1220, 1100), POCKETS[0]]),
+		"FernGrove": _curve([Vector2(2290, 1530), Vector2(2400, 1340), POCKETS[1]]),
+		"QuietGrove": _curve([Vector2(1740, 2310), Vector2(1960, 2380), POCKETS[2]])
+	}
+	routes["LogHollow"] = _curve([routes["South"].get_closest_point(Vector2(1580,2100)),Vector2(1390,2140),Vector2(1200,2060)])
+	routes["BlueFernNook"] = _curve([routes["North"].get_closest_point(Vector2(1730,920)),Vector2(1820,960),Vector2(1900,950)])
+	return routes
+
+static func _curve(points: Array) -> Curve2D:
+	var curve := Curve2D.new()
+	curve.bake_interval = 12.0
+	for i in points.size():
+		var tangent: Vector2 = Vector2.ZERO
+		if i > 0 and i < points.size() - 1:
+			tangent = (points[i + 1] - points[i - 1]).normalized() * minf(points[i].distance_to(points[i - 1]), points[i].distance_to(points[i + 1])) * 0.28
+		curve.add_point(points[i], -tangent, tangent)
+	return curve
+
+static func clearing_radius(angle: float) -> float:
+	return 306.0 + sin(angle * 3.0 + 0.5) * 25.0 + cos(angle * 5.0) * 13.0
+
+static func inside_clearing(at: Vector2, margin: float = 0.0) -> bool:
+	var delta := at - SPAWN
+	return delta.length() < clearing_radius(delta.angle()) + margin
+
+static func trail_distance(at: Vector2, paths: Dictionary) -> float:
+	var closest := INF
+	for curve: Curve2D in paths.values():
+		closest = minf(closest, at.distance_to(curve.get_closest_point(at)))
+	return closest
+
+static func in_pocket(at: Vector2, margin: float = 0.0) -> bool:
+	for pocket in POCKETS:
+		if at.distance_to(pocket) < 112.0 + margin:
+			return true
+	return false
+
+static func reserved(at: Vector2, paths: Dictionary, extra: float = 0.0) -> bool:
+	return inside_clearing(at, extra) or trail_distance(at, paths) < 74.0 + extra or in_pocket(at, extra)

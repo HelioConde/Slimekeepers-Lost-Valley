@@ -1,0 +1,47 @@
+[
+  {
+    "source": "06_Plantacoes_Objetos\\flor_vaso_laranja.png",
+    "destination": "assets\\menu\\provided\\orange_flowers.png",
+    "sha256": "8AA42734B79BEFD7B94417E86891DDD40352E2F1CFDDA2D4B10CA76CFDADBADF"
+  },
+  {
+    "source": "10_Interface\\botao_novo_jogo.png",
+    "destination": "assets\\menu\\provided\\button_ornament_source.png",
+    "sha256": "5DD08BAD014C388440BB67C1BB7E790020DA3DB55CD5C71DC7B5368676B7A44F"
+  },
+  {
+    "source": "09_Decoracoes\\banco_madeira.png",
+    "destination": "assets\\menu\\provided\\bench.png",
+    "sha256": "FC3DD7382B7E15EB5992DC0FB5501F278BDA3CC82C7BFB29E887AE052A7C0750"
+  },
+  {
+    "source": "10_Interface\\logo_slimekeepers.png",
+    "destination": "assets\\menu\\provided\\logo_ornament_source.png",
+    "sha256": "8ACCDF7B0CAF6F86D12F5515D9188D85CFC3EE85FE91F7B212FF2FC649B5B588"
+  },
+  {
+    "source": "09_Decoracoes\\placa_madeira.png",
+    "destination": "assets\\menu\\provided\\wood_sign.png",
+    "sha256": "7A0F50709B0F0C5993CC78571223B98C560ECD9D505B7976DF6F4DB1532EE440"
+  },
+  {
+    "source": "09_Decoracoes\\barril_madeira.png",
+    "destination": "assets\\menu\\provided\\wood_barrel.png",
+    "sha256": "6C23E97FF6834F7DA8830F87309D3981B8988F4DB24350A4E69DAFFEA66E09FA"
+  },
+  {
+    "source": "06_Plantacoes_Objetos\\flor_vaso_rosa.png",
+    "destination": "assets\\menu\\provided\\pink_flowers.png",
+    "sha256": "76513DCBEB689AB31D35BBBC708304BE98A3B7EDDE197A522338D52016278E89"
+  },
+  {
+    "source": "09_Decoracoes\\borboleta_azul_01.png",
+    "destination": "assets\\menu\\provided\\butterfly.png",
+    "sha256": "76436583379DE7ED080CF5EFB860AE5AB226095E94910E5B575D428558427444"
+  },
+  {
+    "source": "09_Decoracoes\\toco_arvore.png",
+    "destination": "assets\\menu\\provided\\stump.png",
+    "sha256": "EBF92797700E1E3A243307B6224B2E7DFAFB24D481E4D9782B16C8BF568CEA8F"
+  }
+]

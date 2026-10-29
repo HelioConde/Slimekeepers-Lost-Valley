@@ -1,0 +1,145 @@
+extends Node2D
+## Individual original sprites, integer scaling and feet aligned to contact shadows.
+@export var reduce_motion := false
+const ENV := "res://assets/menu/environment/"
+const PACK := "res://assets/menu/provided/"
+const PACK_REPLACEMENTS := {"cottage":"cottage"}
+var _ground: Array[Dictionary] = []
+var _rng := RandomNumberGenerator.new()
+var _actors: Array[Dictionary] = []
+var _time := 0.0
+
+func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_rng.seed = 492617
+	_build_ground()
+	# Back of the garden and cottage sit on the same terrace.
+	_prop("oak_medium", Vector2(76, 494), 3)
+	_pack_prop("tree_large",Vector2(430,492),1)
+	_pack_prop("tree_medium",Vector2(504,501),1)
+	_pack_prop("bush",Vector2(490,526),1)
+	_pack_prop("scarecrow",Vector2(742,557),1)
+	for foot in [Vector2(558,548),Vector2(746,564)]:
+		_pack_prop("fence",foot,1)
+	_prop("cottage", Vector2(252, 552), 1)
+	_prop("barrel", Vector2(122, 556), 2)
+	_prop("lantern", Vector2(392, 541), 1)
+	for foot in [Vector2(95,568), Vector2(152,585), Vector2(370,562), Vector2(408,548), Vector2(830,612), Vector2(794,632)]:
+		_prop("flowers", foot, 1)
+	for foot in [Vector2(92,600),Vector2(192,616),Vector2(270,634),Vector2(720,656),Vector2(878,654)]:
+		_prop("grass", foot, 2)
+	# Individually placed planting beds follow the terrace, leaving a continuous path.
+	_pack_prop("seedlings",Vector2(374,646),1)
+	_pack_prop("sprouts",Vector2(478,649),1)
+	_pack_prop("vegetables",Vector2(584,652),1)
+	_pack_prop("flower_box",Vector2(150,570),1)
+	_pack_prop("flower_box",Vector2(388,555),1)
+	_pack_prop("sunflowers",Vector2(854,637),1)
+	_prop_texture(load("res://assets/player/rotations/south-east.png"), Vector2(448, 576), 1)
+	_slime("gelito", Vector2(280, 633), 0.0)
+	_slime("brotinho", Vector2(680, 654), 2.3)
+	_slime("brasinha", Vector2(794, 608), 4.6)
+	_prop("barrel", Vector2(738, 608), 1)
+	for foot in [Vector2(170,588),Vector2(702,566),Vector2(888,668),Vector2(182,696)]:
+		_pack_prop("bush",foot,1)
+	for foot in [Vector2(870,628),Vector2(850,686),Vector2(98,662),Vector2(218,694),Vector2(754,708)]:
+		_prop("stone", foot, 1)
+	# Frame the vista with branches, not four isolated corner trees.
+	_prop("oak", Vector2(-12, 362), 4)
+	_prop("oak_medium", Vector2(1268, 328), 3)
+	_prop("oak_medium", Vector2(24, 866), 3)
+	_prop("oak_medium", Vector2(1236, 858), 3)
+	for foot in [Vector2(112,712), Vector2(182,742), Vector2(864,748), Vector2(1116,734)]:
+		_prop("flowers", foot, 2)
+	var blooms := GardenFlowers.new()
+	add_child(blooms)
+	queue_redraw()
+
+func _build_ground() -> void:
+	var terrace := PackedVector2Array([Vector2(-180,450),Vector2(80,458),Vector2(222,486),Vector2(388,482),Vector2(548,510),Vector2(710,530),Vector2(890,562),Vector2(1080,548),Vector2(1460,520),Vector2(1460,820),Vector2(-180,820)])
+	_ground.append({"poly":terrace,"color":Color("#729453")})
+	var path := PackedVector2Array([Vector2(210,512),Vector2(254,510),Vector2(252,544),Vector2(308,566),Vector2(390,578),Vector2(480,616),Vector2(600,660),Vector2(720,698),Vector2(840,740),Vector2(650,780),Vector2(560,706),Vector2(446,664),Vector2(354,620),Vector2(276,612),Vector2(206,572)])
+	_ground.append({"poly":path,"color":Color("#c5a36c")})
+	_ground.append({"poly":PackedVector2Array([Vector2(710,556),Vector2(830,575),Vector2(924,590),Vector2(940,618),Vector2(810,612),Vector2(714,588),Vector2(610,602),Vector2(594,578)]),"color":Color("#c5a36c")})
+	# Low-contrast clusters rather than single-pixel random noise.
+	for i in range(1250):
+		var point := Vector2(_rng.randi_range(-100, 1380) / 2 * 2, _rng.randi_range(450, 790) / 2 * 2)
+		if not Geometry2D.is_point_in_polygon(point, terrace):
+			continue
+		var on_path := Geometry2D.is_point_in_polygon(point, path)
+		var palette := [Color("#ceb47c"),Color("#b79663")] if on_path else [Color("#7e9c58"),Color("#88a35c"),Color("#65864c")]
+		_ground.append({"rect":Rect2(point,Vector2(_rng.randi_range(2,5)*2,4)),"color":palette[i % palette.size()]})
+	# Planting beds are separate PNG sprites from the supplied pack.
+
+func _prop(name_: String, foot: Vector2, factor: int) -> Sprite2D:
+	if PACK_REPLACEMENTS.has(name_):
+		return _pack_prop(PACK_REPLACEMENTS[name_],foot,factor)
+	return _prop_texture(load(ENV + name_ + ".png") as Texture2D, foot, factor)
+
+func _pack_prop(name_: String, foot: Vector2, factor: int) -> Sprite2D:
+	return _prop_texture(load(PACK+name_+".png") as Texture2D,foot,factor)
+
+func _prop_texture(texture: Texture2D, foot: Vector2, factor: int) -> Sprite2D:
+	var rect := texture.get_image().get_used_rect()
+	var shadow := Polygon2D.new()
+	var radius := minf(rect.size.x * factor * 0.38, 100)
+	shadow.polygon = PackedVector2Array([Vector2(-radius,0),Vector2(-radius+8,-6),Vector2(radius-8,-6),Vector2(radius,0),Vector2(radius-8,6),Vector2(-radius+8,6)])
+	shadow.color = Color(0.12,0.22,0.17,0.25)
+	shadow.position = foot.round()
+	add_child(shadow)
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.centered = false
+	sprite.scale = Vector2.ONE * factor
+	sprite.position = (foot - Vector2(rect.get_center().x, rect.end.y) * factor).round()
+	add_child(sprite)
+	return sprite
+
+func _slime(kind: String, foot: Vector2, phase: float) -> void:
+	var sprite := AnimatedSprite2D.new()
+	sprite.sprite_frames = load("res://assets/slimes/bestiary/%s/%s_frames.tres" % [kind,kind]) as SpriteFrames
+	var frame := sprite.sprite_frames.get_frame_texture("idle",0)
+	var bounds := frame.get_image().get_used_rect()
+	sprite.centered = false
+	sprite.scale = Vector2(2,2)
+	var base := (foot - Vector2(bounds.get_center().x,bounds.end.y)*2).round()
+	sprite.position = base
+	var shadow := Polygon2D.new()
+	shadow.polygon = PackedVector2Array([Vector2(-30,0),Vector2(-22,-6),Vector2(22,-6),Vector2(30,0),Vector2(22,6),Vector2(-22,6)])
+	shadow.position = foot
+	shadow.color = Color(0.12,0.22,0.17,0.36)
+	add_child(shadow)
+	add_child(sprite)
+	sprite.play("idle")
+	_actors.append({"sprite":sprite,"base":base,"shadow":shadow,"phase":phase})
+
+func _process(delta: float) -> void:
+	_time += delta
+	for actor in _actors:
+		var sprite := actor.sprite as AnimatedSprite2D
+		sprite.speed_scale = 0.0 if reduce_motion else 1.0
+		var cycle := fmod(_time + float(actor.phase), 7.0)
+		var hop := sin(cycle / 0.6 * PI) * 9.0 if cycle < 0.6 and not reduce_motion else 0.0
+		sprite.position = actor.base - Vector2(0,round(hop))
+		(actor.shadow as Polygon2D).modulate.a = 1.0 - hop / 30.0
+
+func _draw() -> void:
+	for shape in _ground:
+		if shape.has("poly"):
+			draw_colored_polygon(shape.poly,shape.color)
+		else:
+			draw_rect(shape.rect,shape.color)
+
+class GardenFlowers extends Node2D:
+	func _draw() -> void:
+		var rng := RandomNumberGenerator.new()
+		rng.seed = 571
+		for center in [Vector2(206,552),Vector2(152,625),Vector2(388,578),Vector2(744,656),Vector2(870,616),Vector2(1110,652)]:
+			for i in range(7):
+				var point: Vector2 = (center+Vector2(rng.randi_range(-25,25),rng.randi_range(-10,12))).snapped(Vector2(2,2))
+				draw_rect(Rect2(point+Vector2(0,-12),Vector2(2,12)),Color("#405e35"))
+				draw_rect(Rect2(point+Vector2(-4,-5),Vector2(8,2)),Color("#759a42"))
+				var petals := Color("#fff0c6") if i%3 else Color("#e8a186")
+				draw_rect(Rect2(point+Vector2(-4,-14),Vector2(10,4)),petals)
+				draw_rect(Rect2(point+Vector2(-2,-16),Vector2(6,8)),petals)
+				draw_rect(Rect2(point+Vector2(0,-13),Vector2(2,2)),Color("#d4a34f"))

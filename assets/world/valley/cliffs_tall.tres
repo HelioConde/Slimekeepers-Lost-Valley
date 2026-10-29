@@ -1,0 +1,36 @@
+[gd_resource type="TileSet" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/world/valley/cliffs_tall.png" id="1_tgpar"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_43hc1"]
+texture = ExtResource("1_tgpar")
+texture_region_size = Vector2i(32, 32)
+2:2/0 = 0
+3:2/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:3/0 = 0
+3:4/0 = 0
+0:6/0 = 0
+1:0/0 = 0
+1:1/0 = 0
+0:4/0 = 0
+3:6/0 = 0
+1:6/0 = 0
+3:0/0 = 0
+1:2/0 = 0
+1:7/0 = 0
+3:1/0 = 0
+1:3/0 = 0
+2:0/0 = 0
+0:0/0 = 0
+2:6/0 = 0
+2:1/0 = 0
+0:1/0 = 0
+2:7/0 = 0
+0:2/0 = 0
+0:3/0 = 0
+
+[resource]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_43hc1")

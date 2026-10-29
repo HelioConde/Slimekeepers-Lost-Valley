@@ -1,0 +1,164 @@
+extends Node2D
+## Primeiro "vertical slice": explorar, achar e fazer amizade com três slimes.
+
+const PLAYER_SCENE: PackedScene = preload("res://scenes/player.tscn")
+const SLIME_SCENE: PackedScene = preload("res://scenes/slime.tscn")
+const TERRAIN_SCRIPT: Script = preload("res://scripts/terrain.gd")
+const FONT: FontFile = preload("res://assets/fonts/PixelifySans.ttf")
+
+const BUSH_SMALL: Texture2D = preload("res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png")
+const BUSH_LARGE: Texture2D = preload("res://assets/sprites/objects/bush_large_large_dense_fores/rotations/bush_large_large_dense_fores.png")
+const LOG: Texture2D = preload("res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png")
+
+var player: CharacterBody2D
+var slimes: Array[Node2D] = []
+var friends_count: int = 0
+var hud_title: Label
+var hud_goal: Label
+var hud_hint: Label
+var popup: Label
+var message_time: float = 0.0
+
+func _ready() -> void:
+    y_sort_enabled = true
+    var terrain := Node2D.new()
+    terrain.name = "Terrain"
+    terrain.set_script(TERRAIN_SCRIPT)
+    terrain.z_index = -10
+    add_child(terrain)
+
+    _populate_forest()
+    player = PLAYER_SCENE.instantiate() as CharacterBody2D
+    player.position = Vector2(640, 490)
+    add_child(player)
+    _spawn_slime("gelito", Vector2(475, 356))
+    _spawn_slime("brotinho", Vector2(777, 352))
+    _spawn_slime("brasinha", Vector2(672, 695))
+    _create_hud()
+    _update_hud()
+
+func _process(delta: float) -> void:
+    var closest := _closest_slime()
+    if closest != null:
+        var name_slime: String = str(closest.call("display_name"))
+        hud_hint.text = "[E] %s: %s" % [("Conversar novamente" if bool(closest.get("befriended")) else "Fazer amizade"), name_slime]
+        if Input.is_action_just_pressed("interact"):
+            if bool(closest.call("make_friend")):
+                friends_count += 1
+                _notify("Novo amigo! %s entrou para sua jornada." % name_slime)
+                _update_hud()
+            else:
+                _notify("%s já é seu amigo!" % name_slime)
+    else:
+        hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: interagir"
+    if message_time > 0.0:
+        message_time -= delta
+        if message_time <= 0.0:
+            popup.text = ""
+
+func _closest_slime() -> Node2D:
+    var closest: Node2D = null
+    var distance := 90.0
+    for slime in slimes:
+        var new_distance := player.global_position.distance_to(slime.global_position)
+        if new_distance < distance:
+            distance = new_distance
+            closest = slime
+    return closest
+
+func _spawn_slime(kind: String, pos: Vector2) -> void:
+    var slime := SLIME_SCENE.instantiate() as Node2D
+    slime.set("slime_type", kind)
+    slime.position = pos
+    add_child(slime)
+    slimes.append(slime)
+
+func _populate_forest() -> void:
+    var small_locations := [Vector2(160,150),Vector2(325,265),Vector2(1025,300),Vector2(890,640),Vector2(330,755),Vector2(1080,825),Vector2(96,820),Vector2(1100,125),Vector2(230,545)]
+    var large_locations := [Vector2(420,120),Vector2(865,170),Vector2(1080,525),Vector2(170,675),Vector2(980,885)]
+    var log_locations := [Vector2(250,220),Vector2(980,460),Vector2(410,846)]
+    for p in small_locations:
+        _place_prop(BUSH_SMALL,p,0.55)
+    for p in large_locations:
+        _place_prop(BUSH_LARGE,p,0.68)
+    for p in log_locations:
+        _place_prop(LOG,p,0.67)
+
+func _place_prop(tex: Texture2D, pos: Vector2, scale_factor: float) -> void:
+    var prop := Sprite2D.new()
+    prop.texture = tex
+    prop.position = pos
+    prop.scale = Vector2.ONE * scale_factor
+    prop.offset = Vector2(0,-18)
+    prop.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    add_child(prop)
+
+func _create_hud() -> void:
+    var layer := CanvasLayer.new()
+    layer.name = "HUD"
+    add_child(layer)
+    var panel := PanelContainer.new()
+    panel.position = Vector2(18, 16)
+    panel.custom_minimum_size = Vector2(307, 88)
+    var style := StyleBoxFlat.new()
+    style.bg_color = Color("1b3327e0")
+    style.border_color = Color("88bd87")
+    style.set_border_width_all(2)
+    style.set_corner_radius_all(9)
+    style.set_content_margin_all(11)
+    panel.add_theme_stylebox_override("panel",style)
+    layer.add_child(panel)
+    var contents := VBoxContainer.new()
+    panel.add_child(contents)
+    hud_title = Label.new()
+    hud_title.text = "SLIMEKEEPERS · LOST VALLEY"
+    hud_title.add_theme_font_override("font",FONT)
+    hud_title.add_theme_font_size_override("font_size",20)
+    hud_title.add_theme_color_override("font_color",Color("eff6ce"))
+    contents.add_child(hud_title)
+    hud_goal = Label.new()
+    hud_goal.add_theme_font_override("font",FONT)
+    hud_goal.add_theme_font_size_override("font_size",17)
+    hud_goal.add_theme_color_override("font_color",Color("dfefcf"))
+    contents.add_child(hud_goal)
+
+    var hint_panel := PanelContainer.new()
+    hint_panel.position = Vector2(170, 483)
+    hint_panel.size = Vector2(620,45)
+    hint_panel.custom_minimum_size = Vector2(620,45)
+    var hint_style := StyleBoxFlat.new()
+    hint_style.bg_color = Color("193223d9")
+    hint_style.set_corner_radius_all(6)
+    hint_style.set_content_margin_all(7)
+    hint_panel.add_theme_stylebox_override("panel",hint_style)
+    layer.add_child(hint_panel)
+    hud_hint = Label.new()
+    hud_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    hud_hint.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+    hud_hint.add_theme_font_override("font",FONT)
+    hud_hint.add_theme_font_size_override("font_size",18)
+    hud_hint.add_theme_color_override("font_color",Color("ffffff"))
+    hint_panel.add_child(hud_hint)
+
+    popup = Label.new()
+    popup.position = Vector2(290,100)
+    popup.size = Vector2(460,45)
+    popup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+    popup.add_theme_font_override("font",FONT)
+    popup.add_theme_font_size_override("font_size",21)
+    popup.add_theme_color_override("font_color",Color("fcec9e"))
+    popup.add_theme_color_override("font_shadow_color",Color("132717"))
+    popup.add_theme_constant_override("shadow_offset_x",1)
+    popup.add_theme_constant_override("shadow_offset_y",2)
+    layer.add_child(popup)
+
+func _update_hud() -> void:
+    if friends_count < 3:
+        hud_goal.text = "Objetivo: faça amizade com 3 slimes (%d/3)" % friends_count
+    else:
+        hud_goal.text = "MISSÃO CONCLUÍDA! Os 3 slimes são seus amigos."
+        _notify("O vale ganhou uma nova guardiã! Fim do protótipo 0.1.")
+
+func _notify(message: String) -> void:
+    popup.text = message
+    message_time = 4.5

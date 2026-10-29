@@ -1,0 +1,23 @@
+extends Control
+## Acabamento de madeira/folhas, independente da tipografia e dos botões.
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	resized.connect(queue_redraw)
+
+func _draw() -> void:
+	draw_rect(Rect2(9, 8, size.x - 18, size.y - 18), Color("#d8b06e"), false, 2)
+	draw_line(Vector2(18, 13), Vector2(size.x - 18, 13), Color("#ffebbc"), 2)
+	for corner in [Vector2(12, 12), Vector2(size.x - 12, 12), Vector2(12, size.y - 12), Vector2(size.x - 12, size.y - 12)]:
+		draw_rect(Rect2(corner - Vector2(3, 3), Vector2(6, 6)), Color("#6e4b39"))
+		draw_rect(Rect2(corner - Vector2(2, 2), Vector2(3, 3)), Color("#ffe5a1"))
+	for point in [Vector2(0, 18), Vector2(26, -2), Vector2(size.x - 25, size.y), Vector2(size.x, size.y - 24)]:
+		leaf(point, -1 if point.x > size.x / 2 else 1)
+
+func leaf(origin: Vector2, side: int) -> void:
+	var points := PackedVector2Array()
+	for point in [Vector2(-8, 0), Vector2(-8, -8), Vector2(-3, -14), Vector2(5, -12), Vector2(10, -3), Vector2(4, 4)]:
+		points.append(origin + Vector2(point.x * side, point.y))
+	draw_colored_polygon(points, Color("#35523c"))
+	draw_line(origin + Vector2(-4 * side, -8), origin + Vector2(4 * side, -2), Color("#8ca758"), 6)
+	draw_line(origin + Vector2(-4 * side, -8), origin, Color("#bdd277"), 2)

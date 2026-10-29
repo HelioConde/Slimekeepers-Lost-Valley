@@ -1,0 +1,113 @@
+extends RefCounted
+## Incremental addition; keeps authored forest, trails and solids.
+const POSITION := Vector2(1785,1465)
+const PATCH := Rect2(1670,1290,230,240)
+const ENV := "res://assets/menu/environment/"
+var root: Node2D
+
+func apply(scene: Node2D) -> void:
+	root = scene
+	for prop: Node2D in scene.get_node("Decorations").get_children():
+		var delta := prop.position-POSITION
+		if not prop.has_node("SolidBase") and absf(delta.x)<100 and absf(delta.y)<65:
+			prop.position.x = POSITION.x + (123 if delta.x>=0 else -123)
+	if scene.has_node("NaturalSpring"):
+		_ground_source(scene.get_node("NaturalSpring"))
+		return
+	for layer_name in ["VegetationLow","GroundDetails"]:
+		var layer: TileMapLayer = scene.get_node(layer_name)
+		for cell in layer.get_used_cells():
+			if PATCH.has_point(layer.map_to_local(cell)):
+				layer.erase_cell(cell)
+	var accents := scene.get_node_or_null("WoodlandDetails")
+	if accents != null:
+		for plant: Node2D in accents.get_children():
+			if PATCH.has_point(plant.position):
+				accents.remove_child(plant)
+				plant.free()
+	var spring := Node2D.new()
+	spring.name = "NaturalSpring"
+	spring.position = POSITION
+	spring.y_sort_enabled = true
+	spring.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	spring.set_script(load("res://scripts/world/spring_source.gd"))
+	_add(scene,spring)
+	var pool := Node2D.new()
+	pool.name = "Pool"
+	pool.z_index = -8
+	_add(spring,pool)
+	_polygon(pool,"BankShadow",_outline(Vector2(96,56)),Color("4e6548"))
+	_polygon(pool,"StoneBank",_outline(Vector2(92,52)),Color("a4aa78"))
+	_polygon(pool,"WetBank",_outline(Vector2(86,47)),Color("568a7b"))
+	var water := _polygon(pool,"Water",_outline(Vector2(81,43)),Color.WHITE)
+	var material_ := ShaderMaterial.new()
+	material_.shader = load("res://scripts/world/spring_water.gdshader")
+	material_.resource_local_to_scene = true
+	water.material = material_
+	var foam := Line2D.new()
+	foam.name = "FallFoam"
+	foam.points = PackedVector2Array([Vector2(-42,-20),Vector2(-34,-18),Vector2(-22,-20),Vector2(-12,-17),Vector2(-2,-18)])
+	foam.width = 2
+	foam.default_color = Color("c5f8df")
+	_add(pool,foam)
+	var water_body := StaticBody2D.new()
+	water_body.name = "WaterCollision"
+	water_body.collision_layer = 2
+	water_body.collision_mask = 1
+	_add(spring,water_body)
+	var collision := CollisionPolygon2D.new()
+	collision.polygon = water.polygon
+	_add(water_body,collision)
+	var fall := Node2D.new()
+	fall.name = "RockSpring"
+	fall.position = Vector2(-24,-18)
+	_add(spring,fall)
+	for entry in [[Vector2(-78,-21),"stone.png"],[Vector2(72,-14),"stone.png"],[Vector2(52,44),"stone.png"],[Vector2(-56,54),"grass.png"],[Vector2(78,35),"grass.png"],[Vector2(80,-41),"flowers.png"]]:
+		_sprite(pool,ENV+entry[1],entry[0])
+	var point := Marker2D.new()
+	point.name = "InteractionPoint"
+	point.position = Vector2(-110,20)
+	_add(spring,point)
+	_ground_source(spring)
+
+func _ground_source(spring: Node2D) -> void:
+	# Preserve the animated pool and its bank; remove the rejected source assembly.
+	for path in ["RockSpring", "Pool/FallFoam", "Pool/DampEarth"]:
+		var obsolete := spring.get_node_or_null(path)
+		if obsolete != null:
+			obsolete.get_parent().remove_child(obsolete)
+			obsolete.free()
+	var pool: Node2D = spring.get_node("Pool")
+	for child in pool.get_children():
+		if child is Sprite2D and child.texture.resource_path.ends_with("/stone.png"):
+			pool.remove_child(child)
+			child.free()
+func _outline(radius: Vector2) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	for i in 40:
+		var angle := TAU*i/40.0
+		var irregular := 1+sin(angle*3+0.4)*0.08+cos(angle*5)*0.035
+		points.append((Vector2.from_angle(angle)*radius*irregular/2).round()*2)
+	return points
+
+func _polygon(parent: Node,label: String,points: PackedVector2Array,color: Color) -> Polygon2D:
+	var node := Polygon2D.new()
+	node.name = label
+	node.polygon = points
+	node.color = color
+	_add(parent,node)
+	return node
+
+func _sprite(parent: Node,path: String,at: Vector2,size_scale: int = 1) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = load(path)
+	var bounds := sprite.texture.get_image().get_used_rect()
+	sprite.position = at
+	sprite.scale = Vector2.ONE*size_scale
+	sprite.offset = sprite.texture.get_size()*0.5-Vector2(bounds.position.x+bounds.size.x*0.5,bounds.end.y)
+	_add(parent,sprite)
+	return sprite
+
+func _add(parent: Node,child: Node) -> void:
+	parent.add_child(child)
+	child.owner = root

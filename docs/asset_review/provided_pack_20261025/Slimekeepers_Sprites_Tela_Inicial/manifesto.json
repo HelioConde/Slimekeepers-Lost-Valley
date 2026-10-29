@@ -1,0 +1,1254 @@
+{
+  "project": "Slimekeepers Lost Valley",
+  "count": 140,
+  "sprites": [
+    {
+      "file": "01_Fundos/vale_montanhas_agua_fazenda.png",
+      "size": [
+        691,
+        362
+      ],
+      "type": "background",
+      "alpha_corners": 1
+    },
+    {
+      "file": "01_Fundos/vale_cenario_16x9.png",
+      "size": [
+        644,
+        362
+      ],
+      "type": "background",
+      "alpha_corners": 1
+    },
+    {
+      "file": "02_Casa/casa_principal.png",
+      "size": [
+        270,
+        283
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/casa_pequena_01.png",
+      "size": [
+        119,
+        128
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/casa_pequena_02.png",
+      "size": [
+        117,
+        129
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/porta_madeira.png",
+      "size": [
+        38,
+        53
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/pilar_madeira.png",
+      "size": [
+        18,
+        59
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/porta_lateral.png",
+      "size": [
+        43,
+        57
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/janela_florida.png",
+      "size": [
+        41,
+        48
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/floreira_parede.png",
+      "size": [
+        49,
+        51
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/entrada_casa_pequena.png",
+      "size": [
+        99,
+        94
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/poco_pedra.png",
+      "size": [
+        86,
+        97
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/porta_arredondada.png",
+      "size": [
+        47,
+        63
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/cerca_curta.png",
+      "size": [
+        111,
+        49
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/placa_sinalizacao.png",
+      "size": [
+        42,
+        80
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/poste_lanterna.png",
+      "size": [
+        31,
+        73
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/floreira_01.png",
+      "size": [
+        91,
+        60
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "02_Casa/floreira_02.png",
+      "size": [
+        73,
+        41
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/arvore_verde_grande.png",
+      "size": [
+        107,
+        128
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/pinheiro_alto_01.png",
+      "size": [
+        79,
+        87
+      ],
+      "type": "sprite",
+      "alpha_corners": 3
+    },
+    {
+      "file": "03_Arvores/pinheiro_alto_02.png",
+      "size": [
+        78,
+        100
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/arvore_verde_media.png",
+      "size": [
+        89,
+        109
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/arvore_verde_pequena.png",
+      "size": [
+        56,
+        71
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/cerejeira_rosa.png",
+      "size": [
+        101,
+        106
+      ],
+      "type": "sprite",
+      "alpha_corners": 3
+    },
+    {
+      "file": "03_Arvores/pinheiro_largo.png",
+      "size": [
+        83,
+        116
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/arvore_outono_laranja.png",
+      "size": [
+        105,
+        111
+      ],
+      "type": "sprite",
+      "alpha_corners": 1
+    },
+    {
+      "file": "03_Arvores/arvore_verde_jovem.png",
+      "size": [
+        60,
+        100
+      ],
+      "type": "sprite",
+      "alpha_corners": 3
+    },
+    {
+      "file": "03_Arvores/arbusto_grande.png",
+      "size": [
+        76,
+        66
+      ],
+      "type": "sprite",
+      "alpha_corners": 3
+    },
+    {
+      "file": "03_Arvores/arbusto_medio.png",
+      "size": [
+        50,
+        43
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/arbusto_pequeno.png",
+      "size": [
+        31,
+        27
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "03_Arvores/pinheiro_mini.png",
+      "size": [
+        32,
+        41
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/cachoeira_grande_com_lago.png",
+      "size": [
+        328,
+        254
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/cachoeira_lateral.png",
+      "size": [
+        101,
+        248
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/rocha_aquatica_01.png",
+      "size": [
+        107,
+        113
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/rocha_aquatica_02.png",
+      "size": [
+        109,
+        111
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/agua_queda_modulo_01.png",
+      "size": [
+        56,
+        62
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/agua_queda_modulo_02.png",
+      "size": [
+        56,
+        62
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/agua_queda_modulo_03.png",
+      "size": [
+        54,
+        62
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/agua_queda_modulo_04.png",
+      "size": [
+        54,
+        62
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "04_Agua_Cachoeiras/rio_horizontal_espuma.png",
+      "size": [
+        235,
+        50
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/grama_01.png",
+      "size": [
+        74,
+        74
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/terra_clara.png",
+      "size": [
+        75,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/grama_02.png",
+      "size": [
+        75,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/grama_pedras.png",
+      "size": [
+        76,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/borda_terra_01.png",
+      "size": [
+        74,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/pedras_01.png",
+      "size": [
+        75,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/grama_03.png",
+      "size": [
+        75,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/grama_pedras_02.png",
+      "size": [
+        76,
+        75
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/terra_caminho.png",
+      "size": [
+        74,
+        72
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/pedras_02.png",
+      "size": [
+        75,
+        72
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/pedras_03.png",
+      "size": [
+        75,
+        72
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "05_Terrenos/grama_pedras_03.png",
+      "size": [
+        76,
+        72
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/canteiro_mudas.png",
+      "size": [
+        96,
+        73
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/canteiro_brotos.png",
+      "size": [
+        97,
+        73
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/canteiro_hortalicas.png",
+      "size": [
+        99,
+        76
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/caramanchao_01.png",
+      "size": [
+        46,
+        81
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/caramanchao_02.png",
+      "size": [
+        51,
+        81
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/caramanchao_03.png",
+      "size": [
+        64,
+        84
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/cerca_longa.png",
+      "size": [
+        188,
+        41
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/flor_vaso_rosa.png",
+      "size": [
+        41,
+        66
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/flor_vaso_amarela.png",
+      "size": [
+        64,
+        67
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/flor_vaso_laranja.png",
+      "size": [
+        46,
+        58
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/vaso_arbusto.png",
+      "size": [
+        47,
+        59
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/flor_vaso_branca.png",
+      "size": [
+        64,
+        61
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/espantalho.png",
+      "size": [
+        72,
+        91
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/pedra_com_musgo.png",
+      "size": [
+        79,
+        76
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/carrinho.png",
+      "size": [
+        59,
+        59
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/vaso_cesta_01.png",
+      "size": [
+        64,
+        49
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/barril.png",
+      "size": [
+        57,
+        48
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/canteiro_vaso_01.png",
+      "size": [
+        47,
+        61
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "06_Plantacoes_Objetos/canteiro_vaso_02.png",
+      "size": [
+        77,
+        52
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_01.png",
+      "size": [
+        57,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_02.png",
+      "size": [
+        45,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_03.png",
+      "size": [
+        45,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_04.png",
+      "size": [
+        45,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_05.png",
+      "size": [
+        50,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_06.png",
+      "size": [
+        58,
+        78
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_07.png",
+      "size": [
+        41,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_08.png",
+      "size": [
+        40,
+        76
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_09.png",
+      "size": [
+        42,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_10.png",
+      "size": [
+        41,
+        77
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_11.png",
+      "size": [
+        50,
+        78
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_12.png",
+      "size": [
+        43,
+        79
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_13.png",
+      "size": [
+        46,
+        79
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_14.png",
+      "size": [
+        42,
+        79
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "07_Protagonista/pose_15.png",
+      "size": [
+        46,
+        80
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_agua_01.png",
+      "size": [
+        69,
+        72
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_agua_02.png",
+      "size": [
+        59,
+        64
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_agua_03.png",
+      "size": [
+        58,
+        62
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_agua_04.png",
+      "size": [
+        59,
+        65
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_agua_05.png",
+      "size": [
+        56,
+        65
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_agua_06.png",
+      "size": [
+        53,
+        65
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_fogo_01.png",
+      "size": [
+        69,
+        78
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_fogo_02.png",
+      "size": [
+        59,
+        66
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_fogo_03.png",
+      "size": [
+        59,
+        66
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_fogo_04.png",
+      "size": [
+        63,
+        71
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_fogo_05.png",
+      "size": [
+        56,
+        68
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_fogo_06.png",
+      "size": [
+        53,
+        69
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_natureza_01.png",
+      "size": [
+        69,
+        78
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_natureza_02.png",
+      "size": [
+        58,
+        66
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_natureza_03.png",
+      "size": [
+        59,
+        67
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_natureza_04.png",
+      "size": [
+        58,
+        67
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_natureza_05.png",
+      "size": [
+        56,
+        67
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "08_Slimes/slime_natureza_06.png",
+      "size": [
+        53,
+        67
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/ponte_madeira.png",
+      "size": [
+        191,
+        120
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/placa_madeira.png",
+      "size": [
+        54,
+        114
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/poste_pequeno.png",
+      "size": [
+        27,
+        106
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/poste_alto_lanterna.png",
+      "size": [
+        48,
+        144
+      ],
+      "type": "sprite",
+      "alpha_corners": 3
+    },
+    {
+      "file": "09_Decoracoes/nenufar_flor.png",
+      "size": [
+        69,
+        48
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/pedras.png",
+      "size": [
+        89,
+        56
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/borboleta_laranja.png",
+      "size": [
+        39,
+        36
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/borboleta_azul_01.png",
+      "size": [
+        28,
+        36
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/borboleta_azul_02.png",
+      "size": [
+        34,
+        32
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/banco_madeira.png",
+      "size": [
+        96,
+        66
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/caixote.png",
+      "size": [
+        55,
+        60
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/barril_madeira.png",
+      "size": [
+        48,
+        62
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/fogueira.png",
+      "size": [
+        68,
+        69
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/carroca.png",
+      "size": [
+        77,
+        60
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "09_Decoracoes/toco_arvore.png",
+      "size": [
+        51,
+        40
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/logo_slimekeepers.png",
+      "size": [
+        316,
+        122
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/botao_novo_jogo.png",
+      "size": [
+        192,
+        36
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/botao_continuar.png",
+      "size": [
+        194,
+        39
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/botao_opcoes.png",
+      "size": [
+        191,
+        40
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/botao_sair.png",
+      "size": [
+        190,
+        39
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/icone_engrenagem.png",
+      "size": [
+        54,
+        53
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/icone_audio.png",
+      "size": [
+        54,
+        53
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/icone_tela_cheia.png",
+      "size": [
+        54,
+        54
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "10_Interface/icone_voltar.png",
+      "size": [
+        54,
+        54
+      ],
+      "type": "sprite",
+      "alpha_corners": 4
+    },
+    {
+      "file": "11_Assets_Originais/cachoeira_original.png",
+      "size": [
+        128,
+        160
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/lanterna_original.png",
+      "size": [
+        48,
+        96
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/tileset_grama_terra_32.png",
+      "size": [
+        256,
+        128
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/tileset_floresta_32.png",
+      "size": [
+        256,
+        96
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/botao_base_sem_texto.png",
+      "size": [
+        512,
+        512
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/painel_base.png",
+      "size": [
+        512,
+        512
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/protagonista_frente.png",
+      "size": [
+        128,
+        128
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/protagonista_costas.png",
+      "size": [
+        128,
+        128
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/protagonista_direita.png",
+      "size": [
+        128,
+        128
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/gelito_spritesheet.png",
+      "size": [
+        768,
+        1536
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/brotinho_spritesheet.png",
+      "size": [
+        768,
+        1664
+      ],
+      "type": "existing project asset"
+    },
+    {
+      "file": "11_Assets_Originais/brasinha_spritesheet.png",
+      "size": [
+        768,
+        1536
+      ],
+      "type": "existing project asset"
+    }
+  ]
+}
