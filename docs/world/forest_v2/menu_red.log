@@ -1,0 +1,48 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS: Menu contains the four intended actions
+PASS: Action labels preserve the actual destinations
+PASS: Continue is disabled without a save system
+PASS: Initial focus is New Game
+PASS: Reduced motion stops the new distant water layer
+PASS: Turning reduced motion off resumes distant water
+PASS: Keyboard Down skips disabled Continue
+PASS: Keyboard Down reaches Exit
+PASS: Keyboard navigation wraps to New Game
+PASS: Simulated controller D-pad skips disabled Continue
+PASS: Simulated controller D-pad reaches Exit
+PASS: Simulated controller D-pad Up returns to Options
+PASS: Enter activates the Options action
+PASS: Options begins with focus inside the modal
+PASS: Background actions cannot steal keyboard focus
+PASS: Tab remains inside Options (1/10)
+PASS: Tab remains inside Options (2/10)
+PASS: Tab remains inside Options (3/10)
+PASS: Tab remains inside Options (4/10)
+PASS: Tab remains inside Options (5/10)
+PASS: Tab remains inside Options (6/10)
+PASS: Tab remains inside Options (7/10)
+PASS: Tab remains inside Options (8/10)
+PASS: Tab remains inside Options (9/10)
+PASS: Tab remains inside Options (10/10)
+ERROR: FAIL: Modal Tab loop returns to first control
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tools/test_menu.gd:160)
+       [1] _run (res://tools/test_menu.gd:70)
+       [2] _key (res://tools/test_menu.gd:122)
+       [3] _settle (res://tools/test_menu.gd:152)
+PASS: Escape closes Options
+PASS: Closing Options restores focus to its opener
+PASS: Continue remains unavailable after modal close
+PASS: Other actions regain keyboard focus
+PASS: Mouse click opens Options
+ERROR: FAIL: New Game opens the expanded playable forest
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tools/test_menu.gd:160)
+       [1] _run (res://tools/test_menu.gd:82)
+       [2] _settle (res://tools/test_menu.gd:152)
+PASS: Test did not create or remove presentation preferences
+PASS: Saved presentation preferences remain byte-identical
+MENU_INTEGRATION: 34 checks, 2 failures

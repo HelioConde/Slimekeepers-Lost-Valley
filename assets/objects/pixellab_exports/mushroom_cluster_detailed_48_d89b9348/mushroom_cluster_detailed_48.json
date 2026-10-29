@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "d89b9348-c19a-40c2-a2cf-361fd28c6690",
+    "name": "base",
+    "prompt": "mushroom_cluster \u2014 detailed 48x32 pixel art cluster of red-capped and brown forest mushrooms for a cozy fantasy farming RPG, low top-down perspective, small mossy tufts and subtle leaf accents, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "mushroom_cluster_detailed_48.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:03.040008+00:00"
+}

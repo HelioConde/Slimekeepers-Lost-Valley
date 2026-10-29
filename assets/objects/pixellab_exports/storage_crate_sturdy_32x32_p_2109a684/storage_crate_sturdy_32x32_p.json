@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "2109a684-ec10-4bb3-8a5d-f2d6cab91787",
+    "name": "base",
+    "prompt": "storage_crate \u2014 sturdy 32x32 pixel art wooden storage crate for a cozy fantasy farming RPG, low top-down perspective, warm oak boards with dark metal corner braces, compact walk-blocking object, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "storage_crate_sturdy_32x32_p.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:54.057362+00:00"
+}

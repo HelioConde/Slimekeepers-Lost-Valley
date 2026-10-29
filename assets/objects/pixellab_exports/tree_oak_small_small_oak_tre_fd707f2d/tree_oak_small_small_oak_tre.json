@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "fd707f2d-51f1-4a64-9846-6de7e479f8c1",
+    "name": "base",
+    "prompt": "tree_oak_small \u2014 small oak tree for Slimekeepers: Lost Valley, 64x96 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad leafy oak crown in natural muted greens, slim brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match the Meadow & Forest Grass V2 palette and the 32x32 world grid. Transparent background, isolated static object, no ground tile, no scenery, no characters, no shadow outside the sprite.",
+    "size": {
+      "width": 96,
+      "height": 96
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "tree_oak_small_small_oak_tre.png",
+    "cell_size": {
+      "width": 96,
+      "height": 96
+    },
+    "sheet_size": {
+      "width": 96,
+      "height": 96
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:38:49.064820+00:00"
+}

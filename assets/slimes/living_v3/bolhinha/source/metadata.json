@@ -1,0 +1,389 @@
+{
+  "group_id": "49a6c2b0-4311-48fb-beec-1aea4cc19042",
+  "states": [
+    {
+      "character": {
+        "id": "48e3207b-546f-4fa7-bf90-e67d8bd3105c",
+        "name": "Idle",
+        "prompt": "A cute peaceful water slime for a fantasy farming game, small, round and squishy, made of translucent blue water, with large adorable eyes, a tiny happy smile, soft blush, and a calm friendly personality. Harmless creature, magical water glow, soft highlights, little water droplets, simple readable shape, very cute and appealing, clean game-ready design.",
+        "size": {
+          "width": 64,
+          "height": 64
+        },
+        "template_id": "custom",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-10-25T03:23:38.364041+00:00"
+      },
+      "folder": "Idle",
+      "frames": {
+        "rotations": {
+          "south": "Idle/rotations/south.png",
+          "south-east": "Idle/rotations/south-east.png",
+          "east": "Idle/rotations/east.png",
+          "north-east": "Idle/rotations/north-east.png",
+          "north": "Idle/rotations/north.png",
+          "north-west": "Idle/rotations/north-west.png",
+          "west": "Idle/rotations/west.png",
+          "south-west": "Idle/rotations/south-west.png"
+        },
+        "animations": {
+          "The_slime_performs_a_gentle_rhythmic_bobbing_motio": {
+            "west": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/west/frame_008.png"
+            ],
+            "south": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south/frame_008.png"
+            ],
+            "north-west": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-west/frame_008.png"
+            ],
+            "north-east": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north-east/frame_008.png"
+            ],
+            "north": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/north/frame_008.png"
+            ],
+            "east": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/east/frame_008.png"
+            ],
+            "south-west": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-west/frame_008.png"
+            ],
+            "south-east": [
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_000.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_001.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_002.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_003.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_004.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_005.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_006.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_007.png",
+              "Idle/animations/The_slime_performs_a_gentle_rhythmic_bobbing_motio/south-east/frame_008.png"
+            ]
+          },
+          "The_slime_executes_a_rhythmic_vertical_bounce_comp": {
+            "north-east": [
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_000.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_001.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_002.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_003.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_004.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_005.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_006.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_007.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north-east/frame_008.png"
+            ],
+            "south": [
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_000.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_001.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_002.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_003.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_004.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_005.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_006.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_007.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south/frame_008.png"
+            ],
+            "south-east": [
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_000.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_001.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_002.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_003.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_004.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_005.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_006.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_007.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/south-east/frame_008.png"
+            ],
+            "east": [
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_000.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_001.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_002.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_003.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_004.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_005.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_006.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_007.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/east/frame_008.png"
+            ],
+            "north": [
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_000.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_001.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_002.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_003.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_004.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_005.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_006.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_007.png",
+              "Idle/animations/The_slime_executes_a_rhythmic_vertical_bounce_comp/north/frame_008.png"
+            ]
+          },
+          "A_cute_peaceful_water_slime_magically_watering_pla": {
+            "south": [
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_000.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_001.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_002.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_003.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_004.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_005.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_006.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_007.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south/frame_008.png"
+            ],
+            "north-east": [
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_000.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_001.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_002.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_003.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_004.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_005.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_006.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_007.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/north-east/frame_008.png"
+            ],
+            "east": [
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_000.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_001.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_002.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_003.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_004.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_005.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_006.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_007.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/east/frame_008.png"
+            ],
+            "south-east": [
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_000.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_001.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_002.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_003.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_004.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_005.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_006.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_007.png",
+              "Idle/animations/A_cute_peaceful_water_slime_magically_watering_pla/south-east/frame_008.png"
+            ]
+          },
+          "The_slime_squashes_downward_to_charge_energy_then": {
+            "north-west": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-west/frame_008.png"
+            ],
+            "west": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/west/frame_008.png"
+            ],
+            "north-east": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north-east/frame_008.png"
+            ],
+            "east": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/east/frame_008.png"
+            ],
+            "north": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/north/frame_008.png"
+            ],
+            "south-east": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-east/frame_008.png"
+            ],
+            "south": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south/frame_008.png"
+            ],
+            "south-west": [
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_000.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_001.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_002.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_003.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_004.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_005.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_006.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_007.png",
+              "Idle/animations/The_slime_squashes_downward_to_charge_energy_then/south-west/frame_008.png"
+            ]
+          },
+          "The_slime_gently_leans_forward_to_submerge_its_mou": {
+            "south-east": [
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_000.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_001.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_002.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_003.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_004.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_005.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_006.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_007.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south-east/frame_008.png"
+            ],
+            "north": [
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_000.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_001.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_002.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_003.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_004.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_005.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_006.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_007.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north/frame_008.png"
+            ],
+            "south": [
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_000.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_001.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_002.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_003.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_004.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_005.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_006.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_007.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/south/frame_008.png"
+            ],
+            "east": [
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_000.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_001.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_002.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_003.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_004.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_005.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_006.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_007.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/east/frame_008.png"
+            ],
+            "north-east": [
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_000.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_001.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_002.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_003.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_004.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_005.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_006.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_007.png",
+              "Idle/animations/The_slime_gently_leans_forward_to_submerge_its_mou/north-east/frame_008.png"
+            ]
+          },
+          "Idle": {
+            "south": [
+              "Idle/animations/Idle/south/frame_000.png",
+              "Idle/animations/Idle/south/frame_001.png",
+              "Idle/animations/Idle/south/frame_002.png",
+              "Idle/animations/Idle/south/frame_003.png",
+              "Idle/animations/Idle/south/frame_004.png",
+              "Idle/animations/Idle/south/frame_005.png",
+              "Idle/animations/Idle/south/frame_006.png",
+              "Idle/animations/Idle/south/frame_007.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.1",
+  "export_date": "2026-10-28T01:34:42.270928"
+}

@@ -1,0 +1,512 @@
+WorkerThreadPool: 12 threads, 3 max low-priority.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Using "default" pen tablet driver...
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+CORE API HASH: 2004498165
+EDITOR API HASH: 1696660745
+Loading resource: res://tools/test_forest_v2.gd remapped: res://tools/test_forest_v2.gd
+Completed load for: 'res://tools/test_forest_v2.gd' remapped 'res://tools/test_forest_v2.gd' at thread -1
+SceneTreeFTI: traversal method DEFAULT
+Loading resource: res://addons/godot_mcp/services/mcp_runtime_bridge.gd remapped: res://addons/godot_mcp/services/mcp_runtime_bridge.gd
+Completed load for: 'res://addons/godot_mcp/services/mcp_runtime_bridge.gd' remapped 'res://addons/godot_mcp/services/mcp_runtime_bridge.gd' at thread -1
+Loading resource: res://addons/godot_mcp/services/mcp_input_bridge.gd remapped: res://addons/godot_mcp/services/mcp_input_bridge.gd
+Completed load for: 'res://addons/godot_mcp/services/mcp_input_bridge.gd' remapped 'res://addons/godot_mcp/services/mcp_input_bridge.gd' at thread -1
+Loading resource: res://addons/godot_mcp/services/mcp_screenshot_bridge.gd remapped: res://addons/godot_mcp/services/mcp_screenshot_bridge.gd
+Completed load for: 'res://addons/godot_mcp/services/mcp_screenshot_bridge.gd' remapped 'res://addons/godot_mcp/services/mcp_screenshot_bridge.gd' at thread -1
+Loaded system CA certificates
+Loading resource: res://scenes/regions/FlorestaDoDespertarV2.tscn remapped: res://scenes/regions/FlorestaDoDespertarV2.tscn
+Loading resource: res://scripts/world/forest_region.gd remapped: res://scripts/world/forest_region.gd
+Loading resource: res://scenes/player.tscn remapped: res://scenes/player.tscn
+Loading resource: res://scripts/player.gd remapped: res://scripts/player.gd
+Completed load for: 'res://scripts/player.gd' remapped 'res://scripts/player.gd' at thread -1
+Completed load for: 'res://scenes/player.tscn' remapped 'res://scenes/player.tscn' at thread -1
+Loading resource: res://scenes/slime.tscn remapped: res://scenes/slime.tscn
+Loading resource: res://scripts/slime.gd remapped: res://scripts/slime.gd
+Completed load for: 'res://scripts/slime.gd' remapped 'res://scripts/slime.gd' at thread -1
+Completed load for: 'res://scenes/slime.tscn' remapped 'res://scenes/slime.tscn' at thread -1
+Loading resource: res://assets/fonts/PixelifySans.ttf remapped: res://assets/fonts/PixelifySans.ttf
+Loading resource: res://.godot/imported/PixelifySans.ttf-4613dc276f227b5d31d032a4586e3281.fontdata remapped: res://.godot/imported/PixelifySans.ttf-4613dc276f227b5d31d032a4586e3281.fontdata
+Completed load for: 'res://assets/fonts/PixelifySans.ttf' remapped 'res://assets/fonts/PixelifySans.ttf' at thread -1
+Loading resource: res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png remapped: res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png
+Loading resource: res://.godot/imported/bush_small_compact_leafy_for.png-80bb483c99bee3b368c8a48d001325e3.ctex remapped: res://.godot/imported/bush_small_compact_leafy_for.png-80bb483c99bee3b368c8a48d001325e3.ctex
+Completed load for: 'res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png' remapped 'res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png' at thread -1
+Loading resource: res://assets/sprites/objects/bush_large_large_dense_fores/rotations/bush_large_large_dense_fores.png remapped: res://assets/sprites/objects/bush_large_large_dense_fores/rotations/bush_large_large_dense_fores.png
+Loading resource: res://.godot/imported/bush_large_large_dense_fores.png-6a5d76c2795579819b4567162473bd11.ctex remapped: res://.godot/imported/bush_large_large_dense_fores.png-6a5d76c2795579819b4567162473bd11.ctex
+Completed load for: 'res://assets/sprites/objects/bush_large_large_dense_fores/rotations/bush_large_large_dense_fores.png' remapped 'res://assets/sprites/objects/bush_large_large_dense_fores/rotations/bush_large_large_dense_fores.png' at thread -1
+Loading resource: res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png remapped: res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png
+Loading resource: res://.godot/imported/fallen_log_mossy_fallen_oak.png-c0349a5f4bab0a602fdb36ba42fa976c.ctex remapped: res://.godot/imported/fallen_log_mossy_fallen_oak.png-c0349a5f4bab0a602fdb36ba42fa976c.ctex
+Completed load for: 'res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png' remapped 'res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png' at thread -1
+Loading resource: res://assets/tilesets/grass_dirt_v3_32x32.png remapped: res://assets/tilesets/grass_dirt_v3_32x32.png
+Loading resource: res://.godot/imported/grass_dirt_v3_32x32.png-dbbabe56bf20343b5a83c2b7ba0e041f.ctex remapped: res://.godot/imported/grass_dirt_v3_32x32.png-dbbabe56bf20343b5a83c2b7ba0e041f.ctex
+Completed load for: 'res://assets/tilesets/grass_dirt_v3_32x32.png' remapped 'res://assets/tilesets/grass_dirt_v3_32x32.png' at thread -1
+Loading resource: res://assets/slimes/bestiary/brotinho/brotinho_frames.tres remapped: res://assets/slimes/bestiary/brotinho/brotinho_frames.tres
+Loading resource: res://assets/slimes/bestiary/brotinho/brotinho.png remapped: res://assets/slimes/bestiary/brotinho/brotinho.png
+Loading resource: res://.godot/imported/brotinho.png-88ad34d15bc5477f4849acdc1ab5dd75.ctex remapped: res://.godot/imported/brotinho.png-88ad34d15bc5477f4849acdc1ab5dd75.ctex
+Completed load for: 'res://assets/slimes/bestiary/brotinho/brotinho.png' remapped 'res://assets/slimes/bestiary/brotinho/brotinho.png' at thread -1
+Completed load for: 'res://assets/slimes/bestiary/brotinho/brotinho_frames.tres' remapped 'res://assets/slimes/bestiary/brotinho/brotinho_frames.tres' at thread -1
+Loading resource: res://scripts/world/forest_wind.gdshader remapped: res://scripts/world/forest_wind.gdshader
+Completed load for: 'res://scripts/world/forest_wind.gdshader' remapped 'res://scripts/world/forest_wind.gdshader' at thread -1
+Completed load for: 'res://scripts/world/forest_region.gd' remapped 'res://scripts/world/forest_region.gd' at thread -1
+Loading resource: res://scripts/world/forest_ground.gdshader remapped: res://scripts/world/forest_ground.gdshader
+Completed load for: 'res://scripts/world/forest_ground.gdshader' remapped 'res://scripts/world/forest_ground.gdshader' at thread -1
+Loading resource: res://assets/menu/environment/grass.png remapped: res://assets/menu/environment/grass.png
+Loading resource: res://.godot/imported/grass.png-f35de703702e6baf9763d6dc8e249a8e.ctex remapped: res://.godot/imported/grass.png-f35de703702e6baf9763d6dc8e249a8e.ctex
+Completed load for: 'res://assets/menu/environment/grass.png' remapped 'res://assets/menu/environment/grass.png' at thread -1
+Loading resource: res://assets/menu/environment/flowers.png remapped: res://assets/menu/environment/flowers.png
+Loading resource: res://.godot/imported/flowers.png-71d4135eacea555049feca81152c3a76.ctex remapped: res://.godot/imported/flowers.png-71d4135eacea555049feca81152c3a76.ctex
+Completed load for: 'res://assets/menu/environment/flowers.png' remapped 'res://assets/menu/environment/flowers.png' at thread -1
+Loading resource: res://assets/menu/environment/crops.png remapped: res://assets/menu/environment/crops.png
+Loading resource: res://.godot/imported/crops.png-7ffc97680d5da724065216fee3108d98.ctex remapped: res://.godot/imported/crops.png-7ffc97680d5da724065216fee3108d98.ctex
+Completed load for: 'res://assets/menu/environment/crops.png' remapped 'res://assets/menu/environment/crops.png' at thread -1
+Loading resource: res://assets/menu/environment/stone.png remapped: res://assets/menu/environment/stone.png
+Loading resource: res://.godot/imported/stone.png-059c1034b75edcab8d24ea05c99331ad.ctex remapped: res://.godot/imported/stone.png-059c1034b75edcab8d24ea05c99331ad.ctex
+Completed load for: 'res://assets/menu/environment/stone.png' remapped 'res://assets/menu/environment/stone.png' at thread -1
+Loading resource: res://assets/world/forest/mushroom_red.png remapped: res://assets/world/forest/mushroom_red.png
+Loading resource: res://.godot/imported/mushroom_red.png-f38e6b02fc08a065a4788d58a525009b.ctex remapped: res://.godot/imported/mushroom_red.png-f38e6b02fc08a065a4788d58a525009b.ctex
+Completed load for: 'res://assets/world/forest/mushroom_red.png' remapped 'res://assets/world/forest/mushroom_red.png' at thread -1
+Loading resource: res://assets/world/forest/mushroom_brown.png remapped: res://assets/world/forest/mushroom_brown.png
+Loading resource: res://.godot/imported/mushroom_brown.png-97b68c9ef7416862926a92e8b91bf5f5.ctex remapped: res://.godot/imported/mushroom_brown.png-97b68c9ef7416862926a92e8b91bf5f5.ctex
+Completed load for: 'res://assets/world/forest/mushroom_brown.png' remapped 'res://assets/world/forest/mushroom_brown.png' at thread -1
+Loading resource: res://assets/world/forest/mushroom_glow.png remapped: res://assets/world/forest/mushroom_glow.png
+Loading resource: res://.godot/imported/mushroom_glow.png-2106e7d8bc48e871ff999a5d4e72af1f.ctex remapped: res://.godot/imported/mushroom_glow.png-2106e7d8bc48e871ff999a5d4e72af1f.ctex
+Completed load for: 'res://assets/world/forest/mushroom_glow.png' remapped 'res://assets/world/forest/mushroom_glow.png' at thread -1
+Loading resource: res://assets/world/forest/fern.png remapped: res://assets/world/forest/fern.png
+Loading resource: res://.godot/imported/fern.png-f538ad3e685c80f6264e465fa5914cad.ctex remapped: res://.godot/imported/fern.png-f538ad3e685c80f6264e465fa5914cad.ctex
+Completed load for: 'res://assets/world/forest/fern.png' remapped 'res://assets/world/forest/fern.png' at thread -1
+Loading resource: res://assets/world/forest/pine_crisp.png remapped: res://assets/world/forest/pine_crisp.png
+Loading resource: res://.godot/imported/pine_crisp.png-974589bdb3107bdde63229ff1a3e9b05.ctex remapped: res://.godot/imported/pine_crisp.png-974589bdb3107bdde63229ff1a3e9b05.ctex
+Completed load for: 'res://assets/world/forest/pine_crisp.png' remapped 'res://assets/world/forest/pine_crisp.png' at thread -1
+Loading resource: res://assets/menu/environment/oak_medium.png remapped: res://assets/menu/environment/oak_medium.png
+Loading resource: res://.godot/imported/oak_medium.png-749d14cf76f117f141c1a066626298d6.ctex remapped: res://.godot/imported/oak_medium.png-749d14cf76f117f141c1a066626298d6.ctex
+Completed load for: 'res://assets/menu/environment/oak_medium.png' remapped 'res://assets/menu/environment/oak_medium.png' at thread -1
+Loading resource: res://assets/menu/environment/oak.png remapped: res://assets/menu/environment/oak.png
+Loading resource: res://.godot/imported/oak.png-28b6501ab411c253a6dcec71d228a35d.ctex remapped: res://.godot/imported/oak.png-28b6501ab411c253a6dcec71d228a35d.ctex
+Completed load for: 'res://assets/menu/environment/oak.png' remapped 'res://assets/menu/environment/oak.png' at thread -1
+Loading resource: res://assets/world/forest/oak_young.png remapped: res://assets/world/forest/oak_young.png
+Loading resource: res://.godot/imported/oak_young.png-646284774ab4d1fc7c683a8a15d747d2.ctex remapped: res://.godot/imported/oak_young.png-646284774ab4d1fc7c683a8a15d747d2.ctex
+Completed load for: 'res://assets/world/forest/oak_young.png' remapped 'res://assets/world/forest/oak_young.png' at thread -1
+Loading resource: res://assets/menu/environment/stump.png remapped: res://assets/menu/environment/stump.png
+Loading resource: res://.godot/imported/stump.png-19cc04ef6c399016a49827f6ff6d449a.ctex remapped: res://.godot/imported/stump.png-19cc04ef6c399016a49827f6ff6d449a.ctex
+Completed load for: 'res://assets/menu/environment/stump.png' remapped 'res://assets/menu/environment/stump.png' at thread -1
+Loading resource: res://assets/world/forest/mossy_rock.png remapped: res://assets/world/forest/mossy_rock.png
+Loading resource: res://.godot/imported/mossy_rock.png-31b5953c5e4b216b2d59073574ceb8f3.ctex remapped: res://.godot/imported/mossy_rock.png-31b5953c5e4b216b2d59073574ceb8f3.ctex
+Completed load for: 'res://assets/world/forest/mossy_rock.png' remapped 'res://assets/world/forest/mossy_rock.png' at thread -1
+Loading resource: res://scripts/world/forest_surface.gdshader remapped: res://scripts/world/forest_surface.gdshader
+Completed load for: 'res://scripts/world/forest_surface.gdshader' remapped 'res://scripts/world/forest_surface.gdshader' at thread -1
+Loading resource: res://scripts/world/spring_source.gd remapped: res://scripts/world/spring_source.gd
+Completed load for: 'res://scripts/world/spring_source.gd' remapped 'res://scripts/world/spring_source.gd' at thread -1
+Loading resource: res://scripts/world/spring_water.gdshader remapped: res://scripts/world/spring_water.gdshader
+Completed load for: 'res://scripts/world/spring_water.gdshader' remapped 'res://scripts/world/spring_water.gdshader' at thread -1
+Loading resource: res://assets/world/valley/reeds.png remapped: res://assets/world/valley/reeds.png
+Loading resource: res://.godot/imported/reeds.png-136c9279827c1ac86ac1c50a210564bf.ctex remapped: res://.godot/imported/reeds.png-136c9279827c1ac86ac1c50a210564bf.ctex
+Completed load for: 'res://assets/world/valley/reeds.png' remapped 'res://assets/world/valley/reeds.png' at thread -1
+Loading resource: res://assets/world/valley/lily_pad.png remapped: res://assets/world/valley/lily_pad.png
+Loading resource: res://.godot/imported/lily_pad.png-25335685c098d5cfd6c6bc1e3fc964bb.ctex remapped: res://.godot/imported/lily_pad.png-25335685c098d5cfd6c6bc1e3fc964bb.ctex
+Completed load for: 'res://assets/world/valley/lily_pad.png' remapped 'res://assets/world/valley/lily_pad.png' at thread -1
+Loading resource: res://assets/world/valley/stone_steps.png remapped: res://assets/world/valley/stone_steps.png
+Loading resource: res://.godot/imported/stone_steps.png-ebb56a883f2e4dbdddb0d4343e84d1c9.ctex remapped: res://.godot/imported/stone_steps.png-ebb56a883f2e4dbdddb0d4343e84d1c9.ctex
+Completed load for: 'res://assets/world/valley/stone_steps.png' remapped 'res://assets/world/valley/stone_steps.png' at thread -1
+Loading resource: res://scripts/menu/terrain_surface.gdshader remapped: res://scripts/menu/terrain_surface.gdshader
+Completed load for: 'res://scripts/menu/terrain_surface.gdshader' remapped 'res://scripts/menu/terrain_surface.gdshader' at thread -1
+Loading resource: res://scripts/world/valley_cliffs.gdshader remapped: res://scripts/world/valley_cliffs.gdshader
+Completed load for: 'res://scripts/world/valley_cliffs.gdshader' remapped 'res://scripts/world/valley_cliffs.gdshader' at thread -1
+Loading resource: res://assets/world/valley/cliffs_low.tres remapped: res://assets/world/valley/cliffs_low.tres
+Loading resource: res://assets/world/valley/cliffs_low.png remapped: res://assets/world/valley/cliffs_low.png
+Loading resource: res://.godot/imported/cliffs_low.png-b157dfd08f2da0c97f150e406038b79f.ctex remapped: res://.godot/imported/cliffs_low.png-b157dfd08f2da0c97f150e406038b79f.ctex
+Completed load for: 'res://assets/world/valley/cliffs_low.png' remapped 'res://assets/world/valley/cliffs_low.png' at thread -1
+Completed load for: 'res://assets/world/valley/cliffs_low.tres' remapped 'res://assets/world/valley/cliffs_low.tres' at thread -1
+Completed load for: 'res://scenes/regions/FlorestaDoDespertarV2.tscn' remapped 'res://scenes/regions/FlorestaDoDespertarV2.tscn' at thread -1
+Loading resource: res://assets/player/rotations/south.png remapped: res://assets/player/rotations/south.png
+Loading resource: res://.godot/imported/south.png-48ed2c96e778a67180f74b4f795209f5.ctex remapped: res://.godot/imported/south.png-48ed2c96e778a67180f74b4f795209f5.ctex
+Completed load for: 'res://assets/player/rotations/south.png' remapped 'res://assets/player/rotations/south.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-f96d7729/frame_000.png remapped: res://assets/player/animations/Walk/south-f96d7729/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-b9b038fc806ebbbc5254d8b68008823a.ctex remapped: res://.godot/imported/frame_000.png-b9b038fc806ebbbc5254d8b68008823a.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-f96d7729/frame_000.png' remapped 'res://assets/player/animations/Walk/south-f96d7729/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-f96d7729/frame_001.png remapped: res://assets/player/animations/Walk/south-f96d7729/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-1d0cfcdce1b3e465ff3a1eaecc0b4a76.ctex remapped: res://.godot/imported/frame_001.png-1d0cfcdce1b3e465ff3a1eaecc0b4a76.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-f96d7729/frame_001.png' remapped 'res://assets/player/animations/Walk/south-f96d7729/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-f96d7729/frame_002.png remapped: res://assets/player/animations/Walk/south-f96d7729/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-d46fdff857e1e61fcc71e1208476ed89.ctex remapped: res://.godot/imported/frame_002.png-d46fdff857e1e61fcc71e1208476ed89.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-f96d7729/frame_002.png' remapped 'res://assets/player/animations/Walk/south-f96d7729/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-f96d7729/frame_003.png remapped: res://assets/player/animations/Walk/south-f96d7729/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-92407e1d62dcd5a7ec7f3972e1154ae1.ctex remapped: res://.godot/imported/frame_003.png-92407e1d62dcd5a7ec7f3972e1154ae1.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-f96d7729/frame_003.png' remapped 'res://assets/player/animations/Walk/south-f96d7729/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-f96d7729/frame_004.png remapped: res://assets/player/animations/Walk/south-f96d7729/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-2ce537c3ebdb1df4539459f40e55ff24.ctex remapped: res://.godot/imported/frame_004.png-2ce537c3ebdb1df4539459f40e55ff24.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-f96d7729/frame_004.png' remapped 'res://assets/player/animations/Walk/south-f96d7729/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-f96d7729/frame_005.png remapped: res://assets/player/animations/Walk/south-f96d7729/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-ec669b392b5fe6a7c6f218f071ec54a3.ctex remapped: res://.godot/imported/frame_005.png-ec669b392b5fe6a7c6f218f071ec54a3.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-f96d7729/frame_005.png' remapped 'res://assets/player/animations/Walk/south-f96d7729/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_000.png remapped: res://assets/player/animations/Running/south/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-e9cb6ee36971f541b081038ea589061c.ctex remapped: res://.godot/imported/frame_000.png-e9cb6ee36971f541b081038ea589061c.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_000.png' remapped 'res://assets/player/animations/Running/south/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_001.png remapped: res://assets/player/animations/Running/south/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-6e11b306b3404eb2d35a017e5ab55486.ctex remapped: res://.godot/imported/frame_001.png-6e11b306b3404eb2d35a017e5ab55486.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_001.png' remapped 'res://assets/player/animations/Running/south/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_002.png remapped: res://assets/player/animations/Running/south/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-0b9e08b3e22034ba1b79f19340d77fbd.ctex remapped: res://.godot/imported/frame_002.png-0b9e08b3e22034ba1b79f19340d77fbd.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_002.png' remapped 'res://assets/player/animations/Running/south/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_003.png remapped: res://assets/player/animations/Running/south/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-3f4729be6481d549ecccd1a2236f256c.ctex remapped: res://.godot/imported/frame_003.png-3f4729be6481d549ecccd1a2236f256c.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_003.png' remapped 'res://assets/player/animations/Running/south/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_004.png remapped: res://assets/player/animations/Running/south/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-1f8f1c9a0c39fa5b856761f727c7f805.ctex remapped: res://.godot/imported/frame_004.png-1f8f1c9a0c39fa5b856761f727c7f805.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_004.png' remapped 'res://assets/player/animations/Running/south/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_005.png remapped: res://assets/player/animations/Running/south/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-4e38827f62dad1d8744508492aec1756.ctex remapped: res://.godot/imported/frame_005.png-4e38827f62dad1d8744508492aec1756.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_005.png' remapped 'res://assets/player/animations/Running/south/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_006.png remapped: res://assets/player/animations/Running/south/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-6545c488dcf6d5413e40a92c9c18d2db.ctex remapped: res://.godot/imported/frame_006.png-6545c488dcf6d5413e40a92c9c18d2db.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_006.png' remapped 'res://assets/player/animations/Running/south/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south/frame_007.png remapped: res://assets/player/animations/Running/south/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-bdfb5c322a0a78566171c962619cf505.ctex remapped: res://.godot/imported/frame_007.png-bdfb5c322a0a78566171c962619cf505.ctex
+Completed load for: 'res://assets/player/animations/Running/south/frame_007.png' remapped 'res://assets/player/animations/Running/south/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/south-east.png remapped: res://assets/player/rotations/south-east.png
+Loading resource: res://.godot/imported/south-east.png-bd4c1a4cee04c55024b173e068383c08.ctex remapped: res://.godot/imported/south-east.png-bd4c1a4cee04c55024b173e068383c08.ctex
+Completed load for: 'res://assets/player/rotations/south-east.png' remapped 'res://assets/player/rotations/south-east.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-east/frame_000.png remapped: res://assets/player/animations/Walk/south-east/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-e9527f4516b845e9f8fbcd70d65cc39e.ctex remapped: res://.godot/imported/frame_000.png-e9527f4516b845e9f8fbcd70d65cc39e.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-east/frame_000.png' remapped 'res://assets/player/animations/Walk/south-east/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-east/frame_001.png remapped: res://assets/player/animations/Walk/south-east/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-b3967dd0a0a737b2f6b88ace95f3e196.ctex remapped: res://.godot/imported/frame_001.png-b3967dd0a0a737b2f6b88ace95f3e196.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-east/frame_001.png' remapped 'res://assets/player/animations/Walk/south-east/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-east/frame_002.png remapped: res://assets/player/animations/Walk/south-east/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-a1dfd8f0f53d7c49063fc072f48f2ac4.ctex remapped: res://.godot/imported/frame_002.png-a1dfd8f0f53d7c49063fc072f48f2ac4.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-east/frame_002.png' remapped 'res://assets/player/animations/Walk/south-east/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-east/frame_003.png remapped: res://assets/player/animations/Walk/south-east/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-6005931a8ac2421d0b746dec4fa0292d.ctex remapped: res://.godot/imported/frame_003.png-6005931a8ac2421d0b746dec4fa0292d.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-east/frame_003.png' remapped 'res://assets/player/animations/Walk/south-east/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-east/frame_004.png remapped: res://assets/player/animations/Walk/south-east/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-2bf3864d6d6e5ad2baf95678151eff00.ctex remapped: res://.godot/imported/frame_004.png-2bf3864d6d6e5ad2baf95678151eff00.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-east/frame_004.png' remapped 'res://assets/player/animations/Walk/south-east/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-east/frame_005.png remapped: res://assets/player/animations/Walk/south-east/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-01916283fb86c63b76fe6458ee549d4d.ctex remapped: res://.godot/imported/frame_005.png-01916283fb86c63b76fe6458ee549d4d.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-east/frame_005.png' remapped 'res://assets/player/animations/Walk/south-east/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_000.png remapped: res://assets/player/animations/Running/south-east/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-36bfb61fd740b8282c1010fc1cef3407.ctex remapped: res://.godot/imported/frame_000.png-36bfb61fd740b8282c1010fc1cef3407.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_000.png' remapped 'res://assets/player/animations/Running/south-east/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_001.png remapped: res://assets/player/animations/Running/south-east/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-21279f7c4455ebc208ed9a47cee6c937.ctex remapped: res://.godot/imported/frame_001.png-21279f7c4455ebc208ed9a47cee6c937.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_001.png' remapped 'res://assets/player/animations/Running/south-east/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_002.png remapped: res://assets/player/animations/Running/south-east/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-0294a9d747ffb38121c5926f5b419f62.ctex remapped: res://.godot/imported/frame_002.png-0294a9d747ffb38121c5926f5b419f62.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_002.png' remapped 'res://assets/player/animations/Running/south-east/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_003.png remapped: res://assets/player/animations/Running/south-east/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-a16e7c20ef668938b9de720b55b2eb2b.ctex remapped: res://.godot/imported/frame_003.png-a16e7c20ef668938b9de720b55b2eb2b.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_003.png' remapped 'res://assets/player/animations/Running/south-east/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_004.png remapped: res://assets/player/animations/Running/south-east/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-7292f9c52a682b6ea61a2ce72f452ba4.ctex remapped: res://.godot/imported/frame_004.png-7292f9c52a682b6ea61a2ce72f452ba4.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_004.png' remapped 'res://assets/player/animations/Running/south-east/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_005.png remapped: res://assets/player/animations/Running/south-east/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-2b957ea1d803d2ccef288fe42e2ca8fd.ctex remapped: res://.godot/imported/frame_005.png-2b957ea1d803d2ccef288fe42e2ca8fd.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_005.png' remapped 'res://assets/player/animations/Running/south-east/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_006.png remapped: res://assets/player/animations/Running/south-east/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-be789bb5cbc7f136747b540e09eab7ca.ctex remapped: res://.godot/imported/frame_006.png-be789bb5cbc7f136747b540e09eab7ca.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_006.png' remapped 'res://assets/player/animations/Running/south-east/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-east/frame_007.png remapped: res://assets/player/animations/Running/south-east/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-7ed9ce71806d06b088092f9b91f2073a.ctex remapped: res://.godot/imported/frame_007.png-7ed9ce71806d06b088092f9b91f2073a.ctex
+Completed load for: 'res://assets/player/animations/Running/south-east/frame_007.png' remapped 'res://assets/player/animations/Running/south-east/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/east.png remapped: res://assets/player/rotations/east.png
+Loading resource: res://.godot/imported/east.png-c13dc954e9dfdecf80fffd40373b7578.ctex remapped: res://.godot/imported/east.png-c13dc954e9dfdecf80fffd40373b7578.ctex
+Completed load for: 'res://assets/player/rotations/east.png' remapped 'res://assets/player/rotations/east.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/east/frame_000.png remapped: res://assets/player/animations/Walk/east/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-c980780449b19a81c1d4e73564df2c50.ctex remapped: res://.godot/imported/frame_000.png-c980780449b19a81c1d4e73564df2c50.ctex
+Completed load for: 'res://assets/player/animations/Walk/east/frame_000.png' remapped 'res://assets/player/animations/Walk/east/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/east/frame_001.png remapped: res://assets/player/animations/Walk/east/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-0342fdd2289087c5a68615f5826d2b57.ctex remapped: res://.godot/imported/frame_001.png-0342fdd2289087c5a68615f5826d2b57.ctex
+Completed load for: 'res://assets/player/animations/Walk/east/frame_001.png' remapped 'res://assets/player/animations/Walk/east/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/east/frame_002.png remapped: res://assets/player/animations/Walk/east/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-d7746d9f5b64b09bab618d50d9f74e6a.ctex remapped: res://.godot/imported/frame_002.png-d7746d9f5b64b09bab618d50d9f74e6a.ctex
+Completed load for: 'res://assets/player/animations/Walk/east/frame_002.png' remapped 'res://assets/player/animations/Walk/east/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/east/frame_003.png remapped: res://assets/player/animations/Walk/east/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-98077e2be21331d69ee61afa78701594.ctex remapped: res://.godot/imported/frame_003.png-98077e2be21331d69ee61afa78701594.ctex
+Completed load for: 'res://assets/player/animations/Walk/east/frame_003.png' remapped 'res://assets/player/animations/Walk/east/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/east/frame_004.png remapped: res://assets/player/animations/Walk/east/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-71f5ffba28c6208b204afacbe5555b7d.ctex remapped: res://.godot/imported/frame_004.png-71f5ffba28c6208b204afacbe5555b7d.ctex
+Completed load for: 'res://assets/player/animations/Walk/east/frame_004.png' remapped 'res://assets/player/animations/Walk/east/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/east/frame_005.png remapped: res://assets/player/animations/Walk/east/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-871e2fda28029044a37f5c42a0b71955.ctex remapped: res://.godot/imported/frame_005.png-871e2fda28029044a37f5c42a0b71955.ctex
+Completed load for: 'res://assets/player/animations/Walk/east/frame_005.png' remapped 'res://assets/player/animations/Walk/east/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_000.png remapped: res://assets/player/animations/Running/east/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-d155296faedde0576f6043e0405336a4.ctex remapped: res://.godot/imported/frame_000.png-d155296faedde0576f6043e0405336a4.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_000.png' remapped 'res://assets/player/animations/Running/east/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_001.png remapped: res://assets/player/animations/Running/east/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-35d193bbcfcd78bf9698f69d55730229.ctex remapped: res://.godot/imported/frame_001.png-35d193bbcfcd78bf9698f69d55730229.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_001.png' remapped 'res://assets/player/animations/Running/east/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_002.png remapped: res://assets/player/animations/Running/east/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-b9e7a261b7f59144b3a6c5221809142a.ctex remapped: res://.godot/imported/frame_002.png-b9e7a261b7f59144b3a6c5221809142a.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_002.png' remapped 'res://assets/player/animations/Running/east/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_003.png remapped: res://assets/player/animations/Running/east/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-99da32fc71ecf91bfa8a9fbbd1feed27.ctex remapped: res://.godot/imported/frame_003.png-99da32fc71ecf91bfa8a9fbbd1feed27.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_003.png' remapped 'res://assets/player/animations/Running/east/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_004.png remapped: res://assets/player/animations/Running/east/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-ea3003dd54ffc765dcdbc1f4bbfeacde.ctex remapped: res://.godot/imported/frame_004.png-ea3003dd54ffc765dcdbc1f4bbfeacde.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_004.png' remapped 'res://assets/player/animations/Running/east/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_005.png remapped: res://assets/player/animations/Running/east/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-c31c18f52868a4a0ffef4df25c8df4a1.ctex remapped: res://.godot/imported/frame_005.png-c31c18f52868a4a0ffef4df25c8df4a1.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_005.png' remapped 'res://assets/player/animations/Running/east/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_006.png remapped: res://assets/player/animations/Running/east/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-6e13ff2ed609516ee5cc7909bf32350f.ctex remapped: res://.godot/imported/frame_006.png-6e13ff2ed609516ee5cc7909bf32350f.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_006.png' remapped 'res://assets/player/animations/Running/east/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/east/frame_007.png remapped: res://assets/player/animations/Running/east/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-47be6fc05157e9656dd36ae78735074e.ctex remapped: res://.godot/imported/frame_007.png-47be6fc05157e9656dd36ae78735074e.ctex
+Completed load for: 'res://assets/player/animations/Running/east/frame_007.png' remapped 'res://assets/player/animations/Running/east/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/north-east.png remapped: res://assets/player/rotations/north-east.png
+Loading resource: res://.godot/imported/north-east.png-239f260bef5e3abf84959c9780eec04c.ctex remapped: res://.godot/imported/north-east.png-239f260bef5e3abf84959c9780eec04c.ctex
+Completed load for: 'res://assets/player/rotations/north-east.png' remapped 'res://assets/player/rotations/north-east.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-east/frame_000.png remapped: res://assets/player/animations/Walk/north-east/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-3fead267e5292d3a4faa1de3da811baa.ctex remapped: res://.godot/imported/frame_000.png-3fead267e5292d3a4faa1de3da811baa.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-east/frame_000.png' remapped 'res://assets/player/animations/Walk/north-east/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-east/frame_001.png remapped: res://assets/player/animations/Walk/north-east/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-7d4273b829832191142df969f9479ab2.ctex remapped: res://.godot/imported/frame_001.png-7d4273b829832191142df969f9479ab2.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-east/frame_001.png' remapped 'res://assets/player/animations/Walk/north-east/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-east/frame_002.png remapped: res://assets/player/animations/Walk/north-east/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-1822b2593cf7230fb438f6ecc474ca27.ctex remapped: res://.godot/imported/frame_002.png-1822b2593cf7230fb438f6ecc474ca27.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-east/frame_002.png' remapped 'res://assets/player/animations/Walk/north-east/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-east/frame_003.png remapped: res://assets/player/animations/Walk/north-east/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-10cb58e705cad178b490286f009cac80.ctex remapped: res://.godot/imported/frame_003.png-10cb58e705cad178b490286f009cac80.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-east/frame_003.png' remapped 'res://assets/player/animations/Walk/north-east/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-east/frame_004.png remapped: res://assets/player/animations/Walk/north-east/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-48ff148103dd8601e4c17e90824229ee.ctex remapped: res://.godot/imported/frame_004.png-48ff148103dd8601e4c17e90824229ee.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-east/frame_004.png' remapped 'res://assets/player/animations/Walk/north-east/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-east/frame_005.png remapped: res://assets/player/animations/Walk/north-east/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-a6617276720d9881151cc5d7a8a67086.ctex remapped: res://.godot/imported/frame_005.png-a6617276720d9881151cc5d7a8a67086.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-east/frame_005.png' remapped 'res://assets/player/animations/Walk/north-east/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_000.png remapped: res://assets/player/animations/Running/north-east/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-3b915abe2fb30a708a05a9598833bc93.ctex remapped: res://.godot/imported/frame_000.png-3b915abe2fb30a708a05a9598833bc93.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_000.png' remapped 'res://assets/player/animations/Running/north-east/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_001.png remapped: res://assets/player/animations/Running/north-east/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-72e240196a82d0736a90cea96fb585b5.ctex remapped: res://.godot/imported/frame_001.png-72e240196a82d0736a90cea96fb585b5.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_001.png' remapped 'res://assets/player/animations/Running/north-east/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_002.png remapped: res://assets/player/animations/Running/north-east/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-228d73f3fb093eae2004d62abeeb857f.ctex remapped: res://.godot/imported/frame_002.png-228d73f3fb093eae2004d62abeeb857f.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_002.png' remapped 'res://assets/player/animations/Running/north-east/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_003.png remapped: res://assets/player/animations/Running/north-east/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-5683f5b60e8024f6167f6e66c84c2d22.ctex remapped: res://.godot/imported/frame_003.png-5683f5b60e8024f6167f6e66c84c2d22.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_003.png' remapped 'res://assets/player/animations/Running/north-east/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_004.png remapped: res://assets/player/animations/Running/north-east/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-3f89b78001d35ab55716427730cdf0fd.ctex remapped: res://.godot/imported/frame_004.png-3f89b78001d35ab55716427730cdf0fd.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_004.png' remapped 'res://assets/player/animations/Running/north-east/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_005.png remapped: res://assets/player/animations/Running/north-east/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-bbb596f0ab6888a2217849be4f8f7dcc.ctex remapped: res://.godot/imported/frame_005.png-bbb596f0ab6888a2217849be4f8f7dcc.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_005.png' remapped 'res://assets/player/animations/Running/north-east/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_006.png remapped: res://assets/player/animations/Running/north-east/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-fa59b87866080f7235a854a99d9d121c.ctex remapped: res://.godot/imported/frame_006.png-fa59b87866080f7235a854a99d9d121c.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_006.png' remapped 'res://assets/player/animations/Running/north-east/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-east/frame_007.png remapped: res://assets/player/animations/Running/north-east/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-ce189d2921f40c24366243d8c9031be8.ctex remapped: res://.godot/imported/frame_007.png-ce189d2921f40c24366243d8c9031be8.ctex
+Completed load for: 'res://assets/player/animations/Running/north-east/frame_007.png' remapped 'res://assets/player/animations/Running/north-east/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/north.png remapped: res://assets/player/rotations/north.png
+Loading resource: res://.godot/imported/north.png-41e6b4f3883f9877bcfd23a38dc0445e.ctex remapped: res://.godot/imported/north.png-41e6b4f3883f9877bcfd23a38dc0445e.ctex
+Completed load for: 'res://assets/player/rotations/north.png' remapped 'res://assets/player/rotations/north.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north/frame_000.png remapped: res://assets/player/animations/Walk/north/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-d740415df4d4a74e9053e3220ea14ab0.ctex remapped: res://.godot/imported/frame_000.png-d740415df4d4a74e9053e3220ea14ab0.ctex
+Completed load for: 'res://assets/player/animations/Walk/north/frame_000.png' remapped 'res://assets/player/animations/Walk/north/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north/frame_001.png remapped: res://assets/player/animations/Walk/north/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-859decd52b6dc30cb9998fcc0789b78c.ctex remapped: res://.godot/imported/frame_001.png-859decd52b6dc30cb9998fcc0789b78c.ctex
+Completed load for: 'res://assets/player/animations/Walk/north/frame_001.png' remapped 'res://assets/player/animations/Walk/north/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north/frame_002.png remapped: res://assets/player/animations/Walk/north/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-0afa2ac3351954f740f31632fdfc1982.ctex remapped: res://.godot/imported/frame_002.png-0afa2ac3351954f740f31632fdfc1982.ctex
+Completed load for: 'res://assets/player/animations/Walk/north/frame_002.png' remapped 'res://assets/player/animations/Walk/north/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north/frame_003.png remapped: res://assets/player/animations/Walk/north/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-cfc12a4fb30951e2ba86ebbbf240cc3e.ctex remapped: res://.godot/imported/frame_003.png-cfc12a4fb30951e2ba86ebbbf240cc3e.ctex
+Completed load for: 'res://assets/player/animations/Walk/north/frame_003.png' remapped 'res://assets/player/animations/Walk/north/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north/frame_004.png remapped: res://assets/player/animations/Walk/north/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-159ccbdcd929e38cb0c14698d7a2a180.ctex remapped: res://.godot/imported/frame_004.png-159ccbdcd929e38cb0c14698d7a2a180.ctex
+Completed load for: 'res://assets/player/animations/Walk/north/frame_004.png' remapped 'res://assets/player/animations/Walk/north/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north/frame_005.png remapped: res://assets/player/animations/Walk/north/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-c4b2b0c2769b46c9b7584041dbac31e8.ctex remapped: res://.godot/imported/frame_005.png-c4b2b0c2769b46c9b7584041dbac31e8.ctex
+Completed load for: 'res://assets/player/animations/Walk/north/frame_005.png' remapped 'res://assets/player/animations/Walk/north/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_000.png remapped: res://assets/player/animations/Running/north/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-8cc78fdef126d92a91d1fb597414ea74.ctex remapped: res://.godot/imported/frame_000.png-8cc78fdef126d92a91d1fb597414ea74.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_000.png' remapped 'res://assets/player/animations/Running/north/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_001.png remapped: res://assets/player/animations/Running/north/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-e8822f98a297730eda46bd9299719d1b.ctex remapped: res://.godot/imported/frame_001.png-e8822f98a297730eda46bd9299719d1b.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_001.png' remapped 'res://assets/player/animations/Running/north/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_002.png remapped: res://assets/player/animations/Running/north/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-6d69044f6f59756f538caaa84ef80f61.ctex remapped: res://.godot/imported/frame_002.png-6d69044f6f59756f538caaa84ef80f61.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_002.png' remapped 'res://assets/player/animations/Running/north/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_003.png remapped: res://assets/player/animations/Running/north/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-fc2238907f4874883449bdbea4fc54ff.ctex remapped: res://.godot/imported/frame_003.png-fc2238907f4874883449bdbea4fc54ff.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_003.png' remapped 'res://assets/player/animations/Running/north/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_004.png remapped: res://assets/player/animations/Running/north/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-d44fcebf66f2fd3549a91bdb1e88471f.ctex remapped: res://.godot/imported/frame_004.png-d44fcebf66f2fd3549a91bdb1e88471f.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_004.png' remapped 'res://assets/player/animations/Running/north/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_005.png remapped: res://assets/player/animations/Running/north/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-a765d47e041843233e918a73995dc5fc.ctex remapped: res://.godot/imported/frame_005.png-a765d47e041843233e918a73995dc5fc.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_005.png' remapped 'res://assets/player/animations/Running/north/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_006.png remapped: res://assets/player/animations/Running/north/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-3c219d14c362a9fe13adfd15a293c818.ctex remapped: res://.godot/imported/frame_006.png-3c219d14c362a9fe13adfd15a293c818.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_006.png' remapped 'res://assets/player/animations/Running/north/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north/frame_007.png remapped: res://assets/player/animations/Running/north/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-25a6755347d9dfceeddd85c6bc550f10.ctex remapped: res://.godot/imported/frame_007.png-25a6755347d9dfceeddd85c6bc550f10.ctex
+Completed load for: 'res://assets/player/animations/Running/north/frame_007.png' remapped 'res://assets/player/animations/Running/north/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/north-west.png remapped: res://assets/player/rotations/north-west.png
+Loading resource: res://.godot/imported/north-west.png-534779c4ff463aad00db4c8fadf2be87.ctex remapped: res://.godot/imported/north-west.png-534779c4ff463aad00db4c8fadf2be87.ctex
+Completed load for: 'res://assets/player/rotations/north-west.png' remapped 'res://assets/player/rotations/north-west.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-west/frame_000.png remapped: res://assets/player/animations/Walk/north-west/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-1a282222a96389ac84d5ef281f137b91.ctex remapped: res://.godot/imported/frame_000.png-1a282222a96389ac84d5ef281f137b91.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-west/frame_000.png' remapped 'res://assets/player/animations/Walk/north-west/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-west/frame_001.png remapped: res://assets/player/animations/Walk/north-west/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-8b340d122a150e7c0ef26db2e65381a4.ctex remapped: res://.godot/imported/frame_001.png-8b340d122a150e7c0ef26db2e65381a4.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-west/frame_001.png' remapped 'res://assets/player/animations/Walk/north-west/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-west/frame_002.png remapped: res://assets/player/animations/Walk/north-west/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-c13f4c0546ac903af078dd0b1aa2494c.ctex remapped: res://.godot/imported/frame_002.png-c13f4c0546ac903af078dd0b1aa2494c.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-west/frame_002.png' remapped 'res://assets/player/animations/Walk/north-west/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-west/frame_003.png remapped: res://assets/player/animations/Walk/north-west/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-80e78f202af19dd0578239992a7058ee.ctex remapped: res://.godot/imported/frame_003.png-80e78f202af19dd0578239992a7058ee.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-west/frame_003.png' remapped 'res://assets/player/animations/Walk/north-west/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-west/frame_004.png remapped: res://assets/player/animations/Walk/north-west/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-c7101596777114a46ce2801a33af203a.ctex remapped: res://.godot/imported/frame_004.png-c7101596777114a46ce2801a33af203a.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-west/frame_004.png' remapped 'res://assets/player/animations/Walk/north-west/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/north-west/frame_005.png remapped: res://assets/player/animations/Walk/north-west/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-67ca492c0cda7771cd21bf0db12f9632.ctex remapped: res://.godot/imported/frame_005.png-67ca492c0cda7771cd21bf0db12f9632.ctex
+Completed load for: 'res://assets/player/animations/Walk/north-west/frame_005.png' remapped 'res://assets/player/animations/Walk/north-west/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_000.png remapped: res://assets/player/animations/Running/north-west/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-47466e433749cc7cda1780f9a1ae2446.ctex remapped: res://.godot/imported/frame_000.png-47466e433749cc7cda1780f9a1ae2446.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_000.png' remapped 'res://assets/player/animations/Running/north-west/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_001.png remapped: res://assets/player/animations/Running/north-west/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-9d3997e67277db67278328f5e5394d0f.ctex remapped: res://.godot/imported/frame_001.png-9d3997e67277db67278328f5e5394d0f.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_001.png' remapped 'res://assets/player/animations/Running/north-west/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_002.png remapped: res://assets/player/animations/Running/north-west/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-d97d729b07525486341b723f8171e3d0.ctex remapped: res://.godot/imported/frame_002.png-d97d729b07525486341b723f8171e3d0.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_002.png' remapped 'res://assets/player/animations/Running/north-west/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_003.png remapped: res://assets/player/animations/Running/north-west/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-024168e8aead087e83e62e4c23b40695.ctex remapped: res://.godot/imported/frame_003.png-024168e8aead087e83e62e4c23b40695.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_003.png' remapped 'res://assets/player/animations/Running/north-west/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_004.png remapped: res://assets/player/animations/Running/north-west/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-ca0d62d305bbb12046d30698dc2d19fa.ctex remapped: res://.godot/imported/frame_004.png-ca0d62d305bbb12046d30698dc2d19fa.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_004.png' remapped 'res://assets/player/animations/Running/north-west/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_005.png remapped: res://assets/player/animations/Running/north-west/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-84c04809f50b02f662c6f6c08285b2c3.ctex remapped: res://.godot/imported/frame_005.png-84c04809f50b02f662c6f6c08285b2c3.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_005.png' remapped 'res://assets/player/animations/Running/north-west/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_006.png remapped: res://assets/player/animations/Running/north-west/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-82e113510f5b1a92a81123072699ea3c.ctex remapped: res://.godot/imported/frame_006.png-82e113510f5b1a92a81123072699ea3c.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_006.png' remapped 'res://assets/player/animations/Running/north-west/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/north-west/frame_007.png remapped: res://assets/player/animations/Running/north-west/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-f8788929c5d68c828bf73d949ea2ca75.ctex remapped: res://.godot/imported/frame_007.png-f8788929c5d68c828bf73d949ea2ca75.ctex
+Completed load for: 'res://assets/player/animations/Running/north-west/frame_007.png' remapped 'res://assets/player/animations/Running/north-west/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/west.png remapped: res://assets/player/rotations/west.png
+Loading resource: res://.godot/imported/west.png-ab0e79bfdec8aa774dfd082dbaee6575.ctex remapped: res://.godot/imported/west.png-ab0e79bfdec8aa774dfd082dbaee6575.ctex
+Completed load for: 'res://assets/player/rotations/west.png' remapped 'res://assets/player/rotations/west.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/west/frame_000.png remapped: res://assets/player/animations/Walk/west/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-8db34efd9b5849e9e08bdd3cb7b4cee0.ctex remapped: res://.godot/imported/frame_000.png-8db34efd9b5849e9e08bdd3cb7b4cee0.ctex
+Completed load for: 'res://assets/player/animations/Walk/west/frame_000.png' remapped 'res://assets/player/animations/Walk/west/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/west/frame_001.png remapped: res://assets/player/animations/Walk/west/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-237d9da60a96bb3628d752bcdce914e7.ctex remapped: res://.godot/imported/frame_001.png-237d9da60a96bb3628d752bcdce914e7.ctex
+Completed load for: 'res://assets/player/animations/Walk/west/frame_001.png' remapped 'res://assets/player/animations/Walk/west/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/west/frame_002.png remapped: res://assets/player/animations/Walk/west/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-6eecc63a9cb9bf5fa6e62188807a7dd2.ctex remapped: res://.godot/imported/frame_002.png-6eecc63a9cb9bf5fa6e62188807a7dd2.ctex
+Completed load for: 'res://assets/player/animations/Walk/west/frame_002.png' remapped 'res://assets/player/animations/Walk/west/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/west/frame_003.png remapped: res://assets/player/animations/Walk/west/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-faac9d6f5898ceab68be5c6ee5b224e7.ctex remapped: res://.godot/imported/frame_003.png-faac9d6f5898ceab68be5c6ee5b224e7.ctex
+Completed load for: 'res://assets/player/animations/Walk/west/frame_003.png' remapped 'res://assets/player/animations/Walk/west/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/west/frame_004.png remapped: res://assets/player/animations/Walk/west/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-1d71824afb45b48ef6edd0d3f0987385.ctex remapped: res://.godot/imported/frame_004.png-1d71824afb45b48ef6edd0d3f0987385.ctex
+Completed load for: 'res://assets/player/animations/Walk/west/frame_004.png' remapped 'res://assets/player/animations/Walk/west/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/west/frame_005.png remapped: res://assets/player/animations/Walk/west/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-9a404e6dd6eb98f82098db80d9bdf7d8.ctex remapped: res://.godot/imported/frame_005.png-9a404e6dd6eb98f82098db80d9bdf7d8.ctex
+Completed load for: 'res://assets/player/animations/Walk/west/frame_005.png' remapped 'res://assets/player/animations/Walk/west/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_000.png remapped: res://assets/player/animations/Running/west/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-9c47552eab562356782b0b8d59571aac.ctex remapped: res://.godot/imported/frame_000.png-9c47552eab562356782b0b8d59571aac.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_000.png' remapped 'res://assets/player/animations/Running/west/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_001.png remapped: res://assets/player/animations/Running/west/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-7cf5c4abc1a1f134c97b9a61f3aca925.ctex remapped: res://.godot/imported/frame_001.png-7cf5c4abc1a1f134c97b9a61f3aca925.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_001.png' remapped 'res://assets/player/animations/Running/west/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_002.png remapped: res://assets/player/animations/Running/west/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-5acd8cb176a3e06fc1bbcc712a81d11c.ctex remapped: res://.godot/imported/frame_002.png-5acd8cb176a3e06fc1bbcc712a81d11c.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_002.png' remapped 'res://assets/player/animations/Running/west/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_003.png remapped: res://assets/player/animations/Running/west/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-ebbd01d5f182d821501bb7650da5a633.ctex remapped: res://.godot/imported/frame_003.png-ebbd01d5f182d821501bb7650da5a633.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_003.png' remapped 'res://assets/player/animations/Running/west/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_004.png remapped: res://assets/player/animations/Running/west/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-e6fa83a53a105c1fcec607abb4b41a92.ctex remapped: res://.godot/imported/frame_004.png-e6fa83a53a105c1fcec607abb4b41a92.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_004.png' remapped 'res://assets/player/animations/Running/west/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_005.png remapped: res://assets/player/animations/Running/west/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-99db78ba85427736789c6bc4b9e01a8a.ctex remapped: res://.godot/imported/frame_005.png-99db78ba85427736789c6bc4b9e01a8a.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_005.png' remapped 'res://assets/player/animations/Running/west/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_006.png remapped: res://assets/player/animations/Running/west/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-ccc91ed4981cd3afffe70412c58e4636.ctex remapped: res://.godot/imported/frame_006.png-ccc91ed4981cd3afffe70412c58e4636.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_006.png' remapped 'res://assets/player/animations/Running/west/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/west/frame_007.png remapped: res://assets/player/animations/Running/west/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-c0f4f9fdcf6e7646d738fb08ec298297.ctex remapped: res://.godot/imported/frame_007.png-c0f4f9fdcf6e7646d738fb08ec298297.ctex
+Completed load for: 'res://assets/player/animations/Running/west/frame_007.png' remapped 'res://assets/player/animations/Running/west/frame_007.png' at thread -1
+Loading resource: res://assets/player/rotations/south-west.png remapped: res://assets/player/rotations/south-west.png
+Loading resource: res://.godot/imported/south-west.png-d23dbeb74356894677a1780c1f91e501.ctex remapped: res://.godot/imported/south-west.png-d23dbeb74356894677a1780c1f91e501.ctex
+Completed load for: 'res://assets/player/rotations/south-west.png' remapped 'res://assets/player/rotations/south-west.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-west/frame_000.png remapped: res://assets/player/animations/Walk/south-west/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-596b95901e6dfe12302c942c43a44fcb.ctex remapped: res://.godot/imported/frame_000.png-596b95901e6dfe12302c942c43a44fcb.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-west/frame_000.png' remapped 'res://assets/player/animations/Walk/south-west/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-west/frame_001.png remapped: res://assets/player/animations/Walk/south-west/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-c8016b10eebf2b42886b9b81ac0b4aca.ctex remapped: res://.godot/imported/frame_001.png-c8016b10eebf2b42886b9b81ac0b4aca.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-west/frame_001.png' remapped 'res://assets/player/animations/Walk/south-west/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-west/frame_002.png remapped: res://assets/player/animations/Walk/south-west/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-cf39161b0a06b9647ede2f68280356bd.ctex remapped: res://.godot/imported/frame_002.png-cf39161b0a06b9647ede2f68280356bd.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-west/frame_002.png' remapped 'res://assets/player/animations/Walk/south-west/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-west/frame_003.png remapped: res://assets/player/animations/Walk/south-west/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-6cfbdcf8c66720418865c73f46386e84.ctex remapped: res://.godot/imported/frame_003.png-6cfbdcf8c66720418865c73f46386e84.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-west/frame_003.png' remapped 'res://assets/player/animations/Walk/south-west/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-west/frame_004.png remapped: res://assets/player/animations/Walk/south-west/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-afc5b46f96960e5168298ee7739bae66.ctex remapped: res://.godot/imported/frame_004.png-afc5b46f96960e5168298ee7739bae66.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-west/frame_004.png' remapped 'res://assets/player/animations/Walk/south-west/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Walk/south-west/frame_005.png remapped: res://assets/player/animations/Walk/south-west/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-ae845f53df8874cc09273c965977bf35.ctex remapped: res://.godot/imported/frame_005.png-ae845f53df8874cc09273c965977bf35.ctex
+Completed load for: 'res://assets/player/animations/Walk/south-west/frame_005.png' remapped 'res://assets/player/animations/Walk/south-west/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_000.png remapped: res://assets/player/animations/Running/south-west/frame_000.png
+Loading resource: res://.godot/imported/frame_000.png-2aa96c18f44e0357c14944117d40918c.ctex remapped: res://.godot/imported/frame_000.png-2aa96c18f44e0357c14944117d40918c.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_000.png' remapped 'res://assets/player/animations/Running/south-west/frame_000.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_001.png remapped: res://assets/player/animations/Running/south-west/frame_001.png
+Loading resource: res://.godot/imported/frame_001.png-439ab95d2b07297134a10e37e9c03880.ctex remapped: res://.godot/imported/frame_001.png-439ab95d2b07297134a10e37e9c03880.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_001.png' remapped 'res://assets/player/animations/Running/south-west/frame_001.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_002.png remapped: res://assets/player/animations/Running/south-west/frame_002.png
+Loading resource: res://.godot/imported/frame_002.png-a0346c0af5657426078fa7be82ac272c.ctex remapped: res://.godot/imported/frame_002.png-a0346c0af5657426078fa7be82ac272c.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_002.png' remapped 'res://assets/player/animations/Running/south-west/frame_002.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_003.png remapped: res://assets/player/animations/Running/south-west/frame_003.png
+Loading resource: res://.godot/imported/frame_003.png-62552b5cb4394b7ebcffaae82651b044.ctex remapped: res://.godot/imported/frame_003.png-62552b5cb4394b7ebcffaae82651b044.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_003.png' remapped 'res://assets/player/animations/Running/south-west/frame_003.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_004.png remapped: res://assets/player/animations/Running/south-west/frame_004.png
+Loading resource: res://.godot/imported/frame_004.png-07390a1a7c94950512ebd4b633c91bb4.ctex remapped: res://.godot/imported/frame_004.png-07390a1a7c94950512ebd4b633c91bb4.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_004.png' remapped 'res://assets/player/animations/Running/south-west/frame_004.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_005.png remapped: res://assets/player/animations/Running/south-west/frame_005.png
+Loading resource: res://.godot/imported/frame_005.png-1b081686a6c278b96dfd84855470ae2a.ctex remapped: res://.godot/imported/frame_005.png-1b081686a6c278b96dfd84855470ae2a.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_005.png' remapped 'res://assets/player/animations/Running/south-west/frame_005.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_006.png remapped: res://assets/player/animations/Running/south-west/frame_006.png
+Loading resource: res://.godot/imported/frame_006.png-59de489a69e7d5172bdef64ad3566b57.ctex remapped: res://.godot/imported/frame_006.png-59de489a69e7d5172bdef64ad3566b57.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_006.png' remapped 'res://assets/player/animations/Running/south-west/frame_006.png' at thread -1
+Loading resource: res://assets/player/animations/Running/south-west/frame_007.png remapped: res://assets/player/animations/Running/south-west/frame_007.png
+Loading resource: res://.godot/imported/frame_007.png-79d9395ea86aa07a49c2ab0a4029cc8f.ctex remapped: res://.godot/imported/frame_007.png-79d9395ea86aa07a49c2ab0a4029cc8f.ctex
+Completed load for: 'res://assets/player/animations/Running/south-west/frame_007.png' remapped 'res://assets/player/animations/Running/south-west/frame_007.png' at thread -1
+Loading resource: res://scripts/world/forest_audio.gd remapped: res://scripts/world/forest_audio.gd
+Completed load for: 'res://scripts/world/forest_audio.gd' remapped 'res://scripts/world/forest_audio.gd' at thread -1
+FOREST_V2: checks=141 failures=0 capsule_samples=2317
+XR: Clearing primary interface
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"
+ERROR: 1 RID allocations of type 'P12GodotShape2D' were leaked at exit.
+Leaked instance: CapsuleShape2D:9223372066214905318 - Reference count: 1
+Leaked instance: CollisionShape2D:159601664408 - Node path: 
+Leaked instance: AnimatedSprite2D:159618441625 - Node path: 
+Leaked instance: Camera2D:159635218842 - Node path: 
+Hint: Leaked instances typically happen when nodes are removed from the scene tree (with `remove_child()`) but not freed (with `free()` or `queue_free()`).
+Resource still in use: res://scenes/player.tscn::CapsuleShape2D_player (CapsuleShape2D)
+Orphan StringName: Camera2D (static: 0, total: 1)
+Orphan StringName: default (static: 0, total: 1)
+Orphan StringName: CollisionShape2D (static: 0, total: 1)
+Orphan StringName: AnimatedSprite2D (static: 0, total: 1)
+Orphan StringName: changed (static: 0, total: 3)
+StringName: 5 unclaimed string names at exit.
+WARNING: 3 RIDs of type "CanvasItem" were leaked.
+   at: _free_rids (servers/rendering/renderer_canvas_cull.cpp:2735)
+WARNING: 4 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: Cannot get path of node as it is not in a scene tree.
+   at: get_path (scene/main/node.cpp:2431)
+ERROR: Cannot get path of node as it is not in a scene tree.
+   at: get_path (scene/main/node.cpp:2431)
+ERROR: Cannot get path of node as it is not in a scene tree.
+   at: get_path (scene/main/node.cpp:2431)
+ERROR: 1 resources still in use at exit.
+   at: clear (core/io/resource.cpp:817)

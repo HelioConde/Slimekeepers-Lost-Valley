@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "e12573be-3678-4c91-9c95-f57ad1295176",
+    "name": "base",
+    "prompt": "Object: japanese animals statues (unknown)",
+    "size": {
+      "width": 54,
+      "height": 54
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "japanese_animals_statues.png",
+    "cell_size": {
+      "width": 54,
+      "height": 54
+    },
+    "sheet_size": {
+      "width": 54,
+      "height": 54
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:33.149557+00:00"
+}

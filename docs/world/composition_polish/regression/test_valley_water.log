@@ -1,0 +1,23 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS Underwater ecosystem exists below the surface
+PASS Visible mineral bed exists
+PASS Schools populate the connected basins
+PASS Submerged plants populate the bed
+PASS Fish swim over time
+PASS Water film covers fish and plants
+PASS Fish remain in water across a three minute cycle
+PASS Reduced motion freezes aquatic animation
+PASS Living foam for Waterfall1
+PASS Ripples stay on water for Waterfall1
+PASS Ripples spread for Waterfall1
+PASS Reduced motion freezes Waterfall1
+PASS Living foam for Waterfall2
+PASS Ripples stay on water for Waterfall2
+PASS Ripples spread for Waterfall2
+PASS Reduced motion freezes Waterfall2
+PASS Living foam for Waterfall3
+PASS Ripples stay on water for Waterfall3
+PASS Ripples spread for Waterfall3
+PASS Reduced motion freezes Waterfall3
+VALLEY_WATER_TEST 20 checks; 0 failures

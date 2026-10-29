@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "2baa0fc5-5288-4a39-88a2-1721b319dac6",
+    "name": "base",
+    "prompt": "wooden_barrel \u2014 detailed 32x48 pixel art rustic oak storage barrel for a cozy fantasy farming RPG, low top-down perspective, warm wooden staves, dark metal hoops, subtle aged texture, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "wooden_barrel_detailed_32x48.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:36:43.728851+00:00"
+}

@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Tree trunks stand on dry ground: SouthernBrook/Water
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tools/test_forest_v2.gd:15)
+       [1] _run (res://tools/test_forest_v2.gd:56)
+FOREST_V2: checks=150 failures=1 capsule_samples=2317

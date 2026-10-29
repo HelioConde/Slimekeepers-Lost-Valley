@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS All local painted plant tiles preserved after relocation
+PASS No terrestrial painted plant rooted inside pond
+PASS Floating rock moved to bank
+PASS Rock visible foot on dry ground
+PASS Rock collider preserved with the prop
+PASS Rock collision footprint on dry bank
+PASS Water contour preserved
+PASS Player still blocked by deep water
+PASS Bank cleanup is idempotent
+POND_BANKS: 9 checks; 0 failures

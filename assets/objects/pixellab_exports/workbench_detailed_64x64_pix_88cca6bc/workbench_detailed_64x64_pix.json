@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "88cca6bc-23d3-4676-a674-6175870ef935",
+    "name": "base",
+    "prompt": "workbench \u2014 detailed 64x64 pixel art carpenter workbench for a cozy fantasy farming RPG, low top-down perspective, warm oak work surface, lower shelf, small hand tools neatly arranged, compact interactive crafting object, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "workbench_detailed_64x64_pix.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:49.730569+00:00"
+}

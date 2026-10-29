@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "5be819c8-3974-4f40-9c08-802deca9c18a",
+    "name": "base",
+    "prompt": "wooden_bridge \u2014 96x64 pixel art short wooden footbridge for a cozy fantasy farming RPG, low top-down perspective, warm weathered planks, sturdy side supports, flat walkable crossing, transparent background, isolated, no ground tile or water.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "wooden_bridge_96x64_pixel_ar.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:37:14.617391+00:00"
+}

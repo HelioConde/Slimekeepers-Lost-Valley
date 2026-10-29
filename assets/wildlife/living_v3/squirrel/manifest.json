@@ -1,0 +1,69 @@
+{
+  "idle": {
+    "frames": 1,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 1,
+    "loop": true,
+    "source": "base",
+    "sha256": [
+      "efb418b75cd37a9e5da4a851cda586ec4a7b51444f62204bcff8b5114410a1bb"
+    ]
+  },
+  "walk": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 8,
+    "loop": true,
+    "source": "walk",
+    "sha256": [
+      "efb418b75cd37a9e5da4a851cda586ec4a7b51444f62204bcff8b5114410a1bb",
+      "cfb2e124c7ee7301724ed9a6c3f3bef39d7eceadf068b992c427e1af15275a99",
+      "53dcbff30eaa15ea0b2bc0c41bdf5cc513fd5a9afa559c6912ae8820ad924609",
+      "877d6bf40065afc49f7c22885abbdd1d82f35a6c6624710737c5db49919f90f2",
+      "55944949a265eecf5c5619e0001342cad77c6f2ef6de87c1af2060570311e061",
+      "d73cea6ed07c7247672d22a32e4c9b300fe4f7334ec5636177df84810f233078",
+      "2f619a555c02df9c8a9e184d1b6c4872d86c40f13eb12f726d2f88673a4552d9",
+      "e848fde3c6dd501f1903d2e4bf894cee19cc6846bc70d3c5d57032c79dea9c7d",
+      "bc3efd8db5809a2f22d8d2c023a214ed527f7421c4fe85c60b020d1b68ca6a2b"
+    ]
+  },
+  "forage": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 6,
+    "loop": true,
+    "source": "forage",
+    "sha256": [
+      "efb418b75cd37a9e5da4a851cda586ec4a7b51444f62204bcff8b5114410a1bb",
+      "0d22ac043456c74313467386fe7e8dfd5587b69a9a88881cb87d3a81e5329ba2",
+      "6d38f5c163ba279041596b74095869a8c83e9e3af8464801275bccc4650b3bb8",
+      "be15517e04d2eab884a4c2b0fa362399e84ea52e02ffb5ea8e11a0eacf51fd44",
+      "1c579975d5f4a2d1d187c28d70c49e50c0453e1d4d6a831d88acc97c1846f205",
+      "0501e1dc76ef5f7b6e4505ea02b0d587698574a1dc27078d73c9fd9d5e22192a",
+      "8f6d21ddbb4338851d73ccc07966b6858e12c1daea72e85a6e633639526075d9",
+      "8c9bad737650d87b4d77e8b5e8825d94323bdd70046317d94cb6d1fbaf5027f8",
+      "31bce1c5530aa02eeabc20a6667bedf40007e828b6c6cfeddc0c199264dabd97"
+    ]
+  }
+}

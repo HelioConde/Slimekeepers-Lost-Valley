@@ -1,0 +1,1283 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: No loader found for resource: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png (expected type: Texture2D)
+   at: _load (core/io/resource_loader.cpp:332)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: res://assets/slimes/living_v3/bolhinha/frames.tres:180 - Parse Error: [ext_resource] referenced non-existent resource at: res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png.
+   at: _printerr (scene/resources/resource_format_text.cpp:41)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+ERROR: Failed loading resource: res://assets/slimes/living_v3/bolhinha/frames.tres.
+   at: _load (core/io/resource_loader.cpp:317)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://scripts/world/forest_slime.gd:59)
+       [1] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _ready (res://scripts/world/forest_slime.gd:66)
+       [2] populate (res://scripts/world/forest_habitats.gd:112)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:126)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+SCRIPT ERROR: Cannot call method 'has_animation' on a null value.
+   at: _play_animation (res://scripts/world/forest_slime.gd:273)
+   GDScript backtrace (most recent call first):
+       [0] _play_animation (res://scripts/world/forest_slime.gd:273)
+       [1] _idle_animation (res://scripts/world/forest_slime.gd:268)
+       [2] _physics_process (res://scripts/world/forest_slime.gd:97)
+ENVIRONMENT_REGIONS: 8 checks; 0 failures; 3352 physical creature samples

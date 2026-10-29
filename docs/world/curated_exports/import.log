@@ -1,0 +1,118 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Inicialização do Projeto (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Escaneando estrutura de arquivos...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Carregando nomes de classe globais...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verificando GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Criando scripts autoload...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Inicializando plugins...[39m[0m
+[38;2;218;165;32mIt was recognized that GdUnit4 is running in a test environment, therefore the GdUnit4 plugin will not be executed![0m
+[Godot MCP] Plugin started
+[Godot MCP] Registered 173 commands
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Iniciando escaneamento de arquivos...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[Godot MCP] Connected to MCP server (ws://127.0.0.1:6505)
+[   0% ] [90m[1m_update_scan_actions[22m | Started Escaneando ações... (27 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | wooden_bench_rustic_64x32_pi.png[39m[0m
+[   3% ] [90m[1m_update_scan_actions[22m | bush_large_large_dense_fores.png[39m[0m
+[   7% ] [90m[1m_update_scan_actions[22m | bush_large_large_dense_fores.png[39m[0m
+[  10% ] [90m[1m_update_scan_actions[22m | magic_crystal_detailed_64x96.png[39m[0m
+[  14% ] [90m[1m_update_scan_actions[22m | wildflowers_small_cluster_of.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | wildflowers_small_cluster_of.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | fallen_log_mossy_fallen_oak.png[39m[0m
+[  25% ] [90m[1m_update_scan_actions[22m | mushroom_cluster_detailed_48.png[39m[0m
+[  28% ] [90m[1m_update_scan_actions[22m | mushroom_cluster_detailed_48.png[39m[0m
+[  32% ] [90m[1m_update_scan_actions[22m | rock_large_large_mossy_bould.png[39m[0m
+[  35% ] [90m[1m_update_scan_actions[22m | rock_large_large_mossy_bould.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | stone_ruins_detailed_128x128.png[39m[0m
+[  42% ] [90m[1m_update_scan_actions[22m | stone_ruins_detailed_128x128.png[39m[0m
+[  46% ] [90m[1m_update_scan_actions[22m | Single_rustic_oak_wooden_post.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | exports_before_forest_habitat.png[39m[0m
+[  53% ] [90m[1m_update_scan_actions[22m | exports_before_forest_hills.png[39m[0m
+[  57% ] [90m[1m_update_scan_actions[22m | exports_before_forest_log.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | exports_before_forest_moss.png[39m[0m
+[  64% ] [90m[1m_update_scan_actions[22m | exports_before_forest_mushrooms.png[39m[0m
+[  67% ] [90m[1m_update_scan_actions[22m | exports_before_forest_old_tree.png[39m[0m
+[  71% ] [90m[1m_update_scan_actions[22m | exports_before_forest_spawn.png[39m[0m
+[  75% ] [90m[1m_update_scan_actions[22m | exports_before_valley_bridge.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | exports_before_valley_east.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | exports_before_valley_lagoons.png[39m[0m
+[  85% ] [90m[1m_update_scan_actions[22m | exports_before_valley_marsh.png[39m[0m
+[  89% ] [90m[1m_update_scan_actions[22m | exports_before_valley_springs.png[39m[0m
+[  92% ] [90m[1m_update_scan_actions[22m | exports_before_valley_west.png[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importando Recursos (27 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[   3% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[   7% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  10% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  14% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  25% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  28% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  32% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  35% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  42% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  46% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  50% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  53% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  57% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  64% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  67% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  71% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  75% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  85% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  89% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[  92% ] [90m[1mreimport[22m | Preparando arquivos para reimportação...[39m[0m
+[   0% ] [90m[1mreimport[22m | Executando operações pré-reimportação...[39m[0m
+[   0% ] [90m[1mreimport[22m | exports_before_valley_west.png[39m[0m
+[   3% ] [90m[1mreimport[22m | exports_before_valley_springs.png[39m[0m
+[   7% ] [90m[1mreimport[22m | exports_before_valley_marsh.png[39m[0m
+[  10% ] [90m[1mreimport[22m | exports_before_valley_lagoons.png[39m[0m
+[  14% ] [90m[1mreimport[22m | exports_before_valley_east.png[39m[0m
+[  17% ] [90m[1mreimport[22m | exports_before_valley_bridge.png[39m[0m
+[  21% ] [90m[1mreimport[22m | exports_before_forest_spawn.png[39m[0m
+[  25% ] [90m[1mreimport[22m | exports_before_forest_old_tree.png[39m[0m
+[  28% ] [90m[1mreimport[22m | exports_before_forest_mushrooms.png[39m[0m
+[  32% ] [90m[1mreimport[22m | exports_before_forest_moss.png[39m[0m
+[  35% ] [90m[1mreimport[22m | exports_before_forest_log.png[39m[0m
+[  39% ] [90m[1mreimport[22m | exports_before_forest_hills.png[39m[0m
+[  42% ] [90m[1mreimport[22m | exports_before_forest_habitat.png[39m[0m
+[  46% ] [90m[1mreimport[22m | Single_rustic_oak_wooden_post.png[39m[0m
+[  50% ] [90m[1mreimport[22m | stone_ruins_detailed_128x128.png[39m[0m
+[  53% ] [90m[1mreimport[22m | stone_ruins_detailed_128x128.png[39m[0m
+[  57% ] [90m[1mreimport[22m | rock_large_large_mossy_bould.png[39m[0m
+[  60% ] [90m[1mreimport[22m | rock_large_large_mossy_bould.png[39m[0m
+[  64% ] [90m[1mreimport[22m | mushroom_cluster_detailed_48.png[39m[0m
+[  67% ] [90m[1mreimport[22m | mushroom_cluster_detailed_48.png[39m[0m
+[  71% ] [90m[1mreimport[22m | fallen_log_mossy_fallen_oak.png[39m[0m
+[  75% ] [90m[1mreimport[22m | wildflowers_small_cluster_of.png[39m[0m
+[  78% ] [90m[1mreimport[22m | wildflowers_small_cluster_of.png[39m[0m
+[  82% ] [90m[1mreimport[22m | magic_crystal_detailed_64x96.png[39m[0m
+[  85% ] [90m[1mreimport[22m | bush_large_large_dense_fores.png[39m[0m
+[  89% ] [90m[1mreimport[22m | bush_large_large_dense_fores.png[39m[0m
+[  92% ] [90m[1mreimport[22m | wooden_bench_rustic_64x32_pi.png[39m[0m
+[  96% ] [90m[1mreimport[22m | Finalizando Importação de Recursos...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importando Recursos (27 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Executando operações pós-reimportação...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Carregando editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Carregando layout do editor...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Carregando abas...[39m[0m
+[  33% ] [90m[1mloading_editor_layout[22m | Reabrindo cenas...[39m[0m
+[  50% ] [90m[1mloading_editor_layout[22m | Carregando layout do editor central...[39m[0m
+[  66% ] [90m[1mloading_editor_layout[22m | Carregando layout da janela de plugins...[39m[0m
+[  83% ] [90m[1mloading_editor_layout[22m | Layout do editor pronto.[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m
+[Godot MCP] Plugin stopped

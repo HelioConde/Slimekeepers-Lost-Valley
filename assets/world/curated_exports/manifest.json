@@ -1,0 +1,86 @@
+{
+  "bush_a": {
+    "texture": "res://assets/world/curated_exports/bush_a/bush_large_large_dense_fores.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\arbustos\\bush_large_large_dense_fores_3aa99e92\\bush_large_large_dense_fores.png",
+    "source_id": "3aa99e92-fee5-42df-9ba8-f2a55a54fee9",
+    "sha256": "70d792c0de87815a4ed6078865ad891e3a250832d143a0cbc90b62a1ee5ddf1d"
+  },
+  "bush_b": {
+    "texture": "res://assets/world/curated_exports/bush_b/bush_large_large_dense_fores.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\arbustos\\bush_large_large_dense_fores_42c9a288\\bush_large_large_dense_fores.png",
+    "source_id": "42c9a288-7d28-4ab1-9090-efb4139fbc98",
+    "sha256": "34c814d34ba691bf4704e4da6303a78ad445442e7bc2969a997d7dd7d6f36ed3"
+  },
+  "flowers_a": {
+    "texture": "res://assets/world/curated_exports/flowers_a/wildflowers_small_cluster_of.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\flores\\wildflowers_small_cluster_of_0c5fd15f\\wildflowers_small_cluster_of.png",
+    "source_id": "0c5fd15f-5e5b-4742-ac13-877864abd10c",
+    "sha256": "bc667422755982662078c3feda8725afeb8fc898cb8db38d91d524be578fd52f"
+  },
+  "flowers_b": {
+    "texture": "res://assets/world/curated_exports/flowers_b/wildflowers_small_cluster_of.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\flores\\wildflowers_small_cluster_of_1c3ee58a\\wildflowers_small_cluster_of.png",
+    "source_id": "1c3ee58a-36bb-45bd-9481-704ab5dbf535",
+    "sha256": "f084011faf3c23c40ffbd10a3e7d0912656ba197a6f7933238a2523970be19f7"
+  },
+  "mushrooms_a": {
+    "texture": "res://assets/world/curated_exports/mushrooms_a/mushroom_cluster_detailed_48.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\cogumelos\\mushroom_cluster_detailed_48_184d3b64\\mushroom_cluster_detailed_48.png",
+    "source_id": "184d3b64-8144-41e6-8e51-088ae9618fb8",
+    "sha256": "7ad77e901bb2e3481fb91877c71aa3a7035c88ad48be46bc569feedd0a758207"
+  },
+  "mushrooms_b": {
+    "texture": "res://assets/world/curated_exports/mushrooms_b/mushroom_cluster_detailed_48.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\cogumelos\\mushroom_cluster_detailed_48_21b25517\\mushroom_cluster_detailed_48.png",
+    "source_id": "21b25517-1782-4a25-84ce-bf69a3651196",
+    "sha256": "633bbbd4f25746d076250965c0be9bdadae51dfd517c2df27e211484b5687916"
+  },
+  "log": {
+    "texture": "res://assets/world/curated_exports/log/fallen_log_mossy_fallen_oak.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\vegetacao\\troncos\\fallen_log_mossy_fallen_oak_2f14d4d4\\fallen_log_mossy_fallen_oak.png",
+    "source_id": "2f14d4d4-2766-40e0-a513-cfff6f513ce8",
+    "sha256": "6e3edf09b414a4d13440a18b936917b9b0d44bc4604fb5b703578025d751220c"
+  },
+  "rock_a": {
+    "texture": "res://assets/world/curated_exports/rock_a/rock_large_large_mossy_bould.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\mineracao\\pedras\\rock_large_large_mossy_bould_0fd0a06b\\rock_large_large_mossy_bould.png",
+    "source_id": "0fd0a06b-16ca-4b0d-9d56-349c1067a37f",
+    "sha256": "717465f57a71af3ed503b921d0a3fb05a116c277f7f0419d02ef9e3e7541c1cd"
+  },
+  "rock_b": {
+    "texture": "res://assets/world/curated_exports/rock_b/rock_large_large_mossy_bould.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\mineracao\\pedras\\rock_large_large_mossy_bould_19a7a6cf\\rock_large_large_mossy_bould.png",
+    "source_id": "19a7a6cf-6838-4f1a-89ab-b35f8350978b",
+    "sha256": "3c1186ca203d2eb04ecd83ff7908807e3cf17d838edc9d366a2a906e7f0d5a62"
+  },
+  "ruins_a": {
+    "texture": "res://assets/world/curated_exports/ruins_a/stone_ruins_detailed_128x128.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\ruinas_magia\\ruinas\\stone_ruins_detailed_128x128_216f1f62\\stone_ruins_detailed_128x128.png",
+    "source_id": "216f1f62-0d8a-4823-920b-b09b7bfd5c85",
+    "sha256": "fa537d9f5e13166d73a792e3dbffbf3d2e2c4c03049ec118c4993fc1364f303b"
+  },
+  "ruins_b": {
+    "texture": "res://assets/world/curated_exports/ruins_b/stone_ruins_detailed_128x128.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\ruinas_magia\\ruinas\\stone_ruins_detailed_128x128_37cd3237\\stone_ruins_detailed_128x128.png",
+    "source_id": "37cd3237-b9e7-46b5-8379-2d6361b331d5",
+    "sha256": "b88794adf0fe402a67554fa5e91d1eba5740b66f144eaf0760bab9928b679268"
+  },
+  "bench": {
+    "texture": "res://assets/world/curated_exports/bench/wooden_bench_rustic_64x32_pi.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\objetos\\bancos\\wooden_bench_rustic_64x32_pi_08bc41d2\\wooden_bench_rustic_64x32_pi.png",
+    "source_id": "08bc41d2-aa51-4519-a5b7-a1be0ca13e97",
+    "sha256": "d283e7b5a5717e2b6f2c59686f84da541027f13a6e07b115a2b9692aa3ea55e0"
+  },
+  "crystal": {
+    "texture": "res://assets/world/curated_exports/crystal/magic_crystal_detailed_64x96.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\mineracao\\cristais\\magic_crystal_detailed_64x96_2334d89c\\magic_crystal_detailed_64x96.png",
+    "source_id": "2334d89c-ad10-44cd-a91e-3d52164b158c",
+    "sha256": "e7cef04bc3d7de598c080ba69599cc403542fa5fbc3ecc815cf5c6ccdc79ecb2"
+  },
+  "wood_post": {
+    "texture": "res://assets/world/curated_exports/wood_post/Single_rustic_oak_wooden_post.png",
+    "source": "C:\\Slimekeepers Lost Valley\\sprites\\objects\\pixellab_exports\\objetos\\iluminacao\\single_rustic_oak_wooden_post_4ab6f1ca\\Single_rustic_oak_wooden_post.png",
+    "source_id": "4ab6f1ca-6aa1-4197-86f7-7326200e7d32",
+    "sha256": "f0846e0e13eeda6d1c05e9475e8a3ed0e7542c5d8c9c1ad131469eccf0d76de4"
+  }
+}

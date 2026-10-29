@@ -1,0 +1,706 @@
+{
+  "objects": [
+    {
+      "id": "c7cf930a-6c03-454c-8a0f-97d2e7fa3f33",
+      "name": "base",
+      "prompt": "rock_small \u2014 small rounded fieldstone for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, muted cool gray stone with soft moss-green speckles and subtle natural facets, compact non-walkable footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, plants, characters, text, or external shadow.",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/rock_small_small_rounded_fie.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "557775f5-b1d3-4cab-916a-7764f3bfaeea",
+      "name": "base",
+      "prompt": "wildflowers \u2014 small cluster of wildflowers for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, soft muted lavender, cream and pale yellow blossoms among natural meadow greens, compact irregular cluster, subtle organic texture, readable walk-through decoration. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, rocks, characters, text, or external shadow.",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/wildflowers_small_cluster_of.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "3556423a-1b23-4e59-8534-c7116839e581",
+      "name": "base",
+      "prompt": "tall_grass \u2014 small clump of tall meadow grass for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, soft irregular blades of muted natural green with subtle olive highlights, a few delicate seed heads, readable small walk-through decoration. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, flowers, rocks, characters, text, or external shadow.",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/tall_grass_small_clump_of_ta.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "b514ab09-80da-4232-9ff5-b0416e6939dd",
+      "name": "base",
+      "prompt": "fallen_log \u2014 mossy fallen oak log for Slimekeepers: Lost Valley, 96x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, horizontal cut log with warm brown bark, visible circular cut end, small muted natural moss patches and a few tiny leaves. Clear compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, text, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/fallen_log_mossy_fallen_oak.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ae1b2dc3-df0a-48f0-b6a8-92448ec73771",
+      "name": "base",
+      "prompt": "bush_large \u2014 large dense forest bush for Slimekeepers: Lost Valley, 96x64 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad irregular layered foliage in muted natural greens, rich organic texture, clear compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, flowers, fruit, characters, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/bush_large_large_dense_fores.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "e30ae879-fe0e-49ed-90cb-cf84bb5f071d",
+      "name": "base",
+      "prompt": "bush_small \u2014 compact leafy forest bush for Slimekeepers: Lost Valley, 64x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, rounded irregular foliage in muted natural greens with a few small leaves, subtle depth, compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, flowers, fruit, characters, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/bush_small_compact_leafy_for.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "1e5ca28f-d1c9-47a6-b763-ae09d3750824",
+      "name": "base",
+      "prompt": "tree_stump \u2014 small cut oak stump for Slimekeepers: Lost Valley, 64x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, warm brown wood grain and visible circular cut surface, short roots at the base, subtle moss only, clear compact collision footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, axe, characters, mushrooms, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/tree_stump_small_cut_oak_stu.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "2709c11f-ed97-4935-a4b8-ec91a1f409e8",
+      "name": "base",
+      "prompt": "tree_pine \u2014 tall evergreen pine tree for Slimekeepers: Lost Valley, 96x160 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, layered conical branches in deep natural forest green, visible sturdy brown trunk at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, snow, fruit, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/tree_pine_tall_evergreen_pin.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "e2297389-faaa-4af9-a575-b766b08f8cff",
+      "name": "base",
+      "prompt": "tree_oak_large \u2014 large mature oak tree for Slimekeepers: Lost Valley, 128x160 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad layered leafy oak crown in deep natural muted greens, thick sturdy brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, fruit, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/tree_oak_large_large_mature.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "d1ee869f-5b76-44d3-aedd-140e3ffcfee6",
+      "name": "base",
+      "prompt": "tree_oak_medium \u2014 medium oak tree for Slimekeepers: Lost Valley, 96x128 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, wider mature leafy oak crown in natural muted greens, sturdy brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, or external shadow.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/tree_oak_medium_medium_oak_t.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "d9b03813-8101-4035-96d6-e3624d35c46f",
+      "name": "base",
+      "prompt": "tree_oak_small \u2014 small oak tree for Slimekeepers: Lost Valley, 64x96 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad leafy oak crown in natural muted greens, slim brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match the Meadow & Forest Grass V2 palette and the 32x32 world grid. Transparent background, isolated static object, no ground tile, no scenery, no characters, no shadow outside the sprite.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/tree_oak_small_small_oak_tre.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "efc60e7b-27b4-4ee8-a3f4-63be45ad7626",
+      "name": "base",
+      "prompt": "Object: Object 0 (Copy) (Copy) (Copy) (unknown)",
+      "size": {
+        "width": 95,
+        "height": 105
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Object_0.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "e95d4b2c-4b53-4c5a-b215-36cb8abc4eba",
+      "name": "base",
+      "prompt": "Object: Object 0 (unknown)",
+      "size": {
+        "width": 18,
+        "height": 18
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Object_0_copy_5.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "e12573be-3678-4c91-9c95-f57ad1295176",
+      "name": "base",
+      "prompt": "Object: japanese animals statues (unknown)",
+      "size": {
+        "width": 54,
+        "height": 54
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/japanese_animals_statues.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "c6359b49-711b-4970-9f06-041dfecc603b",
+      "name": "base",
+      "prompt": "Object: Object 0 (unknown)",
+      "size": {
+        "width": 28,
+        "height": 53
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Object_0_copy_4.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ae243fc7-2fdd-4c5d-842e-2d762d877dd8",
+      "name": "base",
+      "prompt": "Object: Object 0 (unknown)",
+      "size": {
+        "width": 84,
+        "height": 141
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Object_0_copy.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "a619f9aa-ecce-43a7-852a-a1e36f9d22cf",
+      "name": "base",
+      "prompt": "fireball projectile",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 8,
+      "view": "low top-down",
+      "rotations": {
+        "south": "rotations/south.png",
+        "south-east": "rotations/south-east.png",
+        "east": "rotations/east.png",
+        "north-east": "rotations/north-east.png",
+        "north": "rotations/north.png",
+        "north-west": "rotations/north-west.png",
+        "west": "rotations/west.png",
+        "south-west": "rotations/south-west.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "8b9b176a-35af-4f54-8056-c41b9e061923",
+      "name": "base",
+      "prompt": "Object: Object 0 (Copy) (Copy) (Copy) (Copy) (Copy) (unknown)",
+      "size": {
+        "width": 20,
+        "height": 80
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Object_0_copy_2.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "042dbddf-b01b-44a6-97ba-52d3c0cc7fcc",
+      "name": "base",
+      "prompt": "Object: Object 0 (unknown)",
+      "size": {
+        "width": 26,
+        "height": 54
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/Object_0_copy_3.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": "bafdb267-63d3-426c-97e6-5d39d6f0ab0b",
+      "folder": "objects/rock_small_small_rounded_fie",
+      "objects": [
+        {
+          "id": "c7cf930a-6c03-454c-8a0f-97d2e7fa3f33",
+          "name": "base",
+          "prompt": "rock_small \u2014 small rounded fieldstone for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, muted cool gray stone with soft moss-green speckles and subtle natural facets, compact non-walkable footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, plants, characters, text, or external shadow.",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/rock_small_small_rounded_fie.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "a9f87db0-868d-4fbb-b175-117a7accfc42",
+      "folder": "objects/wildflowers_small_cluster_of",
+      "objects": [
+        {
+          "id": "557775f5-b1d3-4cab-916a-7764f3bfaeea",
+          "name": "base",
+          "prompt": "wildflowers \u2014 small cluster of wildflowers for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, soft muted lavender, cream and pale yellow blossoms among natural meadow greens, compact irregular cluster, subtle organic texture, readable walk-through decoration. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, rocks, characters, text, or external shadow.",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/wildflowers_small_cluster_of.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "2484a8cc-bdd9-481c-a822-3834748db6d5",
+      "folder": "objects/tall_grass_small_clump_of_ta",
+      "objects": [
+        {
+          "id": "3556423a-1b23-4e59-8534-c7116839e581",
+          "name": "base",
+          "prompt": "tall_grass \u2014 small clump of tall meadow grass for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, soft irregular blades of muted natural green with subtle olive highlights, a few delicate seed heads, readable small walk-through decoration. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, flowers, rocks, characters, text, or external shadow.",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/tall_grass_small_clump_of_ta.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "c87b8eb4-d8c1-48f3-a9bc-927659a8be74",
+      "folder": "objects/fallen_log_mossy_fallen_oak",
+      "objects": [
+        {
+          "id": "b514ab09-80da-4232-9ff5-b0416e6939dd",
+          "name": "base",
+          "prompt": "fallen_log \u2014 mossy fallen oak log for Slimekeepers: Lost Valley, 96x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, horizontal cut log with warm brown bark, visible circular cut end, small muted natural moss patches and a few tiny leaves. Clear compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, text, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/fallen_log_mossy_fallen_oak.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "97806a57-7ba8-41fa-be34-ae0d7568895c",
+      "folder": "objects/bush_large_large_dense_fores",
+      "objects": [
+        {
+          "id": "ae1b2dc3-df0a-48f0-b6a8-92448ec73771",
+          "name": "base",
+          "prompt": "bush_large \u2014 large dense forest bush for Slimekeepers: Lost Valley, 96x64 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad irregular layered foliage in muted natural greens, rich organic texture, clear compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, flowers, fruit, characters, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/bush_large_large_dense_fores.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "b3e4a628-a66d-4415-ba14-3e3e2ebecbd3",
+      "folder": "objects/bush_small_compact_leafy_for",
+      "objects": [
+        {
+          "id": "e30ae879-fe0e-49ed-90cb-cf84bb5f071d",
+          "name": "base",
+          "prompt": "bush_small \u2014 compact leafy forest bush for Slimekeepers: Lost Valley, 64x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, rounded irregular foliage in muted natural greens with a few small leaves, subtle depth, compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, flowers, fruit, characters, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/bush_small_compact_leafy_for.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "73af72ae-614a-4f07-9aeb-73f9d8e6f349",
+      "folder": "objects/tree_stump_small_cut_oak_stu",
+      "objects": [
+        {
+          "id": "1e5ca28f-d1c9-47a6-b763-ae09d3750824",
+          "name": "base",
+          "prompt": "tree_stump \u2014 small cut oak stump for Slimekeepers: Lost Valley, 64x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, warm brown wood grain and visible circular cut surface, short roots at the base, subtle moss only, clear compact collision footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, axe, characters, mushrooms, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/tree_stump_small_cut_oak_stu.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "6e91995e-a86f-4009-9181-b26f9b02c3c3",
+      "folder": "objects/tree_pine_tall_evergreen_pin",
+      "objects": [
+        {
+          "id": "2709c11f-ed97-4935-a4b8-ec91a1f409e8",
+          "name": "base",
+          "prompt": "tree_pine \u2014 tall evergreen pine tree for Slimekeepers: Lost Valley, 96x160 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, layered conical branches in deep natural forest green, visible sturdy brown trunk at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, snow, fruit, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/tree_pine_tall_evergreen_pin.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "7942da24-acb4-4d42-ac2c-f551399b8a9f",
+      "folder": "objects/tree_oak_large_large_mature",
+      "objects": [
+        {
+          "id": "e2297389-faaa-4af9-a575-b766b08f8cff",
+          "name": "base",
+          "prompt": "tree_oak_large \u2014 large mature oak tree for Slimekeepers: Lost Valley, 128x160 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad layered leafy oak crown in deep natural muted greens, thick sturdy brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, fruit, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/tree_oak_large_large_mature.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "79ca56c7-fb4e-4e6a-a1ea-87a657a550a6",
+      "folder": "objects/tree_oak_medium_medium_oak_t",
+      "objects": [
+        {
+          "id": "d1ee869f-5b76-44d3-aedd-140e3ffcfee6",
+          "name": "base",
+          "prompt": "tree_oak_medium \u2014 medium oak tree for Slimekeepers: Lost Valley, 96x128 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, wider mature leafy oak crown in natural muted greens, sturdy brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, or external shadow.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/tree_oak_medium_medium_oak_t.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "836045c0-4697-498f-8c80-94a70aa97054",
+      "folder": "objects/tree_oak_small_small_oak_tre",
+      "objects": [
+        {
+          "id": "d9b03813-8101-4035-96d6-e3624d35c46f",
+          "name": "base",
+          "prompt": "tree_oak_small \u2014 small oak tree for Slimekeepers: Lost Valley, 64x96 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad leafy oak crown in natural muted greens, slim brown trunk visible at the base, compact roots, clear lower trunk for collision and Y-sorting. Match the Meadow & Forest Grass V2 palette and the 32x32 world grid. Transparent background, isolated static object, no ground tile, no scenery, no characters, no shadow outside the sprite.",
+          "size": {
+            "width": 96,
+            "height": 96
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/tree_oak_small_small_oak_tre.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "620b576b-9750-4d12-9252-dbe0cf0d163e",
+      "folder": "objects/Object_0",
+      "objects": [
+        {
+          "id": "efc60e7b-27b4-4ee8-a3f4-63be45ad7626",
+          "name": "base",
+          "prompt": "Object: Object 0 (Copy) (Copy) (Copy) (unknown)",
+          "size": {
+            "width": 95,
+            "height": 105
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/Object_0.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "ff20a36c-d8a5-419c-8513-4690efc4a435",
+      "folder": "objects/Object_0_copy_5",
+      "objects": [
+        {
+          "id": "e95d4b2c-4b53-4c5a-b215-36cb8abc4eba",
+          "name": "base",
+          "prompt": "Object: Object 0 (unknown)",
+          "size": {
+            "width": 18,
+            "height": 18
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/Object_0_copy_5.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "a7e027c1-fdfe-4b00-80ad-a233d9959430",
+      "folder": "objects/japanese_animals_statues",
+      "objects": [
+        {
+          "id": "e12573be-3678-4c91-9c95-f57ad1295176",
+          "name": "base",
+          "prompt": "Object: japanese animals statues (unknown)",
+          "size": {
+            "width": 54,
+            "height": 54
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/japanese_animals_statues.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "6d4ce1a6-c7f2-4e7f-875b-51622bb2ea6d",
+      "folder": "objects/Object_0_copy_4",
+      "objects": [
+        {
+          "id": "c6359b49-711b-4970-9f06-041dfecc603b",
+          "name": "base",
+          "prompt": "Object: Object 0 (unknown)",
+          "size": {
+            "width": 28,
+            "height": 53
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/Object_0_copy_4.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "26a36c43-44fc-4fbd-8879-4fc9a14b4d76",
+      "folder": "objects/Object_0_copy",
+      "objects": [
+        {
+          "id": "ae243fc7-2fdd-4c5d-842e-2d762d877dd8",
+          "name": "base",
+          "prompt": "Object: Object 0 (unknown)",
+          "size": {
+            "width": 84,
+            "height": 141
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/Object_0_copy.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "a4af5a5a-cfd2-48cb-a57d-098aad0ddc87",
+      "folder": "objects/Fireball",
+      "objects": [
+        {
+          "id": "a619f9aa-ecce-43a7-852a-a1e36f9d22cf",
+          "name": "base",
+          "prompt": "fireball projectile",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 8,
+          "view": "low top-down",
+          "rotations": {
+            "south": "rotations/south.png",
+            "south-east": "rotations/south-east.png",
+            "east": "rotations/east.png",
+            "north-east": "rotations/north-east.png",
+            "north": "rotations/north.png",
+            "north-west": "rotations/north-west.png",
+            "west": "rotations/west.png",
+            "south-west": "rotations/south-west.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "66d0c931-7f6c-497f-a39a-b2388489aade",
+      "folder": "objects/Object_0_copy_2",
+      "objects": [
+        {
+          "id": "8b9b176a-35af-4f54-8056-c41b9e061923",
+          "name": "base",
+          "prompt": "Object: Object 0 (Copy) (Copy) (Copy) (Copy) (Copy) (unknown)",
+          "size": {
+            "width": 20,
+            "height": 80
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/Object_0_copy_2.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": "e30e4d41-e664-4bc2-92db-094ae85ad469",
+      "folder": "objects/Object_0_copy_3",
+      "objects": [
+        {
+          "id": "042dbddf-b01b-44a6-97ba-52d3c0cc7fcc",
+          "name": "base",
+          "prompt": "Object: Object 0 (unknown)",
+          "size": {
+            "width": 26,
+            "height": 54
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/Object_0_copy_3.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.1",
+  "export_date": "2026-10-23T15:50:46.115044"
+}

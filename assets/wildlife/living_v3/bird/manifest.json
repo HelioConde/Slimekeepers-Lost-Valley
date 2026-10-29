@@ -1,0 +1,69 @@
+{
+  "idle": {
+    "frames": 1,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 1,
+    "loop": true,
+    "source": "base",
+    "sha256": [
+      "9de3d808ee091362a460623fb63175707c925a7f25f29a6928165d0098777c35"
+    ]
+  },
+  "walk": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 8,
+    "loop": true,
+    "source": "walk",
+    "sha256": [
+      "9de3d808ee091362a460623fb63175707c925a7f25f29a6928165d0098777c35",
+      "49917f88cc7db2e83fd3348a7bef1adee0cc631cf41260e3b6328f9636b1b82c",
+      "594f4e4dcc7995e0f7693ac847009f542bd0e5ea0c9fd02c6decc5c713ecc09e",
+      "4246bfc67472df484820ec540ce25c890fcf3912130182f1f7df9b9fb7701a95",
+      "c9391c97bb2b112078f8277d5c2704f52adf8d3decce5535cdcdc381f43533bb",
+      "44730c653afdf6e37c3833c7e15875e07a68685164a5b1b47298cfeb50dd6af2",
+      "4764fb233f1b0700a54f11417f60e73fda92f90b26ed5d4166ecb9efc061cc41",
+      "08d061c062e56eb32c9cfe6e522985db4e64221b04e9a668831dbdbede4f3f2d",
+      "1b34651cc457d03bdc3e1e2f0236c1a848d6046f39fcc55b2383b65dbfb9289d"
+    ]
+  },
+  "fly": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 12,
+    "loop": true,
+    "source": "fly",
+    "sha256": [
+      "9de3d808ee091362a460623fb63175707c925a7f25f29a6928165d0098777c35",
+      "dcbf84de0893f00227bbaeaec904c34b5aff5f6a07a18e079fcd300ffc1f7818",
+      "894bbdb9d23f0bc852d76f2d1665b4a0eb10930a32bbaeb635430228685d1724",
+      "ab8b462cf88354a35416aaa7fd5eca0b9d881a1e72ac22b6d440565635eeb1de",
+      "5cad0ccb8e12f6ecd1ea2a61d2075255c073124d9a84746eaf7fd56d23be2ca2",
+      "c0f2927dcb684d846b965dd9e989f5122d8bcf2bb6766b57ba3c43f3f0ddf29d",
+      "28abd13332502625020f412f825ca1b5af774d1baf03ba00195f05645c2c22e7",
+      "4b65f1e38a77a847a9bb34d5333a23bd16a457b2a9d29313c43961f4ce4ede5e",
+      "5f3ee5627b5fe7e7fb722eec4833ac3eb1c3404643bd0b5c38803bc58929558b"
+    ]
+  }
+}

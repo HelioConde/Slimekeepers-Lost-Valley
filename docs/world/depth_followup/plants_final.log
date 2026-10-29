@@ -1,0 +1,52 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 Core Profile Context 26.5.2.260413 - Compatibility - Using Device: ATI Technologies Inc. - Radeon RX 580 Series
+
+MAP_DEPTH {"foot":"(1968.0, 2849.0)","map":"FlorestaDoDespertarV2","object":"tile_2","overlap":866,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1968.0, 2849.0)","map":"FlorestaDoDespertarV2","object":"tile_2","overlap":431,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1968.0, 2849.0)","map":"FlorestaDoDespertarV2","object":"tile_2","overlap":1093,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1392.0, 1378.0)","map":"FlorestaDoDespertarV2","object":"tile_3","overlap":1080,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1392.0, 1378.0)","map":"FlorestaDoDespertarV2","object":"tile_3","overlap":527,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1392.0, 1378.0)","map":"FlorestaDoDespertarV2","object":"tile_3","overlap":1286,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2832.0, 285.0)","map":"FlorestaDoDespertarV2","object":"tile_5","overlap":484,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2832.0, 285.0)","map":"FlorestaDoDespertarV2","object":"tile_5","overlap":287,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2832.0, 285.0)","map":"FlorestaDoDespertarV2","object":"tile_5","overlap":611,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1168.0, 2045.0)","map":"FlorestaDoDespertarV2","object":"tile_6","overlap":613,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1168.0, 2045.0)","map":"FlorestaDoDespertarV2","object":"tile_6","overlap":329,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1168.0, 2045.0)","map":"FlorestaDoDespertarV2","object":"tile_6","overlap":762,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2256.0, 2781.0)","map":"FlorestaDoDespertarV2","object":"tile_7","overlap":490,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2256.0, 2781.0)","map":"FlorestaDoDespertarV2","object":"tile_7","overlap":316,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2256.0, 2781.0)","map":"FlorestaDoDespertarV2","object":"tile_7","overlap":656,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2160.0, 159.0)","map":"FlorestaDoDespertarV2","object":"tile_8","overlap":763,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2160.0, 159.0)","map":"FlorestaDoDespertarV2","object":"tile_8","overlap":299,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2160.0, 159.0)","map":"FlorestaDoDespertarV2","object":"tile_8","overlap":916,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2932.0, 3081.0)","map":"FlorestaDoDespertarV2","object":"prop_flower","overlap":865,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2932.0, 3081.0)","map":"FlorestaDoDespertarV2","object":"prop_flower","overlap":426,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2932.0, 3081.0)","map":"FlorestaDoDespertarV2","object":"prop_flower","overlap":1093,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2917.0, 3193.0)","map":"FlorestaDoDespertarV2","object":"prop_fern","overlap":745,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2917.0, 3193.0)","map":"FlorestaDoDespertarV2","object":"prop_fern","overlap":309,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2917.0, 3193.0)","map":"FlorestaDoDespertarV2","object":"prop_fern","overlap":908,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2952.0, 3153.0)","map":"FlorestaDoDespertarV2","object":"prop_mushroom","overlap":477,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2952.0, 3153.0)","map":"FlorestaDoDespertarV2","object":"prop_mushroom","overlap":280,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2952.0, 3153.0)","map":"FlorestaDoDespertarV2","object":"prop_mushroom","overlap":594,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2270.0, 2840.0)","map":"FlorestaDoDespertarV2","object":"prop_bush","overlap":2784,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2270.0, 2840.0)","map":"FlorestaDoDespertarV2","object":"prop_bush","overlap":1207,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2270.0, 2840.0)","map":"FlorestaDoDespertarV2","object":"prop_bush","overlap":2690,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(4204.0, 2179.0)","map":"FlorestaDoDespertarV2","object":"prop_log","overlap":1622,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(4204.0, 2179.0)","map":"FlorestaDoDespertarV2","object":"prop_log","overlap":579,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(4204.0, 2179.0)","map":"FlorestaDoDespertarV2","object":"prop_log","overlap":1714,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1500.0, 1750.0)","map":"ValeDasNascentes","object":"prop_fern","overlap":713,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1500.0, 1750.0)","map":"ValeDasNascentes","object":"prop_fern","overlap":227,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1500.0, 1750.0)","map":"ValeDasNascentes","object":"prop_fern","overlap":841,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1460.0, 1780.0)","map":"ValeDasNascentes","object":"prop_flower","overlap":829,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1460.0, 1780.0)","map":"ValeDasNascentes","object":"prop_flower","overlap":359,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1460.0, 1780.0)","map":"ValeDasNascentes","object":"prop_flower","overlap":1029,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1956.0, 561.0)","map":"ValeDasNascentes","object":"prop_log","overlap":1624,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1956.0, 561.0)","map":"ValeDasNascentes","object":"prop_log","overlap":581,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1956.0, 561.0)","map":"ValeDasNascentes","object":"prop_log","overlap":1719,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2758.0, 104.0)","map":"ValeDasNascentes","object":"prop_mushroom","overlap":465,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2758.0, 104.0)","map":"ValeDasNascentes","object":"prop_mushroom","overlap":307,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2758.0, 104.0)","map":"ValeDasNascentes","object":"prop_mushroom","overlap":587,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH {"foot":"(154.0, 2861.0)","map":"ValeDasNascentes","object":"prop_bush","overlap":2784,"scenario":"lower_base","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(154.0, 2861.0)","map":"ValeDasNascentes","object":"prop_bush","overlap":1207,"scenario":"upper_half","side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(154.0, 2861.0)","map":"ValeDasNascentes","object":"prop_bush","overlap":2690,"scenario":"front","side":1,"wrong":0}
+MAP_DEPTH: 48 checks; 0 failures

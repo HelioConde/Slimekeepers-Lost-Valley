@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+slimes/living_v3/bolhinha: ["blink", "curious", "drink", "happy", "idle", "move", "plant", "play", "sleep", "splash"]
+slimes/living_v3/musguinho: ["curious", "happy", "idle", "jump", "move", "plant", "play", "sleep"]
+wildlife/living_v3/squirrel: ["forage", "idle", "walk"]
+wildlife/living_v3/bird: ["fly", "idle", "walk"]
+LIVING_V3_ASSETS_OK: 4 species, 24 animations, 191 verified frame references

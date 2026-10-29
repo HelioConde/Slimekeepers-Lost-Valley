@@ -1,0 +1,198 @@
+{
+  "idle": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 5,
+    "loop": true,
+    "source": "idle",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "b92cce58fc42b7f521e5a0128c25592d03a399d9d6848c3820e6a1dc445e5d07",
+      "f57c4ee1c43dd3e444a8478182ab97d9a8b6d3879db7657eda959b87ed786ece",
+      "9dd30dd8c3358dfaaaeb44d4b0bca95c48994dc25c160c93545657f18e700e0a",
+      "16a542ea8b71948a23c55197c23fc97261410355ee3ffbf725d7c2c6d771595c",
+      "cb901a20adacdb566e9776863b278f12315a08b0501e625d7470f27985b935ad",
+      "18ed08a423f8823a3b3d465d9e8f1468a991aad8221d220e864ebedee38a0e39",
+      "683ec48081faf65217e2fb35ac87be02bedd929d4b244f52c8c6acba6319d2e1",
+      "f9169c6a841974070a7b6169b6e242aea96629808db47bb837e98388e586ebe4"
+    ]
+  },
+  "move": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 8,
+    "loop": true,
+    "source": "move",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "b9376786023843bb2430890f82dc06423a1c8691289a7d71a7f9dd66c8e447ff",
+      "6f9044b42576a40d94a12ac2dcde71bbc038b243a5f0ae03ddaccc5b03bba68f",
+      "e64b0a0d14fdf22fac4f432e384bce009784dca82d2b39026038785edab1d9e2",
+      "9ca8115caf777a7ecced28bfe1c0e1e179cb743ed9b2b75bed9593b8ebf53b46",
+      "b74bb9331af7ff518c6fae9534dcac7bb4f9cd89f2ce6ba97514cbe9d81b8a2e",
+      "7ac483493f03d8ad5b2fb92d8df594c007d92b52c1aaff7e6ca08887a9382545",
+      "484ffc638b9252c6c07e239a2fce7a80a30832a48788a26b3d943046676a70c9",
+      "87999b8f1d54b18aaf2c3fb1b3cc6459fa1eb846ebf3b3163149f01a153e9bf6"
+    ]
+  },
+  "jump": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 8,
+    "loop": false,
+    "source": "jump",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "4bdfb503d1765ac9723425d828ad14e1fcc60d0e4a345641c1325fa867d848de",
+      "8a680c032b3e7a0c871cc824ccd262bdf1e3943b99c1dd41803cedc8c1d50d69",
+      "7d96d7110ac13afa64c1a538c892d6b128faa1a9ce697feca6bb4322db3d5991",
+      "0c3043bf06242b090bebb1a181abff85b5e943a6ebf17e5838dcf12948ae7129",
+      "9b2afa0bba3f7f05dfd4a5eacc62855c6551d9985719525117434177e25b9004",
+      "2cea5e56a536f25fd1a8fad3a902b743d9f0ef04d1970cd238fbe03e86e78139",
+      "8a0a55181c96b824acc1f38ea7b16f75db9b55066b379761782c88d8f33fc0b2",
+      "6264e2082ac34115da16b57da1430e4970e6ef964e6c5c8019f9182a6f508f4a"
+    ]
+  },
+  "happy": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 8,
+    "loop": false,
+    "source": "happy",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "d572c7182f1260b3beb6c374fd22c2945bfd893a5f08165e4983bb5c2d8fa4cd",
+      "43bc43891a893d9c20fbd20dc12780961b1757aa80ac0c9b64f524077995351b",
+      "be560cbc89325a672997dda566abf7e4ff633d36a30216bc40e97d60f7b46afb",
+      "b5c2bdfb9012fe26c8468b349588b8fa60d90873dfe674a7fa595273ad26b0aa",
+      "22a1fb7b249fc98e3af16cd03239f4d138147915bb2dbb5f9f362581ac4b021f",
+      "e06636938b8be5a78f9fa5e4d944ab3c767569a821bb88e1fce39694b08be563",
+      "c97e03617a7efbfda760234c1ef7f370a9128dd9760af28967c4833923dacc52",
+      "27496a6806e1a5dce44ef8c7f57b596c05e3b46a7da6e25976843e73938660fd"
+    ]
+  },
+  "sleep": {
+    "frames": 5,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 5,
+    "loop": true,
+    "source": "sleep",
+    "sha256": [
+      "2bd8624debcbd0d3b234e5071caa257513e9994968099e1d4f4355344a7bdcec",
+      "04940918076a049fb28d28630bd9b76895d4ae407c46088a33fb3724a915eab2",
+      "ca74f40ac3803ece8f0c7a738e182dbb87fbb419cb3149eb69ffa93b636194f9",
+      "e8b1d112888e694df2ab63157320b080dc29334eaec9e80aeb872eda9d6fb307",
+      "821f9ed7c5749751a3d67beb1d2b0aca0a853a09b8997d9a5b838ce6dcc77ca3"
+    ]
+  },
+  "plant": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 8,
+    "loop": false,
+    "source": "plant",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "9b11de1a20dbd1570e25cb58b7e02c46134759d595e1222325304a6359432e85",
+      "2432e474d8ca5bd7030ecaebc09b2c08bfea4819baef607490a3c9ec63e0016f",
+      "bf3f5d13d751c8b712ff37d6ed1484d31811192f55b77416b58819b20b4882ac",
+      "eaede27a8c6dd1a6b66f16c9a254d52b623ebb62a93aa19883ccfc2edef653cf",
+      "017aa250324c023dfcb74b8333fe40f58218c0f678ac6d95d6e9216346a74737",
+      "f68b4cf36a726c0d3a67a24d66cf0aeb7ea01241574c7e9a3b0568b26ea59a8d",
+      "b9907374d892786bdbf1b9e186ca0fee221410000457cf8846df97dfa9ef1e5b",
+      "6c92dca1462e8de4cfb9eeff8f7ce605a8a6ab913381cdc28169a300a093c078"
+    ]
+  },
+  "play": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 10,
+    "loop": false,
+    "source": "jump",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "4bdfb503d1765ac9723425d828ad14e1fcc60d0e4a345641c1325fa867d848de",
+      "8a680c032b3e7a0c871cc824ccd262bdf1e3943b99c1dd41803cedc8c1d50d69",
+      "7d96d7110ac13afa64c1a538c892d6b128faa1a9ce697feca6bb4322db3d5991",
+      "0c3043bf06242b090bebb1a181abff85b5e943a6ebf17e5838dcf12948ae7129",
+      "9b2afa0bba3f7f05dfd4a5eacc62855c6551d9985719525117434177e25b9004",
+      "2cea5e56a536f25fd1a8fad3a902b743d9f0ef04d1970cd238fbe03e86e78139",
+      "8a0a55181c96b824acc1f38ea7b16f75db9b55066b379761782c88d8f33fc0b2",
+      "6264e2082ac34115da16b57da1430e4970e6ef964e6c5c8019f9182a6f508f4a"
+    ]
+  },
+  "curious": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      64,
+      64
+    ],
+    "fps": 6,
+    "loop": false,
+    "source": "plant",
+    "sha256": [
+      "521d9f7089a59d87a9d776f99a4819e2b7c488f19c36302fa2c9b780a93b3ff2",
+      "9b11de1a20dbd1570e25cb58b7e02c46134759d595e1222325304a6359432e85",
+      "2432e474d8ca5bd7030ecaebc09b2c08bfea4819baef607490a3c9ec63e0016f",
+      "bf3f5d13d751c8b712ff37d6ed1484d31811192f55b77416b58819b20b4882ac",
+      "eaede27a8c6dd1a6b66f16c9a254d52b623ebb62a93aa19883ccfc2edef653cf",
+      "017aa250324c023dfcb74b8333fe40f58218c0f678ac6d95d6e9216346a74737",
+      "f68b4cf36a726c0d3a67a24d66cf0aeb7ea01241574c7e9a3b0568b26ea59a8d",
+      "b9907374d892786bdbf1b9e186ca0fee221410000457cf8846df97dfa9ef1e5b",
+      "6c92dca1462e8de4cfb9eeff8f7ce605a8a6ab913381cdc28169a300a093c078"
+    ]
+  }
+}

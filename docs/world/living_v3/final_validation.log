@@ -1,0 +1,18 @@
+
+CLEARING_INTEGRATION: 59 checks, 0 failures, 1972 capsule samples
+FOREST_V2: checks=157 failures=0 capsule_samples=2317
+FOREST_HABITATS: 37 checks; 0 failures
+FOREST_LIFE: 16 checks; 0 failures
+FOREST_AUDIO: 22 checks; 0 failures
+VALLEY_TEST 41 checks; 0 failures; 2096 samples
+VALLEY_WATER_TEST 20 checks; 0 failures
+REGION_TRAVEL 9 checks; 0 failures
+PASS: Test did not create or remove presentation preferences
+MENU_INTEGRATION: 62 checks, 0 failures
+SLIME_ECOSYSTEM: 36 checks; 0 failures
+ENVIRONMENT_V3: 23 checks; 0 failures
+ENVIRONMENT_REGIONS: 8 checks; 0 failures; 384 physical creature samples
+LIVING_REGIONS: 60 checks; 0 failures
+VISUAL_RULES: 5624 checks; 0 failures
+All forest/valley checks passed. Native rendering and 5-minute exploration are separate tools.
+

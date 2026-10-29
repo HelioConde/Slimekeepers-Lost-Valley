@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "eff1724b-9df8-46c9-9dc5-72518857bf1a",
+    "name": "base",
+    "prompt": "magic_crystal \u2014 detailed 64x96 pixel art mystical blue-purple crystal cluster for a cozy fantasy farming RPG, low top-down perspective, faceted translucent shards, gentle cyan inner glow, small stone base, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "magic_crystal_detailed_64x96.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:36:12.535958+00:00"
+}

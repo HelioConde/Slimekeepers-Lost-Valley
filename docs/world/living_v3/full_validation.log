@@ -1,0 +1,23 @@
+
+CLEARING_INTEGRATION: 59 checks, 0 failures, 1972 capsule samples
+FOREST_V2: checks=157 failures=0 capsule_samples=2317
+FOREST_HABITATS: 37 checks; 0 failures
+FOREST_LIFE: 16 checks; 0 failures
+FOREST_AUDIO: 22 checks; 0 failures
+VALLEY_TEST 41 checks; 0 failures; 2096 samples
+VALLEY_WATER_TEST 20 checks; 0 failures
+REGION_TRAVEL 9 checks; 0 failures
+PASS: Test did not create or remove presentation preferences
+MENU_INTEGRATION: 62 checks, 0 failures
+SLIME_ECOSYSTEM: 36 checks; 0 failures
+ENVIRONMENT_V3: 19 checks; 0 failures
+ENVIRONMENT_REGIONS: 8 checks; 0 failures; 3352 physical creature samples
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Aquatic friendship does not contaminate forest counter
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] check (res://tools/test_living_regions.gd:10)
+       [1] run (res://tools/test_living_regions.gd:57)
+       [2] settle (res://tools/test_living_regions.gd:12)
+LIVING_REGIONS: 60 checks; 1 failures

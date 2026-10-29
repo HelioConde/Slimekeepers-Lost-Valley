@@ -1,0 +1,247 @@
+{
+  "idle": {
+    "frames": 9,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 5,
+    "loop": true,
+    "source": "The_slime_performs_a_gentle_rhythmic_bobbing_motio/south",
+    "sha256": [
+      "d917055952fb41154bd2bbe4b70e3dfc344de5ea3cff3abec5e083a50154685d",
+      "d11b36dea8f795e6e4f41a67aec2b191f8059f08120ddf0f6ec8d633f170a851",
+      "d36a4cf8bb318008656e8ee81eb4f63e56e4be0f8adde5bde7a79397d79452ee",
+      "2a8e4810426bb54791d575ca5ecb2f885dce5736e77d213f72c41b3a19a00f92",
+      "2c0f096f3b192eede75e8297a58f1292b9bf4c4e261125dbd4779157e7cb0889",
+      "44bb2843ed3aff7df2f464a3ab24817e186e902a17ff4e31fafc251f9f7a3701",
+      "1d84c0a77de7c1c8afd9eb0c23d5cea3f32029ab4f246df3e648224798f814e3",
+      "a1e9566c6edd827dba643d30bd28aeb900a35730d58cf0750635f7a72206131b",
+      "d2404a61ce4be8b3c5465089ec40c35769dbb6ff1054ae3eea91af3b03f195af"
+    ]
+  },
+  "blink": {
+    "frames": 8,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 5,
+    "loop": true,
+    "source": "Idle/south",
+    "sha256": [
+      "45305fc074826469aeab844bfcff2b60a9d31a6930fc89c677fcc06f158af031",
+      "3f0765dc5d129ba728dff637e81e0be40940e3029e3a87c34b92dcfbb5832cd4",
+      "293b4983f93cff4ee565f688707c4abbc75297029c6c86e3903ab3f997ac5f25",
+      "9f01cf514492cc031df31db653f7d49fd84155281332bd3277da7d2af1009745",
+      "aca48a48a4000598d507d2b5d84a72f5d476b4682fa098b17b9570e88e54230e",
+      "4ec5a57fb85e8c670fedf966e7655dbb459fe6e4fa9421892697dfee434f92f5",
+      "2a70b662ad28d7a1df9fc9e9496065aa2446be7ab14a7189c08ed62daf45be59",
+      "cfaca2002ddb69cef6546ddddf9901c2ea98a7051b0935db6803d5162607ea54"
+    ]
+  },
+  "move": {
+    "frames": 9,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 9,
+    "loop": true,
+    "source": "The_slime_executes_a_rhythmic_vertical_bounce_comp/south",
+    "sha256": [
+      "d917055952fb41154bd2bbe4b70e3dfc344de5ea3cff3abec5e083a50154685d",
+      "6462a93d0ddeb997545e75c027b89146f270ef1f7d57a0070e4e404804df262d",
+      "21fac2e783c770b802039399fd7c895bddfb4c47d02cee0cbd0754b743fd0256",
+      "5f14495d355d0bd83ce32de1371dd6693630acce8928bfe051ee6463638361fb",
+      "b16ec2701ef69cb6fcbd957e7b1aefd1c2e4015603fe5a35e3a220e8c5a2e002",
+      "d55e942ef14144f294302d678a92fcc616d8b2804df47acb113367e18cba7249",
+      "73a35fa532f02e42ffeb7ee59074b2e45699538bca12bb806f514d25788e2970",
+      "fc3ed48f49ff151db15e638b5c1622a92638217cd4d68dbf0a68bb878ddc9a05",
+      "e35194ac9e40517532b4b53f5fd825f4abf3cf66599fdd091a2edf26f4023969"
+    ]
+  },
+  "happy": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 8,
+    "loop": false,
+    "source": "supplemental/happy",
+    "sha256": [
+      "0a2e0b2930dce76e1ea466d20c6e64e2027d68dce52a81461685397accc34ce5",
+      "8b246773e9b66e10c3141de24329d46c24f775efaf6ef086f8b00ff5cf126b07",
+      "c02d5a4fe8aa6c9e77ecc3f2dac83684b8113b8ddcd34a768bfcda1a5bb0eab9",
+      "a2a402fb916a56ba361647a40e8874a9efc6ebcc4f54c89e15fb42e55778a1b7",
+      "47340a35ed7dbfe1850714856ce619911aa2b95f5ad6d5ea867ebc39d51f4790",
+      "fa3c8e10b57768138ac145db4d43a9458fcffeb71ace2418e3c7d547e095b55e",
+      "4307afd2d1a676009a2bc3d650f3aaf9bda569e8db9d3ea151325eab3ed81813",
+      "ddc312a87868151aa07daf7805b4ad5e1d47f9f520abfee4f03c70fa8ee41afe",
+      "060633a69510fb989c5e8cbe76c7961597330cd90f27e6ea94514b81c555a6fa"
+    ]
+  },
+  "curious": {
+    "frames": 9,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 8,
+    "loop": false,
+    "source": "supplemental/curious",
+    "sha256": [
+      "0a2e0b2930dce76e1ea466d20c6e64e2027d68dce52a81461685397accc34ce5",
+      "4f78758188598e203be35a16dcefbce12a487e5648ac7c7b950b6a41ef7c746e",
+      "365e9a595fa97301026ffac47c2e705d45d32ad7302fa72ca93e8c3881f32a81",
+      "64491980dd1688f34641b88cd9326e748332557cbea7227c6f7c92d1a1c5e50c",
+      "842b63b35076f46b7a41bd562f984fc7dc2beb3ed1495cd85efe46b164663433",
+      "364cc58be0a5844761fcb78cd298d5e61f27efb4c5e9730a74d31c4e4fa5463f",
+      "df72679cf2a6a92d3c7a4c4be0cbedb32766087bebe328fe17c2694d53b4184c",
+      "e8ece4cf188cbcef9bb4dd4b4b5f15d2377560de0dbb2e54443473c11d6f63f9",
+      "50e7e8d9f901828a263385d580dd0f897f666588e9703d6d08bba35926bf838a"
+    ]
+  },
+  "plant": {
+    "frames": 9,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 8,
+    "loop": false,
+    "source": "A_cute_peaceful_water_slime_magically_watering_pla/south",
+    "sha256": [
+      "d917055952fb41154bd2bbe4b70e3dfc344de5ea3cff3abec5e083a50154685d",
+      "6b32df72db93d9a1ef7746d19e5a1d7264864030697e43886bb8c233f3c81624",
+      "4a5df0dc9e781839ce1a1e11bfd6ca616ba645e1b3035379147e58e32f834399",
+      "b0d3abd3ff6bb444999b48eb0b93e110917a66785a56d91766edaf4f25151bc1",
+      "40bddd5c32f1eff02ebbd4a9a2d30fe6d0ea22b6ff232949a6474d88b61a4242",
+      "bc6f98f11bc6f35d79f419779f599051e91ee6e53ea64ddc00a8a98038cf1e0c",
+      "abce2f9757018a7415f26ce2611718bb8ccd0a61c1ed84143faf7c398bf89f72",
+      "06dd9b538c950e1840685c62dd1ccf70bd4f859dbda141522eb0437c2c52c6a4",
+      "868791fb7165a840a4a46032046c4c963253028a037aae3934b3a8bce56247c6"
+    ]
+  },
+  "play": {
+    "frames": 9,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 10,
+    "loop": false,
+    "source": "The_slime_executes_a_rhythmic_vertical_bounce_comp/south",
+    "sha256": [
+      "d917055952fb41154bd2bbe4b70e3dfc344de5ea3cff3abec5e083a50154685d",
+      "6462a93d0ddeb997545e75c027b89146f270ef1f7d57a0070e4e404804df262d",
+      "21fac2e783c770b802039399fd7c895bddfb4c47d02cee0cbd0754b743fd0256",
+      "5f14495d355d0bd83ce32de1371dd6693630acce8928bfe051ee6463638361fb",
+      "b16ec2701ef69cb6fcbd957e7b1aefd1c2e4015603fe5a35e3a220e8c5a2e002",
+      "d55e942ef14144f294302d678a92fcc616d8b2804df47acb113367e18cba7249",
+      "73a35fa532f02e42ffeb7ee59074b2e45699538bca12bb806f514d25788e2970",
+      "fc3ed48f49ff151db15e638b5c1622a92638217cd4d68dbf0a68bb878ddc9a05",
+      "e35194ac9e40517532b4b53f5fd825f4abf3cf66599fdd091a2edf26f4023969"
+    ]
+  },
+  "splash": {
+    "frames": 9,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 9,
+    "loop": false,
+    "source": "The_slime_squashes_downward_to_charge_energy_then/south",
+    "sha256": [
+      "d917055952fb41154bd2bbe4b70e3dfc344de5ea3cff3abec5e083a50154685d",
+      "45a4fc561f9d05edb48338c678cac74f6765a1761877a1c2bda8591bc3214a5a",
+      "8469eef11c91543e36d77c0a537e2cd042144dfacc956c522f3137912ed73657",
+      "01d2c280af3728e53c36e28c2f15f94123716ffb62da4c1e6642dac575ece4a9",
+      "ddc06509162b78ea7835267f9fdd89042c7b9032eb32f59ff4cc05bddcf9ad29",
+      "35bd235c3887d6d143a57d588da159ce97069e3ba9e0b8e71a045fc12dc8fcd9",
+      "d5f7e2b7d9f66adc72f59af529835371eadf3421031cc94fba3392167a17d800",
+      "351dbe40f67ded16713c85da37f14e04c01455acde18e802d315c1325bdb9828",
+      "4294d144d5dd746231530d70c351a6e111bbc2ea7d173f08ef0eb90e4030929e"
+    ]
+  },
+  "drink": {
+    "frames": 9,
+    "canvas": [
+      76,
+      76
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 7,
+    "loop": false,
+    "source": "The_slime_gently_leans_forward_to_submerge_its_mou/south",
+    "sha256": [
+      "d917055952fb41154bd2bbe4b70e3dfc344de5ea3cff3abec5e083a50154685d",
+      "8473b86ed54323c2d3c189480ad001a5a027cdba5fedc475307ca5dfd1128416",
+      "0d98a6e1ce8e1d9882bbf83ad0429bcf4543a9cc7bc00bb6c506b3e41f3939e9",
+      "7eb8e3a1ec1bde516303af2900172478628f1a7eda8c082e2c3df8782e29a70b",
+      "8e3d693ab6bbc72bab0e17a472b5581296a7392ff78e57a6371c03ebe218c01a",
+      "cb699b4676aaaf00c9de5353b79adcd0fdb1fb29ef2cbe5b2621abb7211b8379",
+      "edf113abb0f0ed86bfcc569342494f7a8ff1b2a555c322ffed5e7a57bec47ec6",
+      "56b4c95b06f9c1a7e0759374da011f12113ef600a8b531b7ae08cd06290a73fc",
+      "415712d6894d5083f5e1b2bd9c80b14a302dfe118512f1b9c8c02fdc2a9b20fd"
+    ]
+  },
+  "sleep": {
+    "frames": 5,
+    "canvas": [
+      64,
+      64
+    ],
+    "resource_canvas": [
+      76,
+      76
+    ],
+    "fps": 6,
+    "loop": true,
+    "source": "supplemental/sleep",
+    "sha256": [
+      "cf8ca736478c32bdcafec50e177eac66945dcba0e536ee8a5823b8ca30f90f37",
+      "b69f400e19e5318905bfc49f2d955ee5a3b8ae6c5a112261341dbbef27af23c8",
+      "95d4a1c7bac21a7ae34a517b3b8e5af1867034915c7bd6727da9039571c8b336",
+      "8640905aaf2766dca306e7777aaebc5511a804d858f075f8ba61d684a34d5dda",
+      "e7504384b61973fd85f20b62e0dfa3be2eceb22d9927764614be1ec6143f982e"
+    ]
+  }
+}

@@ -1,0 +1,1001 @@
+[
+	{
+		"foot": "(1968.0, 2849.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_2",
+		"overlap": 866,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1968.0, 2849.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_2",
+		"overlap": 431,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1968.0, 2849.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_2",
+		"overlap": 1093,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1392.0, 1378.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_3",
+		"overlap": 1080,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1392.0, 1378.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_3",
+		"overlap": 527,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1392.0, 1378.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_3",
+		"overlap": 1286,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2832.0, 285.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_5",
+		"overlap": 484,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2832.0, 285.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_5",
+		"overlap": 287,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2832.0, 285.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_5",
+		"overlap": 611,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1168.0, 2045.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_6",
+		"overlap": 613,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1168.0, 2045.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_6",
+		"overlap": 329,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1168.0, 2045.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_6",
+		"overlap": 762,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2256.0, 2781.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_7",
+		"overlap": 490,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2256.0, 2781.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_7",
+		"overlap": 316,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2256.0, 2781.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_7",
+		"overlap": 656,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2160.0, 159.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_8",
+		"overlap": 763,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2160.0, 159.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_8",
+		"overlap": 299,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2160.0, 159.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "tile_8",
+		"overlap": 916,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2932.0, 3081.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_flower",
+		"overlap": 865,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2932.0, 3081.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_flower",
+		"overlap": 426,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2932.0, 3081.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_flower",
+		"overlap": 1091,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2917.0, 3193.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_fern",
+		"overlap": 726,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2917.0, 3193.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_fern",
+		"overlap": 314,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2917.0, 3193.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_fern",
+		"overlap": 893,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2952.0, 3153.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_mushroom",
+		"overlap": 477,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2952.0, 3153.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_mushroom",
+		"overlap": 280,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2952.0, 3153.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_mushroom",
+		"overlap": 594,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2270.0, 2840.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_bush",
+		"overlap": 2784,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2270.0, 2840.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_bush",
+		"overlap": 1207,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2270.0, 2840.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_bush",
+		"overlap": 2690,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(4204.0, 2179.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_log",
+		"overlap": 1622,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(4204.0, 2179.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_log",
+		"overlap": 579,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(4204.0, 2179.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "prop_log",
+		"overlap": 1714,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2966.0, 3046.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bush_a",
+		"overlap": 1319,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2966.0, 3046.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bush_a",
+		"overlap": 604,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2966.0, 3046.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bush_a",
+		"overlap": 1500,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3012.0, 3074.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_flowers_a",
+		"overlap": 320,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3012.0, 3074.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_flowers_a",
+		"overlap": 170,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3012.0, 3074.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_flowers_a",
+		"overlap": 405,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3043.0, 3098.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_flowers_b",
+		"overlap": 561,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3043.0, 3098.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_flowers_b",
+		"overlap": 315,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3043.0, 3098.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_flowers_b",
+		"overlap": 660,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2980.0, 3078.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_rock_b",
+		"overlap": 371,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2980.0, 3078.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_rock_b",
+		"overlap": 227,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2980.0, 3078.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_rock_b",
+		"overlap": 437,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2260.0, 2944.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_mushrooms_a",
+		"overlap": 672,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2260.0, 2944.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_mushrooms_a",
+		"overlap": 379,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2260.0, 2944.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_mushrooms_a",
+		"overlap": 748,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2291.0, 2968.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_mushrooms_b",
+		"overlap": 475,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2291.0, 2968.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_mushrooms_b",
+		"overlap": 227,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2291.0, 2968.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_mushrooms_b",
+		"overlap": 548,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3038.0, 5606.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_rock_a",
+		"overlap": 767,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3038.0, 5606.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_rock_a",
+		"overlap": 450,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3038.0, 5606.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_rock_a",
+		"overlap": 950,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3143.0, 5658.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bush_b",
+		"overlap": 1284,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3143.0, 5658.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bush_b",
+		"overlap": 640,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3143.0, 5658.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bush_b",
+		"overlap": 1490,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3020.0, 3240.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bench",
+		"overlap": 1016,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3020.0, 3240.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bench",
+		"overlap": 516,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3020.0, 3240.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_bench",
+		"overlap": 1090,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2060.0, 1946.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_ruins_a",
+		"overlap": 1417,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2060.0, 1946.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_ruins_a",
+		"overlap": 524,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2060.0, 1946.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_ruins_a",
+		"overlap": 1544,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1816.0, 2070.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_ruins_b",
+		"overlap": 1204,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1816.0, 2070.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_ruins_b",
+		"overlap": 531,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1816.0, 2070.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_ruins_b",
+		"overlap": 1383,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2114.0, 2190.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_crystal",
+		"overlap": 794,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2114.0, 2190.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_crystal",
+		"overlap": 290,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2114.0, 2190.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_crystal",
+		"overlap": 1016,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3120.0, 5506.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_wood_post",
+		"overlap": 1631,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3120.0, 5506.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_wood_post",
+		"overlap": 683,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(3120.0, 5506.0)",
+		"map": "FlorestaDoDespertarV2",
+		"object": "curated_wood_post",
+		"overlap": 1607,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1500.0, 1750.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_fern",
+		"overlap": 713,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1500.0, 1750.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_fern",
+		"overlap": 227,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1500.0, 1750.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_fern",
+		"overlap": 841,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1460.0, 1780.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_flower",
+		"overlap": 829,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1460.0, 1780.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_flower",
+		"overlap": 359,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1460.0, 1780.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_flower",
+		"overlap": 1029,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1956.0, 561.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_log",
+		"overlap": 1624,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1956.0, 561.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_log",
+		"overlap": 581,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1956.0, 561.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_log",
+		"overlap": 1719,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2758.0, 104.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_mushroom",
+		"overlap": 229,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2758.0, 104.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_mushroom",
+		"overlap": 110,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2758.0, 104.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_mushroom",
+		"overlap": 282,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(154.0, 2861.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_bush",
+		"overlap": 2178,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(154.0, 2861.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_bush",
+		"overlap": 971,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(154.0, 2861.0)",
+		"map": "ValeDasNascentes",
+		"object": "prop_bush",
+		"overlap": 2345,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1464.0, 306.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bush_a",
+		"overlap": 1313,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1464.0, 306.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bush_a",
+		"overlap": 599,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1464.0, 306.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bush_a",
+		"overlap": 1497,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1482.0, 334.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_flowers_a",
+		"overlap": 319,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1482.0, 334.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_flowers_a",
+		"overlap": 174,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1482.0, 334.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_flowers_a",
+		"overlap": 409,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1450.0, 338.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_rock_b",
+		"overlap": 371,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1450.0, 338.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_rock_b",
+		"overlap": 227,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1450.0, 338.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_rock_b",
+		"overlap": 437,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1783.0, 478.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_flowers_b",
+		"overlap": 561,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1783.0, 478.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_flowers_b",
+		"overlap": 315,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1783.0, 478.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_flowers_b",
+		"overlap": 660,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2093.0, 1416.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bush_b",
+		"overlap": 1289,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2093.0, 1416.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bush_b",
+		"overlap": 641,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2093.0, 1416.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bush_b",
+		"overlap": 1492,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2184.0, 2078.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_rock_a",
+		"overlap": 767,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2184.0, 2078.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_rock_a",
+		"overlap": 450,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(2184.0, 2078.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_rock_a",
+		"overlap": 950,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(745.0, 1386.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_wood_post",
+		"overlap": 1631,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(745.0, 1386.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_wood_post",
+		"overlap": 683,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(745.0, 1386.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_wood_post",
+		"overlap": 1607,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1474.0, 680.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bench",
+		"overlap": 1016,
+		"scenario": "lower_base",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1474.0, 680.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bench",
+		"overlap": 516,
+		"scenario": "upper_half",
+		"side": -1,
+		"wrong": 0
+	},
+	{
+		"foot": "(1474.0, 680.0)",
+		"map": "ValeDasNascentes",
+		"object": "curated_bench",
+		"overlap": 1090,
+		"scenario": "front",
+		"side": 1,
+		"wrong": 0
+	}
+]

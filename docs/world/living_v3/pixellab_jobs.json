@@ -1,0 +1,548 @@
+{
+  "authorized_limit": 50,
+  "planned": 16,
+  "initial_balance": 4591.2,
+  "final_balance": 4575.2,
+  "actual_generations_used": 16,
+  "additional_usd_credits_used": 0,
+  "all_jobs_completed": true,
+  "jobs": [
+    {
+      "name": "musguinho",
+      "kind": "base",
+      "args": {
+        "description": "Musguinho, a cute small peaceful dark forest green moss slime for Slimekeepers Lost Valley cozy fantasy farming game. Single compact round squishy blob, two large expressive glossy dark eyes, tiny gentle smile, subtle rosy cheeks, a few small muted moss tufts on its head, shy friendly expression. Body roughly 36 pixels wide and 30 pixels tall centered in the 64 pixel canvas, clear silhouette. Authentic clean 2D pixel art, simple readable clusters, consistent dark desaturated green outline, soft pastel highlights, basic shading. High top down front facing, matches a cute round blue water slime. No legs, no accessories, no scenery, no ground shadow, no text, no realism, no 3D.",
+        "width": 64,
+        "height": 64,
+        "no_background": true,
+        "view": "high top-down",
+        "direction": "south",
+        "outline": "single color outline",
+        "detail": "low detail"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: dc5679a8-d798-42f1-9566-de3228a22e17\njob_id: dc5679a8-d798-42f1-9566-de3228a22e17\nmodel: pixen\ndescription: Musguinho, a cute small peaceful dark forest green moss slime for Slimekeepers Lost Valley cozy fantasy farming game. Single compact round squishy blob, two large expressive glossy dark eyes, tiny gentle smile, subtle rosy cheeks, a few small muted moss tufts on its head, shy friendly expression. Body roughly 36 pixels wide and 30 pixels tall centered in the 64 pixel canvas, clear silhouette. Authentic clean 2D pixel art, simple readable clusters, consistent dark desaturated green outline, soft pastel highlights, basic shading. High top down front facing, matches a cute round blue water slime. No legs, no accessories, no scenery, no ground shadow, no text, no realism, no 3D.\nsize: 64x64px\ntransparent: True\nasset_id: 40a151fb-078d-5d99-abf4-d9edb266225c\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~10-40s)\n\nhint: get_image(job_id=\"dc5679a8-d798-42f1-9566-de3228a22e17\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: dc5679a8-d798-42f1-9566-de3228a22e17\njob_id: dc5679a8-d798-42f1-9566-de3228a22e17\nframes: 1\ntransparent: yes\nasset_id: 40a151fb-078d-5d99-abf4-d9edb266225c\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download"
+          }
+        ]
+      }
+    },
+    {
+      "name": "squirrel",
+      "kind": "base",
+      "args": {
+        "description": "A tiny cute woodland squirrel for Slimekeepers Lost Valley cozy fantasy farming RPG. Warm chestnut brown fur, cream belly, large curled fluffy tail, small dark readable eye, standing on four paws ready to walk, facing right in high top down three quarter view. Single compact animal about 36 pixels tall and 38 pixels wide centered in a 64 pixel transparent canvas with generous empty margins for movement. Authentic clean 2D pixel art, simple rounded shapes, muted warm pastel palette, consistent dark brown one pixel outline, basic shading, crisp clusters. No scenery, no food object, no ground shadow, no text, no realism, no 3D.",
+        "width": 64,
+        "height": 64,
+        "no_background": true,
+        "view": "high top-down",
+        "direction": "east",
+        "outline": "single color outline",
+        "detail": "low detail"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: eabe2662-63d9-4253-bab9-526f878660e4\njob_id: eabe2662-63d9-4253-bab9-526f878660e4\nmodel: pixen\ndescription: A tiny cute woodland squirrel for Slimekeepers Lost Valley cozy fantasy farming RPG. Warm chestnut brown fur, cream belly, large curled fluffy tail, small dark readable eye, standing on four paws ready to walk, facing right in high top down three quarter view. Single compact animal about 36 pixels tall and 38 pixels wide centered in a 64 pixel transparent canvas with generous empty margins for movement. Authentic clean 2D pixel art, simple rounded shapes, muted warm pastel palette, consistent dark brown one pixel outline, basic shading, crisp clusters. No scenery, no food object, no ground shadow, no text, no realism, no 3D.\nsize: 64x64px\ntransparent: True\nasset_id: eef0f3b4-97e1-5037-a20b-2ffde1671ec3\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~10-40s)\n\nhint: get_image(job_id=\"eabe2662-63d9-4253-bab9-526f878660e4\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: eabe2662-63d9-4253-bab9-526f878660e4\njob_id: eabe2662-63d9-4253-bab9-526f878660e4\nframes: 1\ntransparent: yes\nasset_id: eef0f3b4-97e1-5037-a20b-2ffde1671ec3\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/eabe2662-63d9-4253-bab9-526f878660e4/download"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bird",
+      "kind": "base",
+      "args": {
+        "description": "A tiny friendly wild songbird for Slimekeepers Lost Valley cozy woodland fantasy farming RPG. Rounded small bird standing on ground facing right, soft muted teal blue wings, warm cream belly, tiny golden beak, two small feet, clear dark eye. Single bird about 26 pixels tall and 28 pixels wide centered in a 64 pixel transparent canvas with ample room for spread wings. High top down three quarter view, authentic clean 2D pixel art, simple rounded readable clusters, dark desaturated blue one pixel outline, soft pastel palette, basic shading. No scenery, no branch, no ground shadow, no text, no realism, no 3D.",
+        "width": 64,
+        "height": 64,
+        "no_background": true,
+        "view": "high top-down",
+        "direction": "east",
+        "outline": "single color outline",
+        "detail": "low detail"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57\njob_id: 0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57\nmodel: pixen\ndescription: A tiny friendly wild songbird for Slimekeepers Lost Valley cozy woodland fantasy farming RPG. Rounded small bird standing on ground facing right, soft muted teal blue wings, warm cream belly, tiny golden beak, two small feet, clear dark eye. Single bird about 26 pixels tall and 28 pixels wide centered in a 64 pixel transparent canvas with ample room for spread wings. High top down three quarter view, authentic clean 2D pixel art, simple rounded readable clusters, dark desaturated blue one pixel outline, soft pastel palette, basic shading. No scenery, no branch, no ground shadow, no text, no realism, no 3D.\nsize: 64x64px\ntransparent: True\nasset_id: 666b8a68-bcbe-5c2a-838e-e2687b34b4d6\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~10-40s)\n\nhint: get_image(job_id=\"0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57\njob_id: 0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57\nframes: 1\ntransparent: yes\nasset_id: 666b8a68-bcbe-5c2a-838e-e2687b34b4d6\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57/download"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bolhinha/sleep",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://backblaze.pixellab.ai/file/pixellab-characters/ca46d57a-358e-4e1e-b573-841aa13cc176/48e3207b-546f-4fa7-bf90-e67d8bd3105c/rotations/south.png?t=1792900219",
+        "action": "The slime slowly relaxes down into a soft low rounded resting shape, closes both eyes peacefully and breathes very subtly while sleeping. Keep its body centered and grounded. The final several frames maintain closed eyes and a calm sleeping pose. No movement across the canvas.",
+        "frame_count": 8,
+        "no_background": true
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 8917f01a-b8bf-4257-bfd3-eb294ce6cb0d\njob_id: 8917f01a-b8bf-4257-bfd3-eb294ce6cb0d\naction: The slime slowly relaxes down into a soft low rounded resting shape, closes both eyes peacefully and breathes very subtly while sleeping. Keep its body centered and grounded. The final several frames maintain closed eyes and a calm sleeping pose. No movement across the canvas.\nframes: 8\nsize: 64x64px\ntransparent: True\nasset_id: ec3a4e5e-40ab-5793-a3f6-2eeed337f4c9\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"8917f01a-b8bf-4257-bfd3-eb294ce6cb0d\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 8917f01a-b8bf-4257-bfd3-eb294ce6cb0d\njob_id: 8917f01a-b8bf-4257-bfd3-eb294ce6cb0d\nframes: 9\ntransparent: yes\nasset_id: ec3a4e5e-40ab-5793-a3f6-2eeed337f4c9\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/8917f01a-b8bf-4257-bfd3-eb294ce6cb0d/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bolhinha/happy",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://backblaze.pixellab.ai/file/pixellab-characters/ca46d57a-358e-4e1e-b573-841aa13cc176/48e3207b-546f-4fa7-bf90-e67d8bd3105c/rotations/south.png?t=1792900219",
+        "action": "The slime smiles broadly, its eyes joyfully squint and it makes one small cheerful squishy bounce, then returns to its exact starting position. Preserve its round body and all facial features. A gentle joyful greeting, no large leap, no movement across the canvas.",
+        "frame_count": 8,
+        "no_background": true
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 71b277d3-5311-471d-8c56-d38d021ad631\njob_id: 71b277d3-5311-471d-8c56-d38d021ad631\naction: The slime smiles broadly, its eyes joyfully squint and it makes one small cheerful squishy bounce, then returns to its exact starting position. Preserve its round body and all facial features. A gentle joyful greeting, no large leap, no movement across the canvas.\nframes: 8\nsize: 64x64px\ntransparent: True\nasset_id: b21f302f-19c1-5140-8aa5-ee2e7bb8683c\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"71b277d3-5311-471d-8c56-d38d021ad631\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 71b277d3-5311-471d-8c56-d38d021ad631\njob_id: 71b277d3-5311-471d-8c56-d38d021ad631\nframes: 9\ntransparent: yes\nasset_id: b21f302f-19c1-5140-8aa5-ee2e7bb8683c\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/71b277d3-5311-471d-8c56-d38d021ad631/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bolhinha/curious",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://backblaze.pixellab.ai/file/pixellab-characters/ca46d57a-358e-4e1e-b573-841aa13cc176/48e3207b-546f-4fa7-bf90-e67d8bd3105c/rotations/south.png?t=1792900219",
+        "action": "The slime tilts its upper body gently to one side with wide curious eyes, pauses to observe, then tilts subtly the other way and returns upright. Keep its lower body planted and centered, preserve its round silhouette. No movement across the canvas.",
+        "frame_count": 8,
+        "no_background": true
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: a5b8879a-84bb-48a7-bdd9-2d2927519ffd\njob_id: a5b8879a-84bb-48a7-bdd9-2d2927519ffd\naction: The slime tilts its upper body gently to one side with wide curious eyes, pauses to observe, then tilts subtly the other way and returns upright. Keep its lower body planted and centered, preserve its round silhouette. No movement across the canvas.\nframes: 8\nsize: 64x64px\ntransparent: True\nasset_id: 32e67549-0922-5dcf-b04f-2dac4a044853\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"a5b8879a-84bb-48a7-bdd9-2d2927519ffd\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: a5b8879a-84bb-48a7-bdd9-2d2927519ffd\njob_id: a5b8879a-84bb-48a7-bdd9-2d2927519ffd\nframes: 9\ntransparent: yes\nasset_id: 32e67549-0922-5dcf-b04f-2dac4a044853\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/a5b8879a-84bb-48a7-bdd9-2d2927519ffd/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "squirrel/walk",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/eabe2662-63d9-4253-bab9-526f878660e4/download",
+        "action": "The squirrel walks in place toward the right with small alternating steps of all four paws, tail bouncing very gently. Keep the body centered, identical size and identity. A seamless walking cycle without travelling across the canvas.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/eabe2662-63d9-4253-bab9-526f878660e4/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 688a809a-960a-4657-9533-54e07d0008d6\njob_id: 688a809a-960a-4657-9533-54e07d0008d6\naction: The squirrel walks in place toward the right with small alternating steps of all four paws, tail bouncing very gently. Keep the body centered, identical size and identity. A seamless walking cycle without travelling across the canvas.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: 0ec3bf09-a9b0-53c6-849f-41a651c4e870\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"688a809a-960a-4657-9533-54e07d0008d6\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 688a809a-960a-4657-9533-54e07d0008d6\njob_id: 688a809a-960a-4657-9533-54e07d0008d6\nframes: 9\ntransparent: yes\nasset_id: 0ec3bf09-a9b0-53c6-849f-41a651c4e870\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/688a809a-960a-4657-9533-54e07d0008d6/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "squirrel/forage",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/eabe2662-63d9-4253-bab9-526f878660e4/download",
+        "action": "The squirrel pauses and sniffs the ground, dips its head and gently moves its front paws as if searching for seeds, then looks up. Tail makes a subtle relaxed twitch. Keep centered with all paws grounded and the exact same size.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/eabe2662-63d9-4253-bab9-526f878660e4/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: c5e2d8c5-68d2-4102-addb-6c09e336789c\njob_id: c5e2d8c5-68d2-4102-addb-6c09e336789c\naction: The squirrel pauses and sniffs the ground, dips its head and gently moves its front paws as if searching for seeds, then looks up. Tail makes a subtle relaxed twitch. Keep centered with all paws grounded and the exact same size.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: f21a9db8-5ee2-5d2f-a62a-cb32da323ae9\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"c5e2d8c5-68d2-4102-addb-6c09e336789c\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: c5e2d8c5-68d2-4102-addb-6c09e336789c\njob_id: c5e2d8c5-68d2-4102-addb-6c09e336789c\nframes: 9\ntransparent: yes\nasset_id: f21a9db8-5ee2-5d2f-a62a-cb32da323ae9\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/c5e2d8c5-68d2-4102-addb-6c09e336789c/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bird/walk",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57/download",
+        "action": "The small bird makes two gentle tiny hops in place and dips its beak briefly as if pecking the ground, then returns to standing. Feet stay near the same ground line. Preserve the body size and face, keep centered, no horizontal travel.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: c964f1a3-8ebc-4566-b953-daaa4780fabf\njob_id: c964f1a3-8ebc-4566-b953-daaa4780fabf\naction: The small bird makes two gentle tiny hops in place and dips its beak briefly as if pecking the ground, then returns to standing. Feet stay near the same ground line. Preserve the body size and face, keep centered, no horizontal travel.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: eab74d58-3ae9-51eb-bb66-d66a3c932056\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"c964f1a3-8ebc-4566-b953-daaa4780fabf\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: c964f1a3-8ebc-4566-b953-daaa4780fabf\njob_id: c964f1a3-8ebc-4566-b953-daaa4780fabf\nframes: 9\ntransparent: yes\nasset_id: eab74d58-3ae9-51eb-bb66-d66a3c932056\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/c964f1a3-8ebc-4566-b953-daaa4780fabf/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bird/fly",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/0f067d1c-6da7-4dd2-b3e0-ff2ed5088b57/download",
+        "action": "The small bird spreads both wings and flaps in a smooth repeated flying cycle facing right. Feet tuck up slightly. Keep the bird centered at the same height, same body size, entire wings inside the canvas. Do not travel across the frame.",
+        "frame_count": 8,
+        "no_background": true
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: f5be8b7f-790e-434d-8d33-7dcd113066ac\njob_id: f5be8b7f-790e-434d-8d33-7dcd113066ac\naction: The small bird spreads both wings and flaps in a smooth repeated flying cycle facing right. Feet tuck up slightly. Keep the bird centered at the same height, same body size, entire wings inside the canvas. Do not travel across the frame.\nframes: 8\nsize: 64x64px\ntransparent: True\nasset_id: 6c939859-250e-5130-8846-fdf9f19e4684\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"f5be8b7f-790e-434d-8d33-7dcd113066ac\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: f5be8b7f-790e-434d-8d33-7dcd113066ac\njob_id: f5be8b7f-790e-434d-8d33-7dcd113066ac\nframes: 9\ntransparent: yes\nasset_id: 6c939859-250e-5130-8846-fdf9f19e4684\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/f5be8b7f-790e-434d-8d33-7dcd113066ac/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "musguinho/idle",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download",
+        "action": "The moss slime breathes with a very gentle slow squish and stretch in place and blinks once. Moss tufts subtly settle. Keep the lower body grounded and all features consistent, seamless calm idle loop.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: dc710886-a1b1-4d69-aa2e-fcd80a8d25c7\njob_id: dc710886-a1b1-4d69-aa2e-fcd80a8d25c7\naction: The moss slime breathes with a very gentle slow squish and stretch in place and blinks once. Moss tufts subtly settle. Keep the lower body grounded and all features consistent, seamless calm idle loop.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: 705d551e-31e8-5877-9c59-2d6d8d785a47\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"dc710886-a1b1-4d69-aa2e-fcd80a8d25c7\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: dc710886-a1b1-4d69-aa2e-fcd80a8d25c7\njob_id: dc710886-a1b1-4d69-aa2e-fcd80a8d25c7\nframes: 9\ntransparent: yes\nasset_id: 705d551e-31e8-5877-9c59-2d6d8d785a47\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/dc710886-a1b1-4d69-aa2e-fcd80a8d25c7/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "musguinho/move",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download",
+        "action": "The moss slime makes small rhythmic low squishy hops in place, gently compressing then lifting slightly and landing softly. Preserve its round body, eyes and moss tufts, seamless movement cycle, no travel across the canvas.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 78762b6c-0629-493b-8eee-0b9feff18459\njob_id: 78762b6c-0629-493b-8eee-0b9feff18459\naction: The moss slime makes small rhythmic low squishy hops in place, gently compressing then lifting slightly and landing softly. Preserve its round body, eyes and moss tufts, seamless movement cycle, no travel across the canvas.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: 1aae073b-ff2d-5c1a-a2af-e93aa1216116\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"78762b6c-0629-493b-8eee-0b9feff18459\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 78762b6c-0629-493b-8eee-0b9feff18459\njob_id: 78762b6c-0629-493b-8eee-0b9feff18459\nframes: 9\ntransparent: yes\nasset_id: 1aae073b-ff2d-5c1a-a2af-e93aa1216116\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/78762b6c-0629-493b-8eee-0b9feff18459/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "musguinho/jump",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download",
+        "action": "The moss slime squashes down, performs one small cheerful vertical hop and lands with a soft squash before recovering its original shape. Preserve its moss tufts and face. Keep centered and entirely inside the canvas.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 819a61c8-ef29-4b13-97d7-b20dd246dce9\njob_id: 819a61c8-ef29-4b13-97d7-b20dd246dce9\naction: The moss slime squashes down, performs one small cheerful vertical hop and lands with a soft squash before recovering its original shape. Preserve its moss tufts and face. Keep centered and entirely inside the canvas.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: 575c83a1-d28f-5460-9107-94fc3d2d5e56\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"819a61c8-ef29-4b13-97d7-b20dd246dce9\")"
+          }
+        ],
+        "isError": false
+      },
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 819a61c8-ef29-4b13-97d7-b20dd246dce9\njob_id: 819a61c8-ef29-4b13-97d7-b20dd246dce9\nframes: 9\ntransparent: yes\nasset_id: 575c83a1-d28f-5460-9107-94fc3d2d5e56\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/819a61c8-ef29-4b13-97d7-b20dd246dce9/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "musguinho/happy",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download",
+        "action": "The shy moss slime smiles with happy curved eyes and makes a tiny joyful wiggle, then returns to its calm friendly expression. Preserve its round body and moss tufts, stay grounded and centered, no large movement.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: a3856402-fd3f-45d6-9ead-f45f730e7106\njob_id: a3856402-fd3f-45d6-9ead-f45f730e7106\naction: The shy moss slime smiles with happy curved eyes and makes a tiny joyful wiggle, then returns to its calm friendly expression. Preserve its round body and moss tufts, stay grounded and centered, no large movement.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: 2e858b9d-0371-5383-9147-154be0372caf\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"a3856402-fd3f-45d6-9ead-f45f730e7106\")"
+          }
+        ],
+        "isError": false
+      },
+      "attempts": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "error: rate limit exceeded (10/10 jobs)\n\nhint: wait for a job to finish, then retry"
+            }
+          ],
+          "isError": true
+        }
+      ],
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: a3856402-fd3f-45d6-9ead-f45f730e7106\njob_id: a3856402-fd3f-45d6-9ead-f45f730e7106\nframes: 9\ntransparent: yes\nasset_id: 2e858b9d-0371-5383-9147-154be0372caf\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/a3856402-fd3f-45d6-9ead-f45f730e7106/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "musguinho/sleep",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download",
+        "action": "The moss slime relaxes into a slightly flattened sleeping shape, closes its eyes and breathes very subtly while asleep. The final several frames maintain closed eyes and gentle sleeping breathing. Keep centered and grounded, preserve moss tufts.",
+        "frame_count": 8,
+        "no_background": true
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: f56f2b21-322a-4413-9ea2-7134d9289251\njob_id: f56f2b21-322a-4413-9ea2-7134d9289251\naction: The moss slime relaxes into a slightly flattened sleeping shape, closes its eyes and breathes very subtly while asleep. The final several frames maintain closed eyes and gentle sleeping breathing. Keep centered and grounded, preserve moss tufts.\nframes: 8\nsize: 64x64px\ntransparent: True\nasset_id: 8fec9303-dd04-52d6-84d8-3e60e8572b14\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"f56f2b21-322a-4413-9ea2-7134d9289251\")"
+          }
+        ],
+        "isError": false
+      },
+      "attempts": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "error: rate limit exceeded (10/10 jobs)\n\nhint: wait for a job to finish, then retry"
+            }
+          ],
+          "isError": true
+        }
+      ],
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: f56f2b21-322a-4413-9ea2-7134d9289251\njob_id: f56f2b21-322a-4413-9ea2-7134d9289251\nframes: 9\ntransparent: yes\nasset_id: 8fec9303-dd04-52d6-84d8-3e60e8572b14\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/f56f2b21-322a-4413-9ea2-7134d9289251/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "musguinho/plant",
+      "kind": "animation",
+      "args": {
+        "first_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download",
+        "action": "The moss slime leans gently forward as if investigating a tiny plant, its moss tufts sway softly, it makes a subtle curious head tilt and returns upright. Keep centered with its base grounded, preserve face and moss details. Do not add objects.",
+        "frame_count": 8,
+        "no_background": true,
+        "last_frame_url": "https://api.pixellab.ai/mcp/images/dc5679a8-d798-42f1-9566-de3228a22e17/download"
+      },
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "id: 6d20769c-3daf-4e5b-a65b-b022fef537c8\njob_id: 6d20769c-3daf-4e5b-a65b-b022fef537c8\naction: The moss slime leans gently forward as if investigating a tiny plant, its moss tufts sway softly, it makes a subtle curious head tilt and returns upright. Keep centered with its base grounded, preserve face and moss details. Do not add objects.\nframes: 8\nsize: 64x64px\ntransparent: True\nlast_frame: yes (interpolating to it)\nasset_id: 50f4b45c-cb2b-57ff-b820-4a0aee16bb35\nasset_status: pending (saved when generation completes)\ncost: 1 generation\nstatus: processing (~30-180s)\n\nhint: get_image(job_id=\"6d20769c-3daf-4e5b-a65b-b022fef537c8\")"
+          }
+        ],
+        "isError": false
+      },
+      "attempts": [
+        {
+          "content": [
+            {
+              "type": "text",
+              "text": "error: rate limit exceeded (10/10 jobs)\n\nhint: wait for a job to finish, then retry"
+            }
+          ],
+          "isError": true
+        }
+      ],
+      "statusResult": {
+        "content": [
+          {
+            "type": "text",
+            "text": "status: completed\nid: 6d20769c-3daf-4e5b-a65b-b022fef537c8\njob_id: 6d20769c-3daf-4e5b-a65b-b022fef537c8\nframes: 9\ntransparent: yes\nasset_id: 50f4b45c-cb2b-57ff-b820-4a0aee16bb35\nasset_type: image\nasset_status: saved\ngallery: saved to your PixelLab gallery (pixellab.ai/create)\ncharged: 1 generation\ndownload: https://api.pixellab.ai/mcp/images/6d20769c-3daf-4e5b-a65b-b022fef537c8/download?index=0 ... ?index=8"
+          },
+          {
+            "type": "text",
+            "text": "(5 more frames not shown — fetch them from the download URLs above)"
+          }
+        ]
+      }
+    }
+  ]
+}

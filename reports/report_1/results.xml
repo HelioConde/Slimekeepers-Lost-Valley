@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites id="2026-10-27" name="report_1" tests="7" failures="0" skipped="0" flaky="0" time="0.000">
+	<testsuite id="0" name="test_habitats" package="tests/forest" timestamp="2026-10-27T13:17:57" hostname="localhost" tests="7" failures="0" errors="0" skipped="0" flaky="0" time="0.320">
+		<testcase name="test_four_habitats_have_unique_bounded_safe_populations" classname="test_habitats" time="0.027">
+		</testcase>
+		<testcase name="test_population_is_idempotent_and_respawn_waits_for_cooldown" classname="test_habitats" time="0.039">
+		</testcase>
+		<testcase name="test_global_cap_limits_oversized_habitat" classname="test_habitats" time="0.040">
+		</testcase>
+		<testcase name="test_exclusion_rejects_unsafe_spawn_and_wander_without_fallback" classname="test_habitats" time="0.033">
+		</testcase>
+		<testcase name="test_friendship_survives_region_recreation_per_instance" classname="test_habitats" time="0.060">
+		</testcase>
+		<testcase name="test_physics_capsule_stops_movement_at_solid_prop" classname="test_habitats" time="0.067">
+		</testcase>
+		<testcase name="test_population_does_not_appear_in_current_player_view" classname="test_habitats" time="0.032">
+		</testcase>
+	</testsuite>
+</testsuites>

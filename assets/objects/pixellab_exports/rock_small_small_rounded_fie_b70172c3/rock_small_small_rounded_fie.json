@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "b70172c3-1861-4098-8451-56a3534db151",
+    "name": "base",
+    "prompt": "rock_small \u2014 small rounded fieldstone for Slimekeepers: Lost Valley, 48x48 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, muted cool gray stone with soft moss-green speckles and subtle natural facets, compact non-walkable footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, plants, characters, text, or external shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "rock_small_small_rounded_fie.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:38:57.568829+00:00"
+}

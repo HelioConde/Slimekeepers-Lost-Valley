@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "a291baf8-9330-412a-bedb-625ecf52b336",
+    "name": "base",
+    "prompt": "tree_pine \u2014 tall evergreen pine tree for Slimekeepers: Lost Valley, 96x160 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, layered conical branches in deep natural forest green, visible sturdy brown trunk at the base, compact roots, clear lower trunk for collision and Y-sorting. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, characters, snow, fruit, or external shadow.",
+    "size": {
+      "width": 96,
+      "height": 96
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "tree_pine_tall_evergreen_pin.png",
+    "cell_size": {
+      "width": 96,
+      "height": 96
+    },
+    "sheet_size": {
+      "width": 96,
+      "height": 96
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:00.833774+00:00"
+}

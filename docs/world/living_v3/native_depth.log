@@ -1,0 +1,12 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 Core Profile Context 26.5.2.260413 - Compatibility - Using Device: ATI Technologies Inc. - Radeon RX 580 Series
+
+DEPTH oak side=-1 overlap=1247 wrong=0
+DEPTH oak side=1 overlap=1064 wrong=0
+DEPTH log side=-1 overlap=531 wrong=0
+DEPTH log side=1 overlap=750 wrong=0
+DEPTH bush side=-1 overlap=1007 wrong=0
+DEPTH bush side=1 overlap=1062 wrong=0
+DEPTH mushroom side=-1 overlap=119 wrong=0
+DEPTH mushroom side=1 overlap=298 wrong=0
+NATIVE_DEPTH: 8 checks; 0 failures

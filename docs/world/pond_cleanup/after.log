@@ -1,0 +1,40 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 Core Profile Context 26.5.2.260413 - Compatibility - Using Device: ATI Technologies Inc. - Radeon RX 580 Series
+
+PROP /root/FlorestaDoDespertarV2/VegetationHigh/Tree_0231/Sprite foot=(3690.0, 2984.0) wet=false tex=res://assets/world/forest/pine_crisp.png
+PROP /root/FlorestaDoDespertarV2/VegetationHigh/Tree_0588/Sprite foot=(3547.0, 3125.0) wet=false tex=res://assets/world/forest/pine_crisp.png
+PROP /root/FlorestaDoDespertarV2/VegetationHigh/Tree_0868/Sprite foot=(3559.0, 2935.0) wet=false tex=res://assets/menu/environment/oak_medium.png
+PROP /root/FlorestaDoDespertarV2/VegetationHigh/Tree_1018/Sprite foot=(3616.0, 2874.0) wet=false tex=res://assets/world/forest/oak_young.png
+PROP /root/FlorestaDoDespertarV2/VegetationHigh/Tree_1029/Sprite foot=(3406.0, 2886.0) wet=false tex=res://assets/menu/environment/oak_medium.png
+PROP /root/FlorestaDoDespertarV2/VegetationHigh/Tree_1154/Sprite foot=(3638.0, 3031.0) wet=false tex=res://assets/world/forest/pine_crisp.png
+PROP /root/FlorestaDoDespertarV2/Decorations/Underbrush_1164/Sprite foot=(3448.0, 2897.0) wet=false tex=res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png
+PROP /root/FlorestaDoDespertarV2/Decorations/Underbrush_1168/Sprite foot=(3508.0, 3091.0) wet=false tex=res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png
+PROP /root/FlorestaDoDespertarV2/Decorations/MossyRock_1317/RockFern foot=(3422.0, 2929.0) wet=false tex=res://assets/world/forest/fern.png
+PROP /root/FlorestaDoDespertarV2/Decorations/MossyRock_1317/Sprite foot=(3430.0, 2964.0) wet=false tex=res://assets/menu/environment/stone.png
+PROP /root/FlorestaDoDespertarV2/Decorations/ClearingShrub_1324/Sprite foot=(3370.0, 2952.0) wet=false tex=res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png
+PROP /root/FlorestaDoDespertarV2/NaturalSpring/Pool/@Sprite2D@8 foot=(3449.0, 3079.0) wet=false tex=res://assets/menu/environment/grass.png
+PROP /root/FlorestaDoDespertarV2/NaturalSpring/Pool/@Sprite2D@9 foot=(3583.0, 3060.0) wet=false tex=res://assets/menu/environment/grass.png
+PROP /root/FlorestaDoDespertarV2/NaturalSpring/Pool/@Sprite2D@10 foot=(3585.0, 2984.0) wet=false tex=res://assets/menu/environment/flowers.png
+PROP /root/FlorestaDoDespertarV2/FlowerClusters/Wildflowers_2897/Sprite foot=(3474.0, 3165.0) wet=false tex=res://assets/menu/environment/flowers.png
+PROP /root/FlorestaDoDespertarV2/FlowerClusters/Wildflowers_2899/Sprite foot=(3430.0, 3179.0) wet=false tex=res://assets/menu/environment/flowers.png
+TILE VegetationLow (109, 91) foot=(3504.0, 2947.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (109, 90) foot=(3504.0, 2914.0) wet=false tex=res://assets/menu/environment/crops.png
+TILE VegetationLow (109, 96) foot=(3504.0, 3107.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (110, 96) foot=(3536.0, 3107.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (112, 96) foot=(3600.0, 3107.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (111, 91) foot=(3568.0, 2946.0) wet=false tex=res://assets/menu/environment/crops.png
+TILE VegetationLow (110, 91) foot=(3536.0, 2945.0) wet=false tex=res://assets/menu/environment/flowers.png
+TILE VegetationLow (112, 91) foot=(3600.0, 2947.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (112, 92) foot=(3600.0, 2973.0) wet=false tex=res://assets/world/forest/mushroom_brown.png
+TILE VegetationLow (108, 91) foot=(3472.0, 2947.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (107, 91) foot=(3440.0, 2947.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE VegetationLow (113, 93) foot=(3632.0, 3011.0) wet=false tex=res://assets/menu/environment/grass.png
+TILE GroundDetails (112, 93) foot=(3600.0, 2992.0) wet=false tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (111, 97) foot=(3568.0, 3120.0) wet=false tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (110, 95) foot=(3536.0, 3056.0) wet=true tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (111, 94) foot=(3568.0, 3024.0) wet=true tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (110, 96) foot=(3536.0, 3088.0) wet=false tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (111, 92) foot=(3568.0, 2960.0) wet=false tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (109, 90) foot=(3504.0, 2896.0) wet=false tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (109, 93) foot=(3504.0, 2992.0) wet=true tex=res://assets/tilesets/grass_dirt_v3_32x32.png
+TILE GroundDetails (109, 98) foot=(3504.0, 3152.0) wet=false tex=res://assets/tilesets/grass_dirt_v3_32x32.png

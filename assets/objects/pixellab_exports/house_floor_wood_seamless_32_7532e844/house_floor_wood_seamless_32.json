@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "7532e844-0e67-43e3-a089-d964ca8f2bbe",
+    "name": "base",
+    "prompt": "house_floor_wood \u2014 seamless 32x32 pixel art interior cottage floor tile, warm wooden planks, low top-down perspective, subtle handcrafted texture, transparent background, flat tile only, no wall, furniture, border, ground or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "house_floor_wood_seamless_32.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:35:24.669518+00:00"
+}

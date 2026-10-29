@@ -1,0 +1,6 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 Core Profile Context 26.5.2.260413 - Compatibility - Using Device: ATI Technologies Inc. - Radeon RX 580 Series
+
+CONTACT tree foot_gap=34.0000915527344 collider=[P: (-12.0, -17.0), S: (24.0, 34.0)]
+CONTACT stone foot_gap=34.0000915527344 collider=[P: (-12.0, -17.0), S: (24.0, 34.0)]
+CONTACT_DISTANCE: 2 approaches; 2 failures

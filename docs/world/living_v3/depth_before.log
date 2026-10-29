@@ -1,0 +1,34 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 Core Profile Context 26.5.2.260413 - Compatibility - Using Device: ATI Technologies Inc. - Radeon RX 580 Series
+
+MAP_DEPTH {"foot":"(1968.0, 2849.0)","map":"FlorestaDoDespertarV2","object":"tile_2","overlap":789,"side":-1,"wrong":789}
+MAP_DEPTH {"foot":"(1968.0, 2849.0)","map":"FlorestaDoDespertarV2","object":"tile_2","overlap":1093,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2832.0, 285.0)","map":"FlorestaDoDespertarV2","object":"tile_5","overlap":392,"side":-1,"wrong":392}
+MAP_DEPTH {"foot":"(2832.0, 285.0)","map":"FlorestaDoDespertarV2","object":"tile_5","overlap":611,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1168.0, 2045.0)","map":"FlorestaDoDespertarV2","object":"tile_6","overlap":516,"side":-1,"wrong":516}
+MAP_DEPTH {"foot":"(1168.0, 2045.0)","map":"FlorestaDoDespertarV2","object":"tile_6","overlap":762,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2256.0, 2781.0)","map":"FlorestaDoDespertarV2","object":"tile_7","overlap":404,"side":-1,"wrong":404}
+MAP_DEPTH {"foot":"(2256.0, 2781.0)","map":"FlorestaDoDespertarV2","object":"tile_7","overlap":656,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2160.0, 159.0)","map":"FlorestaDoDespertarV2","object":"tile_8","overlap":686,"side":-1,"wrong":686}
+MAP_DEPTH {"foot":"(2160.0, 159.0)","map":"FlorestaDoDespertarV2","object":"tile_8","overlap":916,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2932.0, 3081.0)","map":"FlorestaDoDespertarV2","object":"prop_flower","overlap":782,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2932.0, 3081.0)","map":"FlorestaDoDespertarV2","object":"prop_flower","overlap":1093,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2917.0, 3193.0)","map":"FlorestaDoDespertarV2","object":"prop_fern","overlap":661,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2917.0, 3193.0)","map":"FlorestaDoDespertarV2","object":"prop_fern","overlap":908,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2952.0, 3153.0)","map":"FlorestaDoDespertarV2","object":"prop_mushroom","overlap":383,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2952.0, 3153.0)","map":"FlorestaDoDespertarV2","object":"prop_mushroom","overlap":594,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2270.0, 2840.0)","map":"FlorestaDoDespertarV2","object":"prop_bush","overlap":2708,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2270.0, 2840.0)","map":"FlorestaDoDespertarV2","object":"prop_bush","overlap":2690,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(4204.0, 2179.0)","map":"FlorestaDoDespertarV2","object":"prop_log","overlap":1517,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(4204.0, 2179.0)","map":"FlorestaDoDespertarV2","object":"prop_log","overlap":1714,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1500.0, 1750.0)","map":"ValeDasNascentes","object":"prop_fern","overlap":602,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1500.0, 1750.0)","map":"ValeDasNascentes","object":"prop_fern","overlap":841,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1460.0, 1780.0)","map":"ValeDasNascentes","object":"prop_flower","overlap":730,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1460.0, 1780.0)","map":"ValeDasNascentes","object":"prop_flower","overlap":1029,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(1956.0, 561.0)","map":"ValeDasNascentes","object":"prop_log","overlap":1516,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(1956.0, 561.0)","map":"ValeDasNascentes","object":"prop_log","overlap":1719,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(2758.0, 104.0)","map":"ValeDasNascentes","object":"prop_mushroom","overlap":362,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(2758.0, 104.0)","map":"ValeDasNascentes","object":"prop_mushroom","overlap":587,"side":1,"wrong":0}
+MAP_DEPTH {"foot":"(154.0, 2861.0)","map":"ValeDasNascentes","object":"prop_bush","overlap":2709,"side":-1,"wrong":0}
+MAP_DEPTH {"foot":"(154.0, 2861.0)","map":"ValeDasNascentes","object":"prop_bush","overlap":2690,"side":1,"wrong":0}
+MAP_DEPTH: 30 checks; 5 failures

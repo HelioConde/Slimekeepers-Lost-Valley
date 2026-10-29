@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "c5cc2784-b8bf-4be4-a76e-94a3fd4f873b",
+    "name": "base",
+    "prompt": "house_wall_wood \u2014 detailed 64x64 pixel art modular timber-and-plaster cottage wall segment for a cozy fantasy farming RPG, low top-down perspective, warm wooden beams, cream plaster panels, clean tileable edges, transparent background, isolated, no door, no window, no roof, no floor, no ground or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "house_wall_wood_detailed_64x.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:35:47.375850+00:00"
+}

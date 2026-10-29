@@ -1,0 +1,62 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS: Spawn stays exactly central after physics frames
+PASS: 100 x 100 real ground tiles loaded
+PASS: Ground is an editable TileMapLayer
+PASS: GroundDetails is an editable TileMapLayer
+PASS: VegetationLow is an editable TileMapLayer
+PASS: Obstacles is an editable TileMapLayer
+PASS: Feet-based sorting enabled across actors and props
+PASS: Camera spans the new region, not the old prototype
+PASS: Camera follows smoothly
+PASS: Central 160 x 160 movement area is collision-free
+PASS: Ancestral spawn landmark has a solid base
+PASS: Ancestral landmark has an open southern approach
+PASS: Spawn has a clear route to its visual landmark
+PASS: Large trees cast ground shadows without new blockers
+PASS: Player capsule can traverse North continuously
+PASS: Player capsule can traverse East continuously
+PASS: Player capsule can traverse South continuously
+PASS: Player capsule can traverse WestGrove continuously
+PASS: Player capsule can traverse FernGrove continuously
+PASS: Player capsule can traverse QuietGrove continuously
+PASS: Player capsule can traverse LogHollow continuously
+PASS: Player capsule can traverse BlueFernNook continuously
+PASS: Physical route to Gelito
+PASS: Physical route to Brotinho
+PASS: Physical route to Brasinha
+PASS: No trees placed inside the central clearing
+PASS: Illustrated blurred pines replaced throughout the map
+PASS: All 943 tree bases block the player capsule
+PASS: Logs, stumps and mossy rocks have physical bases
+PASS: TileSet rock collision works on layer 2
+PASS: Generated plant source 5 is imported
+PASS: Generated plant source 6 is imported
+PASS: Generated plant source 7 is imported
+PASS: Generated plant source 8 is imported
+PASS: Movement works toward (-1.0, 0.0)
+PASS: Movement works toward (1.0, 0.0)
+PASS: Movement works toward (0.0, -1.0)
+PASS: Movement works toward (0.0, 1.0)
+PASS: Movement works toward (-1.0, -1.0)
+PASS: Movement works toward (1.0, -1.0)
+PASS: Movement works toward (-1.0, 1.0)
+PASS: Movement works toward (1.0, 1.0)
+PASS: North exit detects player without loading unfinished regions
+PASS: Old 1280 x 960 clamp does not affect North
+PASS: East exit detects player without loading unfinished regions
+PASS: Old 1280 x 960 clamp does not affect East
+PASS: South exit detects player without loading unfinished regions
+PASS: Old 1280 x 960 clamp does not affect South
+PASS: Rejected rock formation and spout are removed
+PASS: Former rock formation leaves no invisible collision
+PASS: Spring water blocks the player capsule
+PASS: Spring interaction bank is dry and accessible
+PASS: Spawn connects to the spring bank without obstacles
+PASS: Water interaction appears only near the bank
+PASS: Physical sweep stops entry into the pool
+PASS: E examines the spring without inventing collected resources
+PASS: Source is identified for future water mechanics
+PASS: Water prompt clears after leaving the bank
+PASS: Player stays within map bounds
+CLEARING_INTEGRATION: 59 checks, 0 failures, 1972 capsule samples

@@ -1,0 +1,24 @@
+{
+  "baseline": {
+    "median_fps": 48.0,
+    "p10_fps": 41.0,
+    "median_memory_mib": 150.26592445373552,
+    "max_nodes": 24222.0,
+    "max_draw_calls": 635.0,
+    "median_process_ms": 90.084,
+    "load_ms": 1758,
+    "reached": 14,
+    "stalls": 0
+  },
+  "after": {
+    "median_fps": 135.0,
+    "p10_fps": 120.0,
+    "median_memory_mib": 151.051356315613,
+    "max_nodes": 24242.0,
+    "max_draw_calls": 561.0,
+    "median_process_ms": 15.0665,
+    "load_ms": 1776,
+    "reached": 14,
+    "stalls": 0
+  }
+}

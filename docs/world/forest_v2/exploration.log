@@ -1,0 +1,30 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+OpenGL API 3.3.0 Core Profile Context 26.5.2.260413 - Compatibility - Using Device: ATI Technologies Inc. - Radeon RX 580 Series
+
+EXPLORE t=0 position=(3200.0, 3200.0) reached=0
+FIRST_VISIBLE_SLIME seconds=7.962 id=brotinho/H01/1
+REACHED Jardim das Folhas t=11.617
+REACHED Jardim Escondido t=27.659
+EXPLORE t=30 position=(5073.147, 4270.853) reached=2
+REACHED Campo dos Brotos t=42.805
+REACHED Passagem Úmida t=52.657
+REACHED Chegada sul t=57.767
+EXPLORE t=60 position=(3216.0, 6095.56) reached=5
+REACHED Tronco do Tempo t=80.046
+EXPLORE t=90 position=(3088.0, 2889.366) reached=6
+REACHED Cogumelos t=97.653
+REACHED Círculo Musgoso t=105.253
+REACHED Árvore Centenária t=117.671
+EXPLORE t=120 position=(2909.614, 1872.125) reached=9
+REACHED Mirante t=140.761
+REACHED Bosque Silencioso t=146.457
+EXPLORE t=150 position=(4675.23, 1758.437) reached=11
+REACHED Saída norte t=171.37
+EXPLORE t=180 position=(3089.315, 973.9968) reached=12
+EXPLORE t=210 position=(5392.0, 3107.414) reached=12
+REACHED Saída leste t=217.233
+EXPLORE t=240 position=(3472.739, 3246.357) reached=13
+REACHED Clareira t=241.827
+EXPLORE t=270 position=(3220.357, 3216.0) reached=14
+EXPLORE t=300 position=(3220.357, 3216.0) reached=14
+EXPLORATION_DONE {"failures":[],"load_ms":1468,"reached":14,"seconds":312.032,"stalls":0}

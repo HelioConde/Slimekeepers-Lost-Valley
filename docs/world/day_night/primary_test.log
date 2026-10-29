@@ -1,0 +1,101 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS Initial day 1 at 07:00
+PASS Default day lasts 24 real minutes
+PASS Before boundary 04:59
+PASS Period crosses to manha
+PASS One time/period notification per boundary
+PASS Day rolls only at midnight
+PASS Before boundary 08:59
+PASS Period crosses to dia
+PASS One time/period notification per boundary
+PASS Day rolls only at midnight
+PASS Before boundary 14:59
+PASS Period crosses to tarde
+PASS One time/period notification per boundary
+PASS Day rolls only at midnight
+PASS Before boundary 17:59
+PASS Period crosses to anoitecendo
+PASS One time/period notification per boundary
+PASS Day rolls only at midnight
+PASS Before boundary 19:59
+PASS Period crosses to noite
+PASS One time/period notification per boundary
+PASS Day rolls only at midnight
+PASS Before boundary 23:59
+PASS Period crosses to madrugada
+PASS One time/period notification per boundary
+PASS Day rolls only at midnight
+PASS Batch advance hook for future systems
+PASS Multi-day sleep preserves fractional minutes
+PASS Multi-day skip has bounded aggregate notifications
+PASS Save/load round-trip including fraction and day
+PASS Invalid save leaves clock intact: { "minutes": nan }
+PASS Invalid save leaves clock intact: { "minutes": inf }
+PASS Invalid save leaves clock intact: { "minutes": -1 }
+PASS Invalid save leaves clock intact: { "minutes": 1440 }
+PASS Invalid save leaves clock intact: { "day": "bad" }
+PASS Invalid save leaves clock intact: { "day": 0 }
+PASS Invalid save leaves clock intact: { "day": 1.5 }
+PASS Invalid save leaves clock intact: { "version": 99 }
+PASS Invalid elapsed time rejected: nan
+PASS Invalid elapsed time rejected: inf
+PASS Invalid elapsed time rejected: -inf
+PASS Invalid elapsed time rejected: -1.0
+PASS Invalid duration falls back safely
+PASS Invalid duration falls back safely
+PASS Invalid duration falls back safely
+PASS Invalid duration falls back safely
+PASS Configurable clock speed
+PASS Stopped clock consumes no delta
+PASS All lighting minutes interpolate continuously, including midnight
+PASS Night palette retains minimum ambient luminance
+PASS Midday preserves original sprite palette
+PASS Predawn differs visibly from night
+PASS Scene transition accepted: res://scenes/world.tscn
+PASS Exactly one ambient controller: res://scenes/world.tscn
+PASS Clock uses independent HUD canvas
+PASS HUD theme available
+PASS Region applies current time without entry flash
+PASS HUD updates from global clock
+PASS Clock does not cover Menu at (960, 540)
+PASS Clock does not cover Menu at (1280, 720)
+PASS Clock does not cover Menu at (1920, 1080)
+PASS Scene transition accepted: res://scenes/regions/ClareiraDoDespertar.tscn
+PASS Exactly one ambient controller: res://scenes/regions/ClareiraDoDespertar.tscn
+PASS Clock uses independent HUD canvas
+PASS HUD theme available
+PASS Region applies current time without entry flash
+PASS HUD updates from global clock
+PASS Clock does not cover Menu at (960, 540)
+PASS Clock does not cover Menu at (1280, 720)
+PASS Clock does not cover Menu at (1920, 1080)
+PASS Scene transition accepted: res://scenes/regions/FlorestaDoDespertarV2.tscn
+PASS Exactly one ambient controller: res://scenes/regions/FlorestaDoDespertarV2.tscn
+PASS Clock uses independent HUD canvas
+PASS HUD theme available
+PASS Region applies current time without entry flash
+PASS HUD updates from global clock
+PASS Clock does not cover Menu at (960, 540)
+PASS Clock does not cover Menu at (1280, 720)
+PASS Clock does not cover Menu at (1920, 1080)
+PASS Scene transition accepted: res://scenes/regions/ValeDasNascentes.tscn
+PASS Exactly one ambient controller: res://scenes/regions/ValeDasNascentes.tscn
+PASS Clock uses independent HUD canvas
+PASS HUD theme available
+PASS Region applies current time without entry flash
+PASS HUD updates from global clock
+PASS Clock does not cover Menu at (960, 540)
+PASS Clock does not cover Menu at (1280, 720)
+PASS Clock does not cover Menu at (1920, 1080)
+PASS Scene transition accepted: res://scenes/regions/ValeDasNascentes.tscn
+PASS Global time preserved entering valley
+PASS Scene transition accepted: res://scenes/regions/FlorestaDoDespertarV2.tscn
+PASS Global time preserved returning to forest
+PASS SceneTree pause stops real clock processing
+PASS Clock resumes after pause
+PASS Scene transition accepted: res://scenes/start_menu.tscn
+PASS Main menu consumes no game time
+PASS Actual New Game starts day 1 at 07:00
+PASS Existing ambience follows the global nighttime profile
+DAY_NIGHT_TEST 98 checks; 0 failures

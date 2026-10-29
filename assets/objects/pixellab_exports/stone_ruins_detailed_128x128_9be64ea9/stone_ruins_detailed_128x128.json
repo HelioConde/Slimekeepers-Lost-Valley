@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "9be64ea9-6c25-4ac6-ad49-16b001a04453",
+    "name": "base",
+    "prompt": "stone_ruins \u2014 detailed 128x128 pixel art overgrown ancient stone ruins for a cozy fantasy farming RPG, low top-down perspective, broken carved pillars and collapsed arch fragments, moss and vines, balanced readable silhouette, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "stone_ruins_detailed_128x128.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:36:01.906384+00:00"
+}

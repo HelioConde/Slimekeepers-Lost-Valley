@@ -1,0 +1,13 @@
+
+CLEARING_INTEGRATION: 59 checks, 0 failures, 1972 capsule samples
+FOREST_V2: checks=150 failures=0 capsule_samples=2317
+FOREST_HABITATS: 37 checks; 0 failures
+FOREST_LIFE: 16 checks; 0 failures
+FOREST_AUDIO: 16 checks; 0 failures
+VALLEY_TEST 41 checks; 0 failures; 2096 samples
+VALLEY_WATER_TEST 20 checks; 0 failures
+REGION_TRAVEL 9 checks; 0 failures
+PASS: Test did not create or remove presentation preferences
+MENU_INTEGRATION: 57 checks, 0 failures
+All forest/valley checks passed. Native rendering and 5-minute exploration are separate tools.
+

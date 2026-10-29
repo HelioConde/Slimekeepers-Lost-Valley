@@ -1,0 +1,60 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS: Menu contains the four intended actions
+PASS: Action labels preserve the actual destinations
+PASS: Continue is disabled without a save system
+PASS: Initial focus is New Game
+PASS: Reduced motion stops the new distant water layer
+PASS: Turning reduced motion off resumes distant water
+PASS: Keyboard Down skips disabled Continue
+PASS: Keyboard Down reaches Exit
+PASS: Keyboard navigation wraps to New Game
+PASS: Simulated controller D-pad skips disabled Continue
+PASS: Simulated controller D-pad reaches Exit
+PASS: Simulated controller D-pad Up returns to Options
+PASS: Enter activates the Options action
+PASS: Options begins with focus inside the modal
+PASS: Background actions cannot steal keyboard focus
+PASS: Tab remains inside Options (1/10)
+PASS: Tab remains inside Options (2/10)
+PASS: Tab remains inside Options (3/10)
+PASS: Tab remains inside Options (4/10)
+PASS: Tab remains inside Options (5/10)
+PASS: Tab remains inside Options (6/10)
+PASS: Tab remains inside Options (7/10)
+PASS: Tab remains inside Options (8/10)
+PASS: Tab remains inside Options (9/10)
+PASS: Tab remains inside Options (10/10)
+PASS: Modal Tab loop returns to first control
+PASS: Escape closes Options
+PASS: Closing Options restores focus to its opener
+PASS: Continue remains unavailable after modal close
+PASS: Other actions regain keyboard focus
+PASS: Mouse click opens Options
+PASS: New Game opens the expanded playable forest
+PASS: Entering gameplay restores its existing logical canvas
+PASS: A new game starts eight habitat slimes with no stale friendships
+PASS: E befriends actual slime 1
+PASS: Mission counter updates from gameplay (1/8)
+PASS: E befriends actual slime 2
+PASS: Mission counter updates from gameplay (2/8)
+PASS: E befriends actual slime 3
+PASS: Mission counter updates from gameplay (3/8)
+PASS: E befriends actual slime 4
+PASS: Mission counter updates from gameplay (4/8)
+PASS: E befriends actual slime 5
+PASS: Mission counter updates from gameplay (5/8)
+PASS: E befriends actual slime 6
+PASS: Mission counter updates from gameplay (6/8)
+PASS: E befriends actual slime 7
+PASS: Mission counter updates from gameplay (7/8)
+PASS: E befriends actual slime 8
+PASS: Mission counter updates from gameplay (8/8)
+PASS: Repeated interaction does not duplicate a friendship
+PASS: HUD reports all eight genuine friendships
+PASS: Gameplay Menu button returns to the title scene
+PASS: Returning to the menu restores presentation sizing
+PASS: Returning does not invent a save or enable Continue
+PASS: Test did not create or remove presentation preferences
+PASS: Saved presentation preferences remain byte-identical
+MENU_INTEGRATION: 57 checks, 0 failures

@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "a7915d4f-0b50-4229-87d9-0b4a104b59e2",
+    "name": "base",
+    "prompt": "copper_ore \u2014 copper ore rock node, 48x48 pixel art, low top-down cozy fantasy farming RPG, dark stone with warm copper-orange mineral veins, compact walk-blocking object, transparent background, isolated, no ground tile or shadow.",
+    "size": {
+      "width": 48,
+      "height": 48
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "copper_ore_copper_ore_rock_n.png",
+    "cell_size": {
+      "width": 48,
+      "height": 48
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 48
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:38:44.492573+00:00"
+}

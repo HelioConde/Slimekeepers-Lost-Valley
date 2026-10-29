@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "ae1b2dc3-df0a-48f0-b6a8-92448ec73771",
+    "name": "base",
+    "prompt": "bush_large \u2014 large dense forest bush for Slimekeepers: Lost Valley, 96x64 pixel-art object. Detailed handcrafted cozy fantasy farming RPG style, low top-down perspective, broad irregular layered foliage in muted natural greens, rich organic texture, clear compact walk-blocking footprint. Match Meadow & Forest Grass V2 palette and 32x32 world grid. Transparent background, isolated static object, no ground tile, scenery, flowers, fruit, characters, or external shadow.",
+    "size": {
+      "width": 96,
+      "height": 96
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "bush_large_large_dense_fores.png",
+    "cell_size": {
+      "width": 96,
+      "height": 96
+    },
+    "sheet_size": {
+      "width": 96,
+      "height": 96
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-23T21:39:29.697103+00:00"
+}

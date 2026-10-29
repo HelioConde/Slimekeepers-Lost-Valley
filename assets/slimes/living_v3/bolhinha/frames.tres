@@ -1,0 +1,291 @@
+[gd_resource type="SpriteFrames" load_steps=109 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_000.png" id="1"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_001.png" id="2"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_002.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_003.png" id="4"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_004.png" id="5"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_005.png" id="6"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_006.png" id="7"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_007.png" id="8"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/idle/frame_008.png" id="9"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_000.png" id="10"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_001.png" id="11"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_002.png" id="12"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_003.png" id="13"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_004.png" id="14"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_005.png" id="15"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_006.png" id="16"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/blink/frame_007.png" id="17"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_000.png" id="18"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_001.png" id="19"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_002.png" id="20"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_003.png" id="21"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_004.png" id="22"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_005.png" id="23"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_006.png" id="24"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_007.png" id="25"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/move/frame_008.png" id="26"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_000.png" id="27"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_001.png" id="28"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_002.png" id="29"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_003.png" id="30"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_004.png" id="31"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_005.png" id="32"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_006.png" id="33"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_007.png" id="34"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/happy/frame_008.png" id="35"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_000.png" id="36"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_001.png" id="37"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_002.png" id="38"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_003.png" id="39"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_004.png" id="40"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_005.png" id="41"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_006.png" id="42"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_007.png" id="43"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/curious/frame_008.png" id="44"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_000.png" id="45"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_001.png" id="46"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_002.png" id="47"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_003.png" id="48"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_004.png" id="49"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_005.png" id="50"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_006.png" id="51"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_007.png" id="52"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/plant/frame_008.png" id="53"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_000.png" id="54"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_001.png" id="55"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_002.png" id="56"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_003.png" id="57"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_004.png" id="58"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_005.png" id="59"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_006.png" id="60"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_007.png" id="61"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/play/frame_008.png" id="62"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_000.png" id="63"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_001.png" id="64"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_002.png" id="65"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_003.png" id="66"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_004.png" id="67"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_005.png" id="68"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_006.png" id="69"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_007.png" id="70"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/splash/frame_008.png" id="71"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_000.png" id="72"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_001.png" id="73"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_002.png" id="74"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_003.png" id="75"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_004.png" id="76"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_005.png" id="77"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_006.png" id="78"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_007.png" id="79"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/drink/frame_008.png" id="80"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_000.png" id="81"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_001.png" id="82"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_002.png" id="83"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_003.png" id="84"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/bolhinha/animations/sleep/frame_004.png" id="85"]
+
+[sub_resource type="AtlasTexture" id="Pad_27"]
+atlas = ExtResource("27")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_28"]
+atlas = ExtResource("28")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_29"]
+atlas = ExtResource("29")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_30"]
+atlas = ExtResource("30")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_31"]
+atlas = ExtResource("31")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_32"]
+atlas = ExtResource("32")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_33"]
+atlas = ExtResource("33")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_34"]
+atlas = ExtResource("34")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_35"]
+atlas = ExtResource("35")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_36"]
+atlas = ExtResource("36")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_37"]
+atlas = ExtResource("37")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_38"]
+atlas = ExtResource("38")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_39"]
+atlas = ExtResource("39")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_40"]
+atlas = ExtResource("40")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_41"]
+atlas = ExtResource("41")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_42"]
+atlas = ExtResource("42")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_43"]
+atlas = ExtResource("43")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_44"]
+atlas = ExtResource("44")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_81"]
+atlas = ExtResource("81")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_82"]
+atlas = ExtResource("82")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_83"]
+atlas = ExtResource("83")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_84"]
+atlas = ExtResource("84")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[sub_resource type="AtlasTexture" id="Pad_85"]
+atlas = ExtResource("85")
+region = Rect2(0, 0, 64, 64)
+margin = Rect2(6.0, 6.0, 12, 12)
+
+[resource]
+animations = [
+{"frames": [{"duration": 1.0, "texture": ExtResource("1")},
+{"duration": 1.0, "texture": ExtResource("2")},
+{"duration": 1.0, "texture": ExtResource("3")},
+{"duration": 1.0, "texture": ExtResource("4")},
+{"duration": 1.0, "texture": ExtResource("5")},
+{"duration": 1.0, "texture": ExtResource("6")},
+{"duration": 1.0, "texture": ExtResource("7")},
+{"duration": 1.0, "texture": ExtResource("8")},
+{"duration": 1.0, "texture": ExtResource("9")}], "loop": true, "name": &"idle", "speed": 5.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("10")},
+{"duration": 1.0, "texture": ExtResource("11")},
+{"duration": 1.0, "texture": ExtResource("12")},
+{"duration": 1.0, "texture": ExtResource("13")},
+{"duration": 1.0, "texture": ExtResource("14")},
+{"duration": 1.0, "texture": ExtResource("15")},
+{"duration": 1.0, "texture": ExtResource("16")},
+{"duration": 1.0, "texture": ExtResource("17")}], "loop": true, "name": &"blink", "speed": 5.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("18")},
+{"duration": 1.0, "texture": ExtResource("19")},
+{"duration": 1.0, "texture": ExtResource("20")},
+{"duration": 1.0, "texture": ExtResource("21")},
+{"duration": 1.0, "texture": ExtResource("22")},
+{"duration": 1.0, "texture": ExtResource("23")},
+{"duration": 1.0, "texture": ExtResource("24")},
+{"duration": 1.0, "texture": ExtResource("25")},
+{"duration": 1.0, "texture": ExtResource("26")}], "loop": true, "name": &"move", "speed": 9.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Pad_27")},
+{"duration": 1.0, "texture": SubResource("Pad_28")},
+{"duration": 1.0, "texture": SubResource("Pad_29")},
+{"duration": 1.0, "texture": SubResource("Pad_30")},
+{"duration": 1.0, "texture": SubResource("Pad_31")},
+{"duration": 1.0, "texture": SubResource("Pad_32")},
+{"duration": 1.0, "texture": SubResource("Pad_33")},
+{"duration": 1.0, "texture": SubResource("Pad_34")},
+{"duration": 1.0, "texture": SubResource("Pad_35")}], "loop": false, "name": &"happy", "speed": 8.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Pad_36")},
+{"duration": 1.0, "texture": SubResource("Pad_37")},
+{"duration": 1.0, "texture": SubResource("Pad_38")},
+{"duration": 1.0, "texture": SubResource("Pad_39")},
+{"duration": 1.0, "texture": SubResource("Pad_40")},
+{"duration": 1.0, "texture": SubResource("Pad_41")},
+{"duration": 1.0, "texture": SubResource("Pad_42")},
+{"duration": 1.0, "texture": SubResource("Pad_43")},
+{"duration": 1.0, "texture": SubResource("Pad_44")}], "loop": false, "name": &"curious", "speed": 8.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("45")},
+{"duration": 1.0, "texture": ExtResource("46")},
+{"duration": 1.0, "texture": ExtResource("47")},
+{"duration": 1.0, "texture": ExtResource("48")},
+{"duration": 1.0, "texture": ExtResource("49")},
+{"duration": 1.0, "texture": ExtResource("50")},
+{"duration": 1.0, "texture": ExtResource("51")},
+{"duration": 1.0, "texture": ExtResource("52")},
+{"duration": 1.0, "texture": ExtResource("53")}], "loop": false, "name": &"plant", "speed": 8.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("54")},
+{"duration": 1.0, "texture": ExtResource("55")},
+{"duration": 1.0, "texture": ExtResource("56")},
+{"duration": 1.0, "texture": ExtResource("57")},
+{"duration": 1.0, "texture": ExtResource("58")},
+{"duration": 1.0, "texture": ExtResource("59")},
+{"duration": 1.0, "texture": ExtResource("60")},
+{"duration": 1.0, "texture": ExtResource("61")},
+{"duration": 1.0, "texture": ExtResource("62")}], "loop": false, "name": &"play", "speed": 10.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("63")},
+{"duration": 1.0, "texture": ExtResource("64")},
+{"duration": 1.0, "texture": ExtResource("65")},
+{"duration": 1.0, "texture": ExtResource("66")},
+{"duration": 1.0, "texture": ExtResource("67")},
+{"duration": 1.0, "texture": ExtResource("68")},
+{"duration": 1.0, "texture": ExtResource("69")},
+{"duration": 1.0, "texture": ExtResource("70")},
+{"duration": 1.0, "texture": ExtResource("71")}], "loop": false, "name": &"splash", "speed": 9.0},
+{"frames": [{"duration": 1.0, "texture": ExtResource("72")},
+{"duration": 1.0, "texture": ExtResource("73")},
+{"duration": 1.0, "texture": ExtResource("74")},
+{"duration": 1.0, "texture": ExtResource("75")},
+{"duration": 1.0, "texture": ExtResource("76")},
+{"duration": 1.0, "texture": ExtResource("77")},
+{"duration": 1.0, "texture": ExtResource("78")},
+{"duration": 1.0, "texture": ExtResource("79")},
+{"duration": 1.0, "texture": ExtResource("80")}], "loop": false, "name": &"drink", "speed": 7.0},
+{"frames": [{"duration": 1.0, "texture": SubResource("Pad_81")},
+{"duration": 1.0, "texture": SubResource("Pad_82")},
+{"duration": 1.0, "texture": SubResource("Pad_83")},
+{"duration": 1.0, "texture": SubResource("Pad_84")},
+{"duration": 1.0, "texture": SubResource("Pad_85")}], "loop": true, "name": &"sleep", "speed": 6.0}
+]

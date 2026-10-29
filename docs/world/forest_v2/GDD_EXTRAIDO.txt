@@ -1,0 +1,951 @@
+PAGE 1
+GAME DESIGN DOCUMENT / MAPA 01
+SLIMEKEEPERS
+LOST VALLEY
+Floresta do Despertar
+Projeto detalhado para transformar o primeiro mapa em uma floresta viva:
+200 × 200 tiles, clareira segura, habitats afastados dos primeiros slimes
+verdes, borboletas, flores, copas em movimento, sombras de pássaros e
+ambientação sonora.
+Tipo: Documento de design + plano técnico de implementação
+Motor: Godot 4    Estilo: 2D top-down / pixel art
+Versão: 1.0    Data: 27 de outubro de 2026
+Referência visual: mapa atual de 100 × 100 tiles enviado pelo desenvolvedor.
+
+
+PAGE 2
+Versão do documento: 1.0
+Data: 27 de outubro de 2026
+Estado: especificação de design e implementação; não equivale a uma cena já implementada/testada
+Motor: Godot 4 • Câmera: 2D top-down • Arte: pixel art
+Mapa atual: 100 × 100 tiles • Meta de expansão: 200 × 200 tiles
+Projeto:C:\Slimekeepers_Lost_Valley_v0_1
+Assets locais:C:\Slimekeepers_Lost_Valley_v0_1\assets
+Visão de uma frase: o jogador desperta numa clareira segura e, cercado por uma floresta que se
+movimenta, canta e reage ao vento, precisa explorar trilhas e pequenos habitats naturais até
+encontrar seus primeiros slimes verdes.
+1. Visão geral e princípios do mapa
+A Floresta do Despertar é o primeiro espaço explorável da Ilha Verde. É uma área sem boss principal.
+Sua função não é ensinar tudo de uma vez, mas convidar o jogador a observar a natureza, compreender os
+controles, descobrir rotas e finalmente encontrar slimes verdes que parecem pertencer ao lugar.
+Princípios inegociáveis:
+Primeiro a experiência, depois a densidade visual. Nenhuma árvore, sombra, partícula ou flor
+pode prejudicar a navegação.
+A natureza deve parecer viva mesmo sem o jogador se mover. Movimento e som sutis, variados,
+sem agitação constante.
+O spawn é uma zona segura. Sem bosses, inimigos hostis ou nascimento de slimes verdes dentro da
+zona de exclusão.
+Os primeiros slimes são descobertos, não entregues. Um percurso de exploração deve anteceder
+o primeiro encontro.
+A floresta tem diversidade. Misturar manchas vegetais, clareiras, densidades, micro-habitats e
+diferentes ritmos ambientais.
+Preservar o que já foi construído. A captura do mapa atual mostra a clareira e as rotas
+estruturadas: elas são o ponto de partida para a expansão, não material descartável.
+Um mundo maior não deve apenas conter quatro vezes mais objetos. A expansão para
+200×200 precisa acrescentar atividades, marcos e escolhas de caminho.
+1.1 Experiência desejada
+Primeiros segundos: uma clareira iluminada, pássaros ao longe, vento leve, flores e a sensação de
+proteção.
+Primeiro minuto: o jogador testa o movimento e identifica caminhos; descobre detalhes pequenos
+como borboletas, cogumelos e folhas caindo.
+Exploração seguinte: a floresta fecha a visão, sons mudam e trilhas levam a pontos de interesse
+distintos.
+Primeiro encontro: um slime verde é visto se mexendo perto de flores, sem estar colado ao ponto
+inicial.
+Retorno: há novas coisas a observar; alguns efeitos ambientais e criaturas variam sem mudar a
+estrutura principal.
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 2
+
+PAGE 3
+1.2 Conexão com o restante do jogo
+Mapa 01: Floresta do Despertar — área segura de introdução, slimes verdes e de planta, exploração
+florestal.
+Mapa 02: Vale das Nascentes — ao sul, com maior domínio de água e slimes aquáticos.
+Futura fazenda: deve ficar em região própria, não ser instalada à força na clareira inicial.
+Oito Guardiões principais: pertencem às outras ilhas, não à Ilha Verde e não a este mapa.
+2. Leitura do mapa atual (100×100)
+A imagem de referência do projeto evidencia: massa arbórea densa nas laterais, clareira central com
+elemento provisório colorido, trilhas para norte e sul e um desvio importante a leste. Há também uma
+região no noroeste indicada por retângulo de edição. Essa leitura é apenas visual; não confirma a estrutura
+real dos nós, colisões ou scripts.
+O que manter: clareira central, sentido geral dos caminhos e a sensação de mata fechada.
+O que corrigir: blocos de árvores visualmente homogêneos; transição muito brusca entre vegetação e
+clareira; pontos de interesse ainda pouco diferenciados; necessidade de ambientação em movimento;
+definição de habitats e regras seguras de spawn.
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 3
+
+PAGE 4
+2.1 Como expandir sem perder o trabalho anterior
+O mapa de 200×200 tem quatro vezes a área do mapa de 100×100. Não redimensione visualmente os
+sprites, não escale a imagem pronta e não aumente o TileSet para simular um mapa maior.
+Fazer backup/cópia da cena atual e registrar dimensões reais, origem do TileMap e transformações dos
+nós.
+Escolher uma nova região de coordenadas de tile que comporte 200×200 sem deslocar indevidamente
+a lógica de colisões e triggers.
+Se o mapa atual ocupar coordenadas (0..99, 0..99) e o centro precisar permanecer centrado na nova
+área, uma possibilidade é deslocar tudo em +50 tiles em X e +50 tiles em Y, com ajuste equivalente
+em todos os objetos e pontos de spawn. Isso é somente um exemplo, não um comando a aplicar
+sem inspecionar as coordenadas reais.
+Preservar o miolo reconhecível (clareira, caminhos e pontos existentes). Usar os novos anéis externos
+para habitats, microclareiras e relevo.
+Rever a posição da câmera, limites, saídas e pontos de transição. T estar primeiro com o jogador
+caminhando.
+Escala: utilizar obrigatoriamente o tile size, a relação pixels/unidade e o zoom do projeto existente. Para
+orientação, 200×200 tiles equivaleriam a 6.400×6.400 pixels somente se o tile base confirmado for
+32×32 pixels.
+3. Organização espacial recomendada (200×200)
+A organização abaixo estabelece zonas narrativas e funcionais, não quadrados rígidos. As divisões
+devem ser suavizadas por vegetação, variações de terreno e trilhas orgânicas.
+Zona Posição relativaCaracterística dominanteFunção de gameplay
+A — Clareira do
+Despertar
+Centro Grama aberta, flores e marco
+ancestral
+Spawn seguro, orientação,
+primeira impressão
+B — Mata Antiga Norte e noroeste Árvores maduras, troncos,
+sombra
+Exploração calma, curiosidade,
+coleta simples
+C — Bosque dos
+Cogumelos
+Oeste Samambaias, cogumelos, solo
+escuro
+Micro-habitat, detalhe visual,
+segredo
+D — Refúgio VerdeLeste, afastado do
+centro
+Clareiras menores e flores Primeiro habitat de slimes verdes
+E — Trilhas das
+Colinas
+Norte / nordeste Rochas, raízes e pequenos
+desníveis
+Variedade topográfica e mirante
+sem boss
+F — Corredor das
+Nascentes
+Sul Sinais de umidade, juncos e
+água leve
+Ligação sul com Mapa 02
+G — Bosques
+Secundários
+Sudoeste / sudesteMatagal, troncos e microclareirasHabitats adicionais, alternativas e
+retorno
+H — Borda da
+Floresta
+Perímetro Vegetação muito densa e limites
+naturais
+Delimitação segura sem parede
+artificial
+1. 
+2. 
+3. 
+4. 
+5. 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 4
+
+PAGE 5
+3.1 Clareira de spawn
+Centro lógico: usar o marcador real do projeto, idealmente próximo ao centro geográfico da área
+ampliada, mas não forçar coordenadas sem verificar a cena.
+Área aberta sugerida: diâmetro irregular de 26–36 tiles, ajustado à velocidade do personagem e ao
+campo de visão real.
+Zona completamente livre ao redor do personagem: raio indicativo de 5–7 tiles sem árvores, rochas
+grandes ou colisões.
+Bordas com pequenas moitas, flores e pedras decorativas; não criar um anel sólido que bloqueie
+saídas.
+Marco do despertar: pedra musgosa / círculo natural de pedras, levemente deslocado para não conflitar
+com o PlayerSpawn.
+Pelo menos três entradas visualmente reconhecíveis: norte, leste e sul.
+3.2 Caminhos
+Trilha norte: avanço para mata profunda e colinas; oferecer um pequeno desvio de exploração sem
+criar uma saída falsa.
+Trilha leste: primeiro percurso sugerido para encontrar slimes verdes em habitat natural.
+Trilha sul: continuidade progressiva para o Vale das Nascentes. Água mais perceptível apenas ao se
+aproximar da borda sul.
+Desvios secundários: pequenas rotas em laço, atalhos e becos naturais com recompensa ambiental;
+evitar caminhos que terminam em 30 segundos sem informação ou recompensa.
+Legibilidade: caminhos principais com largura transitável de referência de 3–5 tiles, estreitamentos
+opcionais pontuais de 2–3 tiles se personagem e seguidor couberem. Validar com a geometria e escala
+reais dos colliders; não deixar dois slimes companheiros presos em gargalos.
+3.3 Orientação sem setas artificiais
+Usar pistas ambientais: uma mancha florida no leste, um pinheiro antigo em bifurcação, tronco caído junto
+ao caminho oeste, sons de água ao sul, e uma rocha de formato único no norte. Nenhuma sinalização
+textual é obrigatória para essas rotas iniciais.
+4. Biomas locais e densidade de vegetação
+O objetivo não é um mosaico aleatório de sprites. Cada trecho deve ter um padrão ambiental
+identificável.
+Ambiente Densidade de copas Cobertura baixa Luz e som
+Clareira inicial 0–10% do espaço abertoFlores baixas, grama, poucas
+pedras
+Clara; pássaros e vento leve
+Borda da clareiraMédia Arbustos, flores, samambaiasSombras suaves intermitentes
+Mata de
+exploração
+Média-alta Cogumelos, raízes, folhas no
+chão
+Luz filtrada, pássaros distantes
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 5
+
+PAGE 6
+Ambiente Densidade de copas Cobertura baixa Luz e som
+Mata profunda /
+limite
+Alta a muito alta Poucas brechas e caminhos
+guiados
+Mais sombra; som abafado
+Refúgio de slimesAberta no miolo; densa ao
+redor
+Flores, grama e arbustos
+baixos
+Colorida, viva, borboletas
+ocasionais
+Pré-nascentes Média Juncos, musgo e rochas
+úmidas
+Água distante crescendo na
+direção sul
+Os percentuais são direção de composição visual, não obrigatoriedade de algoritmo de preenchimento.
+Medir a sensação em zoom de gameplay e ajustar para preservar silhuetas e caminhos.
+4.1 Regras de distribuição
+Gerar ou posicionar massas orgânicas de árvores, nunca uma matriz perfeita.
+Misturar espécies com predominância coerente; grandes árvores de copa redonda nos bosques,
+pinheiros em regiões específicas, árvores antigas pontuais.
+Distribuir ao menos três tamanhos de planta e três tonalidades principais de folhagem por sub-região,
+sem provocar incoerência de estilo.
+Evitar repetir uma mesma árvore imediatamente ao lado de sua cópia com idêntica escala e orientação.
+Criar respiros visuais: clareiras laterais, bordas de caminho, pedra marcante ou flores concentradas.
+Cada bloco arbóreo precisa ser percorrido com teste real de colisão. Floresta densa não significa
+labirinto acidental sem saída.
+5. Flores — identidade essencial do primeiro mapa
+Flores são parte importante da identidade da Ilha Verde. Elas não podem ser apenas pequenos pixels raros,
+nem uma distribuição homogênea.
+5.1 Paleta e espécies visuais
+Brancas: frequência visual maior; bordas de trilhas, clareira e manchas pequenas.
+Amarelas: clareiras iluminadas e proximidade de grama alta.
+Azuis: pontos úmidos, sombra leve e habitat verde, sem antecipar todo o estilo do Mapa 02.
+Rosas: detalhes de contraste em agrupamentos especiais e perto de árvores floridas.
+Raras luminosas: reservadas a 1–2 micro-locais e utilizadas com moderação; idealmente ligadas a
+segredos futuros.
+5.2 Formas de agrupamento
+Pequenas manchas: 3–8 sprites próximos sem alinhamento rígido.
+Bordas floridas: sequência fragmentada junto ao caminho, com interrupções naturais.
+Jardins selvagens: bolsões com flores variadas no Refúgio Verde.
+Pontos de atenção: um agrupamento contrastante próximo de rochas, troncos ou bifurcações.
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 6
+
+PAGE 7
+Manter o corredor central das trilhas e a área exata do spawn limpos. Algumas flores podem ocupar
+o contorno da área sem atrapalhar a leitura do personagem.
+5.3 Animação de flores
+Balanço muito pequeno de haste/folhas, especialmente nas bordas de clareiras.
+Nem toda flor deve animar; começar com subconjunto visual limitado.
+Movimento não sincronizado: fases e amplitudes distintas.
+Evitar deformar a base de contato com o chão ou desfocar os pixels.
+6. Movimento do vento e das árvores
+A sensação correta é um vento leve atravessando a floresta em ondas, não centenas de árvores
+tremendo simultaneamente.
+6.1 Tipos de movimento
+Árvores de copa arredondada: topo oscila suavemente; tronco e base permanecem estáveis.
+Pinheiros: pequena oscilação concentrada no topo, amplitude ainda menor.
+Árvores antigas: quase imóveis; algumas folhas periféricas se movem, destacando o porte.
+Arbustos: movimento um pouco mais evidente que o das árvores maiores.
+Samambaias e capim alto: ondulação suave em grupos, mais rápida que a das copas.
+Valores de prototipagem, não parâmetros finais: oscilação visual entre aproximadamente 0,5 e 1,5
+pixel na escala-base do sprite; ciclos de 2–6 segundos; fase aleatória por grupo. Ajustar observando em
+nearest filtering e zoom real. Evitar subpixel blur; quando apropriado, priorizar animação em frames e
+snapping de pixels.
+6.2 Implementação preferencial
+Usar sprites de copa separados do tronco quando o material disponível permitir.
+Para árvores sem copa separada, empregar um overlay decorativo animado ou animação discreta
+preparada em PixelLab; não mexer no collider.
+O vento pode ser um WindManager com intensidade global e variação por região, mas sprites próximos
+devem ter defasagem, não um movimento uniforme.
+Movimento é visual apenas: CollisionShape/oclusão e árvore física não devem mudar a cada frame.
+Para preservar performance, preferir shaders compartilhados adequados ou animações simples em vez
+de um Tween individual em milhares de árvores.
+6.3 Condições de ativação
+Efeitos complexos somente dentro de uma margem ao redor da câmera; árvores distantes podem
+permanecer estáticas ou usar atualização reduzida. A taxa de atualização de efeitos é decisão de
+implementação após perfilamento.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 7
+
+PAGE 8
+7. Borboletas, abelhas e pequenos insetos
+As borboletas devem trazer movimento delicado e previsível o bastante para não parecer ruído.
+7.1 Borboletas
+Aparecer em manchas floridas, especialmente clareira, Refúgio Verde e pequenos jardins escondidos.
+Cores prioritárias: amarelo, branco, azul suave e rosa discreto.
+Voo: rotas curtas com pequenas curvas e pausa ocasional; voar entre duas ou três manchas de flores.
+Ao pousar: reduzir movimento, fechar/abrir asas com animação curta, ficar alguns segundos, decolar.
+Devem surgir e desaparecer fora do campo imediato do jogador quando possível, para não parecer
+teletransporte.
+Evitar voos alinhados ou grupos numerosos em todas as telas.
+Orçamento inicial: até 2–5 borboletas visíveis simultaneamente, variando por zona e qualidade do
+hardware. Não tratar esse limite como regra absoluta sem medir desempenho.
+7.2 Insetos adicionais
+Abelhas: eventuais perto de flores, trajetórias pequenas, zumbido com volume baixo e atenuação por
+distância.
+Joaninhas: detalhes discretos em folhas, especialmente estáticos com movimentos ocasionais.
+Vagalumes: raros nas zonas sombreadas e mais presentes ao entardecer/noite quando houver ciclo
+de tempo implementado; sem criar relógio somente para esse recurso.
+T odos devem ser decoração ambiental sem colisão, a menos que exista mecânica planejada
+especificamente para eles.
+8. Sombras de pássaros, folhas e iluminação viva
+8.1 Sombra de pássaro
+Efeito ocasional de silhueta escura suavizada cruzando o chão, principalmente clareiras abertas.
+O pássaro em si não precisa aparecer na cena.
+Trajetória diagonal ou levemente curva, velocidade maior que a de uma borboleta, duração curta.
+Transparência baixa o suficiente para não esconder flores nem o personagem.
+Pequena variação de escala/opacidade; nada de sombras gigantescas recorrentes.
+A sombra não deve atravessar a interface nem afetar colisões.
+Cadência proposta para protótipo: experimentar intervalos aleatórios de 25–60 segundos durante a
+exploração em áreas abertas, com chance por zona. Ajustar depois de observar; não forçar evento em
+toda janela de tempo.
+8.2 Luz entre copas
+Em manchas iluminadas, criar pequenas áreas de claridade filtrada pelo dossel.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 8
+
+PAGE 9
+Usar poucas máscaras de luz discretas, ou shaders eficientes, mantendo contraste suficiente para
+perceber objetos.
+Não exagerar efeitos de brilho, bloom ou luz branca no spawn.
+A iluminação deve reforçar caminhos e focos de interesse, não esconder passagens.
+8.3 Folhas ao vento
+Folhas isoladas caindo em pontos pré-definidos sob árvores grandes.
+Trajetória irregular, curta; queda e desaparecimento naturais.
+Eventual pequena rajada com duas ou três folhas, sem tempestade constante.
+Cor e movimento coerentes com a estação, se um sistema sazonal vier a existir; não é obrigatório
+agora.
+9. Áudio espacial da floresta
+O som precisa fazer o jogador perceber mudanças de ambiente sem precisar abrir o mapa.
+Região Camada principal Eventos secundários
+Clareira vento leve, pássaros borboletas sem som, asas ocasionais, folhas
+Mata densa insetos baixos, folhas e pássaros afastadosgalhos ao vento, aves esporádicas
+Bosque de cogumelosambiente mais abafado gotas discretas, ruído suave do solo
+Refúgio Verde pássaros suaves e vegetação vocalizações leves de slimes, insetos
+Caminho sul vento e mata úmida água distante aumentando gradualmente
+9.1 Diretrizes sonoras
+Usar AudioStreamPlayer2D/sistema equivalente para fontes posicionais quando fizer sentido.
+Manter um leito ambiente contínuo, sem dezenas de sons iniciando simultaneamente.
+Aplicar fades curtos entre subzonas, sem cortes bruscos.
+Aleatorizar discretamente tempo/pitch de eventos, evitando loops óbvios e barulho excessivo.
+Expor volume de ambiente e efeitos nas opções do jogo quando esse menu existir.
+Confirmar licença/uso permitido para arquivos de som adicionados; não assumir que qualquer recurso
+encontrado na internet é livre.
+10. Slimes verdes — design de habitat e descoberta
+Regra essencial: nenhum slime verde nasce perto da posição inicial. O jogador deve caminhar pela
+floresta para descobrir os primeiros habitantes.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 9
+
+PAGE 10
+10.1 Zona de exclusão
+Definir um NoSlimeSpawnArea independente do formato exato da clareira. Valores sugeridos para começar
+no mapa de 200×200:
+Raio geométrico sem spawn:25–30 tiles em torno de PlayerSpawn.
+Distância mínima real por caminho navegável para o primeiro habitat visível: buscar 35–55
+tiles de percurso, adaptando à velocidade do jogador, curvas e zoom.
+Evitar permitir aparecimento de um slime na tela da câmera inicial, mesmo que a distância geométrica
+pareça aceitável.
+A regra vale para respawn, carregamento e geração procedural; não apenas para a criação inicial.
+Ajuste de experiência: o primeiro encontro deve ocorrer após aproximadamente 1–3 minutos de
+exploração voluntária para um jogador comum; isso é uma meta de teste, não um bloqueio rígido nem
+relógio que dispara slime.
+10.2 Habitats sugeridos
+Habitat Região População inicial
+desejada Caráter
+H01 — Jardim das
+Folhas
+Leste 2–3 slimes Primeiro encontro; flores e espaço
+aberto
+H02 — Clareira
+Escondida
+Oeste/noroeste 1–2 slimes Recompensa por desvio de trilha
+H03 — Campo dos
+Brotos
+Sul intermediário, antes da
+transição
+2–3 slimes Habitat com vegetação baixa
+H04 — Bosque
+Silencioso
+Nordeste, opcional 1–2 slimes Descoberta tardia e pequena
+variação visual
+Orçamento de teste: cerca de 6–10 slimes verdes ativos em todo o mapa, com limite por habitat,
+dependendo do tamanho real e do desempenho. Quantidade não significa que todos devem estar visíveis
+ou carregados ao mesmo tempo.
+10.3 Comportamentos básicos
+Idle: respirar, tremer de leve, olhar ao redor.
+Vagar: pequenos saltos/andar suave dentro do habitat; nunca atravessar árvores ou cair em área
+bloqueada.
+Interesse: aproximar-se de flores, um arbusto ou outro slime por curto período.
+Curiosidade: notar o jogador à distância curta, parar e virar-se; sem perseguição agressiva.
+Reação cautelosa: recuar poucos passos se o jogador se aproximar muito rápido, sem fugir para
+áreas inacessíveis.
+Convivência: duas criaturas podem ficar próximas ocasionalmente; evitar sobreposição visual
+prolongada.
+Vínculo futuro: manter hooks/sinais para interação e amizade, sem forçar implementação completa
+de agricultura neste mapa.
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 10
+
+PAGE 11
+10.4 Spawn e persistência
+Use Marker2D por habitat ou regiões de spawn auditáveis.
+Seleção de posição deve verificar distância mínima do spawn do jogador, chão caminhável,
+ausência de colliders/água profunda, espaço livre em volta e distância mínima entre criaturas.
+Preferir spawn fora do enquadramento imediato; não fazer aparecer criatura à frente dos olhos do
+jogador.
+Não gerar infinitamente: limite global, limite por habitat e cooldown entre tentativas.
+Slime transformado em companheiro não deve ser duplicado ao sair/voltar do mapa ou carregar o
+save.
+Use IDs estáveis de espécie/habitat/instância persistente, conforme a arquitetura já existente.
+11. Micro-locais e segredos ambientais
+O mapa grande só parece grande se houver lugares com identidade própria. Criar 5–8 micro-locais na
+área de 200×200, a maioria opcional.
+Jardim das Folhas: primeiro habitat dos slimes, com flores e borboletas.
+Círculo Musgoso: pedras antigas em clareira lateral; curiosidade visual sem boss.
+Tronco do Tempo: tronco grande caído com pequenos fungos e plantas no entorno.
+Bosque dos Cogumelos: zona mais sombreada, fungos com cores distintas e som abafado.
+Árvore Centenária: silhueta memorável que funciona como marco de orientação.
+Mirante Rochoso: pequeno desnível com vista de parte da mata; não confundir com uma arena.
+Jardim Escondido: flores raras, visual convidativo, acesso por pequeno desvio.
+Passagem Úmida: indica visualmente que o Vale das Nascentes fica ao sul.
+Regra: recompensa de descoberta não precisa ser loot em todas as áreas; pode ser um ambiente bonito,
+nova espécie de planta, som especial ou pequeno indício da história.
+12. Terreno, pedras, relevos e pequenos riachos
+Base do solo: vários tons de grama e terra, com bordas orgânicas; evitar grandes regiões
+monocromáticas.
+Pedras baixas: decoração e variação de relevo; pedras grandes com colisão clara.
+Paredões: aplicar os módulos de rocha e elevação do mesmo padrão visual do projeto.
+Escadas naturais: conectar níveis, sem obrigar salto se não existe mecânica de salto.
+Riachos discretos: apenas alguns pontos, com água baixa e rochas musgosas perto do sul.
+Não transformar o Mapa 1 em área dominada por água. O Mapa 2 é o Vale das Nascentes, e deve
+ter identidade hídrica superior.
+Garantir corredores de circulação, especialmente quando copas sobrepõem as trilhas.
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+8. 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 11
+
+PAGE 12
+12.1 Resolução visual dos relevos
+Uma falha comum é desenhar uma pedra como se fosse escalável e aplicar colisão invisível que impede o
+jogador. O desenho deve esclarecer: parede = bloqueio; escada/trilha = passagem. Evitar misturar falésias
+grandes com pequenas pedras decorativas sem contraste suficiente.
+13. Arquitetura técnica sugerida — Godot 4
+Antes de usar esta estrutura, auditar os nós e scripts já existentes. Os nomes abaixo são uma
+proposta de organização, não exigência de reconstrução da cena.
+Mapa01_FlorestaDoDespertar (Node2D)
+├── Ground (TileMapLayer)
+├── GroundDetails (TileMapLayer)
+├── Paths (TileMapLayer)
+├── LowVegetation (TileMapLayer)
+├── Obstacles (TileMapLayer)
+├── TreesAndLargeProps (Node2D / Y-sort)
+├── FlowerClusters (Node2D ou TileMapLayer)
+├── EnvironmentalVFX (Node2D)
+│   ├── WindVisuals
+│   ├── ButterflyManager
+│   ├── BirdShadowManager
+│   └── LeafParticles
+├── AmbientAudio (Node2D)
+├── PointsOfInterest (Node2D)
+├── PlayerSpawns (Node2D)
+│   ├── PlayerSpawn (Marker2D)
+│   └── ArrivalFromSouth (Marker2D)
+├── SlimeHabitats (Node2D)
+│   ├── H01_East (Node2D / Region)
+│   ├── H02_West (Node2D / Region)
+│   ├── H03_South (Node2D / Region)
+│   └── H04_Northeast (Node2D / Region)
+├── NoSlimeSpawnArea (Area2D ou dado geométrico)
+├── Exits (Node2D)
+│   └── ExitSouthToMap02 (Area2D)
+└── [Player instanciado pelo gerenciador atual, se já existir]
+13.1 Diretrizes de implementação
+Godot 4: usar TileMapLayer conforme versão atual do projeto.
+Preservar filtro Nearest, grade de pixels e consistência de escala.
+Garantir Y-sort adequado para troncos/corpos e copas, sem árvore inteira renderizar sempre à frente.
+Separar colisões de elementos puramente visuais.
+Não instanciar milhares de Node2D com _process() ativo para decorar folhas e flores.
+Movimentos ambientais não podem deslocar a geometria física.
+Usar um gerenciador de efeitos, cache/pooling de elementos repetidos e culling básico quando
+necessário.
+Manter transições entre mapas e spawn do jogador em componentes independentes.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 12
+
+PAGE 13
+13.2 Dados de habitat sugeridos
+# Esboço de dados: adapte aos recursos e scripts existentes.
+# A validação de navegação depende da arquitetura real do projeto.
+@export var habitat_id: StringName
+@export var species_id: StringName = &"slime_verde"
+@export var max_population: int = 3
+@export var min_player_spawn_distance_tiles: int = 30
+@export var allowed_terrain_tags: PackedStringArray = ["grass", "clearing"]
+@export var cooldown_seconds: float = 20.0
+Importante: a distância geométrica é uma primeira filtragem. Quando disponível, validar também a
+distância por caminho utilizável e a visibilidade imediata da câmera. O código acima é um esquema de
+parâmetros, não uma solução completa de spawn.
+13.3 Evento ambiental orientado por câmera
+# Pseudofluxo, não um script pronto para copiar sem adaptação:
+# 1. Verificar zona do jogador e se câmera está ativa.
+# 2. Escolher evento permitido para a zona (vento/borboleta/sombra).
+# 3. Aplicar limite simultâneo e cooldown.
+# 4. Instanciar ou reutilizar efeito do pool na área visível apropriada.
+# 5. Encerrar efeito e devolvê-lo ao pool.
+14. PixelLab e pipeline de assets
+Regra: primeiro inspecionar C:\Slimekeepers_Lost_Valley_v0_1\assets. Nunca gerar substitutos para
+recursos já adequados.
+14.1 Inventário de recursos a conferir
+Árvores: árvore grande de copa arredondada, pinheiro, tronco, copa separável, árvore antiga.
+Plantas: gramíneas, samambaia, moita, arbusto, flores brancas/amarelas/azuis/rosas.
+Solo: diferentes gramados, terra, borda de trilha, transições.
+Objetos: pedra musgosa, tronco caído, toco, raiz, cogumelos, galhos.
+Efeitos: folha isolada, partículas, borboleta com animação, silhueta de pássaro, sombra/recortes de luz.
+Criaturas: slime verde e animações idle/movimentação, coerentes com o tamanho do jogador.
+14.2 Regras de geração de novos sprites
+Confirmar tamanho-base dos sprites, grid, perspectiva e paleta antes de abrir o PixelLab.
+Criar sprites individualizados ou spritesheets com grade verificável, fundo transparente para objetos
+soltos.
+Preservar sombra, iluminação superior-esquerda e proporção relativa ao player.
+Para copa animada, gerar 2–4 frames discretos antes de pedir dezenas de quadros desnecessários.
+Para borboleta, gerar 4–6 frames de asas e permitir movimento pelo código.
+Para sombra de pássaro, gerar silhueta escura e simples, separada do pássaro, para opacidade
+controlável.
+• 
+• 
+• 
+• 
+• 
+• 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 13
+
+PAGE 14
+T estar cada novo asset no tamanho real em que aparecerá no jogo.
+Documentar origem, licença/condições aplicáveis e arquivo de referência.
+14.3 Prompts curtos para PixelLab
+Copas ao vento
+Seamless 2D top-down pixel art animation frames of a lush green tree canopy gently swaying in a soft
+breeze. Keep trunk base fixed, crisp pixels, identical scale and anchor across 4 frames, transparent
+background, soft upper-left light, cozy fantasy forest palette, suitable for a Godot farming RPG. No
+scenery, no text, no blur.
+Borboleta ambiental
+Small top-down pixel art butterfly sprite sheet, 4 to 6 wing-flap frames, delicate yellow and pale blue
+variations, transparent background, consistent sprite anchor and pixel scale, cozy fantasy forest RPG,
+crisp pixel clusters, no cast shadow baked into transparent space.
+Flores e plantas
+Modular top-down pixel art wildflower and fern asset sheet for a bright green fantasy forest: small
+white daisies, yellow flowers, gentle blue blooms, subtle pink flowers, grass tufts, small ferns,
+transparent background, consistent tile scale and shading, reusable isolated sprites, no full
+landscape.
+Sombras de pássaros
+Minimal top-down pixel art ground shadow silhouette of a small bird flying with wings extended, dark
+desaturated blue-gray, separate simple poses, transparent background, designed to pass over grassy
+terrain as a subtle atmospheric shadow effect, no visible bird body, no scenery.
+15. Desempenho e estabilidade
+200×200 tiles = 40.000 posições de terreno, mas o custo real dependerá principalmente da
+quantidade de objetos independentes, colisões, efeitos e criaturas ativos, além dos tiles usados. Não
+estimar FPS sem testes.
+15.1 Orçamento inicial de efeitos (ajustável)
+Sistema Primeira implementação propostaTécnica de economia
+Árvores ao vento Subconjunto perto da câmera Frames/shader compartilhados; não animar collider
+Flores ao vento Pequenos agrupamentos selecionadosAtlas ou animação regional
+Borboletas Até 2–5 simultâneas Pooling, ativação local
+7. 
+8. 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 14
+
+PAGE 15
+Sistema Primeira implementação propostaTécnica de economia
+Sombras de pássaroEvento raro, 0–1 simultâneo Um sprite reutilizável com fade
+Folhas caindo Poucas partículas em pontos chaveGPUParticles2D quando adequado ou pooling
+Slimes verdes Meta de 6–10 ativos no mapa LOD de comportamento, zonas de habitat
+Sons ambientais Um leito base + eventos pontuaisLimitar vozes simultâneas
+15.2 Testes obrigatórios
+Andar da clareira até cada saída com pelo menos um slime seguidor (quando essa mecânica existir).
+Verificar FPS e tempos de carregamento no editor e em build de teste quando possível.
+Checar contador de nós ativos, colisões, partículas e draw calls nas cenas mais densas.
+Provar que desativar efeitos visuais melhora o custo sem quebrar o mapa.
+Conferir câmera em limites e mudanças de região; sem revelar fundo vazio.
+Carregar, sair e voltar sem duplicar slimes ou disparar efeitos repetidos permanentemente.
+15.3 Ajustes para acessibilidade visual
+Permitir reduzir partículas/animações ambientais caso o menu de opções contemple qualidade gráfica.
+Sombras móveis não devem esconder itens de interação ou telegráficos futuros.
+Movimentos lentos e discretos; evitar excesso de flash ou brilho piscando.
+16. Critérios de aceitação de design
+Uma etapa só pode ser considerada concluída quando há evidência verificável (teste em cena, captura,
+logs ou checklist).
+16.1 Mapa e navegação
+A cena existente foi preservada com backup.
+A área passa a comportar 200×200 tiles sem esticar sprites.
+A clareira é claramente reconhecível e o spawn está desobstruído.
+Três rotas principais (norte/leste/sul) são legíveis em zoom normal.
+Não há caminho principal fechado por árvores/colliders.
+Existem ao menos cinco micro-locais distintos e navegáveis.
+A saída sul está preparada para o Vale das Nascentes, com chegada correta.
+16.2 Ecossistema vivo
+Pelo menos três tipos de plantas decorativas aparecem em cada subzona relevante.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 15
+
+PAGE 16
+Flores brancas, amarelas, azuis e rosas estão distribuídas em grupos naturais.
+Há movimento leve e não sincronizado em algumas copas/arbustos.
+Borboletas surgem principalmente em áreas com flores.
+Sombras ocasionais de pássaros passam pelo chão sem afetar UI ou colisões.
+Sons ambientais variam gradualmente por zona.
+Efeitos desativam corretamente quando saem de contexto ou da área ativa.
+16.3 Slimes e descoberta
+Nenhum slime verde aparece no spawn nem dentro da exclusão definida.
+O primeiro habitat fica fora da câmera inicial e requer exploração.
+Existem ao menos três habitats distinguíveis.
+Slimes não surgem dentro de rochas, árvores ou água profunda.
+Movimento dos slimes é calmo e não bloqueia passagens principais.
+Há limites de população/cooldown e não ocorre duplicação no retorno.
+16.4 Qualidade técnica
+T exturas em nearest filtering, sem sprites borrados.
+Y-sort e colisões coerentes com o desenho.
+Nenhum erro relevante no console durante a rota básica.
+FPS e consumo de recursos medidos em trechos leves e densos.
+T odas as mudanças e novos assets foram listados em um relatório.
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 16
+
+PAGE 17
+17. Ordem completa de implementação — executar sem
+comandos separados
+Cada etapa deve terminar com uma pequena validação antes de avançar. Se algo falhar, corrigir antes de
+implementar o sistema dependente. Não confundir plano com execução já realizada.
+Fase A — preservar, estruturar e ampliar
+Auditoria: abrir o projeto, identificar versão do Godot, cena principal, input, TileMapLayers, grid,
+personagens, scripts, spawns e transições.
+Backup: criar cópia/branch da cena atual de 100×100, mantendo um checkpoint restaurável.
+Inventário de assets: catalogar árvores, flores, arbustos, plantas, cogumelos, solo, pedras,
+animações e slimes verdes existentes.
+Planejamento espacial: marcar clareira, três rotas, zonas, micro-locais e habitats antes de preencher
+com objetos.
+Expansão para 200×200: aumentar área jogável sem escalar sprites; preservar o núcleo e ajustar
+posicionamento de objetos conforme a origem real.
+Terreno e caminhos: completar chão e bordas, conectar rotas principais e impedir espaços sem tile.
+Primeira validação: caminhar do spawn até cada futura saída sem obstáculos acidentais.
+Fase B — compor a floresta natural
+Grandes massas arbóreas: criar diferentes densidades, priorizando a leitura das trilhas e silhuetas
+dos pontos de interesse.
+Composição botânica: distribuir arbustos, samambaias, capim e cogumelos em grupos, sem espalhar
+de modo uniforme.
+Flores com identidade: aplicar quatro cores em agrupamentos naturais, especialmente perto do
+spawn e habitats.
+Marcos e micro-locais: criar árvore centenária, tronco caído, jardim secreto, círculo musgoso e outras
+áreas opcionais.
+Relevo e transição sul: introduzir pedras, pequenos desníveis e sinais discretos de umidade sem
+transformar Mapa 1 em Mapa 2.
+Colisões/Y-sort: validar troncos sólidos, copas, pedras, escadas e corredores.
+Fase C — colocar vida no ambiente
+Vento ambiental: sistema global simples com fases variadas; animar apenas elementos selecionados.
+Flores ao vento: animar pequenos grupos preservando posição e nitidez da pixel art.
+Borboletas: implementar voo, pouso, duração, limite simultâneo e vínculo visual com manchas
+floridas.
+Sombras de pássaro: efeito raro atravessando áreas abertas, sem colisão nem efeito sobre UI.
+Folhas e partículas: adicionar poucos emissores regionais, culling/pooling e ajustes de densidade.
+Áudio ambiental: sons base e sons por região com fades e volumes adequados.
+Validação dos efeitos: observar por alguns minutos com personagem parado e depois em
+movimento; remover exageros visuais.
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 17
+
+PAGE 18
+Fase D — população e exploração
+NoSlimeSpawnArea: adicionar zona de exclusão de 25–30 tiles (ajustável) e proteção da câmera
+inicial.
+Habitats de slime verde: configurar 3–4 zonas exploráveis e percursos mínimos; testar o primeiro
+encontro.
+Comportamento e população: idle, vagar, interesse por flores, curiosidade, limite por zona e sem
+duplicações.
+Conexão com mapa 2: preparar e testar saída sul e marcador de chegada norte no Vale das
+Nascentes, sem inventar cenas ausentes.
+Teste final e documentação: caminhar todo o mapa, revisar colisões, desempenho, tempos de
+encontro, registrar evidências e pendências.
+Fase E — ajuste baseado em experiência
+Teste de primeiro contato: pedir a uma pessoa que não conhece o mapa para explorar por 5–10
+minutos sem instruções extras; observar onde se perde.
+Ajuste de descoberta: aproximar ou afastar habitats conforme o tempo de encontro e sensação de
+curiosidade, mantendo a clareira segura.
+Polimento final: remover áreas visualmente repetitivas, corrigir silhuetas, balancear áudio e rever
+efeitos que competem com a leitura do terreno.
+1. 
+2. 
+3. 
+4. 
+5. 
+1. 
+2. 
+3. 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 18
+
+PAGE 19
+18. Prompt único para IA de programação (execução
+sequencial)
+Use o texto abaixo junto com este documento no projeto local. A IA só poderá alterar arquivos
+se tiver acesso real a esse diretório/ambiente.
+Você é responsável por implementar o Mapa 01 — Floresta do Despertar
+em Slimekeepers: Lost Valley, usando este documento mestre como
+especificação obrigatória.
+Projeto: C:\Slimekeepers_Lost_Valley_v0_1
+Assets: C:\Slimekeepers_Lost_Valley_v0_1\assets
+OBJETIVO:
+Evoluir a floresta atual de 100×100 para 200×200 tiles, preservando
+o núcleo já existente, criando uma zona de spawn segura, mata viva,
+flores em agrupamentos, árvores com movimento sutil, borboletas,
+sombras ocasionais de pássaros, folhas, sons ambientais e habitats
+distantes dos primeiros slimes verdes.
+REGRAS:
+1. Faça auditoria e backup antes de qualquer alteração.
+2. Confirme o tile size e a arquitetura do projeto; não presuma 32×32.
+3. Não substitua cenas existentes nem perca o mapa atual.
+4. Trabalhe na ordem das 28 etapas listadas neste documento.
+5. Priorize jogabilidade, rotas transitáveis e boa leitura em zoom real.
+6. NÃO faça slime verde nascer junto ao PlayerSpawn; implemente
+   exclusão e habitats afastados, também aplicáveis a respawn.
+7. Preserve a saída sul para Vale das Nascentes.
+8. A Ilha Verde NÃO possui boss principal.
+9. Reaproveite assets primeiro; PixelLab só se houver acesso real e
+   faltar um recurso necessário, sem alterar a escala artística.
+10. Não gaste processamento com milhares de nós decorativos ativos.
+11. Após cada fase faça os testes que realmente forem possíveis.
+12. Se houver bloqueio, registre o motivo e prossiga somente com
+    tarefas independentes; nunca declare teste não realizado.
+13. Ao concluir, entregue: arquivos alterados, assets reaproveitados,
+    novos assets, status de cada etapa, testes executados, erros e
+    próximos ajustes.
+Comece agora pela auditoria e prossiga sequencialmente.
+19. Lista de entregáveis esperados
+A equipe ou IA responsável deve entregar, conforme a infraestrutura disponível:
+Cena funcional do Mapa 01 em versão ampliada (não apenas um PNG do mapa).
+Spawns e saídas com coordenadas verificadas.
+Habitats configurados e proteção contra slime próximo do spawn.
+Efeitos ambientais organizados e limitados por orçamento.
+Áudio ambiental integrado, se arquivos licenciados estiverem disponíveis.
+• 
+• 
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 19
+
+PAGE 20
+Registro de sprites reaproveitados ou novos, com caminhos reais.
+Relatório de testes de movimentação, câmera, colisão, spawn e FPS.
+Capturas antes/depois no zoom de gameplay e uma visão geral de planejamento.
+Definição de pronto: o jogador aparece numa clareira segura, percebe vida sutil ao seu redor, escolhe
+uma trilha, percorre a floresta sem ficar preso e descobre os primeiros slimes verdes longe do ponto de
+início. A floresta deve continuar interessante sem ser visualmente confusa.
+20. Observações finais e limites
+Este documento foi preparado com base nas decisões de design desta conversa e na imagem do mapa
+atual fornecida. Ele não comprova que a cena local tem as camadas, nós ou scripts sugeridos; esses
+elementos precisam ser auditados antes da implementação.
+Se surgir conflito entre uma recomendação numérica deste texto e a experiência real no Godot — por
+exemplo, tiles muito grandes, personagem muito lento, câmera com zoom muito afastado — preserve os 
+objetivos de experiência e ajuste os parâmetros.
+Prioridade criativa: fazer o jogador sentir que a floresta existe independentemente dele; e que encontrar
+um slime verde, depois de seguir uma trilha e observar o ambiente, é o início de uma amizade, não um
+objeto colecionável na porta de casa.
+• 
+• 
+• 
+SLIMEKEEPERS / DESIGN DO MAPA 01 DOCUMENTO MESTRE 1.0
+Floresta do Despertar • 27.10.2026 20

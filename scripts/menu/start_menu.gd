@@ -1,0 +1,306 @@
+extends Control
+## Presentation scene; the existing prototype remains the source of gameplay.
+const MenuTheme = preload("res://scripts/menu/menu_theme.gd")
+const BoardDetails = preload("res://scripts/menu/board_details.gd")
+const LogoPlaque = preload("res://scripts/menu/logo_plaque.gd")
+const ValleySky = preload("res://scripts/menu/valley_sky.gd")
+const Farm = preload("res://scripts/menu/farm_foreground.gd")
+var panorama: Node2D
+var logo: Panel
+var buttons: VBoxContainer
+var quote: PanelContainer
+var options_layer: Control
+var reduce_motion := false
+var _crest: AnimatedSprite2D
+var _prefs := ConfigFile.new()
+
+func _ready() -> void:
+	GameClock.stop()
+	# Menu uses physical pixels; the gameplay's 960x540 canvas is restored on entry.
+	get_window().content_scale_size = Vector2i.ZERO
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	theme = MenuTheme.make_theme()
+	_prefs.load("user://presentation.cfg")
+	reduce_motion = _prefs.get_value("accessibility","reduce_motion",false)
+	panorama = Node2D.new()
+	panorama.name = "Panorama"
+	panorama.z_index = -10
+	add_child(panorama)
+	var sky := ValleySky.new()
+	sky.name = "Valley"
+	sky.reduce_motion = reduce_motion
+	panorama.add_child(sky)
+	var farm := Farm.new()
+	farm.name = "Farm"
+	farm.reduce_motion = reduce_motion
+	panorama.add_child(farm)
+	_build_logo()
+	_build_buttons()
+	_build_quote()
+	resized.connect(_layout)
+	_layout()
+	buttons.get_child(0).grab_focus()
+	if not reduce_motion:
+		logo.modulate.a = 0
+		buttons.modulate.a = 0
+		var entrance := create_tween().set_parallel(true)
+		entrance.tween_property(logo,"modulate:a",1.0,0.45)
+		entrance.tween_property(buttons,"modulate:a",1.0,0.35).set_delay(0.15)
+
+func _build_logo() -> void:
+	logo = Panel.new()
+	logo.name = "Logo"
+	logo.add_theme_stylebox_override("panel",StyleBoxEmpty.new())
+	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(logo)
+	var trim := LogoPlaque.new()
+	logo.add_child(trim)
+	trim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var title := Label.new()
+	title.name = "Title"
+	title.text = "SLIMEKEEPERS"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_override("font",MenuTheme.font(true))
+	title.add_theme_font_size_override("font_size",72)
+	title.add_theme_color_override("font_color",Color("#ffdfa0"))
+	title.add_theme_color_override("font_outline_color",Color("#342934"))
+	title.add_theme_constant_override("outline_size",6)
+	title.add_theme_color_override("font_shadow_color",Color("#251e2b"))
+	title.add_theme_constant_override("shadow_offset_y",4)
+	logo.add_child(title)
+	title.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	title.offset_top = 20
+	title.offset_bottom = 94
+	var plaque := PanelContainer.new()
+	var plaque_style := MenuTheme.panel(8)
+	plaque_style.bg_color = Color("#e8c78a")
+	plaque_style.border_color = Color("#62452f")
+	plaque_style.set_border_width_all(3)
+	plaque_style.border_width_bottom = 5
+	plaque.add_theme_stylebox_override("panel",plaque_style)
+	logo.add_child(plaque)
+	plaque.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	plaque.offset_left = 136
+	plaque.offset_right = -136
+	plaque.offset_top = -32
+	plaque.offset_bottom = 18
+	var subtitle := Label.new()
+	subtitle.text = "LOST VALLEY"
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_font_override("font",MenuTheme.font(true))
+	subtitle.add_theme_font_size_override("font_size",28)
+	plaque.add_child(subtitle)
+	_crest = AnimatedSprite2D.new()
+	_crest.sprite_frames = load("res://assets/slimes/bestiary/gelito/gelito_frames.tres")
+	_crest.scale = Vector2(2,2)
+	_crest.play("idle")
+	logo.add_child(_crest)
+	_crest.speed_scale = 0 if reduce_motion else 1
+
+func _build_buttons() -> void:
+	buttons = VBoxContainer.new()
+	buttons.name = "Actions"
+	buttons.add_theme_constant_override("separation",14)
+	add_child(buttons)
+	for caption in ["Novo Jogo","Continuar","Opções","Sair"]:
+		var button := Button.new()
+		button.name = caption.replace(" ","")
+		button.text = caption
+		button.custom_minimum_size = Vector2(0,64)
+		button.add_theme_font_size_override("font_size",30)
+		button.add_theme_font_override("font",MenuTheme.font(true))
+		if caption == "Novo Jogo":
+			var primary := MenuTheme.button(&"normal")
+			primary.bg_color = MenuTheme.CREAM
+			button.add_theme_stylebox_override("normal",primary)
+			var primary_hover := MenuTheme.button(&"hover")
+			primary_hover.bg_color = Color("#f6daa1")
+			button.add_theme_stylebox_override("hover",primary_hover)
+			var primary_pressed := MenuTheme.button(&"pressed")
+			primary_pressed.bg_color = Color("#cbaa72")
+			button.add_theme_stylebox_override("pressed",primary_pressed)
+			for font_state in ["font_color","font_hover_color","font_focus_color","font_pressed_color"]:
+				button.add_theme_color_override(font_state,MenuTheme.INK)
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		buttons.add_child(button)
+		var trim := BoardDetails.new()
+		button.add_child(trim)
+		trim.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		button.mouse_entered.connect(func():
+			if not button.disabled:
+				button.grab_focus()
+		)
+		button.focus_entered.connect(_highlight.bind(button,true))
+		button.focus_exited.connect(_highlight.bind(button,false))
+		match caption:
+			"Novo Jogo": button.pressed.connect(_start_game)
+			"Continuar":
+				button.disabled = true
+				button.tooltip_text = "Salvamento indisponível nesta versão."
+				button.focus_mode = Control.FOCUS_NONE
+			"Opções": button.pressed.connect(_show_options)
+			"Sair": button.pressed.connect(func(): get_tree().quit())
+	var active := [buttons.get_child(0),buttons.get_child(2),buttons.get_child(3)]
+	for i in range(active.size()):
+		var button := active[i] as Button
+		button.focus_neighbor_top = button.get_path_to(active[(i+2)%3])
+		button.focus_neighbor_bottom = button.get_path_to(active[(i+1)%3])
+		button.focus_next = button.focus_neighbor_bottom
+		button.focus_previous = button.focus_neighbor_top
+
+func _highlight(button: Button, focused: bool) -> void:
+	var target := Color("#fff0c7") if focused else Color.WHITE
+	if reduce_motion:
+		button.modulate = target
+	else:
+		create_tween().tween_property(button,"modulate",target,0.12)
+
+func _build_quote() -> void:
+	quote = PanelContainer.new()
+	quote.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := MenuTheme.panel(10)
+	style.bg_color = Color("#533b49")
+	style.border_color = Color("#caa270")
+	style.set_border_width_all(2)
+	quote.add_theme_stylebox_override("panel",style)
+	add_child(quote)
+	var line := Label.new()
+	line.text = "Uma nova aventura está prestes a florescer..."
+	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	line.add_theme_font_size_override("font_size",22)
+	line.add_theme_color_override("font_color",MenuTheme.CREAM)
+	quote.add_child(line)
+
+func _layout() -> void:
+	if not is_instance_valid(logo): return
+	var scenery_scale := maxf(1.0,ceil(maxf(size.x/1600.0,size.y/800.0)*2.0)/2.0)
+	panorama.scale = Vector2.ONE * scenery_scale
+	panorama.position = Vector2(round((size.x-1280*scenery_scale)/2.0),round(size.y-720*scenery_scale))
+	var ui_scale := maxf(1.0,floor(minf(size.x/1280.0,size.y/720.0)*2.0)/2.0)
+	for control in [logo,buttons,quote]:
+		control.scale = Vector2.ONE * ui_scale
+	logo.size = Vector2(600,140)
+	logo.position = Vector2(round(size.x * 0.5 - 300*ui_scale),(54 if size.y < 600 else 64)*ui_scale)
+	_crest.position = Vector2(300,-15)
+	var compact := size.y < 600
+	buttons.add_theme_constant_override("separation",8 if compact else 14)
+	for button in buttons.get_children():
+		button.custom_minimum_size.y = 48 if compact else 64
+	buttons.size = Vector2(270 if size.x<1000 else 300,216 if compact else 298)
+	buttons.position = Vector2(size.x-(buttons.size.x+24)*ui_scale,224 if compact else clampf(size.y-406*ui_scale,236,360*ui_scale)).round()
+	quote.size = Vector2(minf(620,size.x-48),44)
+	quote.position = Vector2(round((size.x-quote.size.x*ui_scale)/2),size.y-50*ui_scale)
+	if is_instance_valid(options_layer):
+		var panel := options_layer.get_node("Card") as PanelContainer
+		panel.scale = Vector2.ONE * ui_scale
+		panel.position = ((size - panel.size*ui_scale)/2).round()
+
+func _start_game() -> void:
+	GameClock.reset_new_game()
+	for key in ["clearing_friends", "forest_slime_friends", "valley_slime_friends", "environment_conditions", "forest_places", "region_arrival", "valley_discoveries"]:
+		if get_tree().has_meta(key): get_tree().remove_meta(key)
+	get_window().content_scale_size = Vector2i(960,540)
+	get_tree().change_scene_to_file("res://scenes/regions/FlorestaDoDespertarV2.tscn")
+
+func _show_options() -> void:
+	if is_instance_valid(options_layer): return
+	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
+	options_layer = Control.new()
+	options_layer.name = "Options"
+	add_child(options_layer)
+	options_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var shade := ColorRect.new()
+	shade.color = Color(0.08,0.09,0.13,0.72)
+	options_layer.add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.custom_minimum_size = Vector2(460,420)
+	options_layer.add_child(card)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation",18)
+	card.add_child(stack)
+	var title := Label.new()
+	title.text = "Opções"
+	title.add_theme_font_size_override("font_size",34)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(title)
+	var motion := CheckButton.new()
+	motion.name = "ReduceMotion"
+	motion.text = "Reduzir movimento ambiental"
+	motion.button_pressed = reduce_motion
+	motion.toggled.connect(_set_reduced_motion)
+	stack.add_child(motion)
+	var fullscreen := CheckButton.new()
+	fullscreen.text = "Tela cheia"
+	fullscreen.button_pressed = get_window().mode == Window.MODE_FULLSCREEN
+	fullscreen.toggled.connect(func(enabled: bool):
+		get_window().mode = Window.MODE_FULLSCREEN if enabled else Window.MODE_WINDOWED
+	)
+	stack.add_child(fullscreen)
+	var volume_label := Label.new()
+	volume_label.text = "Volume do ambiente"
+	stack.add_child(volume_label)
+	var volume := HSlider.new()
+	volume.name = "AmbientVolume"
+	volume.min_value = 0
+	volume.max_value = 100
+	volume.step = 5
+	volume.value = float(_prefs.get_value("audio","ambient_volume",0.65))*100
+	volume.custom_minimum_size.y = 22
+	volume.value_changed.connect(func(value:float):
+		_prefs.set_value("audio","ambient_volume",value/100.0)
+		_prefs.save("user://presentation.cfg")
+	)
+	stack.add_child(volume)
+	var mute := CheckButton.new()
+	mute.name = "MuteAmbient"
+	mute.text = "Silenciar ambiente"
+	mute.button_pressed = bool(_prefs.get_value("audio","muted",false))
+	mute.toggled.connect(func(enabled:bool):
+		_prefs.set_value("audio","muted",enabled)
+		_prefs.save("user://presentation.cfg")
+	)
+	stack.add_child(mute)
+	var close := Button.new()
+	close.name = "Close"
+	close.text = "Voltar"
+	close.custom_minimum_size.y = 54
+	close.pressed.connect(_close_options)
+	stack.add_child(close)
+	var focusables := [motion,fullscreen,volume,mute,close]
+	for i in focusables.size():
+		focusables[i].focus_neighbor_top = focusables[i].get_path_to(focusables[(i+focusables.size()-1)%focusables.size()])
+		focusables[i].focus_neighbor_bottom = focusables[i].get_path_to(focusables[(i+1)%focusables.size()])
+		focusables[i].focus_previous = focusables[i].focus_neighbor_top
+		focusables[i].focus_next = focusables[i].focus_neighbor_bottom
+	card.position = ((size-card.size)/2).round()
+	_layout()
+	motion.grab_focus()
+
+func _set_reduced_motion(enabled: bool) -> void:
+	_apply_reduced_motion(enabled)
+	_prefs.set_value("accessibility","reduce_motion",enabled)
+	_prefs.save("user://presentation.cfg")
+
+func _apply_reduced_motion(enabled: bool) -> void:
+	reduce_motion = enabled
+	panorama.get_node("Farm").reduce_motion = enabled
+	var sky := panorama.get_node("Valley")
+	sky.reduce_motion = enabled
+	for child in sky.get_children():
+		if child is not Sprite2D:
+			child.reduce_motion = enabled
+			child.set_process(not enabled)
+	_crest.speed_scale = 0 if enabled else 1
+
+func _close_options() -> void:
+	options_layer.queue_free()
+	options_layer = null
+	for i in [0,2,3]: buttons.get_child(i).focus_mode = Control.FOCUS_ALL
+	buttons.get_child(2).grab_focus()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and is_instance_valid(options_layer):
+		get_viewport().set_input_as_handled()
+		_close_options()

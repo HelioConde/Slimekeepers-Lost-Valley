@@ -1,0 +1,26 @@
+{
+	"FlorestaDoDespertarV2": {
+		"rules": {
+			"cliff_plants_removed": 53,
+			"ground_cover": 80,
+			"root_lines": 5,
+			"sorted_props": 5109,
+			"thinned_plants": 789
+		},
+		"static_bodies_preserved": 3865,
+		"visible_pivots_checked": 4274
+	},
+	"ValeDasNascentes": {
+		"rules": {
+			"cliff_plants_removed": 129,
+			"ground_cover": 247,
+			"root_lines": 0,
+			"sorted_props": 1346,
+			"thinned_plants": 383
+		},
+		"static_bodies_preserved": 467,
+		"visible_pivots_checked": 1210
+	},
+	"bird_height_ratio": 0.362426035502959,
+	"squirrel_height_ratio": 0.591715976331361
+}

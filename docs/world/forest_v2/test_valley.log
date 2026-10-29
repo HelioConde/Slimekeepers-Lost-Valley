@@ -1,0 +1,44 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PASS North spawn is stable
+PASS 100 x 100 editable ground
+PASS Continuous route EscadaOeste
+PASS Continuous route EscadaCentral
+PASS Continuous route RampaLeste
+PASS Continuous route Entrada
+PASS Continuous route MargemNorteOeste
+PASS Continuous route MiranteLeste
+PASS Continuous route PonteOeste
+PASS Continuous route PonteLeste
+PASS Continuous route MargemSul
+PASS Continuous route JardimUmido
+PASS Continuous route Brejo
+PASS Continuous route SaidaSul
+PASS Continuous route HabitatNascenteLeste
+PASS Continuous route HabitatOeste
+PASS Continuous route HabitatLeste
+PASS Continuous route HabitatSul
+PASS Continuous route HabitatIlhota
+PASS Deep basin blocks at (640.0, 850.0)
+PASS Deep basin blocks at (2470.0, 850.0)
+PASS Deep basin blocks at (1600.0, 1730.0)
+PASS Deep basin blocks at (500.0, 1710.0)
+PASS Deep basin blocks at (2700.0, 1700.0)
+PASS Deep basin blocks at (2370.0, 2590.0)
+PASS Bridge center 0
+PASS Bridge center 1
+PASS Bridge center 2
+PASS Bridge center 3
+PASS Bridge center 4
+PASS Habitat accessible (1070.0, 1400.0)
+PASS Habitat accessible (2130.0, 1370.0)
+PASS Habitat accessible (1000.0, 1980.0)
+PASS Habitat accessible (2220.0, 2040.0)
+PASS Habitat accessible (1910.0, 2770.0)
+PASS Habitat accessible (2750.0, 2850.0)
+PASS Six reserved water habitats
+PASS Three editable elevation layers
+PASS Three integrated waterfalls
+PASS Wetland examination works
+PASS Future exit stays in Map 2
+VALLEY_TEST 41 checks; 0 failures; 2096 samples

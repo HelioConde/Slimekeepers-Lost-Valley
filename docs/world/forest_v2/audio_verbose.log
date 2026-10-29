@@ -1,0 +1,32 @@
+WorkerThreadPool: 12 threads, 3 max low-priority.
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+TextServer: Added interface "Dummy"
+TextServer: Added interface "ICU / HarfBuzz / Graphite (Built-in)"
+Using "default" pen tablet driver...
+
+TextServer: Primary interface set to: "ICU / HarfBuzz / Graphite (Built-in)".
+CORE API HASH: 2004498165
+EDITOR API HASH: 1696660745
+Loading resource: res://tools/test_forest_audio.gd remapped: res://tools/test_forest_audio.gd
+Completed load for: 'res://tools/test_forest_audio.gd' remapped 'res://tools/test_forest_audio.gd' at thread -1
+SceneTreeFTI: traversal method DEFAULT
+Loading resource: res://addons/godot_mcp/services/mcp_runtime_bridge.gd remapped: res://addons/godot_mcp/services/mcp_runtime_bridge.gd
+Completed load for: 'res://addons/godot_mcp/services/mcp_runtime_bridge.gd' remapped 'res://addons/godot_mcp/services/mcp_runtime_bridge.gd' at thread -1
+Loading resource: res://addons/godot_mcp/services/mcp_input_bridge.gd remapped: res://addons/godot_mcp/services/mcp_input_bridge.gd
+Completed load for: 'res://addons/godot_mcp/services/mcp_input_bridge.gd' remapped 'res://addons/godot_mcp/services/mcp_input_bridge.gd' at thread -1
+Loading resource: res://addons/godot_mcp/services/mcp_screenshot_bridge.gd remapped: res://addons/godot_mcp/services/mcp_screenshot_bridge.gd
+Completed load for: 'res://addons/godot_mcp/services/mcp_screenshot_bridge.gd' remapped 'res://addons/godot_mcp/services/mcp_screenshot_bridge.gd' at thread -1
+Loaded system CA certificates
+Loading resource: res://scripts/world/forest_audio.gd remapped: res://scripts/world/forest_audio.gd
+Completed load for: 'res://scripts/world/forest_audio.gd' remapped 'res://scripts/world/forest_audio.gd' at thread -1
+FOREST_AUDIO: 16 checks; 0 failures
+XR: Clearing primary interface
+XR: Removed interface "Native mobile"
+XR: Removed interface "OpenXR"
+Leaked instance: AudioStreamWAV:9223372065778697697 - Reference count: 1
+Leaked instance: AudioStreamPlaybackWAV:9223372065929692656 - Reference count: 1
+Hint: Leaked instances typically happen when nodes are removed from the scene tree (with `remove_child()`) but not freed (with `free()` or `queue_free()`).
+Orphan StringName: Master (static: 0, total: 2)
+StringName: 1 unclaimed string names at exit.
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)

@@ -1,0 +1,38 @@
+{
+  "object": {
+    "id": "4ab6f1ca-6aa1-4197-86f7-7326200e7d32",
+    "name": "base",
+    "prompt": "Single rustic oak wooden post with a hanging small golden glowing glass lantern, tiny ivy leaves at base, cozy woodland RPG pixel art environmental prop, crisp pixels, upper left light, isolated full object, no text, no scenery",
+    "size": {
+      "width": 48,
+      "height": 96
+    },
+    "directions": 1,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "Single_rustic_oak_wooden_post.png",
+    "cell_size": {
+      "width": 48,
+      "height": 96
+    },
+    "sheet_size": {
+      "width": 48,
+      "height": 96
+    },
+    "columns": 1,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 1,
+        "directions": [
+          "unknown"
+        ]
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-28T19:18:19.681649+00:00"
+}

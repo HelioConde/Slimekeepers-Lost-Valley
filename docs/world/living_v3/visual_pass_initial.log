@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+WARNING: res://scenes/regions/FlorestaDoDespertarV2.tscn:31 - ext_resource, invalid UID: uid://byhe3s0dmfcfn - using text path instead: res://assets/world/valley/cliffs_low.tres
+   at: load (scene/resources/resource_format_text.cpp:501)
+   GDScript backtrace (most recent call first):
+       [0] _run (res://tools/test_forest_v2.gd:23)
+FOREST_V2: checks=157 failures=0 capsule_samples=2317
