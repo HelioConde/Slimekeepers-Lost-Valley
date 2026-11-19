@@ -6,6 +6,8 @@ O Mapa 01 ativo é `scenes/regions/FlorestaDoDespertarV2.tscn`: 200×200 tiles, 
 
 Relatório, capturas e limites conhecidos: [Floresta v2](docs/world/forest_v2/RELATORIO_FINAL.md).
 
+Primeira coleta jogável: faça amizade com um Brotinho e use **E** junto às pequenas plantas dos caminhos para guardar sementes na **Bolsa**. O inventário da sessão acompanha a viagem ao Vale e é reiniciado em **Novo Jogo**. Detalhes e limitações: [Primeira coleta](docs/gameplay/PRIMEIRA_COLETA.md).
+
 Validação local: `tools/validate_forest.ps1`. As cenas antigas foram preservadas; o checkpoint restaurável está em `docs/backups/before_forest_v2_20261027.zip`.
 
 ## História e direção narrativa
