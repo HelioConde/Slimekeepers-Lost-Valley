@@ -1,6 +1,7 @@
 name: Slimekeepers - Monitorar modelos e limites do proxy
 
 # Monitora apenas GET regularmente; faz NO MAXIMO um smoke POST reservado
+# Recuperacao de verificacao ausente das 15h25: GET-only autorizado.
 # Teste pontual de leitura aprovado: run de push nao permite POST.
 # quando o uso real estiver liberado. O smoke nao modifica jogo nem abre PR.
 on:
