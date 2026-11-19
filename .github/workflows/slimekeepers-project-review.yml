@@ -46,10 +46,8 @@ jobs:
 
   analyze-once:
     if: >-
-      (github.event_name == 'push' &&
-       github.event.head_commit.message == 'ci(ai-review) one authorized real project analysis after Astra ping') ||
-      (github.event_name == 'workflow_dispatch' &&
-       inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS')
+      github.event_name == 'workflow_dispatch' &&
+      inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS'
     needs: offline-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 16
