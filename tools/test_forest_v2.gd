@@ -30,6 +30,7 @@ func _run() -> void:
 	check(region.player.position.is_equal_approx(Vector2(3200,3200)), "Central player spawn")
 	var camera: Camera2D = region.player.get_node("Camera2D")
 	check(camera.limit_right == 6400 and camera.limit_bottom == 6400, "Camera bounds 6400")
+	print("CAMERA_ZOOM_DIAGNOSTIC expected=1.14 current=", camera.zoom, " prefab=", (load("res://scenes/player.tscn").instantiate() as CharacterBody2D).get_node("Camera2D").zoom)
 	check(camera.zoom.is_equal_approx(Vector2(1.14,1.14)), "Gameplay zoom preserved")
 	check(region.get_node("VegetationHigh").get_child_count() > 900, "Original tree population preserved")
 	var legacy := load("res://scenes/world.tscn").instantiate() as Node2D
