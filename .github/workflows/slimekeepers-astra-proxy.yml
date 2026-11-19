@@ -55,11 +55,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_proxy_quota_diagnostics.py' -v
 
   manual-proxy:
-    if: >-
-      github.ref == 'refs/heads/main' &&
-      ((github.event_name == 'workflow_dispatch') ||
-       (github.event_name == 'push' &&
-        startsWith(github.event.head_commit.message, 'ci(proxy) quota diagnostic run one')))
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
     needs: offline-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -70,8 +66,8 @@ jobs:
       CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
       CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
       CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
-      REQUEST_OPERATION: ${{ github.event_name == 'push' && 'diagnose' || inputs.operation }}
-      REQUEST_CONFIRMATION: ${{ github.event_name == 'push' && 'NO_INFERENCE' || inputs.confirmation }}
+      REQUEST_OPERATION: ${{ inputs.operation }}
+      REQUEST_CONFIRMATION: ${{ inputs.confirmation }}
       AI_ENABLED: 'false'
       PAID_CALLS_ENABLED: 'false'
       CODEX_PROXY_TEXT_AUTHORIZED: 'false'
