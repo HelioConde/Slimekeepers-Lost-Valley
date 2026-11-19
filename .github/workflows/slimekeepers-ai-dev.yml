@@ -59,6 +59,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
           python -m unittest discover -s tests -p 'test_slimekeepers_dev_agent.py' -v
           python -m unittest discover -s tests -p 'test_slimekeepers_autonomy_guard.py' -v
+          python -c 'import sys,os;sys.path.insert(0,os.path.join(os.getcwd(),"tools"));from slimekeepers_dev_agent import load_tasks;assert len(load_tasks()) >= 9;print("Autonomy task import: OK")'
 
   queue-plan:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'plan'
@@ -338,7 +339,9 @@ jobs:
           python tools/slimekeepers_autonomy_guard.py --task-id "$TASK_ID" --base-sha "$BASE_SHA"
           python - <<'PY'
           import os
-          from tools.slimekeepers_dev_agent import load_tasks
+          import sys
+          sys.path.insert(0, os.path.join(os.getcwd(), "tools"))
+          from slimekeepers_dev_agent import load_tasks
           task = next(t for t in load_tasks() if t["id"] == os.environ["TASK_ID"])
           suite = next(p for p in task["allowed_files"] if p.startswith("tests/"))
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
