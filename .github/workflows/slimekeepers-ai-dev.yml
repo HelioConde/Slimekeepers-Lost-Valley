@@ -307,3 +307,174 @@ jobs:
         run: |
           docker rm -f slimekeepers-ai-dev-proxy >/dev/null 2>&1 || true
           rm -rf "$RUNNER_TEMP/slimekeepers-dev-proxy-state"
+
+validate-generated:
+    # O codigo gerado pelo modelo so executa em runner separado sem secrets.
+    if: needs.develop-one-task.outputs.pr_number != ''
+    needs: develop-one-task
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      TASK_ID: ${{ needs.develop-one-task.outputs.task_id }}
+      BASE_SHA: ${{ needs.develop-one-task.outputs.base_sha }}
+      GODOT_BINARY_NAME: Godot_v4.7.2-stable_linux.x86_64
+      GODOT_ARCHIVE_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+    steps:
+      - name: Checkout do commit exato da proposta sem credenciais persistentes
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.develop-one-task.outputs.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validar somente novos arquivos autorizados e selecionar suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/slimekeepers_autonomy_guard.py --task-id "$TASK_ID" --base-sha "$BASE_SHA"
+          python - <<'PY'
+          import os
+          from tools.slimekeepers_dev_agent import load_tasks
+          task = next(t for t in load_tasks() if t["id"] == os.environ["TASK_ID"])
+          suite = next(p for p in task["allowed_files"] if p.startswith("tests/"))
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("AUTONOMOUS_TEST_FILE=res://" + suite + "\n")
+          print("Suite GdUnit4 autorizada pela fila.")
+          PY
+
+      - name: Instalar Godot 4.7.2 oficial com checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/autonomy-godot"
+          curl -fsSL --retry 2 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$GODOT_BINARY_NAME.zip" \
+            -o "$RUNNER_TEMP/autonomy-godot/godot.zip"
+          echo "$GODOT_ARCHIVE_SHA256  $RUNNER_TEMP/autonomy-godot/godot.zip" | sha256sum -c --status
+          unzip -q "$RUNNER_TEMP/autonomy-godot/godot.zip" -d "$RUNNER_TEMP/autonomy-godot"
+          chmod +x "$RUNNER_TEMP/autonomy-godot/$GODOT_BINARY_NAME"
+          echo "GODOT_BIN=$RUNNER_TEMP/autonomy-godot/$GODOT_BINARY_NAME" >> "$GITHUB_ENV"
+
+      - name: Importar scripts em processo sem credenciais de IA
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 480 "$GODOT_BIN" --headless --editor --path . --import \
+            > "$RUNNER_TEMP/autonomy-import.log" 2>&1 || {
+              tail -n 65 "$RUNNER_TEMP/autonomy-import.log"
+              exit 1
+            }
+
+      - name: Executar testes reais GdUnit4 do modulo gerado
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT_BIN" --headless --path . \
+            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+            -a "$AUTONOMOUS_TEST_FILE" --ignoreHeadlessMode -c \
+            > "$RUNNER_TEMP/autonomy-gdunit.log" 2>&1 || {
+              tail -n 75 "$RUNNER_TEMP/autonomy-gdunit.log"
+              exit 1
+            }
+          if grep -qE 'No test cases found|Script errors were detected|Abnormal exit' "$RUNNER_TEMP/autonomy-gdunit.log"; then
+            echo "::error::Testes GdUnit4 vazios ou invalidos."
+            exit 2
+          fi
+          echo "Suite GdUnit4 executada."
+
+      - name: Validar regressao com as seis suites nativas
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A minimum=(
+            [test_menu]=61
+            [test_forest_v2]=157
+            [test_habitats]=37
+            [test_region_travel]=9
+            [test_forest_foraging]=23
+            [test_valley_garden]=42
+          )
+          {
+            echo "## Modulo isolado testado com Godot 4.7.2"
+            echo ""
+            echo "| Suite | Verificacoes |"
+            echo "|---|---:|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for suite in test_menu test_forest_v2 test_habitats test_region_travel test_forest_foraging test_valley_garden; do
+            log="$RUNNER_TEMP/autonomy-$suite.log"
+            timeout 240 "$GODOT_BIN" --headless --path . \
+              --script "res://tools/$suite.gd" > "$log" 2>&1 || {
+                tail -n 60 "$log"
+                exit 1
+              }
+            checks="$(grep -cE '^PASS([ :]|$)' "$log" || true)"
+            if [[ "$suite" == test_forest_v2 ]]; then
+              checks="$(sed -nE 's/^FOREST_V2: checks=([0-9]+).*/\1/p' "$log" | tail -n 1)"
+            elif [[ "$suite" == test_habitats ]]; then
+              checks="$(sed -nE 's/^FOREST_HABITATS: ([0-9]+) checks.*/\1/p' "$log" | tail -n 1)"
+            fi
+            checks="${checks:-0}"
+            if [[ "$checks" -lt "${minimum[$suite]}" ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
+              echo "::error::Reprovada suite $suite."
+              tail -n 60 "$log"
+              exit 2
+            fi
+            echo "| $suite | $checks |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "Validação de todos os 329 checks anteriores concluída."
+
+      - name: Arquivar evidencias tecnicas mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-autonomy-validation-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/autonomy-import.log
+            ${{ runner.temp }}/autonomy-gdunit.log
+            ${{ runner.temp }}/autonomy-*.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+  merge-validated-module:
+    # Somente arquivos novos testados; nenhuma alteracao de cenas/sprites/segredos.
+    # Branch remota nao e apagada: impede teste duplicado e gasto extra.
+    if: needs.validate-generated.result == 'success' && needs.develop-one-task.outputs.pr_number != ''
+    needs: [develop-one-task, validate-generated]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ needs.develop-one-task.outputs.pr_number }}
+      EXPECTED_BRANCH: ${{ needs.develop-one-task.outputs.branch }}
+      EXPECTED_SHA: ${{ needs.develop-one-task.outputs.head_sha }}
+    steps:
+      - name: Conferir que a PR nao mudou desde os testes e integrar com protecoes GitHub
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json state,baseRefName,headRefName,headRefOid \
+            > "$RUNNER_TEMP/autonomy-pr.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ["RUNNER_TEMP"]) / "autonomy-pr.json"
+          pr = json.loads(p.read_text(encoding="utf-8"))
+          if (pr.get("state") != "OPEN" or pr.get("baseRefName") != "main"
+                  or pr.get("headRefName") != os.environ["EXPECTED_BRANCH"]
+                  or pr.get("headRefOid") != os.environ["EXPECTED_SHA"]):
+              raise SystemExit("PR alterada: merge cancelado.")
+          print("PR integra exatamente o commit validado.")
+          PY
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --squash --match-head-commit "$EXPECTED_SHA"
+          echo "## Entrega autonoma integrada" >> "$GITHUB_STEP_SUMMARY"
+          echo "PR #$PR_NUMBER validada e integrada; checkpoint preservado." >> "$GITHUB_STEP_SUMMARY"
+
