@@ -11,6 +11,7 @@ on:
       - 'tools/test_region_travel.gd'
       - 'tools/test_forest_v2.gd'
       - 'tools/test_habitats.gd'
+      - 'tools/test_forest_foraging.gd'
       - 'project.godot'
       - '.github/workflows/slimekeepers-godot-gameplay.yml'
   push:
@@ -70,13 +71,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          scripts=(test_menu test_forest_v2 test_habitats test_region_travel)
+          scripts=(test_menu test_forest_v2 test_habitats test_region_travel test_forest_foraging)
           # A successful exit is not enough: every native suite must report its checks.
           declare -A minimum_checks=(
             [test_menu]=50
             [test_forest_v2]=140
             [test_habitats]=30
             [test_region_travel]=9
+            [test_forest_foraging]=20
           )
           failed=0
           {
@@ -125,5 +127,6 @@ jobs:
             ${{ runner.temp }}/test_forest_v2.log
             ${{ runner.temp }}/test_habitats.log
             ${{ runner.temp }}/test_region_travel.log
+            ${{ runner.temp }}/test_forest_foraging.log
           retention-days: 14
           if-no-files-found: ignore
