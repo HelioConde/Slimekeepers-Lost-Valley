@@ -51,7 +51,7 @@ class ReviewTests(unittest.TestCase):
             with patch.object(review, "ROOT", Path(temp)):
                 result = review.analyze(PREFLIGHT, generator=fake)
             self.assertEqual(len(seen), 1)
-            self.assertEqual(seen[0][2]["max_output_tokens"], 2200)
+            self.assertEqual(seen[0][1]["max_output_tokens"], 2200)
             self.assertEqual(seen[0][0][2], "gpt-6.2-astra")
             self.assertEqual(result["game_files_changed"], 0)
             self.assertEqual(result["status"], "reviewed_not_implemented")
