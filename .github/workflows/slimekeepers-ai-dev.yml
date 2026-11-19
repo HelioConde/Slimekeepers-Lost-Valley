@@ -308,7 +308,7 @@ jobs:
           docker rm -f slimekeepers-ai-dev-proxy >/dev/null 2>&1 || true
           rm -rf "$RUNNER_TEMP/slimekeepers-dev-proxy-state"
 
-validate-generated:
+  validate-generated:
     # O codigo gerado pelo modelo so executa em runner separado sem secrets.
     if: needs.develop-one-task.outputs.pr_number != ''
     needs: develop-one-task
