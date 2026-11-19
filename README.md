@@ -8,6 +8,8 @@ Relatório, capturas e limites conhecidos: [Floresta v2](docs/world/forest_v2/RE
 
 Primeira coleta jogável: faça amizade com um Brotinho e use **E** junto às pequenas plantas dos caminhos para guardar sementes na **Bolsa**. O inventário da sessão acompanha a viagem ao Vale e é reiniciado em **Novo Jogo**. Detalhes e limitações: [Primeira coleta](docs/gameplay/PRIMEIRA_COLETA.md).
 
+Primeiro cultivo jogável: no **Vale das Nascentes**, use **E** em um dos dois canteiros próximos ao caminho de entrada. Uma semente é consumida; após **120 minutos do tempo do jogo**, volte e colha **folhas frescas**, que aparecem na mesma bolsa. O progresso acompanha a viagem entre regiões e é reiniciado em **Novo Jogo**. [Guia do primeiro canteiro](docs/gameplay/PRIMEIRO_CANTEIRO.md).
+
 Validação local: `tools/validate_forest.ps1`. As cenas antigas foram preservadas; o checkpoint restaurável está em `docs/backups/before_forest_v2_20261027.zip`.
 
 ## História e direção narrativa
