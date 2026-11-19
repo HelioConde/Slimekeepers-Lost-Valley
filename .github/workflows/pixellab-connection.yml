@@ -1,5 +1,9 @@
 name: PixelLab - Conexao Slimekeepers
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pixellab-connection.yml'
   workflow_dispatch:
     inputs:
       operacao:
@@ -36,7 +40,7 @@ jobs:
         env:
           PIXELLAB_API_TOKEN: ${{ secrets.PIXELLAB_API_TOKEN }}
           PIXELLAB_CHARACTER_ID: ${{ secrets.PIXELLAB_CHARACTER_ID }}
-          OP: ${{ inputs.operacao }}
+          OP: ${{ github.event_name == 'push' && 'inventory' || inputs.operacao }}
           PUBLIC: ${{ inputs.confirmar_artefatos_publicos }}
         shell: bash
         run: |
