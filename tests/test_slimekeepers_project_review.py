@@ -35,6 +35,7 @@ class ReviewTests(unittest.TestCase):
             self.assertNotIn("PRIVATE", prompt)
             self.assertNotIn(".env", prompt)
             self.assertIn("scripts/world/forest_slime.gd", files)
+            self.assertLessEqual(len((review.INSTRUCTIONS + prompt).encode("utf-8")), 6200)
 
     def test_one_request_readonly_and_model_primary(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -51,7 +52,7 @@ class ReviewTests(unittest.TestCase):
             with patch.object(review, "ROOT", Path(temp)):
                 result = review.analyze(PREFLIGHT, generator=fake)
             self.assertEqual(len(seen), 1)
-            self.assertEqual(seen[0][1]["max_output_tokens"], 2200)
+            self.assertEqual(seen[0][1]["max_output_tokens"], 850)
             self.assertEqual(seen[0][0][2], "gpt-6.2-astra")
             self.assertEqual(result["game_files_changed"], 0)
             self.assertEqual(result["status"], "reviewed_not_implemented")
@@ -94,6 +95,20 @@ class ReviewTests(unittest.TestCase):
                 with self.assertRaises(review.ReviewError):
                     review.analyze(PREFLIGHT, generator=fake)
         self.assertEqual(calls, [1])
+
+    def test_gdscript_context_uses_function_outline_not_full_source(self):
+        text = "extends Node\nfunc collect() -> void:\n    var private = 'omit'\nfunc save() -> void:\n    pass\n"
+        excerpt = review._excerpt("scripts/systems/game_clock.gd", text, 200)
+        self.assertIn("func collect()", excerpt)
+        self.assertIn("func save()", excerpt)
+        self.assertNotIn("private", excerpt)
+
+    def test_large_plan_only_sends_headings_and_pending_items(self):
+        text = "# Plano\n- [x] feito\n- [ ] pendente\nexplicacao longa\n"
+        excerpt = review._excerpt("PLANO_DE_DESENVOLVIMENTO.md", text, 300)
+        self.assertIn("pendente", excerpt)
+        self.assertNotIn("feito", excerpt)
+        self.assertNotIn("explicacao longa", excerpt)
 
     def test_context_missing_file_blocks_before_call(self):
         with tempfile.TemporaryDirectory() as temp:
