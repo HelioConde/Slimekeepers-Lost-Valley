@@ -153,9 +153,54 @@ def probe_text(base_url: str, api_key: str, model: str, *, opener=None) -> dict:
     return result
 
 
+
+def inspect_catalog(preflight: dict, base_url: str, api_key: str, *, opener=None) -> dict:
+    """GET /v1/models/<id> for each nonimage alternative; no POST."""
+    if preflight.get("authenticated") is not True or not isinstance(preflight.get("model_ids"), list):
+        raise SmokeError("Preflight autenticado obrigatório.")
+    if not isinstance(api_key, str) or len(api_key.strip()) < 20:
+        raise SmokeError("Credencial do proxy ausente.")
+    origin, kind = normalize_origin(base_url)
+    if opener is None:
+        handlers = [NoRedirect()]
+        if kind == "local_loopback":
+            handlers.insert(0, urllib.request.ProxyHandler({}))
+        opener = urllib.request.build_opener(*handlers)
+    found = set(preflight["model_ids"])
+    results = []
+    for model in CANDIDATES:
+        item = {"model": model, "catalog_listed": model in found,
+                "model_endpoint": "not_listed", "text_inference_verified": False}
+        if model in found:
+            request = urllib.request.Request(
+                origin + "/v1/models/" + model, method="GET",
+                headers={"Authorization": "Bearer " + api_key.strip(),
+                         "Accept": "application/json"},
+            )
+            try:
+                with opener.open(request, timeout=10) as response:
+                    raw = response.read(100001)
+            except urllib.error.HTTPError as err:
+                item["model_endpoint"] = "http_" + str(err.code)
+            except (urllib.error.URLError, TimeoutError, OSError):
+                item["model_endpoint"] = "unreachable"
+            else:
+                try:
+                    data = json.loads(raw) if len(raw) <= 100000 else None
+                except (UnicodeError, ValueError):
+                    data = None
+                item["model_endpoint"] = ("resolved" if isinstance(data, dict)
+                                          and data.get("id") == model else "invalid_response")
+        results.append(item)
+    return {"schema": "slimekeepers/other-model-catalog-check/v1",
+            "status": "get_only", "models": results,
+            "http_get_requests": sum(item["catalog_listed"] for item in results),
+            "inference_requests": 0, "image_requests": 0}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--operation", choices=["select", "run"], required=True)
+    parser.add_argument("--operation", choices=["select", "inspect", "run"], required=True)
     parser.add_argument("--preflight", type=Path, required=True)
     parser.add_argument("--watch", type=Path)
     parser.add_argument("--model", choices=CANDIDATES)
@@ -163,6 +208,15 @@ def main() -> None:
     args = parser.parse_args()
     try:
         preflight = json.loads(args.preflight.read_text(encoding="utf-8"))
+        if args.operation == "inspect":
+            if args.output is None:
+                raise SmokeError("Arquivo de saída obrigatório.")
+            result = inspect_catalog(preflight, os.getenv("CODEX_PROXY_BASE_URL", ""),
+                                     os.getenv("CODEX_PROXY_API_KEY", ""))
+            args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                                   encoding="utf-8")
+            print(json.dumps(result, ensure_ascii=False))
+            return
         if args.operation == "select":
             next_model = choose(preflight, remote_reservations())
             if next_model is None:
