@@ -1,0 +1,221 @@
+name: Slimekeepers - Monitorar modelos e limites do proxy
+
+# Monitora apenas GET regularmente; faz NO MAXIMO um smoke POST reservado
+# quando o uso real estiver liberado. O smoke nao modifica jogo nem abre PR.
+on:
+  schedule:
+    # 11h43 e 17h43 no fuso America/Sao_Paulo (UTC-3)
+    - cron: '43 14,20 * * *'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'tools/proxy_model_watch.py'
+      - 'tests/test_proxy_model_watch.py'
+      - '.github/workflows/slimekeepers-model-watch.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/proxy_model_watch.py'
+      - 'tests/test_proxy_model_watch.py'
+      - '.github/workflows/slimekeepers-model-watch.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: slimekeepers-proxy-model-watch
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testes locais sem chamadas a rede
+        run: |
+          python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+          python -m unittest discover -s tests -p 'test_proxy_quota_diagnostics.py' -v
+          python -m unittest discover -s tests -p 'test_proxy_model_watch.py' -v
+
+  model-watch:
+    # Push imediato limitado a uma verificacao GET; cron monitora
+    # regularmente. Nenhuma inferencia em PR ou push.
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+       startsWith(github.event.head_commit.message, 'ci(proxy-watch) first read-only probe'))
+    needs: tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    permissions:
+      contents: write
+      packages: read
+    env:
+      CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
+      CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
+      CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
+      AI_ENABLED: 'false'
+      PAID_CALLS_ENABLED: 'false'
+      CODEX_PROXY_TEXT_AUTHORIZED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Checar secrets e impedir reexecucoes com POST desconhecido
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != refs/heads/main || "$GITHUB_RUN_ATTEMPT" != "1" ]]; then
+            echo "::error::Apenas primeira tentativa da main."
+            exit 2
+          fi
+          if [[ -z "$CODEX_PROXY_API_KEY" ]]; then
+            echo "::error::CODEX_PROXY_API_KEY ausente."
+            exit 2
+          fi
+          if [[ -n "$CODEX_PROXY_BASE_URL" ]]; then
+            echo "PROXY_MODE=persistent" >> "$GITHUB_ENV"
+          elif [[ -n "$CODEX_PROXY_ACCOUNTS_JSON" ]]; then
+            echo "PROXY_MODE=ephemeral" >> "$GITHUB_ENV"
+            echo "CODEX_PROXY_BASE_URL=http://127.0.0.1:18080" >> "$GITHUB_ENV"
+          else
+            echo "::error::Configure proxy HTTPS ou snapshot OAuth autorizado."
+            exit 2
+          fi
+
+      - name: Montar estado OAuth temporario
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/slimekeepers-watch-state"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          try:
+              snapshot=json.loads(os.environ["CODEX_PROXY_ACCOUNTS_JSON"])
+              entries=snapshot.get("records") if isinstance(snapshot,dict) else None
+              if not isinstance(entries,list) or not entries:
+                  raise ValueError()
+              if not all(isinstance(x,dict) and isinstance(x.get("token"),dict) for x in entries):
+                  raise ValueError()
+              path=Path(os.environ["RUNNER_TEMP"])/"slimekeepers-watch-state"/"accounts.json"
+              path.write_text(json.dumps(snapshot,ensure_ascii=False),encoding="utf-8")
+              path.chmod(0o600)
+              print("Snapshot da conta montado com permissoes restritas.")
+          except (TypeError,ValueError,KeyError):
+              raise SystemExit("Snapshot invalido. Nenhum modelo testado.")
+          PY
+
+      - name: Iniciar proxy efemero precompilado
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin >/dev/null
+          docker pull ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1
+          docker run -d --name slimekeepers-proxy-model-watch --user "$(id -u):$(id -g)" \
+            --read-only --tmpfs /tmp:rw,nosuid,size=32m \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -p 127.0.0.1:18080:8080 \
+            -e PROXY_API_KEY="$CODEX_PROXY_API_KEY" \
+            -e DATA_DIR=/app/data -e DEBUG_LOG_PAYLOADS=false \
+            -v "$RUNNER_TEMP/slimekeepers-watch-state:/app/data:rw" \
+            ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1 >/dev/null
+          for i in {1..30}; do
+            if curl --noproxy '*' -fsS --max-time 2 http://127.0.0.1:18080/health/live >/dev/null; then
+              echo "Proxy iniciado."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Proxy nao iniciou."
+          exit 2
+
+      - name: Permitir atualizacao do catalogo remoto
+        if: env.PROXY_MODE == 'ephemeral'
+        run: sleep 20
+
+      - name: Conferir todos os modelos por GET
+        shell: bash
+        run: |
+          python tools/proxy_preflight.py \
+            --output "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
+
+      - name: Consultar uso real da conta por GET
+        shell: bash
+        run: |
+          python tools/proxy_quota_diagnostics.py --live-usage \
+            --output "$RUNNER_TEMP/slimekeepers-watch-quota.json"
+
+      - name: Determinar modelo e liberar smoke so com cota disponivel
+        shell: bash
+        run: |
+          python tools/proxy_model_watch.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
+            --quota "$RUNNER_TEMP/slimekeepers-watch-quota.json" \
+            --output "$RUNNER_TEMP/slimekeepers-watch-report.json"
+
+      - name: Reservar UMA unica tentativa de texto apos a liberacao de cota
+        if: github.event_name == 'schedule' && env.MODEL_SMOKE_ELIGIBLE == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          reservation="refs/heads/ai/proxy-model-smoke-once"
+          if git ls-remote --exit-code --heads origin "$reservation" >/dev/null; then
+            echo "Teste unico ja reservado; acompanhamento continua somente com GET."
+            exit 0
+          fi
+          # Push atômico de um ref remoto. Falhas bloqueiam POST, sem forcar nada.
+          git push origin "HEAD:$reservation"
+          echo "MODEL_SMOKE_RESERVED=true" >> "$GITHUB_ENV"
+          echo "Uma unica chamada de smoke foi reservada antes da inferencia."
+
+      - name: Testar uma resposta minima com GPT-6.2 ou GPT-6 de reserva
+        if: github.event_name == 'schedule' && env.MODEL_SMOKE_RESERVED == 'true'
+        shell: bash
+        env:
+          AI_ENABLED: 'true'
+          PAID_CALLS_ENABLED: 'true'
+          CODEX_PROXY_TEXT_AUTHORIZED: 'true'
+        run: |
+          python tools/slimekeepers_codex_proxy.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
+            --output "$RUNNER_TEMP/slimekeepers-watch-smoke.json"
+
+      - name: Arquivar relatorios seguros de cada verificacao
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-model-watch-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/slimekeepers-watch-preflight.json
+            ${{ runner.temp }}/slimekeepers-watch-quota.json
+            ${{ runner.temp }}/slimekeepers-watch-report.json
+            ${{ runner.temp }}/slimekeepers-watch-smoke.json
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Apagar sessao temporaria
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f slimekeepers-proxy-model-watch >/dev/null 2>&1 || true
+          rm -rf "$RUNNER_TEMP/slimekeepers-watch-state"
