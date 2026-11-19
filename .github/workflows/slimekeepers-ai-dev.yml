@@ -1,6 +1,7 @@
 name: Slimekeepers - Agente de desenvolvimento Godot via Astra
 
-# Uma tarefa por run. Apenas despacho manual autorizado ou cron habilitado pelo dono.
+# Uma tarefa pequena por run; agendamento autorizado pelo criador em 19/11/2026.
+# Pause: Settings > Variables > SLIMEKEEPERS_AUTO_DEV_PAUSED=true.
 on:
   workflow_dispatch:
     inputs:
@@ -21,13 +22,16 @@ on:
         required: true
         default: NO_INFERENCE
   schedule:
-    - cron: '17 13 * * 1,4'
+    # 09h35 e 18h35, horario America/Sao_Paulo (UTC-3).
+    - cron: '35 12,21 * * *'
   pull_request:
     paths:
       - 'tools/slimekeepers_dev_agent.py'
       - 'tools/slimekeepers_codex_proxy.py'
       - 'automation/dev_tasks.json'
       - 'tests/test_slimekeepers_dev_agent.py'
+      - 'tests/test_slimekeepers_autonomy_guard.py'
+      - 'tools/slimekeepers_autonomy_guard.py'
       - '.github/workflows/slimekeepers-ai-dev.yml'
 
 permissions:
@@ -54,6 +58,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
           python -m unittest discover -s tests -p 'test_slimekeepers_dev_agent.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_autonomy_guard.py' -v
 
   queue-plan:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'plan'
@@ -70,11 +75,17 @@ jobs:
         run: python tools/slimekeepers_dev_agent.py --mode list
 
   develop-one-task:
-    # Cron é opt-in por variável de repositório. Nenhum POST em PR ou push.
-    if: (github.event_name == 'schedule' && vars.SLIMEKEEPERS_AUTO_DEV_ENABLED == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK')
+    # Cron ligado a pedido do criador; variável PAUSED para interromper.
+    if: (github.event_name == 'schedule' && github.ref == 'refs/heads/main' && vars.SLIMEKEEPERS_AUTO_DEV_PAUSED != 'true') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK')
     needs: unit-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      task_id: ${{ steps.choose.outputs.task_id }}
+      branch: ${{ steps.choose.outputs.branch }}
+      base_sha: ${{ steps.choose.outputs.base_sha }}
+      head_sha: ${{ steps.submit.outputs.head_sha }}
+      pr_number: ${{ steps.submit.outputs.pr_number }}
     permissions:
       contents: write
       pull-requests: write
@@ -94,7 +105,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Selecionar proxima tarefa e expor checkpoint seguro
+        id: choose
+        shell: bash
+        run: |
+          python tools/slimekeepers_dev_agent.py --mode select --task-id "$REQUEST_TASK_ID"
+
       - name: Validar autorizacao e primeira tentativa
+        if: env.DEV_TASK_ID != ''
         shell: bash
         run: |
           set -euo pipefail
@@ -117,22 +135,6 @@ jobs:
             echo "::error::CODEX_PROXY_ACCOUNTS_JSON ou CODEX_PROXY_BASE_URL obrigatorio."
             exit 2
           fi
-
-      - name: Selecionar proxima tarefa sem repetir branches
-        shell: bash
-        run: |
-          python tools/slimekeepers_dev_agent.py --mode select --task-id "$REQUEST_TASK_ID"
-
-      - name: Reservar branch ANTES de qualquer inferencia
-        if: env.DEV_TASK_ID != ''
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "slimekeepers-ai-dev[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$DEV_BRANCH"
-          git push --set-upstream origin "$DEV_BRANCH"
-          echo "Branch de reserva criada. Falhas seguintes bloqueiam reexecucao da tarefa."
 
       - name: Montar sessão OAuth privada no runner
         if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
@@ -186,16 +188,57 @@ jobs:
           echo "::error::Proxy indisponivel."
           exit 2
 
+      - name: Aguardar catalogo real de modelos do proxy
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        run: sleep 20
+
       - name: Conferir GPT-6.2 principal e GPT-6 reserva por GET
         if: env.DEV_TASK_ID != ''
         shell: bash
         run: |
           python tools/proxy_preflight.py \
             --output "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
-            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
+
+      - name: Consultar quota real antes de reservar tarefa e gastar tokens
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/proxy_quota_diagnostics.py --live-usage \
+            --output "$RUNNER_TEMP/slimekeepers-dev-live-quota.json"
+          python tools/proxy_model_watch.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
+            --quota "$RUNNER_TEMP/slimekeepers-dev-live-quota.json" \
+            --output "$RUNNER_TEMP/slimekeepers-dev-quota-gate.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "slimekeepers-dev-quota-gate.json"
+          report = json.loads(path.read_text(encoding="utf-8"))
+          ready = report.get("smoke_eligible") is True and report.get("quota_readiness") == "reported_available"
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("DEV_QUOTA_READY=" + ("true" if ready else "false") + "\n")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as out:
+              out.write("## Cota Astra antes da geração\n\n")
+              out.write("- Estado: " + ("disponível" if ready else "bloqueado — sem POST e sem reserva") + "\n")
+              out.write("- Próxima tarefa: " + os.environ["DEV_TASK_ID"] + "\n")
+          print("Cota verificada sem inferencia; prosseguir=" + str(ready))
+          PY
+
+      - name: Reservar branch remota depois do gate de quota, antes do POST
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "slimekeepers-ai-dev[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$DEV_BRANCH"
+          git push --set-upstream origin "$DEV_BRANCH"
+          echo "Checkpoint remoto reservado; nenhum retry do modelo para esta tarefa."
 
       - name: Executar uma unica tarefa autorizada de codigo
-        if: env.DEV_TASK_ID != ''
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
         shell: bash
         env:
           AI_ENABLED: 'true'
@@ -207,8 +250,9 @@ jobs:
             --preflight "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
             --output "$RUNNER_TEMP/slimekeepers-dev-report.json"
 
-      - name: Criar commit e PR para revisao, nunca merge automatico
-        if: env.DEV_TASK_ID != ''
+      - name: Criar PR da entrega isolada para validacao em runner sem segredos
+        id: submit
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -229,8 +273,8 @@ jobs:
               "**Modelo:** `" + report["model"] + "`",
               "**Resumo:** " + report["summary"],
               "",
-              "**Verificacao:** testes do orquestrador passaram; validacao real Godot ainda pendente.",
-              "**Obrigatorio:** revisar a logica, rodar o Godot/GdUnit4 e confirmar "
+              "**Verificacao:** o proximo job executara verificacao independente do Godot 4.7.2 antes de merge automatico restrito.",
+              "**Obrigatorio:** validação automática e proteção de escopo; conferir "
               "compatibilidade com a Biblia Narrativa antes de integrar.",
               "",
               "Sem alteracoes de sprites, cenas, segredos ou assets aprovados.",
@@ -239,16 +283,21 @@ jobs:
               "\n".join(lines)+"\n", encoding="utf-8"
           )
           PY
-          gh pr create --base main --head "$DEV_BRANCH" \
+          pr_url=$(gh pr create --base main --head "$DEV_BRANCH" \
             --title "[AI/Godot] $DEV_TASK_TITLE" \
-            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md"
+            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md")
+          echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "PR criado para validacao independente: $pr_url"
 
       - name: Arquivar resumo sem codigo ou credenciais
         if: always() && env.DEV_TASK_ID != ''
         uses: actions/upload-artifact@v4
         with:
           name: slimekeepers-ai-dev-${{ github.run_id }}
-          path: ${{ runner.temp }}/slimekeepers-dev-report.json
+          path: |
+            ${{ runner.temp }}/slimekeepers-dev-report.json
+            ${{ runner.temp }}/slimekeepers-dev-quota-gate.json
           retention-days: 7
           if-no-files-found: ignore
 
