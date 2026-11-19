@@ -2,12 +2,22 @@ extends "res://scripts/world/clearing_region.gd"
 ## Runtime for expanded map; legacy clearing remains untouched.
 const Forest = preload("res://scripts/world/forest_layout.gd")
 const Living = preload("res://scripts/world/living_region.gd")
+const BAG := preload("res://scripts/systems/forest_bag.gd")
+const SEED_PATCH := preload("res://scripts/world/forest_seed_patch.gd")
+const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
+const SEED_SITES := [
+	{"id": "jardim_folhas", "at": Vector2(4480, 3270)},
+	{"id": "bosque_cogumelos", "at": Vector2(2100, 2860)},
+	{"id": "campo_brotos", "at": Vector2(3350, 4580)}
+]
 var found_places: Dictionary = {}
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
 var _last_zone := ""
 var _last_water_time := -1.0
+var seed_patches: Array[Node2D] = []
+var bag_hud: Node
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -27,6 +37,8 @@ func _ready() -> void:
 	found_places = get_tree().get_meta("forest_places",{}).duplicate()
 	_create_hud()
 	_compact_hud()
+	bag_hud = BAG_HUD.new()
+	$HUD/Interface.add_child(bag_hud)
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
@@ -53,6 +65,26 @@ func _ready() -> void:
 	var art := preload("res://scripts/world/map_art_enrichment.gd").new()
 	art.region_kind = "forest"
 	add_child(art)
+	_spawn_seed_patches()
+
+func _spawn_seed_patches() -> void:
+	for site in SEED_SITES:
+		var patch = SEED_PATCH.new()
+		patch.configure(str(site["id"]), site["at"])
+		add_child(patch)
+		seed_patches.append(patch)
+
+func _nearest_seed_patch() -> Node2D:
+	var nearest: Node2D = null
+	var max_distance := 78.0
+	for patch in seed_patches:
+		if not is_instance_valid(patch) or bool(patch.get("collected")):
+			continue
+		var distance := player.global_position.distance_to(patch.global_position)
+		if distance < max_distance:
+			nearest = patch
+			max_distance = distance
+	return nearest
 
 func _arrange_pond_banks() -> void:
 	# The inherited pond moved in the expanded map; its old ground props did not.
@@ -151,6 +183,16 @@ func _process(delta: float) -> void:
 				closest.make_friend()
 				_update_hud()
 			_notify(closest.display_name()+" parece feliz com sua visita.")
+		return
+	var seeds := _nearest_seed_patch()
+	if seeds != null:
+		hud_hint.text = "[E] Recolher sementes com ajuda do Brotinho" if BAG.has_brotinho_friend(get_tree()) else "Conheça um Brotinho para aprender a recolher estas sementes"
+		if Input.is_action_just_pressed("interact"):
+			if bool(seeds.call("harvest")):
+				bag_hud.call("refresh")
+				_notify("Sementes silvestres guardadas na bolsa. Brotinho ajudou na coleta!")
+			else:
+				_notify("Primeiro, faça amizade com um Brotinho da floresta.")
 		return
 	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir"
 	if player.position.distance_to(Forest.SOUTH_EXIT)<115:

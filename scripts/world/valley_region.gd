@@ -2,12 +2,14 @@ extends "res://scripts/world/clearing_region.gd"
 const Valley = preload("res://scripts/world/valley_layout.gd")
 const Travel = preload("res://scripts/world/region_travel.gd")
 const Living = preload("res://scripts/world/living_region.gd")
+const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
 var elapsed := 0.0
 var reduce_motion := false
 var found_zones: Dictionary = {}
+var bag_hud: Node
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -21,6 +23,8 @@ func _ready() -> void:
 	camera.reset_smoothing()
 	_create_hud()
 	_compact_hud()
+	bag_hud = BAG_HUD.new()
+	$HUD/Interface.add_child(bag_hud)
 	hud_title.text = "VALE DAS NASCENTES"
 	found_zones = get_tree().get_meta("valley_discoveries",{}).duplicate()
 	hud_goal.text = "Siga as águas e explore as margens" if found_zones.is_empty() else "Recantos descobertos: %d / 5" % found_zones.size()
