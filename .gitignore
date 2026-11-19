@@ -8,3 +8,6 @@ Thumbs.db
 !.env.example
 node_modules/
 assets/local_sprout/
+
+# PixelLab exportado localmente: não publicar ZIPs, IDs ou metadados privados
+output/pixellab/
