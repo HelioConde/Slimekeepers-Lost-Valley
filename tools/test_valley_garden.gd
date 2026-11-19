@@ -81,7 +81,7 @@ func _run() -> void:
 		forest.player.global_position = patch.global_position
 		await _settle()
 		await _press_e()
-		_check(bool(patch.collected), "Coleta pela tecla E: " + id)
+		_check(bool(patch.get("collected")), "Coleta pela tecla E: " + id)
 	_check(BAG.seeds(self) == 2, "Duas sementes na bolsa antes de viajar")
 	await _travel_to_valley()
 	_check(current_scene != null and current_scene.scene_file_path == VALLEY, "Chegou ao Vale das Nascentes")
@@ -91,7 +91,7 @@ func _run() -> void:
 	_check(current_scene.garden_beds.size() == 2, "Dois canteiros estao presentes na cena")
 	for bed in current_scene.garden_beds:
 		_check(VALLEY_LAYOUT.route_distance(bed.position, VALLEY_LAYOUT.routes()) < 80,
-			"Canteiro esta proximo do caminho percorrivel: " + str(bed.bed_id))
+			"Canteiro esta proximo do caminho percorrivel: " + str(bed.get("bed_id")))
 	_check(_bag_text(current_scene).contains("2/3"), "Vale mostra sementes trazidas da floresta")
 	var north: Node2D = current_scene.garden_beds[0]
 	current_scene.player.global_position = north.global_position
@@ -116,7 +116,7 @@ func _run() -> void:
 	await _travel_to_valley()
 	_check(current_scene.scene_file_path == VALLEY, "Volta ao Vale para a colheita")
 	north = current_scene.garden_beds[0]
-	_check(str(north.phase()) == "ready", "Canteiro recriado exibe a planta madura")
+	_check(str(north.call("phase")) == "ready", "Canteiro recriado exibe a planta madura")
 	current_scene.player.global_position = north.global_position
 	await _settle()
 	_check(current_scene.hud_hint.text.contains("Colher"), "HUD oferece colher o produto")
