@@ -47,7 +47,7 @@ jobs:
   analyze-once:
     if: >-
       (github.event_name == 'push' &&
-       startsWith(github.event.head_commit.message, 'ci(ai-review) one-time authorized project analysis')) ||
+       github.event.head_commit.message == 'ci(ai-review) second requested analysis 2026-11-19') ||
       (github.event_name == 'workflow_dispatch' &&
        inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS')
     needs: offline-tests
