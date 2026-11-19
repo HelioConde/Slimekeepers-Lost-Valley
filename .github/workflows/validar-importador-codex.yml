@@ -1,0 +1,39 @@
+name: Testar importador local Codex Proxy
+on:
+  pull_request:
+    paths:
+      - "tools/importar_sessao_videoforge.ps1"
+      - ".github/workflows/validar-importador-codex.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/importar_sessao_videoforge.ps1"
+      - ".github/workflows/validar-importador-codex.yml"
+permissions:
+  contents: read
+jobs:
+  check-script:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verificar sintaxe PowerShell sem executar o importador
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $parseErrors = $null
+          $path = Join-Path (Get-Location) 'tools/importar_sessao_videoforge.ps1'
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            $path, [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -ne 0) {
+            $parseErrors | ForEach-Object { Write-Error $_.Message }
+            throw 'Importador PowerShell possui erros de sintaxe.'
+          }
+          $scriptContent = [System.IO.File]::ReadAllText($path)
+          $target = '$Repositorio = ' + "'HelioConde/Slimekeepers-Lost-Valley'"
+          if (-not $scriptContent.Contains($target)) {
+            throw 'Destino de Secrets diverge do repositório Slimekeepers.'
+          }
+          Write-Host 'Sintaxe valida e repositorio destino correto. Nenhum Secret foi acessado.'
