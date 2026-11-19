@@ -3,7 +3,7 @@
 O Slimekeepers monitora os modelos do proxy periodicamente via GitHub Actions, sem alterar o jogo.
 
 ## Agenda e relatórios
-- Diariamente às **11h43 e 17h43**, horário de Brasília (UTC−3), sujeito a atrasos do GitHub Actions.
+- Diariamente às **11h43, 15h25 e 17h43**, horário de Brasília (UTC−3), sujeito a atrasos do GitHub Actions.
 - Workflow: https://github.com/HelioConde/Slimekeepers-Lost-Valley/actions/workflows/slimekeepers-model-watch.yml
 - Dados saneados por execução em artifacts (14 dias).
 
@@ -24,3 +24,7 @@ Não registra e-mails, IDs de contas, tokens, prompts, corpos de resposta brutos
 Desabilite o workflow no GitHub Actions para pausar todos os testes. Para acompanhar apenas GET sem permitir a primeira tentativa de smoke, reserve manualmente a branch ai/proxy-model-smoke-once antes de ativar a agenda.
 
 **Limitação:** o monitor diagnostica modelos e quota; não modifica Godot nem implementa o jogo. Para isso, usar separadamente a fila de desenvolvimento do Slimekeepers e revisar PRs.
+
+## Feedback no proprio GitHub Actions
+
+Cada execucao agora apresenta no **Summary** uma tabela de modelos: identificado no catalogo, GET individual, inferencia verificada ou ainda nao testada. O resumo tambem indica o consumo das janelas de cota e horarios de reset retornados pelo servico, sem publicar dados de autenticacao. A checagem das 15h25 foi adicionada para observar a janela depois da redefinicao inicialmente informada para 15h14; o reset nao significa que toda a quota necessariamente sera liberada.
