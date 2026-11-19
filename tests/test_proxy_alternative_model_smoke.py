@@ -52,6 +52,35 @@ class FakeOpener:
 
 
 class AlternativeModelTests(unittest.TestCase):
+    def test_catalog_get_checks_every_alternative_model(self):
+        class CatalogOpener:
+            def __init__(self):
+                self.calls = []
+            def open(self, request, timeout):
+                self.calls.append((request.method, request.full_url, request.data))
+                model = request.full_url.rsplit("/", 1)[-1]
+                return Response({"id": model, "object": "model"})
+        opener = CatalogOpener()
+        p = preflight()
+        result = sm.inspect_catalog(p, "http://127.0.0.1:18080", "x" * 40, opener=opener)
+        self.assertEqual(result["http_get_requests"], len(sm.CANDIDATES))
+        self.assertEqual(result["inference_requests"], 0)
+        self.assertTrue(all(entry["model_endpoint"] == "resolved" for entry in result["models"]))
+        self.assertTrue(all(method == "GET" and body is None
+                            for method, _, body in opener.calls))
+        self.assertTrue(all(entry["text_inference_verified"] is False for entry in result["models"]))
+
+    def test_catalog_absent_model_does_not_call_get(self):
+        class EmptyOpener:
+            def open(self, request, timeout):
+                raise AssertionError("Unexpected network access")
+        p = preflight()
+        p["model_ids"] = ["gpt-6.2-astra", "gpt-6-astra"]
+        result = sm.inspect_catalog(p, "http://127.0.0.1:18080", "x" * 40,
+                                    opener=EmptyOpener())
+        self.assertEqual(result["http_get_requests"], 0)
+        self.assertTrue(all(x["model_endpoint"] == "not_listed" for x in result["models"]))
+
     def test_candidates_exclude_image_and_prod_priority(self):
         self.assertNotIn("gpt-6.2-astra", sm.CANDIDATES)
         self.assertNotIn("gpt-6-astra", sm.CANDIDATES)
