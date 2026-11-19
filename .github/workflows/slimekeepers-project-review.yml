@@ -46,8 +46,10 @@ jobs:
 
   analyze-once:
     if: >-
-      github.event_name == 'workflow_dispatch' &&
-      inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS'
+      (github.event_name == 'push' &&
+       github.event.head_commit.message == 'ci(ai-review) one authorized real project analysis after Astra ping') ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS')
     needs: offline-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 16
@@ -143,12 +145,41 @@ jobs:
           echo '::error::Proxy nao iniciou.'
           exit 2
 
+      - name: Dar tempo ao catalogo real antes de selecionar o modelo
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        run: sleep 20
+
       - name: Selecionar o modelo disponivel por GET
         shell: bash
         run: |
           python tools/proxy_preflight.py \
             --output "$RUNNER_TEMP/slimekeepers-review-preflight.json" \
-            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
+
+      - name: Validar a cota real por GET antes de pedir a analise
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/proxy_quota_diagnostics.py --live-usage \
+            --output "$RUNNER_TEMP/slimekeepers-review-quota.json"
+          python tools/proxy_model_watch.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-review-preflight.json" \
+            --quota "$RUNNER_TEMP/slimekeepers-review-quota.json" \
+            --output "$RUNNER_TEMP/slimekeepers-review-quota-gate.json"
+          if [[ "${MODEL_SMOKE_ELIGIBLE:-}" == "false" ]]; then
+            echo '::error::Limite reportado; inferencia bloqueada sem POST.'
+            exit 2
+          fi
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          gate = json.loads((Path(os.environ["RUNNER_TEMP"]) /
+              "slimekeepers-review-quota-gate.json").read_text(encoding="utf-8"))
+          if gate.get("smoke_eligible") is not True or gate.get("quota_readiness") != "reported_available":
+              raise SystemExit("Cota bloqueada. Nenhuma inferencia executada.")
+          print("Cota confirmada por GET. Uma analise autorizada sera enviada.")
+          PY
 
       - name: Solicitar e registrar uma unica analise real do jogo
         shell: bash
@@ -169,6 +200,7 @@ jobs:
           path: |
             ${{ runner.temp }}/slimekeepers-review-preflight.json
             ${{ runner.temp }}/slimekeepers-project-review.json
+            ${{ runner.temp }}/slimekeepers-review-quota-gate.json
           retention-days: 7
           if-no-files-found: error
 
