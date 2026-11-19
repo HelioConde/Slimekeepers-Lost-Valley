@@ -71,6 +71,13 @@ jobs:
         run: |
           set -euo pipefail
           scripts=(test_menu test_forest_v2 test_habitats test_region_travel)
+          # A successful exit is not enough: every native suite must report its checks.
+          declare -A minimum_checks=(
+            [test_menu]=50
+            [test_forest_v2]=140
+            [test_habitats]=30
+            [test_region_travel]=9
+          )
           failed=0
           {
             echo '## Slimekeepers - testes nativos Godot 4.7.2'
@@ -86,7 +93,14 @@ jobs:
             exit_code=$?
             set -e
             passes="$(grep -cE '^PASS([ :]|$)' "$log" || true)"
-            if [[ "$exit_code" -ne 0 ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
+            # Habitat/forest tests emit a total in their closing summary instead of PASS lines.
+            if [[ "$suite" == test_forest_v2 ]]; then
+              passes="$(sed -nE 's/^FOREST_V2: checks=([0-9]+).*/\1/p' "$log" | tail -n 1)"
+            elif [[ "$suite" == test_habitats ]]; then
+              passes="$(sed -nE 's/^FOREST_HABITATS: ([0-9]+) checks.*/\1/p' "$log" | tail -n 1)"
+            fi
+            passes="${passes:-0}"
+            if [[ "$exit_code" -ne 0 || "$passes" -lt "${minimum_checks[$suite]}" ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
               failed=1
               echo "| ${suite} | ${passes} | Falhou (exit ${exit_code}) |" >> "$GITHUB_STEP_SUMMARY"
               echo "::error title=${suite}::Godot reportou falha; confira artifact."
