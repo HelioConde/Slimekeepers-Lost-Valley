@@ -86,7 +86,7 @@ def generate_text(base_url: str, api_key: str, model: str, *,
         raise ProxyTextError("Instruções ou entrada inválidas.")
     if len((instructions + prompt).encode("utf-8")) > 16000:
         raise ProxyTextError("Entrada maior que o limite desta integração.")
-    if type(max_output_tokens) is not int or not 1 <= max_output_tokens <= 800:
+    if type(max_output_tokens) is not int or not 1 <= max_output_tokens <= 6000:
         raise ProxyTextError("Limite de saída inválido.")
     try:
         origin, kind = normalize_origin(base_url)
