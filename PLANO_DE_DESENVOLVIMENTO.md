@@ -24,7 +24,7 @@ Um jogo 2D em pixel art, com exploração top-down, uma protagonista com uma bol
 
 - [ ] Definir o ciclo central: explorar → encontrar slime → vínculo → habilidade → melhorar vale
 - [ ] Sistema de diálogo e identidade dos slimes
-- [ ] Um recurso coletável com inventário simples
+- [x] Um recurso coletável com inventário simples — sementes silvestres, bolsa de sessão e testes no Godot 4.7.2 (19/11/2026)
 - [x] Limites de mapa e colisões reais na Clareira do Despertar
 - [x] Tela inicial funcional com opções e retorno pelo gameplay
 - [ ] Menu de pausa durante a exploração
