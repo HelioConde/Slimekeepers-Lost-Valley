@@ -51,7 +51,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
 
   manual-proxy:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'ci(proxy): one-time Astra catalog GET check'))
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.event.head_commit.message == 'ci(proxy) one-time Astra catalog GET check'))
     needs: offline-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 15
