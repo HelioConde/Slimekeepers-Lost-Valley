@@ -47,7 +47,7 @@ jobs:
   analyze-once:
     if: >-
       (github.event_name == 'push' &&
-       github.event.head_commit.message == 'ci(ai-review) compact single analysis after size reduction') ||
+       github.event.head_commit.message == 'ci(ai-review) compact prompt test run 1') ||
       (github.event_name == 'workflow_dispatch' &&
        inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS')
     needs: offline-tests
