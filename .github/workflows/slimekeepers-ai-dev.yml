@@ -1,0 +1,260 @@
+name: Slimekeepers - Agente de desenvolvimento Godot via Astra
+
+# Uma tarefa por run. Apenas despacho manual autorizado ou cron habilitado pelo dono.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan = fila sem inferencia; develop = produzir uma PR'
+        type: choice
+        required: true
+        default: plan
+        options: [plan, develop]
+      task_id:
+        description: 'ID da tarefa ou auto para a primeira nao reservada'
+        type: string
+        required: true
+        default: auto
+      confirmation:
+        description: 'Para develop, escrever AUTHORIZE_ONE_DEV_TASK'
+        type: string
+        required: true
+        default: NO_INFERENCE
+  schedule:
+    - cron: '17 13 * * 1,4'
+  pull_request:
+    paths:
+      - 'tools/slimekeepers_dev_agent.py'
+      - 'tools/slimekeepers_codex_proxy.py'
+      - 'automation/dev_tasks.json'
+      - 'tests/test_slimekeepers_dev_agent.py'
+      - '.github/workflows/slimekeepers-ai-dev.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: slimekeepers-ai-dev-single-lane
+  cancel-in-progress: false
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testes locais de seleção e segurança
+        run: |
+          python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_dev_agent.py' -v
+
+  queue-plan:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'plan'
+    needs: unit-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Mostrar fila sem inferencia
+        run: python tools/slimekeepers_dev_agent.py --mode list
+
+  develop-one-task:
+    # Cron é opt-in por variável de repositório. Nenhum POST em PR ou push.
+    if: (github.event_name == 'schedule' && vars.SLIMEKEEPERS_AUTO_DEV_ENABLED == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK')
+    needs: unit-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+    env:
+      CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
+      CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
+      CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
+      REQUEST_TASK_ID: ${{ github.event_name == 'schedule' && 'auto' || inputs.task_id }}
+      AI_ENABLED: 'false'
+      PAID_CALLS_ENABLED: 'false'
+      CODEX_PROXY_TEXT_AUTHORIZED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validar autorizacao e primeira tentativa
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_RUN_ATTEMPT" != "1" ]]; then
+            echo "::error::Nao repetir inferencia por rerun; conferir branch de reserva."
+            exit 2
+          fi
+          if [[ -z "$CODEX_PROXY_API_KEY" ]]; then
+            echo "::error::CODEX_PROXY_API_KEY ausente."
+            exit 2
+          fi
+          if [[ -n "$CODEX_PROXY_BASE_URL" ]]; then
+            echo 'PROXY_MODE=persistent' >> "$GITHUB_ENV"
+            echo "Proxy persistente selecionado."
+          elif [[ -n "$CODEX_PROXY_ACCOUNTS_JSON" ]]; then
+            echo 'PROXY_MODE=ephemeral' >> "$GITHUB_ENV"
+            echo 'CODEX_PROXY_BASE_URL=http://127.0.0.1:18080' >> "$GITHUB_ENV"
+            echo "Proxy efemero selecionado."
+          else
+            echo "::error::CODEX_PROXY_ACCOUNTS_JSON ou CODEX_PROXY_BASE_URL obrigatorio."
+            exit 2
+          fi
+
+      - name: Selecionar proxima tarefa sem repetir branches
+        shell: bash
+        run: |
+          python tools/slimekeepers_dev_agent.py --mode select --task-id "$REQUEST_TASK_ID"
+
+      - name: Reservar branch ANTES de qualquer inferencia
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "slimekeepers-ai-dev[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$DEV_BRANCH"
+          git push --set-upstream origin "$DEV_BRANCH"
+          echo "Branch de reserva criada. Falhas seguintes bloqueiam reexecucao da tarefa."
+
+      - name: Montar sessão OAuth privada no runner
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/slimekeepers-dev-proxy-state"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          try:
+              state = json.loads(os.environ["CODEX_PROXY_ACCOUNTS_JSON"])
+              records = state.get("records") if isinstance(state, dict) else None
+              if not isinstance(records, list) or not records:
+                  raise ValueError()
+              if not all(isinstance(x, dict) and isinstance(x.get("token"), dict) for x in records):
+                  raise ValueError()
+              path = Path(os.environ["RUNNER_TEMP"]) / "slimekeepers-dev-proxy-state" / "accounts.json"
+              path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+              path.chmod(0o600)
+              print("Sessao privada validada.")
+          except (ValueError, TypeError, KeyError):
+              raise SystemExit("Snapshot invalido; nenhuma inferencia executada.")
+          PY
+
+      - name: Iniciar mesmo proxy precompilado do VideoForge
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin >/dev/null
+          docker pull ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1
+          docker run -d --name slimekeepers-ai-dev-proxy --user "$(id -u):$(id -g)" \
+            --read-only --tmpfs /tmp:rw,nosuid,size=32m \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -p 127.0.0.1:18080:8080 \
+            -e PROXY_API_KEY="$CODEX_PROXY_API_KEY" \
+            -e DATA_DIR=/app/data -e DEBUG_LOG_PAYLOADS=false \
+            -v "$RUNNER_TEMP/slimekeepers-dev-proxy-state:/app/data:rw" \
+            ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1 >/dev/null
+          for i in {1..30}; do
+            if curl --noproxy '*' -fsS --max-time 2 http://127.0.0.1:18080/health/live >/dev/null; then
+              echo "Proxy pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Proxy indisponivel."
+          exit 2
+
+      - name: Conferir GPT-6.2 principal e GPT-6 reserva por GET
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          python tools/proxy_preflight.py \
+            --output "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra
+
+      - name: Executar uma unica tarefa autorizada de codigo
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        env:
+          AI_ENABLED: 'true'
+          PAID_CALLS_ENABLED: 'true'
+          CODEX_PROXY_TEXT_AUTHORIZED: 'true'
+        run: |
+          python tools/slimekeepers_dev_agent.py --mode implement \
+            --task-id "$DEV_TASK_ID" \
+            --preflight "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
+            --output "$RUNNER_TEMP/slimekeepers-dev-report.json"
+
+      - name: Criar commit e PR para revisao, nunca merge automatico
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add -- scripts/systems/ tests/forest/
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::Nenhuma alteracao gerada."; exit 2; }
+          git commit -m "feat(ai): $DEV_TASK_ID - proposta Godot"
+          git push origin "$DEV_BRANCH"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ["RUNNER_TEMP"])/"slimekeepers-dev-report.json").read_text())
+          lines = [
+              "## Proposta automatizada para revisao",
+              "**Tarefa:** `" + report["task_id"] + "`",
+              "**Modelo:** `" + report["model"] + "`",
+              "**Resumo:** " + report["summary"],
+              "",
+              "**Verificacao:** testes do orquestrador passaram; validacao real Godot ainda pendente.",
+              "**Obrigatorio:** revisar a logica, rodar o Godot/GdUnit4 e confirmar "
+              "compatibilidade com a Biblia Narrativa antes de integrar.",
+              "",
+              "Sem alteracoes de sprites, cenas, segredos ou assets aprovados.",
+          ]
+          (Path(os.environ["RUNNER_TEMP"])/"slimekeepers-dev-pr.md").write_text(
+              "\n".join(lines)+"\n", encoding="utf-8"
+          )
+          PY
+          gh pr create --base main --head "$DEV_BRANCH" \
+            --title "[AI/Godot] $DEV_TASK_TITLE" \
+            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md"
+
+      - name: Arquivar resumo sem codigo ou credenciais
+        if: always() && env.DEV_TASK_ID != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-ai-dev-${{ github.run_id }}
+          path: ${{ runner.temp }}/slimekeepers-dev-report.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Encerrar proxy temporario e limpar OAuth
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f slimekeepers-ai-dev-proxy >/dev/null 2>&1 || true
+          rm -rf "$RUNNER_TEMP/slimekeepers-dev-proxy-state"
