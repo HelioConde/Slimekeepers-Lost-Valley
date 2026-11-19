@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "description": "Fila versionada para uma tarefa de código Godot por execução. Todos os resultados vão para PR; nenhuma tarefa altera arte aprovada.",
+  "tasks": [
+    {
+      "id": "inventory-foundation",
+      "title": "Inventário inicial de recursos coletáveis",
+      "goal": "Criar um componente Godot 4.7.2 reutilizável de bolsa/inventário para itens coletáveis, sem acoplar à UI ou alterar cenas existentes.",
+      "context_files": [
+        "PLANO_DE_DESENVOLVIMENTO.md",
+        "scripts/systems/game_clock.gd",
+        "docs/narrativa/BIBLIA_NARRATIVA.md",
+        "tests/forest/test_habitats.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/collectible_inventory.gd",
+        "tests/forest/test_collectible_inventory.gd"
+      ],
+      "acceptance": [
+        "Itens por ID String e quantidade inteira",
+        "Operações de adicionar, remover, contar e serializar/desserializar com validação de dados",
+        "Não aceitar quantidades negativas ou itens vazios; inventário não pode ficar parcialmente modificado",
+        "Testes GdUnit4 para operações básicas, erros e salvamento"
+      ]
+    },
+    {
+      "id": "slime-food-bond",
+      "title": "Regras testáveis de alimento e vínculo com slimes",
+      "goal": "Criar um módulo de regras de oferta de comida e progresso de vínculo, independente da cena, sem modificar a relação de amizade já existente.",
+      "context_files": [
+        "docs/narrativa/BIBLIA_NARRATIVA.md",
+        "scripts/world/forest_slime.gd",
+        "tests/forest/test_habitats.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/slime_food_bond.gd",
+        "tests/forest/test_slime_food_bond.gd"
+      ],
+      "acceptance": [
+        "Sem assumir receitas, probabilidades ou números canônicos ainda em aberto",
+        "IDs de slime e alimento validados; sem duplicar progresso de um slime",
+        "Funções de estado e serialização determinísticas",
+        "Testes GdUnit4 para presente válido, inválido, duplicado e carregamento"
+      ]
+    },
+    {
+      "id": "basic-cooking-foundation",
+      "title": "Base testável para receitas e culinária",
+      "goal": "Criar base de receitas de culinária dirigida por dados que possa posteriormente consumir inventário, sem inventar receitas canônicas ou alterar assets.",
+      "context_files": [
+        "docs/narrativa/BIBLIA_NARRATIVA.md",
+        "PLANO_DE_DESENVOLVIMENTO.md",
+        "tests/forest/test_habitats.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/cooking_recipe_book.gd",
+        "tests/forest/test_cooking_recipe_book.gd"
+      ],
+      "acceptance": [
+        "Registrar receitas por dados sem assumir receitas definitivas",
+        "Verificar ingredientes disponíveis sem consumir nada",
+        "Validar entradas e retornar razões de indisponibilidade",
+        "Testes GdUnit4 de receita válida, inválida, repetida e ingredientes insuficientes"
+      ]
+    }
+  ]
+}
