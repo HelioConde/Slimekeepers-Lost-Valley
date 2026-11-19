@@ -197,7 +197,7 @@ func _layout() -> void:
 
 func _start_game() -> void:
 	GameClock.reset_new_game()
-	for key in ["clearing_friends", "forest_slime_friends", "valley_slime_friends", "environment_conditions", "forest_places", "region_arrival", "valley_discoveries"]:
+	for key in ["clearing_friends", "forest_slime_friends", "valley_slime_friends", "environment_conditions", "forest_places", "region_arrival", "valley_discoveries", "forest_bag_items", "forest_seed_patches_collected"]:
 		if get_tree().has_meta(key): get_tree().remove_meta(key)
 	get_window().content_scale_size = Vector2i(960,540)
 	get_tree().change_scene_to_file("res://scenes/regions/FlorestaDoDespertarV2.tscn")
