@@ -1,0 +1,129 @@
+name: Slimekeepers - Testes reais de gameplay no Godot
+
+# Godot oficial 4.7.2 em runner Linux; sem IA, contas ou segredos.
+on:
+  pull_request:
+    paths:
+      - 'scripts/**/*.gd'
+      - 'scenes/**/*.tscn'
+      - 'tests/forest/**'
+      - 'tools/test_menu.gd'
+      - 'tools/test_region_travel.gd'
+      - 'tools/test_forest_v2.gd'
+      - 'tools/test_habitats.gd'
+      - 'project.godot'
+      - '.github/workflows/slimekeepers-godot-gameplay.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**/*.gd'
+      - 'scenes/**/*.tscn'
+      - 'tools/test_menu.gd'
+      - 'tools/test_region_travel.gd'
+      - 'tools/test_forest_v2.gd'
+      - 'tools/test_habitats.gd'
+      - 'project.godot'
+      - '.github/workflows/slimekeepers-godot-gameplay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gameplay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GODOT_VERSION: '4.7.2'
+      GODOT_BINARY_NAME: 'Godot_v4.7.2-stable_linux.x86_64'
+      GODOT_ARCHIVE_SHA256: 'cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Instalar Godot 4.7.2 oficial e conferir SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl --fail --location --silent --show-error --retry 2 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/${GODOT_BINARY_NAME}.zip" \
+            --output "$RUNNER_TEMP/godot/godot.zip"
+          echo "${GODOT_ARCHIVE_SHA256}  $RUNNER_TEMP/godot/godot.zip" | sha256sum --check --status
+          unzip -q "$RUNNER_TEMP/godot/godot.zip" -d "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot/${GODOT_BINARY_NAME}"
+          echo "GODOT_BIN=$RUNNER_TEMP/godot/${GODOT_BINARY_NAME}" >> "$GITHUB_ENV"
+          "$RUNNER_TEMP/godot/${GODOT_BINARY_NAME}" --headless --version
+
+      - name: Importar projeto e scripts antes dos testes
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 480s "$GODOT_BIN" --headless --editor --path . --import \
+            > "$RUNNER_TEMP/godot-import.log" 2>&1 || {
+              tail -n 70 "$RUNNER_TEMP/godot-import.log"
+              exit 1
+            }
+          echo 'Importacao do projeto concluida.'
+
+      - name: Executar menu, floresta, habitats e ida/volta reais
+        shell: bash
+        run: |
+          set -euo pipefail
+          scripts=(test_menu test_forest_v2 test_habitats test_region_travel)
+          # A successful exit is not enough: every native suite must report its checks.
+          declare -A minimum_checks=(
+            [test_menu]=50
+            [test_forest_v2]=140
+            [test_habitats]=30
+            [test_region_travel]=9
+          )
+          failed=0
+          {
+            echo '## Slimekeepers - testes nativos Godot 4.7.2'
+            echo ''
+            echo '| Suite | PASS | Resultado |'
+            echo '|---|---:|---|'
+          } >> "$GITHUB_STEP_SUMMARY"
+          for suite in "${scripts[@]}"; do
+            log="$RUNNER_TEMP/${suite}.log"
+            set +e
+            timeout 240s "$GODOT_BIN" --headless --path . \
+              --script "res://tools/${suite}.gd" > "$log" 2>&1
+            exit_code=$?
+            set -e
+            passes="$(grep -cE '^PASS([ :]|$)' "$log" || true)"
+            # Habitat/forest tests emit a total in their closing summary instead of PASS lines.
+            if [[ "$suite" == test_forest_v2 ]]; then
+              passes="$(sed -nE 's/^FOREST_V2: checks=([0-9]+).*/\1/p' "$log" | tail -n 1)"
+            elif [[ "$suite" == test_habitats ]]; then
+              passes="$(sed -nE 's/^FOREST_HABITATS: ([0-9]+) checks.*/\1/p' "$log" | tail -n 1)"
+            fi
+            passes="${passes:-0}"
+            if [[ "$exit_code" -ne 0 || "$passes" -lt "${minimum_checks[$suite]}" ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
+              failed=1
+              echo "| ${suite} | ${passes} | Falhou (exit ${exit_code}) |" >> "$GITHUB_STEP_SUMMARY"
+              echo "::error title=${suite}::Godot reportou falha; confira artifact."
+              tail -n 60 "$log"
+            else
+              echo "| ${suite} | ${passes} | Aprovado |" >> "$GITHUB_STEP_SUMMARY"
+              echo "PASS: ${suite} ${passes} verificacoes"
+            fi
+          done
+          if [[ "$failed" -ne 0 ]]; then
+            exit 1
+          fi
+
+      - name: Guardar logs para revisao, inclusive em falhas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-godot-gameplay-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/godot-import.log
+            ${{ runner.temp }}/test_menu.log
+            ${{ runner.temp }}/test_forest_v2.log
+            ${{ runner.temp }}/test_habitats.log
+            ${{ runner.temp }}/test_region_travel.log
+          retention-days: 14
+          if-no-files-found: ignore
