@@ -35,7 +35,7 @@ class FakeOpener:
                 "cached_quota": {"rate_limit": {"used_percent": 100,
                                                "limit_reached": True, "allowed": False,
                                                "reset_at": "2026-11-19T19:00:00Z"},
-                                 "source": "response_headers"}]},
+                                 "source": "response_headers"}}]},
             "/admin/accounts/internal-account-guid/usage?cached=true": {
                 "account_id": "internal-account-guid", "cached_quota": {
                     "rate_limit": {"used_percent": 100, "limit_reached": True,
