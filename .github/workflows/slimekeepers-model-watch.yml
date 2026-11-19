@@ -55,7 +55,7 @@ jobs:
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' &&
-       github.event.head_commit.message == 'ci(proxy-watch) alternative model GET inspect now')
+       startsWith(github.event.head_commit.message, 'ci(proxy-watch) first read-only probe'))
     needs: tests
     runs-on: ubuntu-24.04
     timeout-minutes: 18
