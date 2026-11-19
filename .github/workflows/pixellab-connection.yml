@@ -1,0 +1,59 @@
+name: PixelLab - Conexao Slimekeepers
+on:
+  workflow_dispatch:
+    inputs:
+      operacao:
+        description: "Planejar, conferir conexao ou exportar base existente"
+        required: true
+        type: choice
+        default: plan
+        options:
+          - plan
+          - inventory
+          - export
+      confirmar_artefatos_publicos:
+        description: "Exportacao ZIP ficara acessivel no Actions deste repositorio PUBLICO"
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: slimekeepers-pixellab
+  cancel-in-progress: false
+jobs:
+  pixellab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Testes locais sem API nem custo
+        run: python -m unittest discover -s tests -p 'test_pixellab_bridge.py' -v
+      - name: Consultar PixelLab (GET apenas)
+        env:
+          PIXELLAB_API_TOKEN: ${{ secrets.PIXELLAB_API_TOKEN }}
+          PIXELLAB_CHARACTER_ID: ${{ secrets.PIXELLAB_CHARACTER_ID }}
+          OP: ${{ inputs.operacao }}
+          PUBLIC: ${{ inputs.confirmar_artefatos_publicos }}
+        shell: bash
+        run: |
+          if [[ "$OP" == "export" ]]; then
+            if [[ "$PUBLIC" != "true" ]]; then
+              echo "::error::Exportacao bloqueada: confirme visibilidade publica dos arquivos."
+              exit 1
+            fi
+            python tools/pixellab_bridge.py --operation export --public-artifacts-confirmed
+          else
+            python tools/pixellab_bridge.py --operation "$OP"
+          fi
+      - name: Disponibilizar ZIP existente sem gerar sprites
+        if: ${{ inputs.operacao == 'export' && inputs.confirmar_artefatos_publicos }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-pixellab-export-${{ github.run_id }}
+          path: output/pixellab/*.zip
+          retention-days: 1
+          if-no-files-found: error
