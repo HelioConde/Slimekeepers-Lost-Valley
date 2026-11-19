@@ -59,7 +59,7 @@ def load_tasks(path: Path = QUEUE) -> list[dict]:
         for name in task.get("context_files", []):
             _inside_repo(name)
         for key in ("title", "goal"):
-            if not isinstance(task.get(key), str) or not task[key].strip():
+            if not isinstance(task.get(key), str) or not task[key].strip() or len(task[key]) > 1500 or "\n" in task[key] or "\r" in task[key]:
                 raise DevTaskError("Tarefa sem descrição.")
     return doc["tasks"]
 
@@ -209,16 +209,24 @@ def main() -> None:
             return
         if args.mode == "select":
             task = choose_task(tasks, args.task_id, remote_reservations())
+            output_file = os.environ.get("GITHUB_OUTPUT")
+            if output_file:
+                with open(output_file, "a", encoding="utf-8") as output:
+                    output.write("base_sha=" + subprocess.run(
+                        ["git", "rev-parse", "HEAD"], cwd=ROOT, check=True,
+                        capture_output=True, text=True).stdout.strip() + "\n")
+                    output.write("task_id=" + (task["id"] if task else "") + "\n")
+                    output.write("branch=" + ("ai/" + task["id"] if task else "") + "\n")
             if task is None:
-                print('{"status":"no_unreserved_tasks"}')
+                print('{"status":"no_unreserved_tasks","inference_requests":0}')
                 return
             env_file = Path(os.environ["GITHUB_ENV"])
             with env_file.open("a", encoding="utf-8") as output:
                 output.write("DEV_TASK_ID=" + task["id"] + "\n")
                 output.write("DEV_BRANCH=ai/" + task["id"] + "\n")
-                output.write("DEV_TASK_TITLE=" + task["title"] + "\n")
+                output.write("DEV_TASK_TITLE=" + task["title"].replace("\n", " ") + "\n")
             print(json.dumps({"status": "task_selected", "task": task["id"],
-                              "branch": "ai/" + task["id"]}))
+                              "branch": "ai/" + task["id"], "inference_requests": 0}))
             return
         task = next((t for t in tasks if t["id"] == args.task_id), None)
         if task is None or args.preflight is None or args.output is None:

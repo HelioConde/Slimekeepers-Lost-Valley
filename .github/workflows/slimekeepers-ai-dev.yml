@@ -1,6 +1,7 @@
 name: Slimekeepers - Agente de desenvolvimento Godot via Astra
 
-# Uma tarefa por run. Apenas despacho manual autorizado ou cron habilitado pelo dono.
+# Uma tarefa pequena por run; agendamento autorizado pelo criador em 19/11/2026.
+# Pause: Settings > Variables > SLIMEKEEPERS_AUTO_DEV_PAUSED=true.
 on:
   workflow_dispatch:
     inputs:
@@ -21,13 +22,16 @@ on:
         required: true
         default: NO_INFERENCE
   schedule:
-    - cron: '17 13 * * 1,4'
+    # 09h35 e 18h35, horario America/Sao_Paulo (UTC-3).
+    - cron: '35 12,21 * * *'
   pull_request:
     paths:
       - 'tools/slimekeepers_dev_agent.py'
       - 'tools/slimekeepers_codex_proxy.py'
       - 'automation/dev_tasks.json'
       - 'tests/test_slimekeepers_dev_agent.py'
+      - 'tests/test_slimekeepers_autonomy_guard.py'
+      - 'tools/slimekeepers_autonomy_guard.py'
       - '.github/workflows/slimekeepers-ai-dev.yml'
 
 permissions:
@@ -54,6 +58,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
           python -m unittest discover -s tests -p 'test_slimekeepers_dev_agent.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_autonomy_guard.py' -v
 
   queue-plan:
     if: github.event_name == 'workflow_dispatch' && inputs.mode == 'plan'
@@ -70,11 +75,17 @@ jobs:
         run: python tools/slimekeepers_dev_agent.py --mode list
 
   develop-one-task:
-    # Cron é opt-in por variável de repositório. Nenhum POST em PR ou push.
-    if: (github.event_name == 'schedule' && vars.SLIMEKEEPERS_AUTO_DEV_ENABLED == 'true') || (github.event_name == 'workflow_dispatch' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK')
+    # Cron ligado a pedido do criador; variável PAUSED para interromper.
+    if: (github.event_name == 'schedule' && github.ref == 'refs/heads/main' && vars.SLIMEKEEPERS_AUTO_DEV_PAUSED != 'true') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK')
     needs: unit-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    outputs:
+      task_id: ${{ steps.choose.outputs.task_id }}
+      branch: ${{ steps.choose.outputs.branch }}
+      base_sha: ${{ steps.choose.outputs.base_sha }}
+      head_sha: ${{ steps.submit.outputs.head_sha }}
+      pr_number: ${{ steps.submit.outputs.pr_number }}
     permissions:
       contents: write
       pull-requests: write
@@ -94,7 +105,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Selecionar proxima tarefa e expor checkpoint seguro
+        id: choose
+        shell: bash
+        run: |
+          python tools/slimekeepers_dev_agent.py --mode select --task-id "$REQUEST_TASK_ID"
+
       - name: Validar autorizacao e primeira tentativa
+        if: env.DEV_TASK_ID != ''
         shell: bash
         run: |
           set -euo pipefail
@@ -117,22 +135,6 @@ jobs:
             echo "::error::CODEX_PROXY_ACCOUNTS_JSON ou CODEX_PROXY_BASE_URL obrigatorio."
             exit 2
           fi
-
-      - name: Selecionar proxima tarefa sem repetir branches
-        shell: bash
-        run: |
-          python tools/slimekeepers_dev_agent.py --mode select --task-id "$REQUEST_TASK_ID"
-
-      - name: Reservar branch ANTES de qualquer inferencia
-        if: env.DEV_TASK_ID != ''
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "slimekeepers-ai-dev[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$DEV_BRANCH"
-          git push --set-upstream origin "$DEV_BRANCH"
-          echo "Branch de reserva criada. Falhas seguintes bloqueiam reexecucao da tarefa."
 
       - name: Montar sessão OAuth privada no runner
         if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
@@ -186,16 +188,57 @@ jobs:
           echo "::error::Proxy indisponivel."
           exit 2
 
+      - name: Aguardar catalogo real de modelos do proxy
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        run: sleep 20
+
       - name: Conferir GPT-6.2 principal e GPT-6 reserva por GET
         if: env.DEV_TASK_ID != ''
         shell: bash
         run: |
           python tools/proxy_preflight.py \
             --output "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
-            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
+
+      - name: Consultar quota real antes de reservar tarefa e gastar tokens
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/proxy_quota_diagnostics.py --live-usage \
+            --output "$RUNNER_TEMP/slimekeepers-dev-live-quota.json"
+          python tools/proxy_model_watch.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
+            --quota "$RUNNER_TEMP/slimekeepers-dev-live-quota.json" \
+            --output "$RUNNER_TEMP/slimekeepers-dev-quota-gate.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "slimekeepers-dev-quota-gate.json"
+          report = json.loads(path.read_text(encoding="utf-8"))
+          ready = report.get("smoke_eligible") is True and report.get("quota_readiness") == "reported_available"
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("DEV_QUOTA_READY=" + ("true" if ready else "false") + "\n")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as out:
+              out.write("## Cota Astra antes da geração\n\n")
+              out.write("- Estado: " + ("disponível" if ready else "bloqueado — sem POST e sem reserva") + "\n")
+              out.write("- Próxima tarefa: " + os.environ["DEV_TASK_ID"] + "\n")
+          print("Cota verificada sem inferencia; prosseguir=" + str(ready))
+          PY
+
+      - name: Reservar branch remota depois do gate de quota, antes do POST
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "slimekeepers-ai-dev[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$DEV_BRANCH"
+          git push --set-upstream origin "$DEV_BRANCH"
+          echo "Checkpoint remoto reservado; nenhum retry do modelo para esta tarefa."
 
       - name: Executar uma unica tarefa autorizada de codigo
-        if: env.DEV_TASK_ID != ''
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
         shell: bash
         env:
           AI_ENABLED: 'true'
@@ -207,8 +250,9 @@ jobs:
             --preflight "$RUNNER_TEMP/slimekeepers-dev-preflight.json" \
             --output "$RUNNER_TEMP/slimekeepers-dev-report.json"
 
-      - name: Criar commit e PR para revisao, nunca merge automatico
-        if: env.DEV_TASK_ID != ''
+      - name: Criar PR da entrega isolada para validacao em runner sem segredos
+        id: submit
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -229,8 +273,8 @@ jobs:
               "**Modelo:** `" + report["model"] + "`",
               "**Resumo:** " + report["summary"],
               "",
-              "**Verificacao:** testes do orquestrador passaram; validacao real Godot ainda pendente.",
-              "**Obrigatorio:** revisar a logica, rodar o Godot/GdUnit4 e confirmar "
+              "**Verificacao:** o proximo job executara verificacao independente do Godot 4.7.2 antes de merge automatico restrito.",
+              "**Obrigatorio:** validação automática e proteção de escopo; conferir "
               "compatibilidade com a Biblia Narrativa antes de integrar.",
               "",
               "Sem alteracoes de sprites, cenas, segredos ou assets aprovados.",
@@ -239,16 +283,21 @@ jobs:
               "\n".join(lines)+"\n", encoding="utf-8"
           )
           PY
-          gh pr create --base main --head "$DEV_BRANCH" \
+          pr_url=$(gh pr create --base main --head "$DEV_BRANCH" \
             --title "[AI/Godot] $DEV_TASK_TITLE" \
-            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md"
+            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md")
+          echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "PR criado para validacao independente: $pr_url"
 
       - name: Arquivar resumo sem codigo ou credenciais
         if: always() && env.DEV_TASK_ID != ''
         uses: actions/upload-artifact@v4
         with:
           name: slimekeepers-ai-dev-${{ github.run_id }}
-          path: ${{ runner.temp }}/slimekeepers-dev-report.json
+          path: |
+            ${{ runner.temp }}/slimekeepers-dev-report.json
+            ${{ runner.temp }}/slimekeepers-dev-quota-gate.json
           retention-days: 7
           if-no-files-found: ignore
 
@@ -258,3 +307,174 @@ jobs:
         run: |
           docker rm -f slimekeepers-ai-dev-proxy >/dev/null 2>&1 || true
           rm -rf "$RUNNER_TEMP/slimekeepers-dev-proxy-state"
+
+  validate-generated:
+    # O codigo gerado pelo modelo so executa em runner separado sem secrets.
+    if: needs.develop-one-task.outputs.pr_number != ''
+    needs: develop-one-task
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      TASK_ID: ${{ needs.develop-one-task.outputs.task_id }}
+      BASE_SHA: ${{ needs.develop-one-task.outputs.base_sha }}
+      GODOT_BINARY_NAME: Godot_v4.7.2-stable_linux.x86_64
+      GODOT_ARCHIVE_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+    steps:
+      - name: Checkout do commit exato da proposta sem credenciais persistentes
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.develop-one-task.outputs.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validar somente novos arquivos autorizados e selecionar suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/slimekeepers_autonomy_guard.py --task-id "$TASK_ID" --base-sha "$BASE_SHA"
+          python - <<'PY'
+          import os
+          from tools.slimekeepers_dev_agent import load_tasks
+          task = next(t for t in load_tasks() if t["id"] == os.environ["TASK_ID"])
+          suite = next(p for p in task["allowed_files"] if p.startswith("tests/"))
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("AUTONOMOUS_TEST_FILE=res://" + suite + "\n")
+          print("Suite GdUnit4 autorizada pela fila.")
+          PY
+
+      - name: Instalar Godot 4.7.2 oficial com checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/autonomy-godot"
+          curl -fsSL --retry 2 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$GODOT_BINARY_NAME.zip" \
+            -o "$RUNNER_TEMP/autonomy-godot/godot.zip"
+          echo "$GODOT_ARCHIVE_SHA256  $RUNNER_TEMP/autonomy-godot/godot.zip" | sha256sum -c --status
+          unzip -q "$RUNNER_TEMP/autonomy-godot/godot.zip" -d "$RUNNER_TEMP/autonomy-godot"
+          chmod +x "$RUNNER_TEMP/autonomy-godot/$GODOT_BINARY_NAME"
+          echo "GODOT_BIN=$RUNNER_TEMP/autonomy-godot/$GODOT_BINARY_NAME" >> "$GITHUB_ENV"
+
+      - name: Importar scripts em processo sem credenciais de IA
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 480 "$GODOT_BIN" --headless --editor --path . --import \
+            > "$RUNNER_TEMP/autonomy-import.log" 2>&1 || {
+              tail -n 65 "$RUNNER_TEMP/autonomy-import.log"
+              exit 1
+            }
+
+      - name: Executar testes reais GdUnit4 do modulo gerado
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT_BIN" --headless --path . \
+            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+            -a "$AUTONOMOUS_TEST_FILE" --ignoreHeadlessMode -c \
+            > "$RUNNER_TEMP/autonomy-gdunit.log" 2>&1 || {
+              tail -n 75 "$RUNNER_TEMP/autonomy-gdunit.log"
+              exit 1
+            }
+          if grep -qE 'No test cases found|Script errors were detected|Abnormal exit' "$RUNNER_TEMP/autonomy-gdunit.log"; then
+            echo "::error::Testes GdUnit4 vazios ou invalidos."
+            exit 2
+          fi
+          echo "Suite GdUnit4 executada."
+
+      - name: Validar regressao com as seis suites nativas
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A minimum=(
+            [test_menu]=61
+            [test_forest_v2]=157
+            [test_habitats]=37
+            [test_region_travel]=9
+            [test_forest_foraging]=23
+            [test_valley_garden]=42
+          )
+          {
+            echo "## Modulo isolado testado com Godot 4.7.2"
+            echo ""
+            echo "| Suite | Verificacoes |"
+            echo "|---|---:|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for suite in test_menu test_forest_v2 test_habitats test_region_travel test_forest_foraging test_valley_garden; do
+            log="$RUNNER_TEMP/autonomy-$suite.log"
+            timeout 240 "$GODOT_BIN" --headless --path . \
+              --script "res://tools/$suite.gd" > "$log" 2>&1 || {
+                tail -n 60 "$log"
+                exit 1
+              }
+            checks="$(grep -cE '^PASS([ :]|$)' "$log" || true)"
+            if [[ "$suite" == test_forest_v2 ]]; then
+              checks="$(sed -nE 's/^FOREST_V2: checks=([0-9]+).*/\1/p' "$log" | tail -n 1)"
+            elif [[ "$suite" == test_habitats ]]; then
+              checks="$(sed -nE 's/^FOREST_HABITATS: ([0-9]+) checks.*/\1/p' "$log" | tail -n 1)"
+            fi
+            checks="${checks:-0}"
+            if [[ "$checks" -lt "${minimum[$suite]}" ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
+              echo "::error::Reprovada suite $suite."
+              tail -n 60 "$log"
+              exit 2
+            fi
+            echo "| $suite | $checks |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "Validação de todos os 329 checks anteriores concluída."
+
+      - name: Arquivar evidencias tecnicas mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-autonomy-validation-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/autonomy-import.log
+            ${{ runner.temp }}/autonomy-gdunit.log
+            ${{ runner.temp }}/autonomy-*.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+  merge-validated-module:
+    # Somente arquivos novos testados; nenhuma alteracao de cenas/sprites/segredos.
+    # Branch remota nao e apagada: impede teste duplicado e gasto extra.
+    if: needs.validate-generated.result == 'success' && needs.develop-one-task.outputs.pr_number != ''
+    needs: [develop-one-task, validate-generated]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ needs.develop-one-task.outputs.pr_number }}
+      EXPECTED_BRANCH: ${{ needs.develop-one-task.outputs.branch }}
+      EXPECTED_SHA: ${{ needs.develop-one-task.outputs.head_sha }}
+    steps:
+      - name: Conferir que a PR nao mudou desde os testes e integrar com protecoes GitHub
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --json state,baseRefName,headRefName,headRefOid \
+            > "$RUNNER_TEMP/autonomy-pr.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ["RUNNER_TEMP"]) / "autonomy-pr.json"
+          pr = json.loads(p.read_text(encoding="utf-8"))
+          if (pr.get("state") != "OPEN" or pr.get("baseRefName") != "main"
+                  or pr.get("headRefName") != os.environ["EXPECTED_BRANCH"]
+                  or pr.get("headRefOid") != os.environ["EXPECTED_SHA"]):
+              raise SystemExit("PR alterada: merge cancelado.")
+          print("PR integra exatamente o commit validado.")
+          PY
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --squash --match-head-commit "$EXPECTED_SHA"
+          echo "## Entrega autonoma integrada" >> "$GITHUB_STEP_SUMMARY"
+          echo "PR #$PR_NUMBER validada e integrada; checkpoint preservado." >> "$GITHUB_STEP_SUMMARY"
+

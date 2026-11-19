@@ -1,26 +1,25 @@
 {
   "schema": 1,
-  "description": "Fila versionada para uma tarefa de código Godot por execução. Todos os resultados vão para PR; nenhuma tarefa altera arte aprovada.",
+  "description": "Fila autorizada de componentes pequenos para evolucao autonoma; um modulo novo com suite GdUnit4 por rodada, sem editar assets, cenas ou historia. Desenvolvimento sujeito a quota e validacao nativa sem secrets.",
   "tasks": [
     {
-      "id": "inventory-foundation",
-      "title": "Inventário inicial de recursos coletáveis",
-      "goal": "Criar um componente Godot 4.7.2 reutilizável de bolsa/inventário para itens coletáveis, sem acoplar à UI ou alterar cenas existentes.",
+      "id": "basic-cooking-foundation",
+      "title": "Base testável para receitas e culinária",
+      "goal": "Criar base de receitas de culinária dirigida por dados que possa posteriormente consumir inventário, sem inventar receitas canônicas ou alterar assets.",
       "context_files": [
-        "PLANO_DE_DESENVOLVIMENTO.md",
-        "scripts/systems/game_clock.gd",
         "docs/narrativa/BIBLIA_NARRATIVA.md",
+        "PLANO_DE_DESENVOLVIMENTO.md",
         "tests/forest/test_habitats.gd"
       ],
       "allowed_files": [
-        "scripts/systems/collectible_inventory.gd",
-        "tests/forest/test_collectible_inventory.gd"
+        "scripts/systems/cooking_recipe_book.gd",
+        "tests/forest/test_cooking_recipe_book.gd"
       ],
       "acceptance": [
-        "Itens por ID String e quantidade inteira",
-        "Operações de adicionar, remover, contar e serializar/desserializar com validação de dados",
-        "Não aceitar quantidades negativas ou itens vazios; inventário não pode ficar parcialmente modificado",
-        "Testes GdUnit4 para operações básicas, erros e salvamento"
+        "Registrar receitas por dados sem assumir receitas definitivas",
+        "Verificar ingredientes disponíveis sem consumir nada",
+        "Validar entradas e retornar razões de indisponibilidade",
+        "Testes GdUnit4 de receita válida, inválida, repetida e ingredientes insuficientes"
       ]
     },
     {
@@ -44,23 +43,133 @@
       ]
     },
     {
-      "id": "basic-cooking-foundation",
-      "title": "Base testável para receitas e culinária",
-      "goal": "Criar base de receitas de culinária dirigida por dados que possa posteriormente consumir inventário, sem inventar receitas canônicas ou alterar assets.",
+      "id": "inventory-foundation",
+      "title": "Inventário inicial de recursos coletáveis",
+      "goal": "Criar um componente Godot 4.7.2 reutilizável de bolsa/inventário para itens coletáveis, sem acoplar à UI ou alterar cenas existentes.",
       "context_files": [
-        "docs/narrativa/BIBLIA_NARRATIVA.md",
         "PLANO_DE_DESENVOLVIMENTO.md",
+        "scripts/systems/game_clock.gd",
+        "docs/narrativa/BIBLIA_NARRATIVA.md",
         "tests/forest/test_habitats.gd"
       ],
       "allowed_files": [
-        "scripts/systems/cooking_recipe_book.gd",
-        "tests/forest/test_cooking_recipe_book.gd"
+        "scripts/systems/collectible_inventory.gd",
+        "tests/forest/test_collectible_inventory.gd"
       ],
       "acceptance": [
-        "Registrar receitas por dados sem assumir receitas definitivas",
-        "Verificar ingredientes disponíveis sem consumir nada",
-        "Validar entradas e retornar razões de indisponibilidade",
-        "Testes GdUnit4 de receita válida, inválida, repetida e ingredientes insuficientes"
+        "Itens por ID String e quantidade inteira",
+        "Operações de adicionar, remover, contar e serializar/desserializar com validação de dados",
+        "Não aceitar quantidades negativas ou itens vazios; inventário não pode ficar parcialmente modificado",
+        "Testes GdUnit4 para operações básicas, erros e salvamento"
+      ]
+    },
+    {
+      "id": "cooking-ingredient-validation",
+      "title": "Validacao reutilizavel de ingredientes",
+      "goal": "Criar regras puras para conferir se uma lista de ingredientes esta disponivel, sem consumir recursos nem inventar receitas oficiais.",
+      "context_files": [
+        "scripts/systems/forest_bag.gd",
+        "scripts/systems/valley_starter_garden.gd",
+        "docs/narrativa/BIBLIA_NARRATIVA.md"
+      ],
+      "allowed_files": [
+        "scripts/systems/cooking_ingredient_rules.gd",
+        "tests/forest/test_cooking_ingredient_rules.gd"
+      ],
+      "acceptance": [
+        "Recusar IDs vazios, quantidades negativas e dados malformados",
+        "Calcular falta de ingredientes de forma deterministica sem mutacao",
+        "Testes separados para recursos disponiveis, insuficientes e entradas invalidas"
+      ]
+    },
+    {
+      "id": "cooking-serving-ledger",
+      "title": "Registro reutilizavel de refeicoes preparadas",
+      "goal": "Criar um historico pequeno de pratos preparados por ID, sem alterar gameplay ou inventar conteudo narrativo.",
+      "context_files": [
+        "docs/narrativa/BIBLIA_NARRATIVA.md",
+        "scripts/systems/forest_bag.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/cooking_serving_ledger.gd",
+        "tests/forest/test_cooking_serving_ledger.gd"
+      ],
+      "acceptance": [
+        "Contar preparacoes por receita com IDs validados",
+        "Retornar snapshots sem permitir alteracao externa",
+        "Rejeitar dados ou quantidades invalidas e testar idempotencia de consultas"
+      ]
+    },
+    {
+      "id": "crop-stage-calculator",
+      "title": "Regras deterministicas para fases de cultivo",
+      "goal": "Criar modulo puro para calcular estagios de cultivo por tempo do jogo, sem modificar canteiros atuais.",
+      "context_files": [
+        "scripts/systems/valley_starter_garden.gd",
+        "scripts/systems/game_clock.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/crop_stage_calculator.gd",
+        "tests/forest/test_crop_stage_calculator.gd"
+      ],
+      "acceptance": [
+        "Receber tempo de plantio e duracao configuravel em minutos",
+        "Retornar fase e tempo restante sem efeitos colaterais",
+        "Tratar entradas invalidas, limites, transicao de dia e tempo monotonicamente"
+      ]
+    },
+    {
+      "id": "food-preference-catalog",
+      "title": "Catalogo de preferencias alimentares de slimes",
+      "goal": "Criar estrutura baseada em dados para armazenar preferencias alimentares futuras, sem definir especies favoritas sem aprovacao.",
+      "context_files": [
+        "docs/narrativa/BIBLIA_NARRATIVA.md",
+        "scripts/world/forest_slime.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/slime_food_preferences.gd",
+        "tests/forest/test_slime_food_preferences.gd"
+      ],
+      "acceptance": [
+        "Catalogar entradas validas de slime e comida, sem declarar preferencias canônicas",
+        "Permitir consultas por ID e resultados previsiveis",
+        "Nao criar multiplicadores, probabilidades ou receitas nao aprovadas; testar invalidos"
+      ]
+    },
+    {
+      "id": "session-progress-flags",
+      "title": "Estado reutilizavel de objetivos iniciais",
+      "goal": "Criar registro deterministico de marcadores de progresso de sessao, para futuro tutorial de coleta, cultivo e culinaria.",
+      "context_files": [
+        "scripts/systems/forest_bag.gd",
+        "docs/narrativa/BIBLIA_NARRATIVA.md"
+      ],
+      "allowed_files": [
+        "scripts/systems/session_progress_flags.gd",
+        "tests/forest/test_session_progress_flags.gd"
+      ],
+      "acceptance": [
+        "Armazenar objetivos por IDs genericos sem definir novo evento canônico",
+        "Marcar e consultar sem duplicar contagem; limpar estado",
+        "Exportar/importar apenas dicionarios validos, com testes de regressao"
+      ]
+    },
+    {
+      "id": "garden-harvest-ledger",
+      "title": "Registro isolado de colheitas",
+      "goal": "Criar componente reutilizavel para registrar colheita por canteiro com prevençao de duplicacoes, sem sobrescrever o Vale existente.",
+      "context_files": [
+        "scripts/systems/valley_starter_garden.gd",
+        "scripts/systems/forest_bag.gd"
+      ],
+      "allowed_files": [
+        "scripts/systems/garden_harvest_ledger.gd",
+        "tests/forest/test_garden_harvest_ledger.gd"
+      ],
+      "acceptance": [
+        "ID de canteiro validado; colheita unica por ciclo",
+        "Nao aceitar recursos vazios ou quantidades negativas",
+        "Copias de estado independentes, serializacao validada e testes de duplicacao"
       ]
     }
   ]
