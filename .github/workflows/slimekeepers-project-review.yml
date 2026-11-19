@@ -1,0 +1,182 @@
+name: Slimekeepers - Analise inicial pelo Astra
+
+# Um disparo explicitamente solicitado; nunca roda inferencia em PRs.
+on:
+  pull_request:
+    paths:
+      - 'tools/slimekeepers_project_review.py'
+      - 'tests/test_slimekeepers_project_review.py'
+      - '.github/workflows/slimekeepers-project-review.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/slimekeepers-project-review.yml'
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Digite AUTHORIZE_ONE_PROJECT_ANALYSIS para uma analise real'
+        type: string
+        required: true
+        default: NO_INFERENCE
+
+permissions:
+  contents: read
+
+concurrency:
+  group: slimekeepers-project-review
+  cancel-in-progress: false
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testes locais sem proxy nem inferencia
+        run: |
+          python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_project_review.py' -v
+
+  analyze-once:
+    if: >-
+      (github.event_name == 'push' &&
+       startsWith(github.event.head_commit.message, 'ci(ai-review) one-time authorized project analysis')) ||
+      (github.event_name == 'workflow_dispatch' &&
+       inputs.confirmation == 'AUTHORIZE_ONE_PROJECT_ANALYSIS')
+    needs: offline-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    permissions:
+      contents: read
+      packages: read
+    env:
+      CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
+      CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
+      CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
+      AI_ENABLED: 'false'
+      PAID_CALLS_ENABLED: 'false'
+      CODEX_PROXY_TEXT_AUTHORIZED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verificar autorizacao e evitar chamada duplicada
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_RUN_ATTEMPT" != "1" || "$GITHUB_REF" != refs/heads/main ]]; then
+            echo '::error::Somente primeira tentativa da main pode executar a analise.'
+            exit 2
+          fi
+          if [[ -z "$CODEX_PROXY_API_KEY" ]]; then
+            echo '::error::Secret CODEX_PROXY_API_KEY ausente.'
+            exit 2
+          fi
+          if [[ -n "$CODEX_PROXY_BASE_URL" ]]; then
+            echo 'PROXY_MODE=persistent' >> "$GITHUB_ENV"
+          elif [[ -n "$CODEX_PROXY_ACCOUNTS_JSON" ]]; then
+            echo 'PROXY_MODE=ephemeral' >> "$GITHUB_ENV"
+            echo 'CODEX_PROXY_BASE_URL=http://127.0.0.1:18080' >> "$GITHUB_ENV"
+          else
+            echo '::error::Faltam CODEX_PROXY_BASE_URL ou CODEX_PROXY_ACCOUNTS_JSON.'
+            exit 2
+          fi
+
+      - name: Restaurar sessao OAuth temporaria do VideoForge
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/slimekeepers-review-state"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          try:
+              data=json.loads(os.environ["CODEX_PROXY_ACCOUNTS_JSON"])
+              records=data.get("records") if isinstance(data,dict) else None
+              if not isinstance(records,list) or not records:
+                  raise ValueError("invalid")
+              if not all(isinstance(record,dict) and isinstance(record.get("token"),dict) for record in records):
+                  raise ValueError("invalid")
+              p=Path(os.environ["RUNNER_TEMP"])/"slimekeepers-review-state"/"accounts.json"
+              p.write_text(json.dumps(data,ensure_ascii=False),encoding="utf-8")
+              p.chmod(0o600)
+              print("Uma sessao local temporaria foi carregada sem divulgar tokens.")
+          except (ValueError,TypeError,KeyError):
+              raise SystemExit("Snapshot OAuth invalido; analise bloqueada.")
+          PY
+
+      - name: Iniciar proxy efemero precompilado
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin >/dev/null
+          docker pull ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1
+          docker run -d --name slimekeepers-review-proxy --user "$(id -u):$(id -g)" \
+            --read-only --tmpfs /tmp:rw,nosuid,size=32m \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -p 127.0.0.1:18080:8080 \
+            -e PROXY_API_KEY="$CODEX_PROXY_API_KEY" \
+            -e DATA_DIR=/app/data -e DEBUG_LOG_PAYLOADS=false \
+            -v "$RUNNER_TEMP/slimekeepers-review-state:/app/data:rw" \
+            ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1 >/dev/null
+          for i in {1..30}; do
+            if curl --noproxy '*' -fsS --max-time 2 http://127.0.0.1:18080/health/live >/dev/null; then
+              echo "Proxy pronto para a analise."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo '::error::Proxy nao iniciou.'
+          exit 2
+
+      - name: Selecionar o modelo disponivel por GET
+        shell: bash
+        run: |
+          python tools/proxy_preflight.py \
+            --output "$RUNNER_TEMP/slimekeepers-review-preflight.json" \
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra
+
+      - name: Solicitar e registrar uma unica analise real do jogo
+        shell: bash
+        env:
+          AI_ENABLED: 'true'
+          PAID_CALLS_ENABLED: 'true'
+          CODEX_PROXY_TEXT_AUTHORIZED: 'true'
+        run: |
+          python tools/slimekeepers_project_review.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-review-preflight.json" \
+            --output "$RUNNER_TEMP/slimekeepers-project-review.json"
+
+      - name: Arquivar resposta e dados técnicos sem credenciais
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-project-review-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/slimekeepers-review-preflight.json
+            ${{ runner.temp }}/slimekeepers-project-review.json
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Encerrar container e apagar o estado OAuth
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f slimekeepers-review-proxy >/dev/null 2>&1 || true
+          rm -rf "$RUNNER_TEMP/slimekeepers-review-state"
