@@ -9,7 +9,7 @@ func _ready() -> void:
 	name = "ForagingBagPanel"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	offset_left = 18
-	offset_right = 350
+	offset_right = 450
 	offset_top = 100
 	offset_bottom = 135
 	var skin := StyleBoxFlat.new()
@@ -23,11 +23,11 @@ func _ready() -> void:
 	_counter.name = "InventoryCount"
 	_counter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_counter.add_theme_font_override("font", FONT)
-	_counter.add_theme_font_size_override("font_size", 16)
+	_counter.add_theme_font_size_override("font_size", 15)
 	_counter.add_theme_color_override("font_color", Color("#3e5c43"))
 	add_child(_counter)
 	refresh()
 
 func refresh() -> void:
 	if is_instance_valid(_counter):
-		_counter.text = "Bolsa · sementes silvestres: %d/%d" % [BAG.seeds(get_tree()), TOTAL_PATCHES]
+		_counter.text = "Bolsa · sementes %d/%d · folhas frescas %d" % [BAG.seeds(get_tree()), TOTAL_PATCHES, BAG.leaves(get_tree())]
