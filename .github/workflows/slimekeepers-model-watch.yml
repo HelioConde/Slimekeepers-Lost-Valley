@@ -10,6 +10,8 @@ on:
   pull_request:
     paths:
       - 'tools/proxy_model_watch.py'
+      - 'tools/proxy_alternative_model_smoke.py'
+      - 'tests/test_proxy_alternative_model_smoke.py'
       - 'tests/test_proxy_model_watch.py'
       - '.github/workflows/slimekeepers-model-watch.yml'
   push:
@@ -44,6 +46,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
           python -m unittest discover -s tests -p 'test_proxy_quota_diagnostics.py' -v
           python -m unittest discover -s tests -p 'test_proxy_model_watch.py' -v
+          python -m unittest discover -s tests -p 'test_proxy_alternative_model_smoke.py' -v
 
   model-watch:
     # Push imediato limitado a uma verificacao GET; cron monitora
@@ -200,6 +203,41 @@ jobs:
             --preflight "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
             --output "$RUNNER_TEMP/slimekeepers-watch-smoke.json"
 
+      - name: Selecionar outro modelo de TEXTO que ainda nao foi testado
+        if: github.event_name == 'schedule' && env.MODEL_SMOKE_ELIGIBLE == 'true' && env.MODEL_SMOKE_RESERVED != 'true'
+        shell: bash
+        run: |
+          python tools/proxy_alternative_model_smoke.py --operation select \
+            --preflight "$RUNNER_TEMP/slimekeepers-watch-preflight.json"
+
+      - name: Reservar branch unica por modelo ANTES do POST
+        if: github.event_name == 'schedule' && env.MODEL_SMOKE_ELIGIBLE == 'true' && env.ALTERNATIVE_SMOKE_MODEL != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="refs/heads/ai/model-smoke-$ALTERNATIVE_SMOKE_MODEL"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            echo "Modelo ja reservado: sem outra inferencia."
+            exit 0
+          fi
+          git push origin "HEAD:$branch"
+          echo "ALTERNATIVE_SMOKE_RESERVED=true" >> "$GITHUB_ENV"
+          echo "Reservada tentativa unica para $ALTERNATIVE_SMOKE_MODEL"
+
+      - name: Testar outro modelo com UMA resposta curta
+        if: github.event_name == 'schedule' && env.ALTERNATIVE_SMOKE_RESERVED == 'true'
+        shell: bash
+        env:
+          AI_ENABLED: 'true'
+          PAID_CALLS_ENABLED: 'true'
+          CODEX_PROXY_TEXT_AUTHORIZED: 'true'
+        run: |
+          python tools/proxy_alternative_model_smoke.py --operation run \
+            --preflight "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
+            --watch "$RUNNER_TEMP/slimekeepers-watch-report.json" \
+            --model "$ALTERNATIVE_SMOKE_MODEL" \
+            --output "$RUNNER_TEMP/slimekeepers-alternative-smoke.json"
+
       - name: Arquivar relatorios seguros de cada verificacao
         if: always()
         uses: actions/upload-artifact@v4
@@ -210,6 +248,7 @@ jobs:
             ${{ runner.temp }}/slimekeepers-watch-quota.json
             ${{ runner.temp }}/slimekeepers-watch-report.json
             ${{ runner.temp }}/slimekeepers-watch-smoke.json
+            ${{ runner.temp }}/slimekeepers-alternative-smoke.json
           retention-days: 14
           if-no-files-found: ignore
 
