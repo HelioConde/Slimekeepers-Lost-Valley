@@ -24,6 +24,9 @@ on:
   schedule:
     # 09h35 e 18h35, horario America/Sao_Paulo (UTC-3).
     - cron: '35 12,21 * * *'
+  # Acionamento pontual via issue do proprietario; o rotulo so e aplicado com permissao de escrita.
+  issues:
+    types: [labeled]
   pull_request:
     paths:
       - 'tools/slimekeepers_dev_agent.py'
@@ -77,7 +80,7 @@ jobs:
 
   develop-one-task:
     # Cron ligado a pedido do criador; variável PAUSED para interromper.
-    if: (github.event_name == 'schedule' && github.ref == 'refs/heads/main' && vars.SLIMEKEEPERS_AUTO_DEV_PAUSED != 'true') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK')
+    if: (github.event_name == 'schedule' && github.ref == 'refs/heads/main' && vars.SLIMEKEEPERS_AUTO_DEV_PAUSED != 'true') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK') || (github.event_name == 'issues' && github.ref == 'refs/heads/main' && github.event.action == 'labeled' && github.event.label.name == 'slimekeepers-run-one-task' && github.event.issue.user.login == github.repository_owner && vars.SLIMEKEEPERS_AUTO_DEV_PAUSED != 'true')
     needs: unit-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -95,7 +98,7 @@ jobs:
       CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
       CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
       CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
-      REQUEST_TASK_ID: ${{ github.event_name == 'schedule' && 'auto' || inputs.task_id }}
+      REQUEST_TASK_ID: ${{ (github.event_name == 'schedule' || github.event_name == 'issues') && 'auto' || inputs.task_id }}
       AI_ENABLED: 'false'
       PAID_CALLS_ENABLED: 'false'
       CODEX_PROXY_TEXT_AUTHORIZED: 'false'
