@@ -162,6 +162,13 @@ jobs:
             --output "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
             --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
 
+      - name: Testar individualmente GET dos oito modelos de texto alternativos
+        shell: bash
+        run: |
+          python tools/proxy_alternative_model_smoke.py --operation inspect \
+            --preflight "$RUNNER_TEMP/slimekeepers-watch-preflight.json" \
+            --output "$RUNNER_TEMP/slimekeepers-alternative-catalog.json"
+
       - name: Consultar uso real da conta por GET
         shell: bash
         run: |
@@ -249,6 +256,7 @@ jobs:
             ${{ runner.temp }}/slimekeepers-watch-report.json
             ${{ runner.temp }}/slimekeepers-watch-smoke.json
             ${{ runner.temp }}/slimekeepers-alternative-smoke.json
+            ${{ runner.temp }}/slimekeepers-alternative-catalog.json
           retention-days: 14
           if-no-files-found: ignore
 
