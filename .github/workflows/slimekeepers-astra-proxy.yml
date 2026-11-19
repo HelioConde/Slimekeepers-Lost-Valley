@@ -7,6 +7,8 @@ on:
       - "tools/proxy_preflight.py"
       - "tools/slimekeepers_codex_proxy.py"
       - "tests/test_slimekeepers_codex_proxy.py"
+      - "tests/test_proxy_quota_diagnostics.py"
+      - "tools/proxy_quota_diagnostics.py"
       - ".github/workflows/slimekeepers-astra-proxy.yml"
   push:
     branches: [main]
@@ -18,11 +20,11 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: "verify = somente GET; ping = uma chamada de texto Astra"
+        description: "verify = modelo; diagnose = cota e modelos por GET; ping = uma chamada de texto"
         type: choice
         required: true
         default: verify
-        options: [verify, ping]
+        options: [verify, diagnose, ping]
       confirmation:
         description: "Para ping, escreva AUTHORIZE_ONE_ASTRA_TEXT_CALL"
         type: string
@@ -48,10 +50,16 @@ jobs:
         with:
           python-version: '3.12'
       - name: Testes locais, sem rede nem geracao
-        run: python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+          python -m unittest discover -s tests -p 'test_proxy_quota_diagnostics.py' -v
 
   manual-proxy:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      ((github.event_name == 'workflow_dispatch') ||
+       (github.event_name == 'push' &&
+        startsWith(github.event.head_commit.message, 'ci(proxy) quota diagnostic run one')))
     needs: offline-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -62,8 +70,8 @@ jobs:
       CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
       CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
       CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
-      REQUEST_OPERATION: ${{ inputs.operation }}
-      REQUEST_CONFIRMATION: ${{ inputs.confirmation }}
+      REQUEST_OPERATION: ${{ github.event_name == 'push' && 'diagnose' || inputs.operation }}
+      REQUEST_CONFIRMATION: ${{ github.event_name == 'push' && 'NO_INFERENCE' || inputs.confirmation }}
       AI_ENABLED: 'false'
       PAID_CALLS_ENABLED: 'false'
       CODEX_PROXY_TEXT_AUTHORIZED: 'false'
@@ -79,7 +87,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$REQUEST_OPERATION" != verify && "$REQUEST_OPERATION" != ping ]]; then
+          if [[ "$REQUEST_OPERATION" != verify && "$REQUEST_OPERATION" != diagnose && "$REQUEST_OPERATION" != ping ]]; then
             echo "::error::Operacao nao permitida."
             exit 2
           fi
@@ -168,6 +176,13 @@ jobs:
             --output "$RUNNER_TEMP/slimekeepers-proxy-preflight.json" \
             --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
 
+      - name: Diagnosticar cota e disponibilidade sem inferencia
+        if: env.REQUEST_OPERATION == 'diagnose'
+        shell: bash
+        run: |
+          python tools/proxy_quota_diagnostics.py \
+            --live-usage --output "$RUNNER_TEMP/slimekeepers-quota-diagnostic.json"
+
       - name: Uma unica chamada Astra, com autorizacao manual
         if: inputs.operation == 'ping'
         env:
@@ -188,6 +203,7 @@ jobs:
           path: |
             ${{ runner.temp }}/slimekeepers-proxy-preflight.json
             ${{ runner.temp }}/slimekeepers-astra-ping.json
+            ${{ runner.temp }}/slimekeepers-quota-diagnostic.json
           retention-days: 7
           if-no-files-found: error
 
