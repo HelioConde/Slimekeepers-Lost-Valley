@@ -23,6 +23,7 @@ on:
       - 'tools/test_region_travel.gd'
       - 'tools/test_forest_v2.gd'
       - 'tools/test_habitats.gd'
+      - 'tools/test_forest_foraging.gd'
       - 'project.godot'
       - '.github/workflows/slimekeepers-godot-gameplay.yml'
   workflow_dispatch:
