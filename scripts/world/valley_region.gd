@@ -3,6 +3,8 @@ const Valley = preload("res://scripts/world/valley_layout.gd")
 const Travel = preload("res://scripts/world/region_travel.gd")
 const Living = preload("res://scripts/world/living_region.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
+const GARDEN_BED := preload("res://scripts/world/valley_garden_bed.gd")
+const BAG := preload("res://scripts/systems/forest_bag.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
@@ -10,6 +12,7 @@ var elapsed := 0.0
 var reduce_motion := false
 var found_zones: Dictionary = {}
 var bag_hud: Node
+var garden_beds: Array[Node2D] = []
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -41,6 +44,59 @@ func _ready() -> void:
 	var art := preload("res://scripts/world/map_art_enrichment.gd").new()
 	art.region_kind = "valley"
 	add_child(art)
+	_spawn_starter_garden()
+
+func _spawn_starter_garden() -> void:
+	var garden := Node2D.new()
+	garden.name = "StarterGarden"
+	add_child(garden)
+	for plot in [
+		{"id": "norte", "at": Vector2(1440, 560)},
+		{"id": "sul", "at": Vector2(1390, 625)},
+	]:
+		var bed := GARDEN_BED.new()
+		bed.configure(str(plot["id"]), plot["at"])
+		garden.add_child(bed)
+		garden_beds.append(bed)
+
+func _nearest_garden_bed() -> Node2D:
+	var result: Node2D = null
+	var best_distance := 72.0
+	for bed in garden_beds:
+		if not is_instance_valid(bed):
+			continue
+		var distance := player.global_position.distance_to(bed.global_position)
+		if distance < best_distance:
+			best_distance = distance
+			result = bed
+	return result
+
+func _handle_garden_interaction() -> bool:
+	var bed := _nearest_garden_bed()
+	if bed == null:
+		return false
+	var state: String = str(bed.call("phase"))
+	match state:
+		"empty":
+			hud_hint.text = "[E] Plantar uma semente no canteiro" if BAG.seeds(get_tree()) > 0 else "Canteiro vazio · encontre sementes na floresta"
+		"growing":
+			hud_hint.text = "Cultivo crescendo · faltam %d minutos do jogo" % int(bed.call("remaining_minutes"))
+		"ready":
+			hud_hint.text = "[E] Colher folhas frescas"
+		"harvested":
+			hud_hint.text = "Canteiro colhido nesta partida"
+	if Input.is_action_just_pressed("interact"):
+		var action: String = str(bed.call("interact"))
+		match action:
+			"planted":
+				bag_hud.call("refresh")
+				_notify("Uma semente foi plantada. Volte quando crescer.")
+			"collected":
+				bag_hud.call("refresh")
+				_notify("Folhas frescas guardadas na bolsa!")
+			"needs_seed":
+				_notify("A bolsa esta vazia. Recolha sementes com o Brotinho.")
+	return true
 
 func _setup_living_valley() -> void:
 	var flowers: Array[Vector2] = []
@@ -105,22 +161,23 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("interact"):
 			_notify("O caminho segue pela ilha. Uma nova região chegará em breve.")
 	else:
-		var closest := _closest_slime()
-		if closest != null:
-			hud_hint.text = "[E] Fazer amizade com "+closest.display_name() if not closest.befriended else "[E] Cumprimentar "+closest.display_name()
-			if Input.is_action_just_pressed("interact"):
-				closest.make_friend()
-				_update_living_goal()
-				_notify("Bolhinha salta e espalha pequenas gotas de alegria.")
-		else:
-			for marker: Marker2D in $PointsOfInterest.get_children():
-				if player.position.distance_to(marker.position)<90:
-					hud_hint.text = "[E] " + str(marker.get_meta("label"))
-					if Input.is_action_just_pressed("interact"):
-						_notify(marker.get_meta("description"))
-						found_zones[marker.name] = true
-						_update_living_goal()
-					break
+		if not _handle_garden_interaction():
+			var closest := _closest_slime()
+			if closest != null:
+				hud_hint.text = "[E] Fazer amizade com "+closest.display_name() if not closest.befriended else "[E] Cumprimentar "+closest.display_name()
+				if Input.is_action_just_pressed("interact"):
+					closest.make_friend()
+					_update_living_goal()
+					_notify("Bolhinha salta e espalha pequenas gotas de alegria.")
+			else:
+				for marker: Marker2D in $PointsOfInterest.get_children():
+					if player.position.distance_to(marker.position)<90:
+						hud_hint.text = "[E] " + str(marker.get_meta("label"))
+						if Input.is_action_just_pressed("interact"):
+							_notify(marker.get_meta("description"))
+							found_zones[marker.name] = true
+							_update_living_goal()
+						break
 	if not reduce_motion:
 		for water: Polygon2D in $Water.get_children():
 			if water.material is ShaderMaterial:

@@ -6,7 +6,7 @@
 
 ## Identidade provisória
 
-Um jogo 2D em pixel art, com exploração top-down, uma protagonista com uma bolsa mágica herdada da mãe e criaturas slime com diferentes personalidades e funções. Esta formulação é um ponto de partida baseado nos assets, e deve ser confirmada no documento de visão do jogo.
+Um jogo 2D em pixel art, com exploração top-down, um protagonista humano perdido numa floresta, coleta, cultivo e criaturas slime com diferentes personalidades e funções. Não definir gênero do protagonista nem a origem de uma bolsa mágica: o cânone vigente está em `docs/narrativa/BIBLIA_NARRATIVA.md`.
 
 ## Etapa 0 — base de trabalho (v0.1)
 
@@ -25,6 +25,7 @@ Um jogo 2D em pixel art, com exploração top-down, uma protagonista com uma bol
 - [ ] Definir o ciclo central: explorar → encontrar slime → vínculo → habilidade → melhorar vale
 - [ ] Sistema de diálogo e identidade dos slimes
 - [x] Um recurso coletável com inventário simples — sementes silvestres, bolsa de sessão e testes no Godot 4.7.2 (19/11/2026)
+- [x] Primeiro canteiro no Vale das Nascentes — 2 locais de plantio, crescimento por GameClock, folhas frescas e 42 testes nativos (19/11/2026)
 - [x] Limites de mapa e colisões reais na Clareira do Despertar
 - [x] Tela inicial funcional com opções e retorno pelo gameplay
 - [ ] Menu de pausa durante a exploração
@@ -42,8 +43,8 @@ Um jogo 2D em pixel art, com exploração top-down, uma protagonista com uma bol
 
 ## Etapa 2 — expansão controlada (v0.3)
 
-- [ ] Uso da bolsa mágica como inventário
-- [ ] Um slime ajuda na coleta ou agricultura
+- [x] Bolsa comum de sessão para sementes e folhas frescas (sem inventar bolsa mágica herdada)
+- [ ] Slime auxilia ativamente na coleta ou agricultura (Brotinho já permite aprender coleta, mas ainda não executa tarefas sozinho)
 - [ ] Uma missão narrativa curta com começo, meio e fim
 - [ ] Salvamento/carregamento local
 

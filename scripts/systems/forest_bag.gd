@@ -1,6 +1,7 @@
 extends RefCounted
 ## Inventario simples, somente na sessao: sem poderes magicos nem save em disco.
 const ITEM_ID := "sementes_silvestres"
+const LEAVES_ID := "folhas_frescas"
 const INVENTORY_KEY := "forest_bag_items"
 const PATCHES_KEY := "forest_seed_patches_collected"
 const FRIENDS_KEY := "forest_slime_friends"
@@ -8,6 +9,23 @@ const FRIENDS_KEY := "forest_slime_friends"
 static func seeds(tree: SceneTree) -> int:
 	var bag: Dictionary = tree.get_meta(INVENTORY_KEY, {})
 	return maxi(0, int(bag.get(ITEM_ID, 0)))
+
+static func leaves(tree: SceneTree) -> int:
+	var bag: Dictionary = tree.get_meta(INVENTORY_KEY, {})
+	return maxi(0, int(bag.get(LEAVES_ID, 0)))
+
+static func spend_seed(tree: SceneTree) -> bool:
+	if seeds(tree) <= 0:
+		return false
+	var bag: Dictionary = tree.get_meta(INVENTORY_KEY, {}).duplicate()
+	bag[ITEM_ID] = seeds(tree) - 1
+	tree.set_meta(INVENTORY_KEY, bag)
+	return true
+
+static func add_leaves(tree: SceneTree) -> void:
+	var bag: Dictionary = tree.get_meta(INVENTORY_KEY, {}).duplicate()
+	bag[LEAVES_ID] = leaves(tree) + 1
+	tree.set_meta(INVENTORY_KEY, bag)
 
 static func has_brotinho_friend(tree: SceneTree) -> bool:
 	var friends: Dictionary = tree.get_meta(FRIENDS_KEY, {})
