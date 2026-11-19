@@ -5,6 +5,7 @@ const GARDEN := preload("res://scripts/systems/valley_starter_garden.gd")
 const VALLEY_LAYOUT := preload("res://scripts/world/valley_layout.gd")
 const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
 const VALLEY := "res://scenes/regions/ValeDasNascentes.tscn"
+var clock
 var checks := 0
 var failures: Array[String] = []
 
@@ -47,10 +48,11 @@ func _travel_to_forest() -> void:
 	await _press_e()
 
 func _run() -> void:
-	GameClock.reset_new_game()
+	clock = root.get_node("GameClock")
+	clock.reset_new_game()
 	_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "A bolsa comeca sem sementes e folhas")
-	_check(not GARDEN.plant(self, GameClock, "norte"), "Nao planta sem sementes")
-	_check(not GARDEN.plant(self, GameClock, "invalido"), "Canteiro desconhecido nao consome sementes")
+	_check(not GARDEN.plant(self, clock, "norte"), "Nao planta sem sementes")
+	_check(not GARDEN.plant(self, clock, "invalido"), "Canteiro desconhecido nao consome sementes")
 	var forest := load(FOREST).instantiate() as Node2D
 	root.add_child(forest)
 	current_scene = forest
@@ -98,21 +100,21 @@ func _run() -> void:
 	await _settle()
 	_check(current_scene.hud_hint.text.contains("Plantar"), "Interface oferece plantar com E")
 	await _press_e()
-	_check(GARDEN.phase(self, GameClock, "norte") == "growing", "Semente plantada inicia crescimento")
+	_check(GARDEN.phase(self, clock, "norte") == "growing", "Semente plantada inicia crescimento")
 	_check(BAG.seeds(self) == 1, "Plantio consome exatamente uma semente")
 	_check(_bag_text(current_scene).contains("1/3"), "Bolsa atualiza imediatamente apos plantio")
 	await _press_e()
-	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, GameClock, "norte") == "growing",
+	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, clock, "norte") == "growing",
 		"Repetir E durante crescimento nao gasta outra semente")
-	GameClock.advance_minutes(60.0)
-	_check(GARDEN.phase(self, GameClock, "norte") == "growing", "Uma hora ainda nao amadurece o cultivo")
-	_check(GARDEN.minutes_remaining(self, GameClock, "norte") <= 60, "HUD pode consultar tempo restante")
+	clock.advance_minutes(60.0)
+	_check(GARDEN.phase(self, clock, "norte") == "growing", "Uma hora ainda nao amadurece o cultivo")
+	_check(GARDEN.minutes_remaining(self, clock, "norte") <= 60, "HUD pode consultar tempo restante")
 	await _travel_to_forest()
 	_check(current_scene.scene_file_path == FOREST, "Voltar a floresta preserva o canteiro")
-	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, GameClock, "norte") == "growing",
+	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, clock, "norte") == "growing",
 		"Sementes e crescimento preservados fora do Vale")
-	GameClock.advance_minutes(61.0)
-	_check(GARDEN.phase(self, GameClock, "norte") == "ready", "Cultivo amadurece mesmo fora do Vale")
+	clock.advance_minutes(61.0)
+	_check(GARDEN.phase(self, clock, "norte") == "ready", "Cultivo amadurece mesmo fora do Vale")
 	await _travel_to_valley()
 	_check(current_scene.scene_file_path == VALLEY, "Volta ao Vale para a colheita")
 	north = current_scene.garden_beds[0]
@@ -121,22 +123,22 @@ func _run() -> void:
 	await _settle()
 	_check(current_scene.hud_hint.text.contains("Colher"), "HUD oferece colher o produto")
 	await _press_e()
-	_check(GARDEN.phase(self, GameClock, "norte") == "harvested", "Colheita atualiza canteiro")
+	_check(GARDEN.phase(self, clock, "norte") == "harvested", "Colheita atualiza canteiro")
 	_check(BAG.leaves(self) == 1 and BAG.seeds(self) == 1, "Folhas frescas entram na bolsa sem gastar mais sementes")
 	_check(_bag_text(current_scene).contains("folhas frescas 1"), "HUD mostra a colheita")
 	await _press_e()
-	_check(BAG.leaves(self) == 1 and not GARDEN.harvest(self, GameClock, "norte"),
+	_check(BAG.leaves(self) == 1 and not GARDEN.harvest(self, clock, "norte"),
 		"Mesma plantacao nao pode ser colhida duas vezes")
 	var south: Node2D = current_scene.garden_beds[1]
 	current_scene.player.global_position = south.global_position
 	await _settle()
 	await _press_e()
-	_check(BAG.seeds(self) == 0 and GARDEN.phase(self, GameClock, "sul") == "growing",
+	_check(BAG.seeds(self) == 0 and GARDEN.phase(self, clock, "sul") == "growing",
 		"Segundo canteiro consome a ultima semente")
-	_check(not GARDEN.plant(self, GameClock, "norte") and BAG.seeds(self) == 0,
+	_check(not GARDEN.plant(self, clock, "norte") and BAG.seeds(self) == 0,
 		"Nao reutiliza canteiro antigo sem sementes")
-	GameClock.advance_minutes(121.0)
-	_check(GARDEN.phase(self, GameClock, "sul") == "ready", "Segundo cultivo cresce pelo GameClock")
+	clock.advance_minutes(121.0)
+	_check(GARDEN.phase(self, clock, "sul") == "ready", "Segundo cultivo cresce pelo clock")
 	await _press_e()
 	_check(BAG.leaves(self) == 2 and BAG.seeds(self) == 0, "Bolsa recebe segunda colheita")
 	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza segunda colheita")
@@ -149,9 +151,9 @@ func _run() -> void:
 		await _settle()
 		_check(current_scene.scene_file_path == FOREST, "Novo Jogo retorna a floresta")
 		_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "Novo Jogo limpa sementes e folhas")
-		_check(GARDEN.phase(self, GameClock, "norte") == "empty" and
-			GARDEN.phase(self, GameClock, "sul") == "empty", "Novo Jogo reinicia ambos os canteiros")
-		_check(GameClock.day_number == 1 and GameClock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
+		_check(GARDEN.phase(self, clock, "norte") == "empty" and
+			GARDEN.phase(self, clock, "sul") == "empty", "Novo Jogo reinicia ambos os canteiros")
+		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
 	_finish()
 
 func _change_to_menu() -> void:
