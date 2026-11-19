@@ -52,7 +52,7 @@ func _spawn_starter_garden() -> void:
 	add_child(garden)
 	for plot in [
 		{"id": "norte", "at": Vector2(1440, 560)},
-		{"id": "sul", "at": Vector2(1530, 590)},
+		{"id": "sul", "at": Vector2(1390, 625)},
 	]:
 		var bed := GARDEN_BED.new()
 		bed.configure(str(plot["id"]), plot["at"])
