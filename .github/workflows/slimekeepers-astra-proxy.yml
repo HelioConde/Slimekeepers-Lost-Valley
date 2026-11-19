@@ -1,0 +1,199 @@
+name: Slimekeepers - Codex Proxy Astra 6.2
+
+# Verificacoes offline no PR/push. Acesso a Secrets somente por despacho manual.
+on:
+  pull_request:
+    paths:
+      - "tools/proxy_preflight.py"
+      - "tools/slimekeepers_codex_proxy.py"
+      - "tests/test_slimekeepers_codex_proxy.py"
+      - ".github/workflows/slimekeepers-astra-proxy.yml"
+  push:
+    branches: [main]
+    paths:
+      - "tools/proxy_preflight.py"
+      - "tools/slimekeepers_codex_proxy.py"
+      - "tests/test_slimekeepers_codex_proxy.py"
+      - ".github/workflows/slimekeepers-astra-proxy.yml"
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "verify = somente GET; ping = uma chamada de texto Astra"
+        type: choice
+        required: true
+        default: verify
+        options: [verify, ping]
+      confirmation:
+        description: "Para ping, escreva AUTHORIZE_ONE_ASTRA_TEXT_CALL"
+        type: string
+        required: true
+        default: NO_INFERENCE
+
+permissions:
+  contents: read
+
+concurrency:
+  group: slimekeepers-astra-proxy-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  offline-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testes locais, sem rede nem geracao
+        run: python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+
+  manual-proxy:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: offline-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    env:
+      CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
+      CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
+      CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
+      REQUEST_OPERATION: ${{ inputs.operation }}
+      REQUEST_CONFIRMATION: ${{ inputs.confirmation }}
+      AI_ENABLED: 'false'
+      PAID_CALLS_ENABLED: 'false'
+      CODEX_PROXY_TEXT_AUTHORIZED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Checar Secrets e autorizacao antes de iniciar proxy
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$REQUEST_OPERATION" != verify && "$REQUEST_OPERATION" != ping ]]; then
+            echo "::error::Operacao nao permitida."
+            exit 2
+          fi
+          if [[ "$REQUEST_OPERATION" == ping ]]; then
+            if [[ "$REQUEST_CONFIRMATION" != AUTHORIZE_ONE_ASTRA_TEXT_CALL || "$GITHUB_RUN_ATTEMPT" != 1 ]]; then
+              echo "::error::Ping exige autorizacao explicita e primeira tentativa do workflow."
+              exit 2
+            fi
+          elif [[ "$REQUEST_CONFIRMATION" != NO_INFERENCE ]]; then
+            echo "::error::Verificacao GET nao exige permissao para inferencia."
+            exit 2
+          fi
+          if [[ -z "$CODEX_PROXY_API_KEY" ]]; then
+            echo "::error::Configure CODEX_PROXY_API_KEY no Secrets deste repositorio."
+            exit 2
+          fi
+          if [[ -n "$CODEX_PROXY_BASE_URL" ]]; then
+            echo 'PROXY_MODE=persistent' >> "$GITHUB_ENV"
+            echo 'Proxy HTTPS externo configurado, URL oculta.'
+          elif [[ -n "$CODEX_PROXY_ACCOUNTS_JSON" ]]; then
+            echo 'PROXY_MODE=ephemeral' >> "$GITHUB_ENV"
+            echo 'CODEX_PROXY_BASE_URL=http://127.0.0.1:18080' >> "$GITHUB_ENV"
+            echo 'Proxy efemero selecionado.'
+          else
+            echo "::error::Configure CODEX_PROXY_BASE_URL (HTTPS) ou CODEX_PROXY_ACCOUNTS_JSON."
+            exit 2
+          fi
+
+      - name: Montar estado OAuth apenas no runner efemero
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/slimekeepers-proxy-state"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          try:
+              state = json.loads(os.environ["CODEX_PROXY_ACCOUNTS_JSON"])
+              records = state.get("records") if isinstance(state, dict) else None
+              if not isinstance(records, list) or not records:
+                  raise ValueError("empty snapshot")
+              if not all(isinstance(r, dict) and isinstance(r.get("token"), dict) for r in records):
+                  raise ValueError("unexpected snapshot")
+              target = Path(os.environ["RUNNER_TEMP"]) / "slimekeepers-proxy-state" / "accounts.json"
+              target.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+              target.chmod(0o600)
+              print("Snapshot temporario validado; nenhum segredo exibido.")
+          except (ValueError, TypeError, KeyError):
+              raise SystemExit("Snapshot privado invalido; conexao bloqueada.")
+          PY
+
+      - name: Iniciar imagem fixa do proxy VideoForge via GHCR
+        if: env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin >/dev/null
+          docker pull ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1
+          docker run -d --name slimekeepers-codex-proxy --user "$(id -u):$(id -g)" \
+            --read-only --tmpfs /tmp:rw,nosuid,size=32m \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -p 127.0.0.1:18080:8080 \
+            -e PROXY_API_KEY="$CODEX_PROXY_API_KEY" \
+            -e DATA_DIR=/app/data -e DEBUG_LOG_PAYLOADS=false \
+            -v "$RUNNER_TEMP/slimekeepers-proxy-state:/app/data:rw" \
+            ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1 >/dev/null
+          for i in {1..30}; do
+            if curl --noproxy '*' -fsS --max-time 2 http://127.0.0.1:18080/health/live >/dev/null; then
+              echo "Proxy efemero pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Proxy efemero nao iniciou."
+          exit 2
+
+      - name: Conferir autenticacao e disponibilidade do modelo (GET apenas)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/proxy_preflight.py \
+            --output "$RUNNER_TEMP/slimekeepers-proxy-preflight.json" \
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra
+
+      - name: Uma unica chamada Astra, com autorizacao manual
+        if: inputs.operation == 'ping'
+        env:
+          AI_ENABLED: 'true'
+          PAID_CALLS_ENABLED: 'true'
+          CODEX_PROXY_TEXT_AUTHORIZED: 'true'
+        shell: bash
+        run: |
+          python tools/slimekeepers_codex_proxy.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-proxy-preflight.json" \
+            --output "$RUNNER_TEMP/slimekeepers-astra-ping.json"
+
+      - name: Publicar apenas evidencia tecnica saneada
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-astra-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/slimekeepers-proxy-preflight.json
+            ${{ runner.temp }}/slimekeepers-astra-ping.json
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Desligar container e apagar sessao temporaria
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f slimekeepers-codex-proxy >/dev/null 2>&1 || true
+          rm -rf "$RUNNER_TEMP/slimekeepers-proxy-state"
