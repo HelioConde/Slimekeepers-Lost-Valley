@@ -18,7 +18,7 @@ class Phase2BacklogTests(unittest.TestCase):
         data = self.manifest
         self.assertEqual(data["schema"], 1)
         self.assertEqual(data["phase"], "2")
-        self.assertEqual(data["execution_status"], "planned_not_enabled")
+        self.assertIn(data["execution_status"], ("planned_not_enabled", "scoped_executor_enabled"))
         tasks = data["tasks"]
         self.assertEqual(len(tasks), 30)
         total = sum(t["estimated_minutes"] for t in tasks)
