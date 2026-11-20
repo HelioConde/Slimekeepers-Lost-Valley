@@ -48,4 +48,12 @@ O desenvolvimento automatico, por seguranca, cria componentes de regras e testes
 
 A fila inicial de 9 módulos foi concluída. O novo planejamento de **30 tarefas e 600 minutos estimados** está em [`automation/phase2_10h_queue.json`](../automation/phase2_10h_queue.json), detalhado em [`FASE2_SPRINT_10H.md`](FASE2_SPRINT_10H.md) e associado à [Issue #39](https://github.com/HelioConde/Slimekeepers-Lost-Valley/issues/39).
 
-**Atenção:** o arquivo novo **ainda não é lido pelo executor** e não libera edição automática de scripts ou cenas existentes. Primeiro são necessários guard de patch e CI independentes, com escopos estritos por tarefa. Manter os agendamentos atuais até o novo executor ser validado. A meta de dez horas é **estimativa de esforço, não tempo de execução garantido**; a programação atual de duas rodadas por dia não consome esta fila automaticamente.
+**Atualização (PR #42):** o executor específico da Fase 2 lê a fila nova, valida dependências e usa patch literal restrito e QA sem segredos. O agendamento anterior continua válido somente para a fila original. A Fase 2 é configurada para tentativas ~a cada 20 minutos, sujeitas a quota, branch checkpoint e revisão por PR. A meta de dez horas continua uma estimativa, não execução ininterrupta garantida.
+
+## Atualização: executor fase 2 controlado (PR #42)
+
+O workflow [`slimekeepers-phase2.yml`](../.github/workflows/slimekeepers-phase2.yml) agora executa **uma tarefa da Fase 2 por rodada** quando a quota permitir. Escolhe tarefas por dependências realmente integradas à `main`, reserva `p2/<id>` antes de qualquer POST, usa `gpt-6.2-astra` (fallback somente pelo catálogo) e **não repete uma inferência ambígua**. O trabalho ocorre em `docs/phase2/` (auditoria) ou em pequenos patches com substituição literal, no máximo dois scripts/cenas reais + suite GdUnit4.
+
+Um segundo runner **sem credenciais** confere base SHA, diff, escopo, Godot 4.7.2, GdUnit4 e regressões. O repositório ainda impede que `GITHUB_TOKEN` crie Pull Requests; a branch e os testes são preservados e uma PR pode ser aberta pela integração GitHub do ChatGPT. Por segurança **não há merge automático de cenas/scripts nesta Fase 2**. A automação não avança dependências até o merge.
+
+As tarefas `p2-scoped-change-guard` e `p2-native-ci-guard` estão concluídas pela própria infraestrutura da PR #42. As tarefas de geração PixelLab permanecem intencionalmente bloqueadas até existir controle real de créditos, deduplicação e QA visual. O cron tenta a cada ~20 minutos, mas a fila de **600 minutos estimados** não tem conclusão garantida em 10 horas corridas.
