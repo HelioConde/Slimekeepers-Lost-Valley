@@ -7,7 +7,7 @@
   "estimated_total_minutes": 600,
   "planning_assumption": "Estimativas de esforço de implementação, revisão e QA; não são garantia de duração real nem equivalem a tempo de execução ininterrupta do proxy.",
   "execution_status": "scoped_executor_enabled",
-  "execution_note": "A automação independente da Fase 2 continua ativa para as tarefas pendentes, com preflight de quota e checkpoints. Tarefas que foram concluídas manualmente na main são reconhecidas por status=completed e evidence de PR revisada, evitando reinferência e sobrescrita. O cron não garante duração de 10h corridas. A produção visual paga PixelLab continua bloqueada sem produtor controlado e revisão.",
+  "execution_note": "Nao refazer tarefas manuais com evidence de PR integrada; manter gate de cota para proxy. O esquema V1 de snapshot nao equivale a salvar/continuar partidas; a restauracao real ainda depende de QA. PixelLab permanece bloqueado sem produtor controlado.",
   "rules": [
     "Uma tarefa pequena por PR e uma inferência por tentativa sem reenvios cegos",
     "Nunca sobrescrever assets existentes nem alterar a Bíblia Narrativa automaticamente",
@@ -465,7 +465,7 @@
       "stage": "04",
       "title": "Ligar metas de coleta, plantio e preparo ao estado da sessão",
       "estimated_minutes": 20,
-      "status": "planned",
+      "status": "completed",
       "execution_mode": "scoped_code_review",
       "candidate_paths": [
         "scripts/systems/session_progress_flags.gd",
@@ -478,14 +478,16 @@
       "acceptance": [
         "Objetivos registram eventos reais uma única vez e resetam no Novo Jogo",
         "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
-      ]
+      ],
+      "evidence": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/49",
+      "completed_via": "reviewed_manual_gameplay"
     },
     {
       "id": "p2-save-schema",
       "stage": "04",
       "title": "Especificar persistência segura da vertical slice",
       "estimated_minutes": 25,
-      "status": "planned",
+      "status": "completed",
       "execution_mode": "scoped_code_review",
       "candidate_paths": [
         "scripts/systems/forest_bag.gd",
@@ -497,7 +499,9 @@
       "acceptance": [
         "Formato versionado, sem gravar segredos ou serializar objetos executáveis; não ativar save sem teste de round-trip",
         "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
-      ]
+      ],
+      "evidence": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/50",
+      "completed_via": "reviewed_manual_gameplay"
     },
     {
       "id": "p2-session-reset-qa",
@@ -680,9 +684,9 @@
       ]
     }
   ],
-  "completed_task_count": 20,
-  "remaining_task_count": 10,
-  "remaining_estimated_minutes": 165,
+  "completed_task_count": 22,
+  "remaining_task_count": 8,
+  "remaining_estimated_minutes": 120,
   "last_manual_reconciliation": "2026-11-20",
-  "progress_description": "Concluídas as integrações manuais de bolsa, culinária e lista de receitas, alimento de slimes, colheitas e cálculo de crescimento; inventário de arte revisado por filenames/manifests, sem geração paga. Pendentes: flags/salvamento e progressão, revisão visual/PixelLab controlado, tutorial e release QA."
+  "progress_description": "22/30: PRs #49 (marcos reais da sessao) e #50 (snapshot JSON-safe versionado, sem save em disco ou botao Continuar) integradas e validadas no Godot. Ainda pendentes: QA de reinicio/restauracao real, gate de PixelLab e revisao de assets, tutorial, acessibilidade e regressao/release."
 }
