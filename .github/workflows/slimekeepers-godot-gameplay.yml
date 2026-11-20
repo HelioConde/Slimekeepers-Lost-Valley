@@ -119,24 +119,26 @@ jobs:
             exit 1
           fi
 
-      - name: Validar GdUnit4 da culinaria de sessao
+      - name: Validar GdUnit4 do inventario e da culinaria
         shell: bash
         run: |
           set -euo pipefail
-          log="$RUNNER_TEMP/test_valley_cooking_gdunit.log"
-          timeout 240s "$GODOT_BIN" --headless --path . \
-            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
-            -a res://tests/forest/test_valley_cooking.gd --ignoreHeadlessMode -c \
-            > "$log" 2>&1 || {
+          for suite in test_p2_bag_adapter test_valley_cooking; do
+            log="$RUNNER_TEMP/${suite}_gdunit.log"
+            timeout 240s "$GODOT_BIN" --headless --path . \
+              -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+              -a "res://tests/forest/${suite}.gd" --ignoreHeadlessMode -c \
+              > "$log" 2>&1 || {
+                tail -n 80 "$log"
+                exit 1
+              }
+            if grep -qE 'No test cases found|Script errors were detected|Abnormal exit|FAILED' "$log"; then
+              echo "::error::Suite GdUnit4 $suite falhou."
               tail -n 80 "$log"
-              exit 1
-            }
-          if grep -qE 'No test cases found|Script errors were detected|Abnormal exit|FAILED' "$log"; then
-            echo "::error::Suite GdUnit4 de culinaria falhou."
-            tail -n 80 "$log"
-            exit 2
-          fi
-          echo "PASS: teste de culinaria GdUnit4 executado."
+              exit 2
+            fi
+            echo "PASS: $suite GdUnit4 executado."
+          done
 
       - name: Guardar logs para revisao, inclusive em falhas
         if: always()
@@ -151,6 +153,7 @@ jobs:
             ${{ runner.temp }}/test_region_travel.log
             ${{ runner.temp }}/test_forest_foraging.log
             ${{ runner.temp }}/test_valley_garden.log
+            ${{ runner.temp }}/test_p2_bag_adapter_gdunit.log
             ${{ runner.temp }}/test_valley_cooking_gdunit.log
           retention-days: 14
           if-no-files-found: ignore
