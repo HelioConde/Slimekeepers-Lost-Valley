@@ -1,0 +1,643 @@
+{
+  "schema": 1,
+  "phase": "2",
+  "title": "Sprint de integração e gameplay — aproximadamente 10 horas",
+  "created_on": "2026-11-19",
+  "source_issue": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/issues/39",
+  "estimated_total_minutes": 600,
+  "planning_assumption": "Estimativas de esforço de implementação, revisão e QA; não são garantia de duração real nem equivalem a tempo de execução ininterrupta do proxy.",
+  "execution_status": "planned_not_enabled",
+  "execution_note": "A automação antiga lê somente automation/dev_tasks.json e cria arquivos novos em scripts/systems/ e tests/forest/. Esta fila da Fase 2 exige primeiro uma implementação de guard e runner de patches para arquivos existentes, com CI independente. Não executar esta fila através do fluxo antigo sem revisão e testes.",
+  "rules": [
+    "Uma tarefa pequena por PR e uma inferência por tentativa sem reenvios cegos",
+    "Nunca sobrescrever assets existentes nem alterar a Bíblia Narrativa automaticamente",
+    "Antes de editar código existente conferir SHA base e caminhos por tarefa",
+    "Quotas e modelo real GET antes do POST; gpt-6.2-astra principal e gpt-6-astra reserva quando justificado",
+    "PixelLab somente quando o inventário identificar ausência ou falha real de sprites; evitar geração duplicada e revisar qualidade",
+    "Executar testes Godot 4.7.2, GdUnit4, regressões nativas e QA visual quando aplicável"
+  ],
+  "stages": [
+    {
+      "id": "01",
+      "name": "Auditoria e automação segura",
+      "tasks": 5,
+      "estimated_minutes": 110
+    },
+    {
+      "id": "02",
+      "name": "Inventário e culinária jogável",
+      "tasks": 7,
+      "estimated_minutes": 160
+    },
+    {
+      "id": "03",
+      "name": "Alimentação e vínculo com slimes",
+      "tasks": 5,
+      "estimated_minutes": 110
+    },
+    {
+      "id": "04",
+      "name": "Cultivo, progresso e sessão",
+      "tasks": 5,
+      "estimated_minutes": 110
+    },
+    {
+      "id": "05",
+      "name": "PixelLab e consistência visual",
+      "tasks": 4,
+      "estimated_minutes": 70
+    },
+    {
+      "id": "06",
+      "name": "UX, regressão e entrega",
+      "tasks": 4,
+      "estimated_minutes": 40
+    }
+  ],
+  "tasks": [
+    {
+      "id": "p2-audit-runtime",
+      "stage": "01",
+      "title": "Mapear cenas reais, sinais, bolsa e ciclo de Novo Jogo",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scenes/regions/FlorestaDoDespertarV2.tscn",
+        "scenes/regions/ValeDasNascentes.tscn",
+        "scripts/world/region_travel.gd"
+      ],
+      "depends_on": [],
+      "acceptance": [
+        "Mapa de dependências reais com arquivos, sinais, contratos e riscos; sem alterar a Bíblia Narrativa",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-contract-inventory",
+      "stage": "01",
+      "title": "Especificar adaptador entre ForestBag e inventário Astra",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/forest_bag.gd",
+        "scripts/systems/collectible_inventory.gd"
+      ],
+      "depends_on": [
+        "p2-audit-runtime"
+      ],
+      "acceptance": [
+        "Contrato documentado de IDs, quantidades, inventário de sessão e sem dupla contagem",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-scoped-change-guard",
+      "stage": "01",
+      "title": "Criar guard de alterações existentes para Fase 2",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "tools/slimekeepers_autonomy_guard.py",
+        "tools/slimekeepers_dev_agent.py"
+      ],
+      "depends_on": [
+        "p2-audit-runtime"
+      ],
+      "acceptance": [
+        "Permitir alterações somente com SHA base, caminhos autorizados por tarefa e diff revisável; negar segredos, história e assets aprovados",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-native-ci-guard",
+      "stage": "01",
+      "title": "Validar patches de integração em runner sem segredos",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        ".github/workflows/slimekeepers-generated-qa.yml",
+        "tools/test_forest_foraging.gd"
+      ],
+      "depends_on": [
+        "p2-scoped-change-guard"
+      ],
+      "acceptance": [
+        "Exigir Godot 4.7.2, importação, regressões e sem execução de código gerado no runner com OAuth",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-playtest-baseline",
+      "stage": "01",
+      "title": "Registrar checkpoint reproduzível de gameplay",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "tools/test_forest_foraging.gd",
+        "tools/test_valley_garden.gd"
+      ],
+      "depends_on": [
+        "p2-audit-runtime"
+      ],
+      "acceptance": [
+        "Baseline documentada de coleta, cultivo, transição, Novo Jogo e diferenças para vertical slice",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-bag-adapter",
+      "stage": "02",
+      "title": "Integrar inventário de regras à bolsa real",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/forest_bag.gd",
+        "scripts/systems/collectible_inventory.gd"
+      ],
+      "depends_on": [
+        "p2-contract-inventory",
+        "p2-native-ci-guard",
+        "p2-playtest-baseline"
+      ],
+      "acceptance": [
+        "Coleta e colheita preservadas; recursos visíveis após trocar de região, sem saldo divergente",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-recipe-data",
+      "stage": "02",
+      "title": "Definir receita de teste autorizada por dados",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/cooking_recipe_book.gd",
+        "docs/narrativa/BIBLIA_NARRATIVA.md"
+      ],
+      "depends_on": [
+        "p2-audit-runtime"
+      ],
+      "acceptance": [
+        "Usar somente dados já existentes ou rótulo explicitamente provisório; não inventar cânone",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-cooking-offer-filter",
+      "stage": "02",
+      "title": "Exibir receitas fabricáveis a partir da bolsa",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/cooking_ingredient_rules.gd",
+        "scripts/systems/forest_bag.gd"
+      ],
+      "depends_on": [
+        "p2-bag-adapter",
+        "p2-recipe-data"
+      ],
+      "acceptance": [
+        "Lista distingue receitas disponíveis e ingredientes faltantes em tempo real",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-cooking-interact",
+      "stage": "02",
+      "title": "Conectar ponto de culinária à tecla E no Vale",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scenes/regions/ValeDasNascentes.tscn",
+        "scripts/world/valley_region.gd"
+      ],
+      "depends_on": [
+        "p2-native-ci-guard",
+        "p2-recipe-data"
+      ],
+      "acceptance": [
+        "Ponto utilizável sem bloquear coleta, canteiros, câmera ou viagens",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-cooking-consume",
+      "stage": "02",
+      "title": "Consumir ingredientes e registrar preparo atomicamente",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/forest_bag.gd",
+        "scripts/systems/cooking_serving_ledger.gd"
+      ],
+      "depends_on": [
+        "p2-bag-adapter",
+        "p2-cooking-interact"
+      ],
+      "acceptance": [
+        "Nenhum item some se a receita falhar; preparo válido debita exatamente a quantidade esperada",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-cooking-feedback",
+      "stage": "02",
+      "title": "Mostrar sucesso, falha e quantidades da culinária",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/world/valley_region.gd",
+        "scripts/systems/cooking_serving_ledger.gd"
+      ],
+      "depends_on": [
+        "p2-cooking-consume",
+        "p2-cooking-offer-filter"
+      ],
+      "acceptance": [
+        "Jogador entende qual receita preparou e por que uma operação falhou",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-cooking-e2e",
+      "stage": "02",
+      "title": "Testar ciclo completo de preparo jogável",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "tools/test_valley_garden.gd",
+        "tools/test_forest_foraging.gd"
+      ],
+      "depends_on": [
+        "p2-cooking-feedback"
+      ],
+      "acceptance": [
+        "Coletar, viajar, cozinhar, confirmar saldo, voltar ao mapa e iniciar Novo Jogo sem regressão",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-slime-offer-entry",
+      "stage": "03",
+      "title": "Adicionar ação contextual de oferecer comida a slime",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/world/forest_slime.gd",
+        "scripts/world/forest_region.gd"
+      ],
+      "depends_on": [
+        "p2-bag-adapter",
+        "p2-cooking-e2e"
+      ],
+      "acceptance": [
+        "Ação aparece somente perto do slime válido, preserva interação de amizade atual",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-slime-inventory-debit",
+      "stage": "03",
+      "title": "Consumir alimento somente se a oferta for aceita",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/forest_bag.gd",
+        "scripts/systems/slime_food_bond.gd"
+      ],
+      "depends_on": [
+        "p2-slime-offer-entry"
+      ],
+      "acceptance": [
+        "Oferta inválida não debita, oferta válida não duplica efeitos",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-slime-bond-reconciler",
+      "stage": "03",
+      "title": "Associar ID do slime ao registro de alimento sem duplicação",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/world/forest_slime.gd",
+        "scripts/systems/slime_food_bond.gd"
+      ],
+      "depends_on": [
+        "p2-slime-inventory-debit"
+      ],
+      "acceptance": [
+        "A primeira oferta fica no slime correto, com comportamento determinístico e sem inventar afinidade",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-slime-feedback",
+      "stage": "03",
+      "title": "Exibir resposta de oferta e estado conhecido do slime",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/world/forest_slime.gd",
+        "scripts/systems/slime_food_preferences.gd"
+      ],
+      "depends_on": [
+        "p2-slime-bond-reconciler"
+      ],
+      "acceptance": [
+        "Feedback respeita preferências ainda não definidas; sem inventar diálogos canônicos",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-slime-e2e",
+      "stage": "03",
+      "title": "Executar regressão de amizade e alimentação",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "tools/test_habitats.gd",
+        "tools/test_forest_foraging.gd"
+      ],
+      "depends_on": [
+        "p2-slime-feedback"
+      ],
+      "acceptance": [
+        "Três interações iniciais continuam funcionando; alimento não some em interação inválida",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-garden-ledger-hook",
+      "stage": "04",
+      "title": "Registrar colheita uma vez por canteiro e ciclo",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/valley_starter_garden.gd",
+        "scripts/systems/garden_harvest_ledger.gd"
+      ],
+      "depends_on": [
+        "p2-bag-adapter"
+      ],
+      "acceptance": [
+        "Colheita não duplica ao interagir rapidamente ou alternar mapas",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-day-cycle-guard",
+      "stage": "04",
+      "title": "Validar crescimento ao atravessar meia-noite do jogo",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/game_clock.gd",
+        "scripts/systems/crop_stage_calculator.gd"
+      ],
+      "depends_on": [
+        "p2-garden-ledger-hook"
+      ],
+      "acceptance": [
+        "Estágios de cultivo não retrocedem e o contador de tempo continua correto",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-session-flags-hook",
+      "stage": "04",
+      "title": "Ligar metas de coleta, plantio e preparo ao estado da sessão",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/session_progress_flags.gd",
+        "scripts/world/valley_region.gd"
+      ],
+      "depends_on": [
+        "p2-cooking-e2e",
+        "p2-garden-ledger-hook"
+      ],
+      "acceptance": [
+        "Objetivos registram eventos reais uma única vez e resetam no Novo Jogo",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-save-schema",
+      "stage": "04",
+      "title": "Especificar persistência segura da vertical slice",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/forest_bag.gd",
+        "scripts/systems/session_progress_flags.gd"
+      ],
+      "depends_on": [
+        "p2-session-flags-hook"
+      ],
+      "acceptance": [
+        "Formato versionado, sem gravar segredos ou serializar objetos executáveis; não ativar save sem teste de round-trip",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-session-reset-qa",
+      "stage": "04",
+      "title": "Testar regressão Novo Jogo, viagem e restauração",
+      "estimated_minutes": 25,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "tools/test_region_travel.gd",
+        "tools/test_valley_garden.gd"
+      ],
+      "depends_on": [
+        "p2-save-schema",
+        "p2-slime-e2e"
+      ],
+      "acceptance": [
+        "Bolsa, plantio, alimentação e culinária preservam/limpam o estado no momento correto",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-art-inventory",
+      "stage": "05",
+      "title": "Auditar sprites existentes e lacunas visuais reais",
+      "estimated_minutes": 15,
+      "status": "planned",
+      "execution_mode": "visual_audit",
+      "candidate_paths": [
+        "assets/slimes/bestiary",
+        "assets/slimes/living_v3",
+        "assets/world"
+      ],
+      "depends_on": [
+        "p2-audit-runtime"
+      ],
+      "acceptance": [
+        "Inventariar personagem/slimes, frames, direções e objetos; marcar reutilização antes de pedir imagens",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-pixellab-controlled-job",
+      "stage": "05",
+      "title": "Projetar fila controlada de geração PixelLab",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "controlled_visual_or_review",
+      "candidate_paths": [
+        "tools/pixellab_client.py",
+        "tools/pixellab_bridge.py"
+      ],
+      "depends_on": [
+        "p2-art-inventory"
+      ],
+      "acceptance": [
+        "Gate de token/créditos, idempotência por chave/job, sem POST duplicado nem exportação pública inadvertida",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-visual-preview",
+      "stage": "05",
+      "title": "Produzir evidência visual de sprites necessários",
+      "estimated_minutes": 20,
+      "status": "planned",
+      "execution_mode": "controlled_visual_or_review",
+      "candidate_paths": [
+        "docs/asset_review",
+        "assets/slimes"
+      ],
+      "depends_on": [
+        "p2-art-inventory",
+        "p2-pixellab-controlled-job"
+      ],
+      "acceptance": [
+        "Prévia com escala, transparência e alinhamento; somente gerar o que faltar após inventário",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-asset-import-qa",
+      "stage": "05",
+      "title": "Conferir sprites e animações integrados ao Godot",
+      "estimated_minutes": 15,
+      "status": "planned",
+      "execution_mode": "visual_audit",
+      "candidate_paths": [
+        "assets/slimes",
+        "scenes/regions/FlorestaDoDespertarV2.tscn"
+      ],
+      "depends_on": [
+        "p2-visual-preview"
+      ],
+      "acceptance": [
+        "Referências aprovadas preservadas; verificação de recortes, pivôs, quadros e nitidez",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-tutorial-guidance",
+      "stage": "06",
+      "title": "Adicionar orientação breve ao ciclo da culinária",
+      "estimated_minutes": 10,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "scripts/systems/session_progress_flags.gd",
+        "scenes/regions/ValeDasNascentes.tscn"
+      ],
+      "depends_on": [
+        "p2-session-flags-hook"
+      ],
+      "acceptance": [
+        "Objetivo contextual breve, sem spoilers, opcional e sem bloquear jogador",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-keyboard-feedback",
+      "stage": "06",
+      "title": "Verificar foco, tecla E, pausa e mensagens de erro",
+      "estimated_minutes": 10,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        "tools/test_menu.gd",
+        "tools/test_region_travel.gd"
+      ],
+      "depends_on": [
+        "p2-cooking-e2e",
+        "p2-slime-e2e"
+      ],
+      "acceptance": [
+        "Controles coerentes em cenas de exploração e na interação com o novo sistema",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-godot-regression",
+      "stage": "06",
+      "title": "Executar QA final de menu, floresta, Vale e módulos",
+      "estimated_minutes": 10,
+      "status": "planned",
+      "execution_mode": "scoped_code_review",
+      "candidate_paths": [
+        ".github/workflows/slimekeepers-godot-gameplay.yml",
+        "tools/test_valley_garden.gd"
+      ],
+      "depends_on": [
+        "p2-session-reset-qa",
+        "p2-asset-import-qa",
+        "p2-keyboard-feedback"
+      ],
+      "acceptance": [
+        "Todas as suites e GdUnit4 passam no commit final; registrar links de runs e artifacts",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    },
+    {
+      "id": "p2-review-release",
+      "stage": "06",
+      "title": "Publicar relatório de vertical slice e pendências",
+      "estimated_minutes": 10,
+      "status": "planned",
+      "execution_mode": "human_review",
+      "candidate_paths": [
+        "README.md",
+        "docs/PIXELLAB_INTEGRACAO.md"
+      ],
+      "depends_on": [
+        "p2-godot-regression",
+        "p2-tutorial-guidance"
+      ],
+      "acceptance": [
+        "Registrar o que está jogável, controles, evidências, imagens usadas e limitações, sem afirmar publicação de build não verificada",
+        "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
+      ]
+    }
+  ]
+}
