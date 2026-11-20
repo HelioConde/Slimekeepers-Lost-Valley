@@ -9,7 +9,7 @@ const LEDGER_KEY := "valley_cooking_ledger"
 
 static func _recipe_book() -> Variant:
 	var book = BOOK.new()
-	book.register_recipe({"id": RECIPE_ID, "ingredients": {BAG.LEAVES_ID: 1}})
+	book.register_recipe({"id": RECIPE_ID, "ingredients": {"folhas_frescas": 1}})
 	return book
 
 static func availability(tree: SceneTree) -> Dictionary:
