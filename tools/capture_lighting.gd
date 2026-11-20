@@ -3,7 +3,8 @@ extends SceneTree
 ##   godot --path . --rendering-driver opengl3 --script res://tools/capture_lighting.gd -- \
 ##     --scene=FlorestaDoDespertarV2 --out=C:/tmp/shots --tag=antes --times=9:00,12:00,18:30,22:00
 ## Opcional: --at=x,y (posição do jogador), --walk (faixa com o jogador andando),
-## --fps (mede tempo de quadro com vsync desligado, 300 quadros por horário).
+## --fps (mede tempo de quadro com vsync desligado, 300 quadros por horário),
+## --layers (mesma cena sem luzes locais, sem sombras e sem tom ambiente).
 
 var args := {}
 
@@ -45,6 +46,8 @@ func run() -> void:
 		var stamp := "%02d%02d" % [int(hm[0]), int(hm[1]) if hm.size() > 1 else 0]
 		var image: Image = await frame_image()
 		image.save_png("%s/%s_%s_%s.png" % [out, tag, scene, stamp])
+		if args.has("layers"):
+			await _capture_layers(region, "%s/%s_%s_%s" % [out, tag, scene, stamp])
 		if args.has("fps"):
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			for i in 30: await process_frame
@@ -75,3 +78,29 @@ func run() -> void:
 	region.queue_free()
 	await process_frame
 	quit(0)
+
+
+## Mesma imagem com uma camada desligada por vez, para achar a origem de cada mancha.
+func _capture_layers(region: Node2D, prefix: String) -> void:
+	var lighting := region.get_node("DayNightLighting") as CanvasModulate
+	var lights := lighting.get_node_or_null("AmbientLights") as Node2D
+	var shadows := lighting.get_node_or_null("DayShadows") as Node2D
+	var tint := lighting.color
+	var point_lights := region.find_children("*", "PointLight2D", true, false)
+	for layer in ["sem_luzes", "sem_sombras", "sem_ambiente"]:
+		match layer:
+			"sem_luzes":
+				for light in point_lights: light.enabled = false
+				if lights: lights.hide()
+			"sem_sombras":
+				if shadows: shadows.hide()
+			"sem_ambiente":
+				lighting.set_process(false)
+				lighting.color = Color.WHITE
+		var image: Image = await frame_image()
+		image.save_png("%s_%s.png" % [prefix, layer])
+		for light in point_lights: light.enabled = true
+		if lights: lights.show()
+		if shadows: shadows.show()
+		lighting.set_process(true)
+		lighting.color = tint
