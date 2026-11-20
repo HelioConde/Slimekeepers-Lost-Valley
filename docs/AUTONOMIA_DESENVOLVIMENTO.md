@@ -43,3 +43,9 @@ O desenvolvimento automatico, por seguranca, cria componentes de regras e testes
 - GdUnit/Gameplay reprovados: manter PR sem integrar e continuar pelas demais tarefas.
 - Permissao de criar PR ou merge bloqueada por configuracoes GitHub: nao contorna as restricoes; verificar permissoes de Actions (`contents:write`, `pull-requests:write`), protecoes de branch e configuracao do `GITHUB_TOKEN`.
 - Fila esgotada: encerra com status `no_unreserved_tasks`, sem inferencia.
+
+## Planejamento da Fase 2 — 10 horas
+
+A fila inicial de 9 módulos foi concluída. O novo planejamento de **30 tarefas e 600 minutos estimados** está em [`automation/phase2_10h_queue.json`](../automation/phase2_10h_queue.json), detalhado em [`FASE2_SPRINT_10H.md`](FASE2_SPRINT_10H.md) e associado à [Issue #39](https://github.com/HelioConde/Slimekeepers-Lost-Valley/issues/39).
+
+**Atenção:** o arquivo novo **ainda não é lido pelo executor** e não libera edição automática de scripts ou cenas existentes. Primeiro são necessários guard de patch e CI independentes, com escopos estritos por tarefa. Manter os agendamentos atuais até o novo executor ser validado. A meta de dez horas é **estimativa de esforço, não tempo de execução garantido**; a programação atual de duas rodadas por dia não consome esta fila automaticamente.
