@@ -18,7 +18,7 @@ func run() -> void:
 		var kind: String = shadows._kinds[id]
 		kinds[kind] = kinds.get(kind, 0) + 1
 		var foot: Vector2 = shadows.foot_for(sprite) if shadows.has_method("foot_for") else sprite.global_position
-		var base_y: float = (sprite.global_transform * Vector2(0, shadows.source_bottom(sprite))).y
+		var base_y: float = (sprite.global_transform * Vector2(0, shadows.ground_bottom(sprite))).y
 		var gap := base_y - foot.y
 		var near := foot.distance_to(center) < 700
 		if near or absf(gap) > 24:

@@ -31,7 +31,7 @@ func run():
 			var player = region.player
 			check(shadows.has_caster(player.sprite),"Player participates")
 			var transform = shadows.projection_for(player.sprite, player.global_position, morning.vector)
-			var base = Vector2(0, shadows.source_bottom(player.sprite))
+			var base = Vector2(0, shadows.ground_bottom(player.sprite))
 			check(absf((transform*base).y-player.global_position.y)<.01,"Projected feet touch ground anchor")
 			var animals = Sprite2D.new()
 			animals.name = "Ambient_shadow_probe"
@@ -45,7 +45,7 @@ func run():
 			var floating := 0
 			for id in shadows._casters:
 				var caster: Node2D = shadows._casters[id]
-				var base_y: float = (caster.global_transform * Vector2(0, shadows.source_bottom(caster))).y
+				var base_y: float = (caster.global_transform * Vector2(0, shadows.ground_bottom(caster))).y
 				if absf(base_y - shadows.foot_for(caster).y) > 8.0:
 					floating += 1
 					print("FLOATING %s gap=%.0f" % [region.get_path_to(caster), base_y - shadows.foot_for(caster).y])

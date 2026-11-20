@@ -71,7 +71,7 @@ func test_contact_strip_is_the_visual_base_of_the_silhouette() -> void:
 	var shadows: Node2D = parts[1]
 	var pine: Sprite2D = parts[2]
 	var strip: Rect2 = shadows.contact_strip(pine)
-	assert_float(strip.end.y).is_equal_approx(shadows.source_bottom(pine), 0.01)
+	assert_float(strip.end.y).is_equal_approx(shadows.ground_bottom(pine), 0.01)
 	var world_height := strip.size.y * pine.global_scale.y
 	assert_float(world_height).is_between(6.0, 18.0)
 
@@ -108,3 +108,32 @@ func test_loose_sprite_shadow_starts_at_visible_base_not_padding() -> void:
 	var base_y: float = (fern.global_transform * Vector2(0, shadows.source_bottom(fern))).y
 	assert_float(shadows.foot_for(fern).y).is_equal_approx(base_y, 0.01)
 	assert_float(base_y).is_less(fern.global_position.y)
+
+
+func test_running_shadow_keeps_one_ground_line_across_frames() -> void:
+	var parts := _rig()
+	var body := CharacterBody2D.new()
+	body.position = Vector2(600, 400)
+	(parts[0] as Node2D).add_child(body)
+	var sprite := AnimatedSprite2D.new()
+	sprite.position = Vector2(0, -34)
+	sprite.scale = Vector2(0.65, 0.65)
+	var frames := SpriteFrames.new()
+	frames.add_animation("run_north-east")
+	for i in 8:
+		frames.add_frame("run_north-east", load("res://assets/player/animations/Running/north-east/frame_%03d.png" % i))
+	sprite.sprite_frames = frames
+	sprite.animation = "run_north-east"
+	body.add_child(sprite)
+	await await_idle_frame()
+	var shadows: Node2D = parts[1]
+	var lines: Array[float] = []
+	var bottoms: Array[float] = []
+	for i in 8:
+		sprite.frame = i
+		lines.append(shadows.ground_bottom(sprite))
+		bottoms.append(shadows.source_bottom(sprite))
+	# A base de cada quadro varia (pés no ar), a linha do chão não.
+	assert_float(bottoms.max() - bottoms.min()).is_greater(5.0)
+	assert_float(lines.max() - lines.min()).is_equal(0.0)
+	assert_float(lines[0]).is_equal(bottoms.max())

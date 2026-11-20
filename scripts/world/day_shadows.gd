@@ -20,6 +20,7 @@ var _contact := {"vector": Vector2.ZERO, "opacity": 0.0}
 var _kinds: Dictionary = {}
 var _pending: Array[WeakRef] = []
 var _used_rects: Dictionary = {}
+var _ground_lines: Dictionary = {}
 var _profile := {"vector": Vector2.ZERO, "opacity": 0.0}
 var _region: Node2D
 var _old_canopy: CanvasItem
@@ -162,7 +163,7 @@ func contact_strip(sprite: Node2D) -> Rect2:
 	var texture := _texture_for(sprite)
 	if not texture: return Rect2()
 	var rect := _rect_for(sprite, texture)
-	var bottom := source_bottom(sprite)
+	var bottom := ground_bottom(sprite)
 	var scale_y := maxf(absf(sprite.global_scale.y), .001)
 	var visible_height := bottom - rect.position.y
 	var height := clampf(visible_height * scale_y * .18, CONTACT_MIN, CONTACT_MAX) / scale_y
@@ -204,12 +205,33 @@ func foot_for(sprite: Node2D) -> Vector2:
 	if parent is CharacterBody2D or (sprite.name == &"Sprite" and parent is Node2D): return parent.global_position
 	# Sprite solto: apoia na base visível (ignora padding transparente embaixo),
 	# senão a sombra nasce alguns pixels abaixo do objeto e parece desconectada.
-	return Vector2(sprite.global_position.x, (sprite.global_transform * Vector2(0, source_bottom(sprite))).y)
+	return Vector2(sprite.global_position.x, (sprite.global_transform * Vector2(0, ground_bottom(sprite))).y)
+
+## Linha do chão estável da animação: o pé mais baixo entre todos os quadros.
+## Usar a base de cada quadro fazia a sombra subir/descer até 7 px por quadro na
+## corrida (quadros com os dois pés no ar), fora de sincronia com o corpo.
+func ground_bottom(sprite: Node2D) -> float:
+	if not (sprite is AnimatedSprite2D and sprite.sprite_frames and sprite.sprite_frames.has_animation(sprite.animation)):
+		return source_bottom(sprite)
+	var frames: SpriteFrames = sprite.sprite_frames
+	var key := "%d:%s:%s" % [frames.get_instance_id(), sprite.animation, sprite.flip_v]
+	if not _ground_lines.has(key):
+		var lowest := -INF
+		for index in frames.get_frame_count(sprite.animation):
+			var texture := frames.get_frame_texture(sprite.animation, index)
+			if not texture: continue
+			var rect := _rect_for(sprite, texture)
+			var used_key := texture.get_instance_id()
+			if not _used_rects.has(used_key): _used_rects[used_key] = texture.get_image().get_used_rect()
+			var used: Rect2i = _used_rects[used_key]
+			lowest = maxf(lowest, rect.position.y + (texture.get_height()-used.position.y if sprite.flip_v else used.end.y))
+		_ground_lines[key] = lowest if is_finite(lowest) else source_bottom(sprite)
+	return _ground_lines[key]
 
 func projection_for(sprite: Node2D, foot: Vector2, direction: Vector2) -> Transform2D:
 	var source := sprite.global_transform
 	# Strip transparent bottom padding and hop height: the shadow remains on the ground.
-	var baseline := source * Vector2(0,source_bottom(sprite))
+	var baseline := source * Vector2(0,ground_bottom(sprite))
 	source.origin -= Vector2(foot.x,baseline.y)
 	var projection := Transform2D(Vector2.RIGHT,-direction,foot)
 	return projection * source
