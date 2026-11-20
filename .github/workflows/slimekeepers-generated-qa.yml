@@ -1,0 +1,145 @@
+name: Slimekeepers - QA independente para PRs Astra
+
+# Codigo da IA roda somente em runner sem segredos e com escopo restrito.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'scripts/systems/**'
+      - 'tests/forest/**'
+      - '.github/workflows/slimekeepers-generated-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-astra-pr:
+    if: startsWith(github.head_ref, 'ai/') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      GODOT_BINARY_NAME: Godot_v4.7.2-stable_linux.x86_64
+      GODOT_ARCHIVE_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+    steps:
+      - name: Checkout do commit proposto sem credenciais persistentes
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validar somente dois arquivos novos autorizados e selecionar suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          task_id="$(python - <<'PY'
+          import os, re
+          branch = os.environ["HEAD_BRANCH"]
+          if not re.fullmatch(r"ai/[a-z0-9]+(?:-[a-z0-9]+)*", branch):
+              raise SystemExit("Branch Astra fora do padrao autorizado")
+          print(branch.removeprefix("ai/"))
+          PY
+          )"
+          echo "TASK_ID=$task_id" >> "$GITHUB_ENV"
+          python tools/slimekeepers_autonomy_guard.py --task-id "$task_id" --base-sha "$BASE_SHA"
+          TASK_ID="$task_id" python - <<'PY'
+          import os, sys
+          sys.path.insert(0, "tools")
+          from slimekeepers_dev_agent import load_tasks
+          task = next((t for t in load_tasks() if t["id"] == os.environ["TASK_ID"]))
+          suite = next(p for p in task["allowed_files"] if p.startswith("tests/"))
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("AUTONOMOUS_TEST_FILE=res://" + suite + "\n")
+          print("Teste GdUnit4 autorizado: " + suite)
+          PY
+
+      - name: Instalar Godot oficial verificado
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/godot"
+          curl -fsSL --retry 2 "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$GODOT_BINARY_NAME.zip" -o "$RUNNER_TEMP/godot/godot.zip"
+          echo "$GODOT_ARCHIVE_SHA256  $RUNNER_TEMP/godot/godot.zip" | sha256sum -c --status
+          unzip -q "$RUNNER_TEMP/godot/godot.zip" -d "$RUNNER_TEMP/godot"
+          chmod +x "$RUNNER_TEMP/godot/$GODOT_BINARY_NAME"
+          echo "GODOT_BIN=$RUNNER_TEMP/godot/$GODOT_BINARY_NAME" >> "$GITHUB_ENV"
+
+      - name: Importar projeto em ambiente sem segredos
+        shell: bash
+        run: |
+          timeout 480 "$GODOT_BIN" --headless --editor --path . --import > "$RUNNER_TEMP/astra-import.log" 2>&1 || {
+            tail -n 80 "$RUNNER_TEMP/astra-import.log"
+            exit 1
+          }
+
+      - name: Executar suite GdUnit4 do novo modulo
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT_BIN" --headless --path . \
+            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+            -a "$AUTONOMOUS_TEST_FILE" --ignoreHeadlessMode -c \
+            > "$RUNNER_TEMP/astra-gdunit.log" 2>&1 || {
+              tail -n 90 "$RUNNER_TEMP/astra-gdunit.log"
+              exit 1
+            }
+          if grep -qE 'No test cases found|Script errors were detected|Abnormal exit' "$RUNNER_TEMP/astra-gdunit.log"; then
+            echo "::error::Suite GdUnit4 nao executou testes validos"
+            exit 2
+          fi
+          echo "Suite GdUnit4 concluida: $AUTONOMOUS_TEST_FILE"
+
+      - name: Executar as seis suites nativas e impedir regressoes
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A minimum=(
+            [test_menu]=61
+            [test_forest_v2]=157
+            [test_habitats]=37
+            [test_region_travel]=9
+            [test_forest_foraging]=23
+            [test_valley_garden]=42
+          )
+          {
+            echo '## Validacao independente do modulo Astra'
+            echo ''
+            echo '| Suite | Checks |'
+            echo '|---|---:|'
+          } >> "$GITHUB_STEP_SUMMARY"
+          for suite in test_menu test_forest_v2 test_habitats test_region_travel test_forest_foraging test_valley_garden; do
+            log="$RUNNER_TEMP/astra-$suite.log"
+            timeout 240 "$GODOT_BIN" --headless --path . \
+              --script "res://tools/$suite.gd" > "$log" 2>&1 || {
+                tail -n 65 "$log"
+                exit 1
+              }
+            checks="$(grep -cE '^PASS([ :]|$)' "$log" || true)"
+            if [[ "$suite" == "test_forest_v2" ]]; then
+              checks="$(sed -nE 's/^FOREST_V2: checks=([0-9]+).*/\1/p' "$log" | tail -n 1)"
+            elif [[ "$suite" == "test_habitats" ]]; then
+              checks="$(sed -nE 's/^FOREST_HABITATS: ([0-9]+) checks.*/\1/p' "$log" | tail -n 1)"
+            fi
+            checks="${checks:-0}"
+            if [[ "$checks" -lt "${minimum[$suite]}" ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
+              echo "::error::Suite $suite reprovada"
+              tail -n 65 "$log"
+              exit 2
+            fi
+            echo "| $suite | $checks |" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Arquivar logs de QA independentemente do resultado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-astra-pr-qa-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/astra-*.log
+          retention-days: 14
+          if-no-files-found: ignore
