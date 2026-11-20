@@ -13,7 +13,13 @@ const SLIME_GLOWS := {
 	"brasinha": [Color(1.0, 0.5, 0.2), 1.1, true],
 	"gelito": [Color(0.55, 0.82, 1.0), 0.9, false],
 }
-const DAPPLE_RADIUS := Vector2(430, 250)
+## Mancha de sol: textura pequena em pixel art, 1 pixel = DAPPLE_PIXEL px do mundo.
+const DAPPLE_PIXEL := 2
+const DAPPLE_SIZE := 56
+## Força máxima (alfa aditivo) do miolo da mancha; o contorno usa metade.
+const DAPPLE_STRENGTH := 0.3
+## Distância (px) em que o jogador dentro de uma mancha recebe luz fraca.
+const DAPPLE_PLAYER_REACH := 30.0
 ## Grade de mundo das manchas de sol: cada célula tem posição fixa (hash), não segue a câmera.
 const DAPPLE_CELL := 150.0
 const GLOW_TEXTURE_SUFFIX := "mushroom_glow.png"
@@ -33,13 +39,16 @@ var _glows: Array[PointLight2D] = []
 var _player_light: PointLight2D
 var _fireflies: CPUParticles2D
 var _motes: CPUParticles2D
-var _dapples: Array[PointLight2D] = []
+var _dapples: Array[Sprite2D] = []
+var _dapple_strengths: PackedFloat32Array = []
+var _dapple_cache: Dictionary = {}
+var _dapple_material: CanvasItemMaterial
+var _player_dapple_light: PointLight2D
 var _dapple_anchor := Vector2.INF
 var _slime_lights: Array[PointLight2D] = []
 var _identity := 1.0
 var _time := 0.0
 var _light_texture: GradientTexture2D
-var _dapple_textures: Array[ImageTexture] = []
 var _soft_texture: GradientTexture2D
 
 
@@ -53,27 +62,45 @@ static func night_factor(minutes: float) -> float:
 	return 0.0
 
 
-## Mancha de sol irregular em pixel art: bolhas sobrepostas em 3 faixas de alfa,
-## em imagem pequena (ampliada pela luz) para manter o pixel visível.
-static func dapple_texture(variant: int) -> ImageTexture:
-	var size := 64
+## Aberturas entre folhas em pixel art: 6–9 furos pequenos e nítidos (2 faixas de
+## alfa), alongados na direção da sombra conforme o sol baixa. A direção é desenhada
+## nos pixels — o sprite nunca gira, então a grade de pixels continua alinhada.
+static func dapple_image(variant: int, sun: Vector2) -> Image:
+	var size := DAPPLE_SIZE
 	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7919 + variant * 104729
-	var blobs: Array = []
-	# Aberturas entre folhas: vários lóbulos pequenos e irregulares.
-	for i in 7:
-		blobs.append([Vector2(rng.randf_range(16, 48), rng.randf_range(16, 48)), rng.randf_range(4.0, 10.0)])
+	var along := sun.normalized() if sun.length() > 0.05 else Vector2.DOWN
+	var across := along.orthogonal()
+	var stretch := 1.0 + 1.3 * clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
+	var center := Vector2(size, size) * 0.5
+	var holes: Array = []
+	for i in rng.randi_range(6, 9):
+		var offset := Vector2(rng.randf_range(-9.0, 9.0), rng.randf_range(-9.0, 9.0))
+		holes.append([offset, rng.randf_range(1.4, 3.4)])
 	for y in size:
 		for x in size:
+			var p := Vector2(x, y) + Vector2(0.5, 0.5) - center
 			var best := 9.0
-			for blob in blobs:
-				best = minf(best, Vector2(x, y).distance_to(blob[0]) / blob[1])
+			for hole in holes:
+				var d: Vector2 = p - (along * (hole[0] as Vector2).dot(along) * stretch + across * (hole[0] as Vector2).dot(across))
+				best = minf(best, Vector2(d.dot(along) / stretch, d.dot(across)).length() / float(hole[1]))
 			var alpha := 0.0
-			if best < 0.8: alpha = 1.0
-			elif best < 1.0: alpha = 0.45
+			if best < 0.72: alpha = 1.0
+			elif best < 1.0: alpha = 0.5
 			image.set_pixel(x, y, Color(1, 1, 1, alpha))
-	return ImageTexture.create_from_image(image)
+	return image
+
+
+## Textura de mancha em cache por variante e direção/comprimento do sol (em degraus).
+func dapple_texture_for(variant: int, sun: Vector2) -> ImageTexture:
+	var angle_step := int(round(sun.angle() / (TAU / 16.0))) if sun.length() > 0.05 else 99
+	var length_step := int(round(clampf(sun.length(), 0.0, 1.4) * 4.0))
+	var key := Vector3i(variant, angle_step, length_step)
+	if not _dapple_cache.has(key):
+		var quantized := Vector2.from_angle(angle_step * TAU / 16.0) * (length_step / 4.0) if angle_step != 99 else Vector2.ZERO
+		_dapple_cache[key] = ImageTexture.create_from_image(dapple_image(variant, quantized))
+	return _dapple_cache[key]
 
 
 ## Textura radial com poucas faixas de intensidade (estilo pixel art).
@@ -100,8 +127,8 @@ func _ready() -> void:
 	_region = get_parent().get_parent()
 	_light_texture = banded_light_texture(128)
 	_soft_texture = banded_light_texture(128, false)
-	for variant in 3:
-		_dapple_textures.append(dapple_texture(variant))
+	_dapple_material = CanvasItemMaterial.new()
+	_dapple_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	call_deferred("_scan")
 	get_tree().node_added.connect(_on_node_added)
 
@@ -117,7 +144,8 @@ func glow_lights() -> Array[PointLight2D]: return _glows
 func player_light() -> PointLight2D: return _player_light
 func fireflies() -> CPUParticles2D: return _fireflies
 func motes() -> CPUParticles2D: return _motes
-func dapples() -> Array[PointLight2D]: return _dapples
+func dapples() -> Array[Sprite2D]: return _dapples
+func dapple_strength(index: int) -> float: return _dapple_strengths[index] if index < _dapple_strengths.size() else 0.0
 func slime_lights() -> Array[PointLight2D]: return _slime_lights
 
 
@@ -198,12 +226,13 @@ func _scan() -> void:
 		_motes = _make_motes(int(round(22 * _identity)))
 		player.add_child(_motes)
 		for i in MAX_DAPPLES:
-			var dapple := _make_light(Color(1.0, 0.95, 0.82), 1.6 + 0.3 * (i % 3))
-			dapple.name = "SunDapple%d" % i
-			dapple.texture = _dapple_textures[i % _dapple_textures.size()]
-			dapple.add_child(_make_sunbeam_dust())
-			add_child(dapple)
-			_dapples.append(dapple)
+			add_child(_make_dapple(i))
+		# Luz fraca no jogador quando ele atravessa uma mancha de sol.
+		_player_dapple_light = _make_light(Color(1.0, 0.93, 0.75), 0.45)
+		_player_dapple_light.texture = _soft_texture
+		_player_dapple_light.name = "DappleLight"
+		_player_dapple_light.position = Vector2(0, -12)
+		player.add_child(_player_dapple_light)
 	apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), 0.0)
 
 
@@ -321,8 +350,26 @@ func _make_fireflies(amount: int) -> CPUParticles2D:
 	return flies
 
 
-## Luz filtrada pelas folhas: manchas alongadas na direção do sol que acompanham
-## o jogador, mais fortes no começo e no fim do dia; zero à noite.
+## Manchas de sol nítidas presas ao mundo (grade de células com hash), no plano do
+## chão, mais longas com sol baixo; zero à noite.
+func _make_dapple(index: int) -> Sprite2D:
+	var dapple := Sprite2D.new()
+	dapple.name = "SunDapple%d" % index
+	dapple.top_level = true
+	dapple.z_as_relative = false
+	dapple.z_index = -1
+	dapple.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	dapple.material = _dapple_material
+	dapple.scale = Vector2(DAPPLE_PIXEL, DAPPLE_PIXEL)
+	dapple.visible = false
+	var dust := _make_sunbeam_dust()
+	dust.emission_sphere_radius = 10.0  # o sprite tem escala 2
+	dapple.add_child(dust)
+	_dapples.append(dapple)
+	_dapple_strengths.append(0.0)
+	return dapple
+
+
 func _update_dapples(minutes: float, night: float) -> void:
 	if _dapples.is_empty() or not is_instance_valid(_region):
 		return
@@ -335,21 +382,30 @@ func _update_dapples(minutes: float, night: float) -> void:
 		for i in _dapples.size():
 			_dapples[i].set_meta("home", homes[i])
 	var sun: Vector2 = SHADOWS.profile_at(minutes)["vector"]
-	var low_sun := clampf(sun.length() / 40.0, 0.0, 1.0)
+	var low_sun := clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
 	var day := 1.0 - night
-	var warm := Color(1.0, 0.95, 0.82).lerp(Color(1.0, 0.82, 0.6), smoothstep(13 * 60.0, 17.5 * 60.0, fposmod(minutes, 1440.0)))
+	var warm := Color(1.0, 0.95, 0.8).lerp(Color(1.0, 0.8, 0.55), smoothstep(13 * 60.0, 17.5 * 60.0, fposmod(minutes, 1440.0)))
+	var near_player := 0.0
 	for i in _dapples.size():
 		var dapple := _dapples[i]
 		var home: Vector2 = dapple.get_meta("home", center)
-		# Folhas balançando: deslocamento de 1–2 px, sem sair do lugar no mundo.
-		dapple.global_position = (home + Vector2(sin(_time * 0.9 + i), cos(_time * 0.7 + i * 1.7)) * 1.5).round()
-		dapple.rotation = sun.angle() + PI / 2.0 if sun.length() > 0.5 else 0.0
-		dapple.scale = Vector2(1.0, 1.0 + 0.9 * low_sun)
-		dapple.color = warm
+		var strength := DAPPLE_STRENGTH * day * (0.65 + 0.35 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
+		_dapple_strengths[i] = strength
+		dapple.visible = strength > 0.01
 		var dust := dapple.get_node_or_null("SunbeamDust") as CPUParticles2D
 		if dust:
 			dust.emitting = day > 0.5
-		dapple.energy = 0.34 * day * (0.6 + 0.4 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
+		if not dapple.visible:
+			continue
+		# Folhas balançando: 1–2 px, na grade de pixels, sem sair do lugar no mundo.
+		dapple.global_position = (home + Vector2(sin(_time * 0.9 + i), cos(_time * 0.7 + i * 1.7)) * 1.5).round()
+		dapple.texture = dapple_texture_for(i % 3, sun)
+		dapple.modulate = Color(warm.r, warm.g, warm.b, strength)
+		if player:
+			near_player = maxf(near_player, strength * (1.0 - clampf(player.global_position.distance_to(home) / DAPPLE_PLAYER_REACH, 0.0, 1.0)))
+	if is_instance_valid(_player_dapple_light):
+		_player_dapple_light.color = warm
+		_player_dapple_light.energy = 0.9 * near_player
 
 
 func _make_motes(amount: int) -> CPUParticles2D:
@@ -436,6 +492,10 @@ func _make_sunbeam_dust() -> CPUParticles2D:
 	ramp.offsets = PackedFloat32Array([0.0, 0.25, 0.6, 1.0])
 	ramp.colors = PackedColorArray([Color(1.0, 0.9, 0.55, 0.0), Color(1.0, 0.92, 0.6, 0.8), Color(1.0, 0.85, 0.5, 0.45), Color(1.0, 0.9, 0.55, 0.0)])
 	dust.color_ramp = ramp
+	# Poeira no ar: acima do chão (a mancha fica em z -1), abaixo da copa ordenada por Y.
+	dust.z_as_relative = false
+	dust.z_index = 0
+	dust.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	var glow := CanvasItemMaterial.new()
 	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED

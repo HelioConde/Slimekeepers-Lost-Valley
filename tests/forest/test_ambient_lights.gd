@@ -121,12 +121,61 @@ func test_sun_dapples_light_the_ground_by_day_only_and_follow_sun_direction() ->
 	var dapples: Array = rig.dapples()
 	assert_int(dapples.size()).is_between(4, Lights.MAX_DAPPLES)
 	rig.apply_time(9 * 60, 0.0)
-	var morning_rotation: float = dapples[0].rotation
-	assert_float(dapples[0].energy).is_greater(0.05)
+	var morning_texture: Texture2D = dapples[0].texture
+	assert_float(rig.dapple_strength(0)).is_greater(0.05)
 	rig.apply_time(16 * 60, 0.0)
-	assert_float(absf(angle_difference(morning_rotation, dapples[0].rotation))).is_greater(0.3)
+	# A direção do sol é desenhada nos pixels (sem girar o sprite e quebrar a grade).
+	assert_object(dapples[0].texture).is_not_same(morning_texture)
+	assert_float(dapples[0].rotation).is_equal(0.0)
 	rig.apply_time(23 * 60, 0.0)
-	assert_float(dapples[0].energy).is_equal(0.0)
+	assert_float(rig.dapple_strength(0)).is_equal(0.0)
+	assert_bool(dapples[0].visible).is_false()
+
+
+func test_sun_dapples_are_crisp_additive_ground_sprites() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	rig.apply_time(9 * 60, 0.0)
+	for dapple in rig.dapples():
+		assert_object(dapple).is_instanceof(Sprite2D)
+		assert_bool(dapple.top_level).is_true()
+		assert_bool(dapple.z_as_relative).is_false()
+		assert_int(dapple.z_index).is_equal(-1)
+		assert_int(dapple.texture_filter).is_equal(CanvasItem.TEXTURE_FILTER_NEAREST)
+		assert_int((dapple.material as CanvasItemMaterial).blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
+		# Escala inteira: 1 pixel da textura = 2 px do mundo, como a arte do jogo.
+		assert_vector(dapple.scale).is_equal(Vector2(Lights.DAPPLE_PIXEL, Lights.DAPPLE_PIXEL))
+		assert_object(dapple.get_node_or_null("SunbeamDust")).is_not_null()
+
+
+func test_dapple_pattern_is_small_leaf_gaps_with_hard_bands() -> void:
+	var image := Lights.dapple_image(1, Vector2(-1.0, 0.5))
+	var lit := 0
+	for y in image.get_height():
+		for x in image.get_width():
+			var a := image.get_pixel(x, y).a
+			assert_bool(is_zero_approx(a) or is_equal_approx(a, 1.0) or absf(a - 0.5) < 0.01) 				.override_failure_message("alfa intermediário %f" % a).is_true()
+			if a > 0.0: lit += 1
+	var coverage := float(lit) / float(image.get_width() * image.get_height())
+	assert_float(coverage).is_between(0.03, 0.3)
+
+
+func test_dapple_gaps_stretch_along_low_sun() -> void:
+	var low := Lights.dapple_image(2, Vector2(1.2, 0.0)).get_used_rect()
+	var high := Lights.dapple_image(2, Vector2(0.05, 0.0)).get_used_rect()
+	assert_int(low.size.x).is_greater(high.size.x)
+
+
+func test_dapples_sway_one_or_two_pixels_around_world_home() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	rig.apply_time(10 * 60, 0.0)
+	var dapple: Sprite2D = rig.dapples()[0]
+	var home: Vector2 = dapple.get_meta("home")
+	for i in 60:
+		rig.apply_time(10 * 60, 0.1)
+		assert_float(dapple.global_position.distance_to(home)).is_less_equal(2.9)
+		assert_vector(dapple.global_position).is_equal(dapple.global_position.round())
 
 
 func test_motes_change_color_with_period_and_rest_at_deep_night() -> void:
