@@ -4,6 +4,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const GARDEN := preload("res://scripts/systems/valley_starter_garden.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
+const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const VALLEY_LAYOUT := preload("res://scripts/world/valley_layout.gd")
 const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
 const VALLEY := "res://scenes/regions/ValeDasNascentes.tscn"
@@ -60,8 +61,10 @@ func _run() -> void:
 	clock = root.get_node("GameClock")
 	clock.reset_new_game()
 	_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "A bolsa comeca sem sementes e folhas")
+	_check(PROGRESS.count(self) == 0, "Marcos da sessao iniciam vazios")
 	_check(not GARDEN.plant(self, clock, "norte"), "Nao planta sem sementes")
 	_check(not GARDEN.plant(self, clock, "invalido"), "Canteiro desconhecido nao consome sementes")
+	_check(PROGRESS.count(self) == 0, "Tentativa de plantio sem sementes nao marca progresso")
 	var forest := load(FOREST).instantiate() as Node2D
 	root.add_child(forest)
 	current_scene = forest
@@ -94,6 +97,8 @@ func _run() -> void:
 		await _press_e()
 		_check(bool(patch.get("collected")), "Coleta pela tecla E: " + id)
 	_check(BAG.seeds(self) == 2, "Duas sementes na bolsa antes de viajar")
+	_check(PROGRESS.is_marked(self, PROGRESS.SEEDS_COLLECTED) and PROGRESS.count(self) == 1,
+		"Coletar dois locais registra apenas um marco real de coleta")
 	await _travel_to_valley()
 	_check(current_scene != null and current_scene.scene_file_path == VALLEY, "Chegou ao Vale das Nascentes")
 	if current_scene == null or current_scene.scene_file_path != VALLEY:
@@ -104,6 +109,7 @@ func _run() -> void:
 		_check(VALLEY_LAYOUT.route_distance(bed.position, VALLEY_LAYOUT.routes()) < 80,
 			"Canteiro esta proximo do caminho percorrivel: " + str(bed.get("bed_id")))
 	_check(_bag_text(current_scene).contains("2/3"), "Vale mostra sementes trazidas da floresta")
+	_check(PROGRESS.count(self) == 1, "Progresso da coleta permanece entre as regioes")
 	var cooking_station: Node2D = current_scene.get_node_or_null("CookingStation")
 	_check(cooking_station != null, "Estacao de preparo aparece na cena real do Vale")
 	if cooking_station != null:
@@ -126,11 +132,14 @@ func _run() -> void:
 	_check(current_scene.hud_hint.text.contains("Plantar"), "Interface oferece plantar com E")
 	await _press_e()
 	_check(GARDEN.phase(self, clock, "norte") == "growing", "Semente plantada inicia crescimento")
+	_check(PROGRESS.is_marked(self, PROGRESS.GARDEN_PLANTED) and PROGRESS.count(self) == 2,
+		"Plantio real adiciona um marco sem apagar o anterior")
 	_check(BAG.seeds(self) == 1, "Plantio consome exatamente uma semente")
 	_check(_bag_text(current_scene).contains("1/3"), "Bolsa atualiza imediatamente apos plantio")
 	await _press_e()
 	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, clock, "norte") == "growing",
 		"Repetir E durante crescimento nao gasta outra semente")
+	_check(PROGRESS.count(self) == 2, "Repetir E no canteiro nao duplica o marco de plantio")
 	clock.advance_minutes(60.0)
 	_check(GARDEN.phase(self, clock, "norte") == "growing", "Uma hora ainda nao amadurece o cultivo")
 	_check(GARDEN.minutes_remaining(self, clock, "norte") <= 60, "HUD pode consultar tempo restante")
@@ -151,6 +160,8 @@ func _run() -> void:
 	_check(current_scene.hud_hint.text.contains("Colher"), "HUD oferece colher o produto")
 	await _press_e()
 	_check(GARDEN.phase(self, clock, "norte") == "harvested", "Colheita atualiza canteiro")
+	_check(PROGRESS.is_marked(self, PROGRESS.GARDEN_HARVESTED) and PROGRESS.count(self) == 3,
+		"Colheita de folhas confirma o terceiro marco de sessao")
 	_check(GARDEN.harvest_record(self).get("cycles", {}).get(0, {}).has("norte"),
 		"Primeira colheita e registrada uma vez no ledger")
 	_check(BAG.leaves(self) == 1 and BAG.seeds(self) == 1, "Folhas frescas entram na bolsa sem gastar mais sementes")
@@ -172,6 +183,7 @@ func _run() -> void:
 	_check(BAG.leaves(self) == 2 and BAG.seeds(self) == 0, "Bolsa recebe segunda colheita")
 	_check(GARDEN.harvest_record(self).get("cycles", {}).get(0, {}).size() == 2,
 		"Ledger registra cada canteiro de forma independente")
+	_check(PROGRESS.count(self) == 3, "Dois canteiros colhidos nao duplicam marco de colheita")
 	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza segunda colheita")
 	# A troca de cenas invalida a referencia anterior. Recuperar sempre a estacao nova.
 	cooking_station = current_scene.get_node_or_null("CookingStation")
@@ -189,6 +201,8 @@ func _run() -> void:
 		await _press_e()
 		_check(BAG.leaves(self) == 1 and COOKING.portions(self) == 1,
 			"Primeiro preparo gasta exatamente uma folha e registra uma porcao")
+		_check(PROGRESS.is_marked(self, PROGRESS.FOOD_PREPARED) and PROGRESS.count(self) == 4,
+			"Preparo efetivo completa os quatro marcos da sessao")
 		_check(_bag_text(current_scene).contains("preparos 1"), "HUD exibe porcao realmente produzida")
 		await _travel_to_forest()
 		_check(current_scene.scene_file_path == FOREST and COOKING.portions(self) == 1 and BAG.leaves(self) == 1,
@@ -212,6 +226,7 @@ func _run() -> void:
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
 	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Dois preparos viram duas porcoes reais na bolsa")
+	_check(PROGRESS.count(self) == 4, "Preparo repetido e viagem preservam marcos sem duplicacao")
 	await _travel_to_forest()
 	_check(current_scene.scene_file_path == FOREST, "Refeicoes preparadas chegam intactas a floresta")
 	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Duas porcoes preservadas entre regioes")
@@ -253,6 +268,8 @@ func _run() -> void:
 		_check(GARDEN.harvest_record(self).get("cycles", {}).is_empty(),
 			"Novo Jogo limpa ledger dos ciclos anteriores")
 		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
+		_check(PROGRESS.count(self) == 0 and not has_meta(PROGRESS.KEY),
+			"Novo Jogo remove os quatro marcos sem afetar o proximo ciclo")
 	_finish()
 
 func _change_to_menu() -> void:
