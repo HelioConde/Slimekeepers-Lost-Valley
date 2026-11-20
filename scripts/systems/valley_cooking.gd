@@ -4,6 +4,7 @@ extends RefCounted
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const BOOK := preload("res://scripts/systems/cooking_recipe_book.gd")
 const LEDGER := preload("res://scripts/systems/cooking_serving_ledger.gd")
+const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const RECIPE_ID := "porcao_folhas_prototipo"
 const LEDGER_KEY := "valley_cooking_ledger"
 
@@ -53,4 +54,5 @@ static func prepare(tree: SceneTree) -> String:
 	if not BAG.exchange_item(tree, BAG.LEAVES_ID, RECIPE_ID, 1):
 		return "needs_leaves"
 	tree.set_meta(LEDGER_KEY, replacement)
+	PROGRESS.mark_event(tree, PROGRESS.FOOD_PREPARED)
 	return "prepared"
