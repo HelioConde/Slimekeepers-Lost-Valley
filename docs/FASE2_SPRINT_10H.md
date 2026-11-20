@@ -55,3 +55,10 @@ As tarefas `p2-scoped-change-guard` e `p2-native-ci-guard` estão concluídas pe
 - [PR #46 — colheitas e crescimento](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/46): controle de colheita por canteiro, registro de ciclo, tempo contínuo através da meia-noite e testes Godot.
 
 **Proteção anti-retrabalho:** o executor da Fase 2 deve reconhecer as tarefas `completed` da fila `automation/phase2_10h_queue.json` somente quando houver `evidence` referenciando a PR já integrada à `main`. As tarefas não validadas ou de arte continuam abertas. A cota do proxy é independente das entregas manuais e continua sujeita ao preflight.
+
+## Atualização manual da Fase 2 — 20/11/2026 (22/30)
+
+- [PR #49](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/49) integrou os quatro marcos de sessão no gameplay real. Coleta, plantio, colheita e culinária registram uma vez, via dados seguros de `SceneTree`; a viagem preserva e Novo Jogo reinicia. [CI Godot #44679547292](https://github.com/HelioConde/Slimekeepers-Lost-Valley/actions/runs/44679547292) aprovado.
+- [PR #50](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/50) integrou contrato versionado de snapshot JSON-safe de relógio, bolsa, canteiros, colheitas, culinária, amizades e ofertas, com testes de round-trip e rejeição de dados inválidos. [CI Godot #44680549711](https://github.com/HelioConde/Slimekeepers-Lost-Valley/actions/runs/44680549711) aprovado.
+
+**22 de 30 tarefas concluídas com evidências de PR integrada.** Restam oito tarefas e 120 minutos de esforço originalmente estimado na fila. Esse tempo não representa uma execução em andamento. O botão **Continuar continua desativado**: o contrato V1 não implementa save/restore em disco. Os pontos restantes de PixelLab ainda exigem revisão de arte, gate de créditos e idempotência. Nenhuma cota Astra foi utilizada nas duas entregas.
