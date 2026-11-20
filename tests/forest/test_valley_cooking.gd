@@ -57,3 +57,17 @@ func test_zero_legacy_balance_not_counted_as_food() -> void:
 	assert_str(COOKING.prepare(tree)).is_equal("prepared")
 	assert_int(BAG.seeds(tree)).is_equal(0)
 	assert_int(COOKING.portions(tree)).is_equal(1)
+
+func test_recipe_list_shows_missing_and_available_without_spending() -> void:
+	var tree := get_tree()
+	var first: Array[Dictionary] = COOKING.recipe_options(tree)
+	assert_int(first.size()).is_equal(1)
+	assert_str(first[0]["id"]).is_equal(COOKING.RECIPE_ID)
+	assert_bool(first[0]["available"]).is_false()
+	assert_dict(first[0]["missing"]).is_equal({BAG.LEAVES_ID: 1})
+	assert_bool(BAG.add_item(tree, BAG.LEAVES_ID, 1)).is_true()
+	var second: Array[Dictionary] = COOKING.recipe_options(tree)
+	assert_bool(second[0]["available"]).is_true()
+	assert_dict(second[0]["missing"]).is_empty()
+	assert_int(BAG.leaves(tree)).is_equal(1)
+
