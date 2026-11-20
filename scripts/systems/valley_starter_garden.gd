@@ -70,4 +70,5 @@ static func harvest(tree: SceneTree, clock: Node, bed_id: String) -> bool:
 	beds[bed_id] = bed
 	tree.set_meta(KEY, beds)
 	tree.set_meta(LEDGER_KEY, ledger.get_save_data())
+	PROGRESS.mark_event(tree, PROGRESS.GARDEN_HARVESTED)
 	return true
