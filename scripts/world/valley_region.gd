@@ -23,6 +23,7 @@ var recipe_panel: PanelContainer
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	y_sort_enabled = true
+	add_child(PauseOverlay.new())
 	player = $Player
 	player.position = Valley.SPAWN
 	player.world_bounds = Rect2(24,44,3152,3132)
