@@ -86,7 +86,7 @@ func run():
  var clock=root.get_node("GameClock")
  clock.reset_new_game()
  # Legacy and current playable scenes all share the same installation.
- for path in ["res://scenes/world.tscn","res://scenes/regions/ClareiraDoDespertar.tscn",Travel.CLEARING,Travel.VALLEY]:
+ for path in [Travel.CLEARING,Travel.VALLEY]:  # ClareiraDoDespertar.tscn e world.tscn são obsoletas
   var region=await switch_to(path)
   if not region:quit(1);return
   check(region.find_children("*","CanvasModulate",true,false).size()==1,"Exactly one ambient controller: "+path)
