@@ -16,9 +16,11 @@ static func availability(tree: SceneTree) -> Dictionary:
 	return _recipe_book().check_availability(RECIPE_ID, BAG.inventory_snapshot(tree))
 
 static func portions(tree: SceneTree) -> int:
-	var current: Variant = tree.get_meta(LEDGER_KEY, null)
-	if current == null:
+	if not tree.has_meta(LEDGER_KEY):
 		return 0
+	var current: Variant = tree.get_meta(LEDGER_KEY)
+	if current == null:
+		return -1
 	if typeof(current) != TYPE_OBJECT or not current.has_method("count_for"):
 		return -1
 	return current.count_for(RECIPE_ID)
