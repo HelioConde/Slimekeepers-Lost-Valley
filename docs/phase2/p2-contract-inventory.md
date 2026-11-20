@@ -17,3 +17,7 @@ O único saldo jogável fica em `SceneTree` com `forest_bag_items`, usado por `f
 
 ## Critérios de segurança e testes
 Quantidade negativa, zero, fracionada, ID vazio, saldo insuficiente e inventário malformado são recusados sem alteração parcial. Colheita repetida, E repetido, troca de mapa e Novo Jogo devem ser cobertos. Não são definidos efeitos de alimento, preferências canônicas ou salvamento em disco.
+
+## Evolução validada nas PRs #44–#45
+
+A [PR #44](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/44) integrou a bolsa, coleta e preparo da receita provisória. Na [PR #45](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/45), cada porção preparada passou a ser um **item de alimento próprio**, identificado por `porcao_folhas_prototipo`: `ForestBag.exchange_item` retira uma folha e adiciona uma porção na mesma transação. O ledger `valley_cooking_ledger` continua contando preparos históricos, enquanto a bolsa armazena **somente o saldo consumível**. Oferecer comida a um slime amigo diminui o saldo sem modificar a amizade canônica; a primeira oferta fica em `slime_food_offers`.
