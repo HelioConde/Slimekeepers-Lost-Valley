@@ -5,6 +5,7 @@ const BoardDetails = preload("res://scripts/menu/board_details.gd")
 const LogoPlaque = preload("res://scripts/menu/logo_plaque.gd")
 const ValleySky = preload("res://scripts/menu/valley_sky.gd")
 const Farm = preload("res://scripts/menu/farm_foreground.gd")
+const SessionState = preload("res://scripts/systems/session_state.gd")
 var panorama: Node2D
 var logo: Panel
 var buttons: VBoxContainer
@@ -197,8 +198,7 @@ func _layout() -> void:
 
 func _start_game() -> void:
 	GameClock.reset_new_game()
-	for key in ["clearing_friends", "forest_slime_friends", "valley_slime_friends", "environment_conditions", "forest_places", "region_arrival", "valley_discoveries", "forest_bag_items", "forest_seed_patches_collected", "valley_starter_garden", "valley_starter_garden_harvests", "valley_cooking_ledger", "slime_food_offers", "session_progress_flags"]:
-		if get_tree().has_meta(key): get_tree().remove_meta(key)
+	SessionState.clear_session(get_tree())
 	get_window().content_scale_size = Vector2i(960,540)
 	get_tree().change_scene_to_file("res://scenes/regions/FlorestaDoDespertarV2.tscn")
 
