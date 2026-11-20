@@ -105,6 +105,18 @@ class Phase2AgentTests(unittest.TestCase):
         blocked["depends_on"] = ["p2-audit-runtime"]
         self.assertIsNone(agent.choose([t, blocked], "auto", {"p2/p2-audit-runtime"}))
 
+    def test_completed_manual_pr_prevents_duplicate_inference(self):
+        t = task("p2-cooking-interact")
+        t["status"] = "completed"
+        self.assertFalse(agent.satisfied(t))
+        t["evidence"] = "https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/44"
+        self.assertTrue(agent.satisfied(t))
+        self.assertIsNone(agent.choose([t], "auto", set()))
+        with self.assertRaises(agent.Phase2Error):
+            agent.choose([t], "p2-cooking-interact", set())
+        t["evidence"] = "https://example.invalid/pull/44"
+        self.assertFalse(agent.satisfied(t))
+
     def test_visual_and_sensitive_sources_fail_closed(self):
         t = task("p2-pixellab-controlled-job")
         with self.assertRaises(agent.Phase2Error):
