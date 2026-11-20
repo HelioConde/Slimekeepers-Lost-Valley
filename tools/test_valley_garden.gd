@@ -187,6 +187,7 @@ func _run() -> void:
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
+	print("COOKING_DIAG: ", BAG.inventory_snapshot(self), " recipe=", COOKING.RECIPE_ID, " count=", BAG.count_item(self, COOKING.RECIPE_ID), " prepared=", COOKING.portions(self))
 	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Dois preparos viram duas porcoes reais na bolsa")
 	await _travel_to_forest()
 	_check(current_scene.scene_file_path == FOREST, "Refeicoes preparadas chegam intactas a floresta")
