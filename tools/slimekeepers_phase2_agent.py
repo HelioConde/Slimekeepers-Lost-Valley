@@ -42,7 +42,7 @@ MAX_EDITS = 6
 # Evidencia versionada de uma PR real ja integrada; apenas a fila confiavel da main
 # pode marcar uma tarefa como concluida (sem executar outra inferencia).
 MERGED_PR_EVIDENCE = re.compile(
-    r"https://github\\.com/HelioConde/Slimekeepers-Lost-Valley/pull/[1-9][0-9]*\\Z"
+    r"https://github\.com/HelioConde/Slimekeepers-Lost-Valley/pull/[1-9][0-9]*\Z"
 )
 
 
