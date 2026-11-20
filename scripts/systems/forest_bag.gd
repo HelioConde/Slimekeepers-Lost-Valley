@@ -2,6 +2,7 @@ extends RefCounted
 ## Inventario de sessao: SceneTree e a unica fonte de verdade; sem save em disco.
 ## O adaptador valida transacoes usando collectible_inventory, sem duplicar saldos.
 const INVENTORY := preload("res://scripts/systems/collectible_inventory.gd")
+const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const ITEM_ID := "sementes_silvestres"
 const LEAVES_ID := "folhas_frescas"
 const INVENTORY_KEY := "forest_bag_items"
@@ -93,4 +94,5 @@ static func harvest(tree: SceneTree, patch_id: String) -> bool:
 	var patches: Dictionary = tree.get_meta(PATCHES_KEY, {}).duplicate()
 	patches[patch_id] = true
 	tree.set_meta(PATCHES_KEY, patches)
+	PROGRESS.mark_event(tree, PROGRESS.SEEDS_COLLECTED)
 	return true
