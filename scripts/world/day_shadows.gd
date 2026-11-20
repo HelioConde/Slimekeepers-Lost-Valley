@@ -9,7 +9,14 @@ const STOPS := [
 	[1170.0, Vector2(1.3,.65), 0.0], [1200.0, Vector2(-.4,.35), .06],
 	[1320.0, Vector2(-.5,.27), .11], [1440.0, Vector2(-.22,.22), .09]
 ]
+## Sombra de contato: faixa da base da silhueta (tronco, pedra, pés), projetada curta.
+const CONTACT_MIN := 6.0
+const CONTACT_MAX := 18.0
+const CONTACT_SKIP := ["flower", "fern", "reed", "grass", "lily", "clover"]
 var _casters: Dictionary = {}
+var _contacts: Dictionary = {}
+var _hidden_blobs: Array[CanvasItem] = []
+var _contact := {"vector": Vector2.ZERO, "opacity": 0.0}
 var _kinds: Dictionary = {}
 var _pending: Array[WeakRef] = []
 var _used_rects: Dictionary = {}
@@ -50,6 +57,9 @@ func _ready() -> void:
 	update_for_time(0)
 
 func _exit_tree() -> void:
+	for blob in _hidden_blobs:
+		if is_instance_valid(blob): blob.show()
+	_hidden_blobs.clear()
 	if is_instance_valid(_old_canopy): _old_canopy.visible = _old_canopy_visible
 	if get_tree().node_added.is_connected(_on_node_added): get_tree().node_added.disconnect(_on_node_added)
 
@@ -80,6 +90,23 @@ func _register(sprite: Node2D) -> void:
 		else: _static_ids.append(sprite.get_instance_id()); _cull_age = 1.0
 	_casters[sprite.get_instance_id()] = sprite
 	_kinds[sprite.get_instance_id()] = kind
+	_contacts[sprite.get_instance_id()] = _wants_contact(sprite)
+	# O blob elíptico fixo do mapa é trocado pela sombra de contato com silhueta.
+	for holder in [sprite, sprite.get_parent()]:
+		var blob := holder.get_node_or_null("ContactShadow") as CanvasItem
+		if blob and blob.visible and _contacts[sprite.get_instance_id()]:
+			blob.hide()
+			_hidden_blobs.append(blob)
+
+func _wants_contact(sprite: Node2D) -> bool:
+	var texture := _texture_for(sprite)
+	if texture is AtlasTexture: texture = texture.atlas
+	var path := texture.resource_path.to_lower() if texture else ""
+	for word in CONTACT_SKIP:
+		if word in path: return false
+	return true
+
+func has_contact(sprite: Node2D) -> bool: return _contacts.get(sprite.get_instance_id(), false)
 
 func _is_wildlife_texture(sprite: Node2D) -> bool:
 	var texture := _texture_for(sprite)
@@ -93,6 +120,7 @@ func update_for_time(delta: float) -> void:
 		if is_instance_valid(sprite): _register(sprite)
 	_pending.clear()
 	_profile = profile_at(GameClock.get_save_data().minutes)
+	_contact = contact_profile(GameClock.get_save_data().minutes)
 	_cull_age += delta
 	_shade_age += delta
 	if _cull_age >= .25 or delta == 0:
@@ -123,6 +151,24 @@ static func profile_at(minutes: float) -> Dictionary:
 			return {"vector":(a[1] as Vector2).lerp(b[1],t),"opacity":lerpf(a[2],b[2],t)}
 	return {"vector":Vector2.ZERO,"opacity":0.0}
 
+## Contato: mesma direção do sol, encurtada, com um leve espalhamento para baixo
+## (oclusão no pé) para nunca sumir ao meio-dia; mais escura que a sombra projetada.
+static func contact_profile(minutes: float) -> Dictionary:
+	var cast := profile_at(minutes)
+	return {"vector": (cast.vector as Vector2) * .8 + Vector2(0, .3), "opacity": .16 + .55 * float(cast.opacity)}
+
+## Faixa (em coordenadas locais do sprite) da base visível da silhueta.
+func contact_strip(sprite: Node2D) -> Rect2:
+	var texture := _texture_for(sprite)
+	if not texture: return Rect2()
+	var rect := _rect_for(sprite, texture)
+	var bottom := source_bottom(sprite)
+	var scale_y := maxf(absf(sprite.global_scale.y), .001)
+	var visible_height := bottom - rect.position.y
+	var height := clampf(visible_height * scale_y * .18, CONTACT_MIN, CONTACT_MAX) / scale_y
+	height = minf(height, visible_height)
+	return Rect2(rect.position.x, bottom - height, rect.size.x, height)
+
 func has_caster(sprite: Node2D) -> bool: return _casters.has(sprite.get_instance_id())
 func count_category(kind: String) -> int: return _kinds.values().count(kind)
 
@@ -152,6 +198,14 @@ func source_bottom(sprite: Node2D) -> float:
 	var used: Rect2i = _used_rects[key]
 	return rect.position.y + (texture.get_height()-used.position.y if sprite.flip_v else used.end.y)
 
+## Ponto de apoio no chão: o corpo do personagem ou o nó-âncora do objeto.
+func foot_for(sprite: Node2D) -> Vector2:
+	var parent: Node = sprite.get_parent()
+	if parent is CharacterBody2D or (sprite.name == &"Sprite" and parent is Node2D): return parent.global_position
+	# Sprite solto: apoia na base visível (ignora padding transparente embaixo),
+	# senão a sombra nasce alguns pixels abaixo do objeto e parece desconectada.
+	return Vector2(sprite.global_position.x, (sprite.global_transform * Vector2(0, source_bottom(sprite))).y)
+
 func projection_for(sprite: Node2D, foot: Vector2, direction: Vector2) -> Transform2D:
 	var source := sprite.global_transform
 	# Strip transparent bottom padding and hop height: the shadow remains on the ground.
@@ -165,13 +219,12 @@ func _draw() -> void:
 	_draw_casters(self,_dynamic_ids)
 
 func _draw_casters(target: Node2D, ids: Array) -> void:
-	if _profile.opacity < .001: return
+	if _profile.opacity < .001 and _contact.opacity < .001: return
 	var view := (get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()).grow(170)
 	for id in ids:
 		var sprite = _casters.get(id)
 		if not is_instance_valid(sprite) or not casts_on_ground(sprite): continue
-		var parent: Node = sprite.get_parent()
-		var foot: Vector2 = parent.global_position if parent is CharacterBody2D or (sprite.name == &"Sprite" and parent is Node2D) else sprite.global_position
+		var foot := foot_for(sprite)
 		if not view.has_point(foot): continue
 		var texture := _texture_for(sprite)
 		if not texture: continue
@@ -185,11 +238,26 @@ func _draw_casters(target: Node2D, ids: Array) -> void:
 		if sprite.flip_h: rect.position.x += rect.size.x; rect.size.x = -rect.size.x
 		if sprite.flip_v: rect.position.y += rect.size.y; rect.size.y = -rect.size.y
 		var tint := Color(1,1,1,opacity*sprite.modulate.a)
-		if sprite is Sprite2D and sprite.region_enabled:
-			target.draw_texture_rect_region(texture,rect,sprite.region_rect,tint)
-		elif sprite is Sprite2D and (sprite.hframes>1 or sprite.vframes>1):
-			var size := texture.get_size()/Vector2(sprite.hframes,sprite.vframes)
-			target.draw_texture_rect_region(texture,rect,Rect2(Vector2(sprite.frame_coords)*size,size),tint)
-		else: target.draw_texture_rect(texture,rect,false,tint)
+		var source := _source_for(sprite, texture)
+		if tint.a > .001: target.draw_texture_rect_region(texture,rect,source,tint)
+		if _contacts.get(id, false) and not sprite.flip_v:
+			_draw_contact(target, sprite, texture, foot, source)
 		drawn_casters += 1
 	target.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+func _source_for(sprite: Node2D, texture: Texture2D) -> Rect2:
+	if sprite is Sprite2D and sprite.region_enabled: return sprite.region_rect
+	if sprite is Sprite2D and (sprite.hframes>1 or sprite.vframes>1):
+		var size := texture.get_size()/Vector2(sprite.hframes,sprite.vframes)
+		return Rect2(Vector2(sprite.frame_coords)*size,size)
+	return Rect2(Vector2.ZERO,texture.get_size())
+
+func _draw_contact(target: Node2D, sprite: Node2D, texture: Texture2D, foot: Vector2, source: Rect2) -> void:
+	var full := _rect_for(sprite,texture)
+	var strip := contact_strip(sprite)
+	if strip.size.y <= 0.0 or full.size.y <= 0.0: return
+	var ratio := source.size.y/full.size.y
+	var src := Rect2(source.position.x,source.position.y+(strip.position.y-full.position.y)*ratio,source.size.x,strip.size.y*ratio)
+	target.draw_set_transform_matrix(target.global_transform.affine_inverse()*projection_for(sprite,foot,_contact.vector))
+	if sprite.flip_h: strip.position.x += strip.size.x; strip.size.x = -strip.size.x
+	target.draw_texture_rect_region(texture,strip,src,Color(1,1,1,float(_contact.opacity)*sprite.modulate.a))
