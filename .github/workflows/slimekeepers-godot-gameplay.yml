@@ -123,7 +123,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for suite in test_p2_bag_adapter test_valley_cooking test_slime_food_session test_p2_garden_ledger_integration test_p2_session_progress_integration; do
+          for suite in test_p2_bag_adapter test_valley_cooking test_slime_food_session test_p2_garden_ledger_integration test_p2_session_progress_integration test_p2_session_save_schema; do
             log="$RUNNER_TEMP/${suite}_gdunit.log"
             timeout 240s "$GODOT_BIN" --headless --path . \
               -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
@@ -158,5 +158,6 @@ jobs:
             ${{ runner.temp }}/test_slime_food_session_gdunit.log
             ${{ runner.temp }}/test_p2_garden_ledger_integration_gdunit.log
             ${{ runner.temp }}/test_p2_session_progress_integration_gdunit.log
+            ${{ runner.temp }}/test_p2_session_save_schema_gdunit.log
           retention-days: 14
           if-no-files-found: ignore
