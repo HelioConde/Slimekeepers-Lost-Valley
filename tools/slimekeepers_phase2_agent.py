@@ -73,7 +73,7 @@ def queue(path: Path = QUEUE) -> list[dict]:
                 raise Phase2Error("Dependência futura ou desconhecida.")
         for p in task.get("candidate_paths", []):
             path_under_root(p)
-        if task.get("status") != "planned":
+        if task.get("status") not in ("planned", "completed"):
             raise Phase2Error("Estado do manifesto divergente.")
     return data["tasks"]
 
@@ -116,7 +116,7 @@ def editable_paths(task: dict) -> list[str]:
 def satisfied(task: dict) -> bool:
     k = kind(task)
     if k == "implemented":
-        return True
+        return task.get("status") == "completed"
     if k == "report":
         return path_under_root(report_path(task)).is_file()
     if k == "patch":
