@@ -9,6 +9,7 @@ const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
 const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
+const GUIDANCE_HUD := preload("res://scripts/ui/cooking_guidance_hud.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
@@ -34,6 +35,7 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
+	$HUD/Interface.add_child(GUIDANCE_HUD.new())
 	recipe_panel = RECIPE_PANEL.new()
 	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
