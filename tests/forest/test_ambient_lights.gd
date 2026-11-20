@@ -113,3 +113,56 @@ func test_firefly_density_depends_on_region_identity() -> void:
 	assert_int(Lights.firefly_amount("FlorestaDoDespertarV2")).is_greater(Lights.firefly_amount("ClareiraDoDespertar"))
 	assert_int(Lights.firefly_amount("ValeDasNascentes")).is_greater(Lights.firefly_amount("ClareiraDoDespertar"))
 	assert_int(Lights.firefly_amount("ClareiraDoDespertar")).is_greater(0)
+
+
+func test_sun_dapples_light_the_ground_by_day_only_and_follow_sun_direction() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	var dapples: Array = rig.dapples()
+	assert_int(dapples.size()).is_between(4, Lights.MAX_DAPPLES)
+	rig.apply_time(9 * 60, 0.0)
+	var morning_rotation: float = dapples[0].rotation
+	assert_float(dapples[0].energy).is_greater(0.05)
+	rig.apply_time(16 * 60, 0.0)
+	assert_float(absf(angle_difference(morning_rotation, dapples[0].rotation))).is_greater(0.3)
+	rig.apply_time(23 * 60, 0.0)
+	assert_float(dapples[0].energy).is_equal(0.0)
+
+
+func test_motes_change_color_with_period_and_rest_at_deep_night() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	var motes: CPUParticles2D = rig.motes()
+	rig.apply_time(9 * 60, 0.0)
+	var morning: Color = motes.color
+	assert_bool(motes.emitting).is_true()
+	rig.apply_time(18 * 60 + 40, 0.0)
+	assert_float(motes.color.b).is_greater(morning.b)
+	rig.apply_time(1 * 60, 0.0)
+	assert_bool(motes.emitting).is_false()
+
+
+func test_fireflies_start_at_dusk() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	rig.apply_time(18 * 60 + 40, 0.0)
+	assert_bool(rig.fireflies().emitting).is_true()
+
+
+func test_fire_and_ice_slimes_emit_real_light() -> void:
+	var parts := _rig_in_region(false, 0)
+	var region: Node2D = parts[0]
+	var rig: Node2D = parts[1]
+	for id in ["brasinha", "gelito", "brotinho"]:
+		var slime := AnimatedSprite2D.new()
+		slime.sprite_frames = load("res://assets/slimes/bestiary/%s/%s_frames.tres" % [id, id])
+		region.add_child(slime)
+	await await_idle_frame()
+	await await_idle_frame()
+	var lights: Array = rig.slime_lights()
+	assert_int(lights.size()).is_equal(2)
+	rig.apply_time(22 * 60, 0.0)
+	var warm: PointLight2D = lights.filter(func(l): return l.color.r > l.color.b)[0]
+	var cold: PointLight2D = lights.filter(func(l): return l.color.b > l.color.r)[0]
+	assert_float(warm.energy).is_greater(0.3)
+	assert_float(cold.energy).is_greater(0.3)
