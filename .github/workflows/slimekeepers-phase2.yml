@@ -58,7 +58,7 @@ jobs:
       - name: Testes locais de seleção e segurança
         run: |
           python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
-          python -m unittest discover -s tests -p 'test_slimekeepers_phase2_agent.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_dev_agent.py' -v
           python -m unittest discover -s tests -p 'test_slimekeepers_autonomy_guard.py' -v
           python -m unittest discover -s tests -p 'test_phase2_queue.py' -v
           python -m unittest discover -s tests -p 'test_slimekeepers_phase2_agent.py' -v
