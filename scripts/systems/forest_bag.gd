@@ -50,6 +50,18 @@ static func add_item(tree: SceneTree, item_id: String, quantity: int = 1) -> boo
 	tree.set_meta(INVENTORY_KEY, inventory.serialize())
 	return true
 
+## Troca atomica: nenhuma folha desaparece caso o alimento de destino estoure o saldo.
+static func exchange_item(tree: SceneTree, consume_id: String, produce_id: String, quantity: int = 1) -> bool:
+	if consume_id == produce_id:
+		return false
+	var inventory = _load_inventory(tree)
+	if inventory == null or not inventory.remove(consume_id, quantity):
+		return false
+	if not inventory.add(produce_id, quantity):
+		return false
+	tree.set_meta(INVENTORY_KEY, inventory.serialize())
+	return true
+
 static func seeds(tree: SceneTree) -> int:
 	return count_item(tree, ITEM_ID)
 
