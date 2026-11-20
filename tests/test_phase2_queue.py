@@ -36,6 +36,9 @@ class Phase2BacklogTests(unittest.TestCase):
                 self.assertIn(dep, seen)
             seen.add(task_id)
             self.assertIn(task["status"], ("planned", "blocked", "in_progress", "completed"))
+            if task["status"] == "completed":
+                self.assertRegex(task["evidence"],
+                    r"https://github\.com/HelioConde/Slimekeepers-Lost-Valley/pull/[1-9][0-9]*\Z")
             self.assertGreater(task["estimated_minutes"], 0)
             self.assertTrue(task["acceptance"])
             self.assertTrue(task["candidate_paths"])
