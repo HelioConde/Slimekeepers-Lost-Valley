@@ -3,6 +3,7 @@ extends "res://scripts/world/clearing_region.gd"
 const Forest = preload("res://scripts/world/forest_layout.gd")
 const Living = preload("res://scripts/world/living_region.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
+const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const SEED_PATCH := preload("res://scripts/world/forest_seed_patch.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const SEED_SITES := [
@@ -177,7 +178,10 @@ func _process(delta: float) -> void:
 		if message_time <= 0: popup.text = ""
 	var closest := _closest_slime()
 	if closest != null:
-		hud_hint.text = "[E] Fazer amizade com "+closest.display_name() if not closest.befriended else "[E] Cumprimentar "+closest.display_name()
+		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Oferecer porcao"
+		if Input.is_action_just_pressed("feed"):
+			_offer_prototype_food(closest)
+			return
 		if Input.is_action_just_pressed("interact"):
 			if not closest.befriended:
 				closest.make_friend()
@@ -215,6 +219,22 @@ func _process(delta: float) -> void:
 				_notify(marker.get_meta("description"))
 				_update_hud()
 			return
+
+func _offer_prototype_food(slime: Node2D) -> void:
+	var result: String = FOOD.offer(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")))
+	match result:
+		"offered":
+			bag_hud.call("refresh")
+			slime.set("_happy_time", 2.4)
+			_notify("Uma porcao de teste foi oferecida a " + slime.display_name() + ".")
+		"needs_friendship":
+			_notify("Primeiro conheca este slime usando E.")
+		"already_offered":
+			_notify("Este slime ja recebeu uma porcao nesta partida.")
+		"needs_portion":
+			_notify("Cozinhe folhas frescas no Vale antes de oferecer comida.")
+		_:
+			_notify("Nao foi possivel oferecer a porcao; nenhum alimento foi gasto.")
 
 func _update_hud() -> void:
 	if hud_goal == null: return
