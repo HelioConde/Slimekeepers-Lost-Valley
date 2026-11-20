@@ -124,9 +124,9 @@ jobs:
         run: |
           set -euo pipefail
           log="$RUNNER_TEMP/test_valley_cooking_gdunit.log"
-          timeout 240s "$GODOT_BIN" --headless --path . \\
-            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \\
-            -a res://tests/forest/test_valley_cooking.gd --ignoreHeadlessMode -c \\
+          timeout 240s "$GODOT_BIN" --headless --path . \
+            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+            -a res://tests/forest/test_valley_cooking.gd --ignoreHeadlessMode -c \
             > "$log" 2>&1 || {
               tail -n 80 "$log"
               exit 1
