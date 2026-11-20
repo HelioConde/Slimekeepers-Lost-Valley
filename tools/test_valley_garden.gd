@@ -162,7 +162,10 @@ func _run() -> void:
 	await _press_e()
 	_check(BAG.leaves(self) == 2 and BAG.seeds(self) == 0, "Bolsa recebe segunda colheita")
 	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza segunda colheita")
-	if cooking_station != null:
+	# A troca de cenas invalida a referencia anterior. Recuperar sempre a estacao nova.
+	cooking_station = current_scene.get_node_or_null("CookingStation")
+	_check(is_instance_valid(cooking_station), "Estacao de preparo foi recriada na cena atual")
+	if is_instance_valid(cooking_station):
 		current_scene.player.global_position = cooking_station.global_position
 		await _settle()
 		_check(current_scene.hud_hint.text.contains("Preparar"), "Preparo de teste fica disponivel com folhas")
@@ -177,8 +180,8 @@ func _run() -> void:
 		await _travel_to_valley()
 		_check(current_scene.scene_file_path == VALLEY, "Retorno ao Vale apos preparar refeicao")
 		cooking_station = current_scene.get_node_or_null("CookingStation")
-		_check(cooking_station != null, "Estacao recriada com registro intacto")
-		if cooking_station != null:
+		_check(is_instance_valid(cooking_station), "Estacao recriada com registro intacto")
+		if is_instance_valid(cooking_station):
 			current_scene.player.global_position = cooking_station.global_position
 			await _settle()
 			await _press_e()
@@ -187,7 +190,6 @@ func _run() -> void:
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
-	print("COOKING_DIAG: ", BAG.inventory_snapshot(self), " recipe=", COOKING.RECIPE_ID, " count=", BAG.count_item(self, COOKING.RECIPE_ID), " prepared=", COOKING.portions(self))
 	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Dois preparos viram duas porcoes reais na bolsa")
 	await _travel_to_forest()
 	_check(current_scene.scene_file_path == FOREST, "Refeicoes preparadas chegam intactas a floresta")
