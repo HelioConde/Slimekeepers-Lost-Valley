@@ -92,3 +92,24 @@ func test_light_texture_is_banded_for_pixel_art() -> void:
 	var gradient: Gradient = texture.gradient
 	assert_int(gradient.interpolation_mode).is_equal(Gradient.GRADIENT_INTERPOLATE_CONSTANT)
 	assert_int(gradient.get_point_count()).is_greater_equal(4)
+
+
+func test_fireflies_follow_player_glow_unshaded_and_only_at_night() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	var fireflies: CPUParticles2D = rig.fireflies()
+	assert_object(fireflies).is_not_null()
+	assert_bool(fireflies.local_coords).is_false()
+	var material := fireflies.material as CanvasItemMaterial
+	assert_int(material.light_mode).is_equal(CanvasItemMaterial.LIGHT_MODE_UNSHADED)
+	assert_int(material.blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
+	rig.apply_time(12 * 60, 0.0)
+	assert_bool(fireflies.emitting).is_false()
+	rig.apply_time(23 * 60, 0.0)
+	assert_bool(fireflies.emitting).is_true()
+
+
+func test_firefly_density_depends_on_region_identity() -> void:
+	assert_int(Lights.firefly_amount("FlorestaDoDespertarV2")).is_greater(Lights.firefly_amount("ClareiraDoDespertar"))
+	assert_int(Lights.firefly_amount("ValeDasNascentes")).is_greater(Lights.firefly_amount("ClareiraDoDespertar"))
+	assert_int(Lights.firefly_amount("ClareiraDoDespertar")).is_greater(0)

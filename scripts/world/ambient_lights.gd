@@ -13,13 +13,14 @@ const DAWN_START := 4.5 * 60.0
 const DAWN_END := 6.5 * 60.0
 const CAMPFIRE_COLOR := Color(1.0, 0.55, 0.25)
 const GLOW_COLOR := Color(0.45, 0.95, 0.85)
-const PLAYER_COLOR := Color(0.85, 0.88, 1.0)
+const PLAYER_COLOR := Color(1.0, 0.96, 0.88)
 
 var _region: Node
 var _campfires: Array[PointLight2D] = []
 var _fires: Array[CPUParticles2D] = []
 var _glows: Array[PointLight2D] = []
 var _player_light: PointLight2D
+var _fireflies: CPUParticles2D
 var _time := 0.0
 var _light_texture: GradientTexture2D
 
@@ -35,9 +36,9 @@ static func night_factor(minutes: float) -> float:
 
 
 ## Textura radial com poucas faixas de intensidade (estilo pixel art).
-static func banded_light_texture(size: int) -> GradientTexture2D:
+static func banded_light_texture(size: int, banded: bool = true) -> GradientTexture2D:
 	var gradient := Gradient.new()
-	gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CONSTANT
+	gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CONSTANT if banded else Gradient.GRADIENT_INTERPOLATE_CUBIC
 	gradient.offsets = PackedFloat32Array([0.0, 0.3, 0.55, 0.78, 0.95])
 	gradient.colors = PackedColorArray([
 		Color(1, 1, 1, 1.0), Color(1, 1, 1, 0.7), Color(1, 1, 1, 0.42),
@@ -70,6 +71,14 @@ func campfire_lights() -> Array[PointLight2D]: return _campfires
 func campfire_fire() -> Array[CPUParticles2D]: return _fires
 func glow_lights() -> Array[PointLight2D]: return _glows
 func player_light() -> PointLight2D: return _player_light
+func fireflies() -> CPUParticles2D: return _fireflies
+
+
+## Mais vagalumes na Floresta e no Vale; poucos na Clareira (visibilidade para iniciantes).
+static func firefly_amount(region_name: String) -> int:
+	if region_name.contains("Floresta"): return 28
+	if region_name.contains("Vale"): return 20
+	return 8
 
 
 func _process(delta: float) -> void:
@@ -90,7 +99,9 @@ func apply_time(minutes: float, delta: float) -> void:
 		if is_instance_valid(light):
 			light.energy = 0.55 * night
 	if is_instance_valid(_player_light):
-		_player_light.energy = 0.32 * night
+		_player_light.energy = 0.22 * night
+	if is_instance_valid(_fireflies):
+		_fireflies.emitting = night > 0.4
 
 
 func _scan() -> void:
@@ -101,8 +112,12 @@ func _scan() -> void:
 	var player := _region.get_node_or_null("Player")
 	if player and not is_instance_valid(_player_light):
 		_player_light = _make_light(PLAYER_COLOR, 2.6)
+		# Luz de visibilidade: degradê suave (faixas viram anéis em chão escuro).
+		_player_light.texture = banded_light_texture(128, false)
 		_player_light.name = "VisibilityLight"
 		player.add_child(_player_light)
+		_fireflies = _make_fireflies(firefly_amount(str(_region.name)))
+		player.add_child(_fireflies)
 	apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), 0.0)
 
 
@@ -168,3 +183,35 @@ func _make_light(color: Color, scale: float) -> PointLight2D:
 	light.energy = 0.0
 	light.shadow_enabled = false
 	return light
+
+
+func _make_fireflies(amount: int) -> CPUParticles2D:
+	var flies := CPUParticles2D.new()
+	flies.name = "Fireflies"
+	flies.amount = amount
+	flies.lifetime = 6.0
+	flies.preprocess = 3.0
+	flies.local_coords = false
+	flies.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	flies.emission_rect_extents = Vector2(460, 260)
+	flies.direction = Vector2.UP
+	flies.spread = 180.0
+	flies.gravity = Vector2.ZERO
+	flies.initial_velocity_min = 3.0
+	flies.initial_velocity_max = 9.0
+	flies.scale_amount_min = 1.0
+	flies.scale_amount_max = 2.0
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.2, 0.5, 0.8, 1.0])
+	ramp.colors = PackedColorArray([
+		Color(0.8, 1.0, 0.45, 0.0), Color(0.85, 1.0, 0.5, 0.9), Color(0.6, 0.9, 0.35, 0.25),
+		Color(0.9, 1.0, 0.55, 0.85), Color(0.8, 1.0, 0.45, 0.0),
+	])
+	flies.color_ramp = ramp
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	flies.material = glow
+	flies.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	flies.emitting = false
+	return flies
