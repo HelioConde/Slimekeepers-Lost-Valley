@@ -39,6 +39,11 @@ FORBIDDEN = (
     "HTTPRequest", "HTTPClient", "ResourceSaver", "ProjectSettings.set_setting",
 )
 MAX_EDITS = 6
+# Evidencia versionada de uma PR real ja integrada; apenas a fila confiavel da main
+# pode marcar uma tarefa como concluida (sem executar outra inferencia).
+MERGED_PR_EVIDENCE = re.compile(
+    r"https://github\.com/HelioConde/Slimekeepers-Lost-Valley/pull/[1-9][0-9]*\Z"
+)
 
 
 class Phase2Error(RuntimeError):
@@ -75,6 +80,8 @@ def queue(path: Path = QUEUE) -> list[dict]:
             path_under_root(p)
         if task.get("status") not in ("planned", "completed"):
             raise Phase2Error("Estado do manifesto divergente.")
+        if task.get("status") == "completed" and not has_merged_pr_evidence(task):
+            raise Phase2Error("Tarefa concluida sem PR de integracao identificada.")
     return data["tasks"]
 
 
@@ -113,10 +120,19 @@ def editable_paths(task: dict) -> list[str]:
     return result[:2]
 
 
+def has_merged_pr_evidence(task: dict) -> bool:
+    proof = task.get("evidence")
+    return isinstance(proof, str) and MERGED_PR_EVIDENCE.fullmatch(proof) is not None
+
+
 def satisfied(task: dict) -> bool:
+    # Somente tarefas explicitamente marcadas por uma PR revisada na main
+    # podem ser puladas sem a suite no nome original da fila.
+    if task.get("status") == "completed":
+        return has_merged_pr_evidence(task)
     k = kind(task)
     if k == "implemented":
-        return task.get("status") == "completed"
+        return False
     if k == "report":
         return path_under_root(report_path(task)).is_file()
     if k == "patch":

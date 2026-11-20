@@ -57,3 +57,11 @@ O workflow [`slimekeepers-phase2.yml`](../.github/workflows/slimekeepers-phase2.
 Um segundo runner **sem credenciais** confere base SHA, diff, escopo, Godot 4.7.2, GdUnit4 e regressões. O repositório ainda impede que `GITHUB_TOKEN` crie Pull Requests; a branch e os testes são preservados e uma PR pode ser aberta pela integração GitHub do ChatGPT. Por segurança **não há merge automático de cenas/scripts nesta Fase 2**. A automação não avança dependências até o merge.
 
 As tarefas `p2-scoped-change-guard` e `p2-native-ci-guard` estão concluídas pela própria infraestrutura da PR #42. As tarefas de geração PixelLab permanecem intencionalmente bloqueadas até existir controle real de créditos, deduplicação e QA visual. O cron tenta a cada ~20 minutos, mas a fila de **600 minutos estimados** não tem conclusão garantida em 10 horas corridas.
+
+## Entregas manuais durante bloqueio de quota Astra
+
+- [PR #44 — ciclo de culinária jogável](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/44): auditoria, inventário transacional, estação de preparo (E), uma receita provisória, HUD, Novo Jogo e testes.
+- [PR #45 — alimentação dos slimes](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/45): porções consumíveis, oferta com F a slimes amigos, registro por identidade, sem duplicação ou efeito narrativo definitivo.
+- [PR #46 — colheitas e crescimento](https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/46): controle de colheita por canteiro, registro de ciclo, tempo contínuo através da meia-noite e testes Godot.
+
+**Proteção anti-retrabalho:** o executor da Fase 2 deve reconhecer as tarefas `completed` da fila `automation/phase2_10h_queue.json` somente quando houver `evidence` referenciando a PR já integrada à `main`. As tarefas não validadas ou de arte continuam abertas. A cota do proxy é independente das entregas manuais e continua sujeita ao preflight.
