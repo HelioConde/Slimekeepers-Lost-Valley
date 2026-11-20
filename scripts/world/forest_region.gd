@@ -6,6 +6,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const SEED_PATCH := preload("res://scripts/world/forest_seed_patch.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
+const GUIDANCE_HUD := preload("res://scripts/ui/cooking_guidance_hud.gd")
 const SEED_SITES := [
 	{"id": "jardim_folhas", "at": Vector2(4480, 3270)},
 	{"id": "bosque_cogumelos", "at": Vector2(2100, 2860)},
@@ -41,6 +42,7 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
+	$HUD/Interface.add_child(GUIDANCE_HUD.new())
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
