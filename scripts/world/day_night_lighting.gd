@@ -10,6 +10,12 @@ func _ready() -> void:
 	call_deferred("_sync_environment", GameClock.get_period())
 	call_deferred("_install_reflections")
 	call_deferred("_install_shadows")
+	call_deferred("_install_ambient_lights")
+
+
+func _install_ambient_lights() -> void:
+	if not is_inside_tree() or is_queued_for_deletion() or has_node("AmbientLights"): return
+	add_child(preload("res://scripts/world/ambient_lights.gd").new())
 
 
 func _process(delta: float) -> void:

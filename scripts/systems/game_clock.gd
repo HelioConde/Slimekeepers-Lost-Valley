@@ -17,9 +17,9 @@ const START_MINUTE: float = 7.0 * 60.0
 ## Color keyframes, interpolated smoothly for pixel-art friendly ambient light.
 ## The last keyframe repeats the first, avoiding flashes at midnight.
 const LIGHTING_STOPS = [
-	[0, Color(0.46, 0.54, 0.75)],
-	[180, Color(0.43, 0.50, 0.69)],
-	[270, Color(0.51, 0.56, 0.73)],
+	[0, Color(0.34, 0.39, 0.62)],
+	[180, Color(0.35, 0.38, 0.60)],
+	[270, Color(0.46, 0.48, 0.66)],
 	[300, Color(0.62, 0.58, 0.72)],
 	[420, Color(1.0, 0.93, 0.83)],
 	[540, Color(1.0, 1.0, 1.0)],
@@ -27,10 +27,10 @@ const LIGHTING_STOPS = [
 	[1020, Color(0.99, 0.84, 0.70)],
 	[1080, Color(0.88, 0.72, 0.75)],
 	[1170, Color(0.65, 0.62, 0.73)],
-	[1200, Color(0.57, 0.65, 0.87)],
-	[1320, Color(0.53, 0.61, 0.84)],
-	[1380, Color(0.49, 0.57, 0.79)],
-	[1440, Color(0.46, 0.54, 0.75)]
+	[1200, Color(0.50, 0.53, 0.73)],
+	[1320, Color(0.36, 0.41, 0.63)],
+	[1380, Color(0.34, 0.39, 0.62)],
+	[1440, Color(0.34, 0.39, 0.62)]
 ]
 
 ## Editable: 24 real minutes = one in-game day; one real second = one in-game minute.

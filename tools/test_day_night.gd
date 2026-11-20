@@ -76,7 +76,8 @@ func run():
  for minute in 1440:
   var tint:Color=model.lighting_at(minute)
   if distance(tint,model.lighting_at(minute+1))>.015:continuous=false
-  if tint.r*.2126+tint.g*.7152+tint.b*.0722<.48:readable=false
+  # Piso 0.38 (antes 0.48): noite mais escura compensada pela luz de visibilidade do jogador (AmbientLights).
+  if tint.r*.2126+tint.g*.7152+tint.b*.0722<.38:readable=false
  check(continuous,"All lighting minutes interpolate continuously, including midnight")
  check(readable,"Night palette retains minimum ambient luminance")
  check(model.lighting_at(720)==Color.WHITE,"Midday preserves original sprite palette")
