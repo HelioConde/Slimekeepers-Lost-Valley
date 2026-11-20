@@ -37,7 +37,7 @@ func test_empty_snapshot_json_round_trip_is_valid_and_independent() -> void:
 	assert_bool(SAVE.validate(decoded)).is_true()
 	assert_int(int(decoded["version"])).is_equal(SAVE.VERSION)
 	assert_int(int(decoded["clock"]["day"])).is_equal(1)
-	assert_int(tree.get_meta(BAG.INVENTORY_KEY, {}).size()).is_equal(0)
+	assert_bool(tree.has_meta(BAG.INVENTORY_KEY)).is_false()
 
 func test_capture_real_foraging_garden_cooking_and_offer() -> void:
 	var tree := get_tree()
