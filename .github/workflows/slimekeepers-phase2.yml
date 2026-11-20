@@ -22,7 +22,8 @@ on:
         required: true
         default: NO_INFERENCE
   schedule:
-    # 09h35 e 18h35, horario America/Sao_Paulo (UTC-3).
+    # Tentativa por tarefa a cada ~20 min; o GitHub pode atrasar ou pular o cron.
+    # Checkpoints e dependencias impedem inferencia duplicada.
     - cron: '7,27,47 * * * *'
   # Acionamento pontual via issue do proprietario; o rotulo so e aplicado com permissao de escrita.
   issues:
@@ -34,6 +35,11 @@ on:
       - 'automation/phase2_10h_queue.json'
       - 'tests/test_slimekeepers_phase2_agent.py'
       - '.github/workflows/slimekeepers-phase2.yml'
+      - 'docs/phase2/**'
+      - 'scripts/systems/**'
+      - 'scripts/world/**'
+      - 'scenes/regions/**'
+      - 'tests/forest/**'
 
 permissions:
   contents: read
@@ -458,3 +464,34 @@ jobs:
             ${{ runner.temp }}/autonomy-*.log
           retention-days: 14
           if-no-files-found: ignore
+
+  review-phase2-pr:
+    # Proteção também para PR aberta manualmente após bloqueio do GITHUB_TOKEN.
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'p2/p2-')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    permissions:
+      contents: read
+    env:
+      REVIEW_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      REVIEW_HEAD_REF: ${{ github.head_ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Revalidar PR pelo SHA e escopo da tarefa
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVIEW_HEAD_SHA"
+          git fetch origin main --depth=100
+          base_sha="$(git merge-base "$REVIEW_HEAD_SHA" origin/main)"
+          test -n "$base_sha"
+          task_id="${REVIEW_HEAD_REF#p2/}"
+          python tools/slimekeepers_phase2_guard.py --task-id "$task_id" --base-sha "$base_sha"
+          echo "PR aprovada pelo guard da Fase 2; regressões Godot verificadas em workflow independente." >> "$GITHUB_STEP_SUMMARY"
