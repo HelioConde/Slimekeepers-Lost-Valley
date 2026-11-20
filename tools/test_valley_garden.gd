@@ -180,11 +180,11 @@ func _run() -> void:
 		current_scene.player.global_position = cooking_station.global_position
 		await _settle()
 		_check(current_scene.hud_hint.text.contains("Preparar"), "Preparo de teste fica disponivel com folhas")
-		var recipe_panel: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
-		_check(is_instance_valid(recipe_panel) and recipe_panel.visible,
+		var recipe_panel_ready: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
+		_check(is_instance_valid(recipe_panel_ready) and recipe_panel_ready.visible,
 			"Lista de receitas aparece no ponto de preparo")
-		if is_instance_valid(recipe_panel):
-			_check(recipe_panel.get_node("RecipeList").text.contains("pronta para preparar"),
+		if is_instance_valid(recipe_panel_ready):
+			_check(recipe_panel_ready.get_node("RecipeList").text.contains("pronta para preparar"),
 				"Painel mostra receita disponivel com folhas")
 		await _press_e()
 		_check(BAG.leaves(self) == 1 and COOKING.portions(self) == 1,
@@ -204,9 +204,9 @@ func _run() -> void:
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Segundo preparo consome so a ultima folha sem duplicar refeicao")
-			var recipe_panel: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
-			if is_instance_valid(recipe_panel):
-				_check(recipe_panel.get_node("RecipeList").text.contains("falta 1 folha"),
+			var recipe_panel_after: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
+			if is_instance_valid(recipe_panel_after):
+				_check(recipe_panel_after.get_node("RecipeList").text.contains("falta 1 folha"),
 					"Painel atualiza ingredientes imediatamente depois de cozinhar")
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
