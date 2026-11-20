@@ -81,3 +81,6 @@ A variável fica no ambiente do processo e de seus filhos; não é gravada no Gi
 
 Referências de configuração: https://code.claude.com/docs/en/mcp e https://api.pixellab.ai/mcp/docs.
 
+## Economia de tokens (20/11/2026)
+
+Adicionadas oito skills locais: `context-window-hygiene`, `session-handoff-notes`, `subagent-design`, `memory-file-architect`, `usage-cost-tracking`, `skill-authoring`, `skill-description-tuning`, `statusline-scripts`. São adaptações sem scripts externos automáticos e não interferem nas skills Godot/PixelLab. Veja [guia de medição e segurança](TOKEN_ECONOMY.md).

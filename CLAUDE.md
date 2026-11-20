@@ -35,3 +35,8 @@ Projeto real, não um projeto Godot novo. Antes de propor alterações, leia `RE
 ## GodotPrompter
 Ao implementar um subsistema Godot, procure primeiro uma skill `godot-prompter:*` adequada, mas não duplique o trabalho dos subagentes locais nem altere o projeto apenas porque um template sugeriu. Prefira a versão do motor declarada em `project.godot` e os padrões já existentes.
 
+## Economia de tokens — Claude Code local
+- Prefira busca por símbolos e intervalos de linhas; não despeje cenas, logs ou JSON enormes no contexto.
+- Use `context-window-hygiene` em sessões longas e `session-handoff-notes` ao retomar trabalho.
+- Antes de alegar economia, use `usage-cost-tracking` e compare tokens totais (inclusive subagentes).
+- As oito skills estão documentadas em `docs/TOKEN_ECONOMY.md`; não mudam o proxy Astra das Actions.

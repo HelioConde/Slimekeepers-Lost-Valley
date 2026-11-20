@@ -15,3 +15,7 @@ output/pixellab/
 # Configuracoes e credenciais locais do Claude Code / MCP
 .claude/settings.local.json
 .mcp.local.json
+
+# Claude Code: uso privado e handoffs locais
+reports/claude-usage/
+.claude/local-handoffs/
