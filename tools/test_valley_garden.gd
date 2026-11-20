@@ -135,6 +135,8 @@ func _run() -> void:
 		"Sementes e crescimento preservados fora do Vale")
 	clock.advance_minutes(61.0)
 	_check(GARDEN.phase(self, clock, "norte") == "ready", "Cultivo amadurece mesmo fora do Vale")
+	_check(GARDEN.harvest_record(self).get("cycles", {}).is_empty(),
+		"Registro de colheita permanece vazio ate colher pela primeira vez")
 	await _travel_to_valley()
 	_check(current_scene.scene_file_path == VALLEY, "Volta ao Vale para a colheita")
 	north = current_scene.garden_beds[0]
@@ -144,6 +146,8 @@ func _run() -> void:
 	_check(current_scene.hud_hint.text.contains("Colher"), "HUD oferece colher o produto")
 	await _press_e()
 	_check(GARDEN.phase(self, clock, "norte") == "harvested", "Colheita atualiza canteiro")
+	_check(GARDEN.harvest_record(self).get("cycles", {}).get(0, {}).has("norte"),
+		"Primeira colheita e registrada uma vez no ledger")
 	_check(BAG.leaves(self) == 1 and BAG.seeds(self) == 1, "Folhas frescas entram na bolsa sem gastar mais sementes")
 	_check(_bag_text(current_scene).contains("folhas frescas 1"), "HUD mostra a colheita")
 	await _press_e()
@@ -161,6 +165,8 @@ func _run() -> void:
 	_check(GARDEN.phase(self, clock, "sul") == "ready", "Segundo cultivo cresce pelo clock")
 	await _press_e()
 	_check(BAG.leaves(self) == 2 and BAG.seeds(self) == 0, "Bolsa recebe segunda colheita")
+	_check(GARDEN.harvest_record(self).get("cycles", {}).get(0, {}).size() == 2,
+		"Ledger registra cada canteiro de forma independente")
 	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza segunda colheita")
 	# A troca de cenas invalida a referencia anterior. Recuperar sempre a estacao nova.
 	cooking_station = current_scene.get_node_or_null("CookingStation")
@@ -229,6 +235,8 @@ func _run() -> void:
 			"Novo Jogo limpa porcoes e ofertas, sem conservar saldo de partida anterior")
 		_check(GARDEN.phase(self, clock, "norte") == "empty" and
 			GARDEN.phase(self, clock, "sul") == "empty", "Novo Jogo reinicia ambos os canteiros")
+		_check(GARDEN.harvest_record(self).get("cycles", {}).is_empty(),
+			"Novo Jogo limpa ledger dos ciclos anteriores")
 		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
 	_finish()
 
