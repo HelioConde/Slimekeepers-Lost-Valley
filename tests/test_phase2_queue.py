@@ -43,7 +43,7 @@ class Phase2BacklogTests(unittest.TestCase):
             for path in task["candidate_paths"]:
                 self.assertFalse(path.startswith("/") or ".." in path.split("/"))
                 self.assertNotIn("\\", path)
-                self.assertFalse(path.startswith((".git", "secrets/", ".env")))
+                self.assertFalse(path == ".git" or path.startswith((".git/", "secrets/", ".env")))
 
     def test_stages_and_files_have_consistent_coverage(self):
         tasks = self.manifest["tasks"]
