@@ -40,7 +40,7 @@ func test_invalid_operations_leave_inventory_unchanged() -> void:
 	assert_bool(BAG.add_item(tree, BAG.ITEM_ID, 0)).is_false()
 	assert_dict(BAG.inventory_snapshot(tree)).is_equal(before)
 	tree.set_meta(BAG.INVENTORY_KEY, {BAG.ITEM_ID: 1, BAG.LEAVES_ID: -1})
-	var malformed := tree.get_meta(BAG.INVENTORY_KEY).duplicate()
+	var malformed: Dictionary = tree.get_meta(BAG.INVENTORY_KEY).duplicate()
 	assert_bool(BAG.add_item(tree, BAG.ITEM_ID, 1)).is_false()
 	assert_bool(BAG.spend_item(tree, BAG.ITEM_ID, 1)).is_false()
 	assert_dict(tree.get_meta(BAG.INVENTORY_KEY)).is_equal(malformed)
