@@ -112,6 +112,11 @@ func _run() -> void:
 		current_scene.player.global_position = cooking_station.global_position
 		await _settle()
 		_check(current_scene.hud_hint.text.contains("falta"), "Sem folhas, HUD informa ingrediente faltante")
+		var recipe_panel: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
+		_check(is_instance_valid(recipe_panel), "Lista de receitas esta ligada a HUD real")
+		if is_instance_valid(recipe_panel):
+			_check(recipe_panel.visible and recipe_panel.get_node("RecipeList").text.contains("falta 1 folha"),
+				"Painel indica a receita de teste e o ingrediente faltante")
 		await _press_e()
 		_check(COOKING.portions(self) == 0 and BAG.leaves(self) == 0,
 			"Tentar preparar sem ingredientes nao cria porcao")
@@ -175,6 +180,12 @@ func _run() -> void:
 		current_scene.player.global_position = cooking_station.global_position
 		await _settle()
 		_check(current_scene.hud_hint.text.contains("Preparar"), "Preparo de teste fica disponivel com folhas")
+		var recipe_panel: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
+		_check(is_instance_valid(recipe_panel) and recipe_panel.visible,
+			"Lista de receitas aparece no ponto de preparo")
+		if is_instance_valid(recipe_panel):
+			_check(recipe_panel.get_node("RecipeList").text.contains("pronta para preparar"),
+				"Painel mostra receita disponivel com folhas")
 		await _press_e()
 		_check(BAG.leaves(self) == 1 and COOKING.portions(self) == 1,
 			"Primeiro preparo gasta exatamente uma folha e registra uma porcao")
@@ -193,6 +204,10 @@ func _run() -> void:
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Segundo preparo consome so a ultima folha sem duplicar refeicao")
+			var recipe_panel: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
+			if is_instance_valid(recipe_panel):
+				_check(recipe_panel.get_node("RecipeList").text.contains("falta 1 folha"),
+					"Painel atualiza ingredientes imediatamente depois de cozinhar")
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
