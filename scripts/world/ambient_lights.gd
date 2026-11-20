@@ -14,6 +14,8 @@ const SLIME_GLOWS := {
 	"gelito": [Color(0.55, 0.82, 1.0), 0.9, false],
 }
 const DAPPLE_RADIUS := Vector2(430, 250)
+## Grade de mundo das manchas de sol: cada célula tem posição fixa (hash), não segue a câmera.
+const DAPPLE_CELL := 150.0
 const GLOW_TEXTURE_SUFFIX := "mushroom_glow.png"
 const CAMPFIRE_NAME := "CookingStation"
 const DUSK_START := 16.5 * 60.0
@@ -38,6 +40,7 @@ var _identity := 1.0
 var _time := 0.0
 var _light_texture: GradientTexture2D
 var _dapple_textures: Array[ImageTexture] = []
+var _soft_texture: GradientTexture2D
 
 
 ## 0 de dia, 1 à noite; rampas suaves no anoitecer e no amanhecer.
@@ -53,22 +56,22 @@ static func night_factor(minutes: float) -> float:
 ## Mancha de sol irregular em pixel art: bolhas sobrepostas em 3 faixas de alfa,
 ## em imagem pequena (ampliada pela luz) para manter o pixel visível.
 static func dapple_texture(variant: int) -> ImageTexture:
-	var size := 28
+	var size := 64
 	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 7919 + variant * 104729
 	var blobs: Array = []
-	for i in 4:
-		blobs.append([Vector2(rng.randf_range(9, 19), rng.randf_range(9, 19)), rng.randf_range(4.0, 7.5)])
+	# Aberturas entre folhas: vários lóbulos pequenos e irregulares.
+	for i in 7:
+		blobs.append([Vector2(rng.randf_range(16, 48), rng.randf_range(16, 48)), rng.randf_range(4.0, 10.0)])
 	for y in size:
 		for x in size:
 			var best := 9.0
 			for blob in blobs:
 				best = minf(best, Vector2(x, y).distance_to(blob[0]) / blob[1])
 			var alpha := 0.0
-			if best < 0.55: alpha = 1.0
-			elif best < 0.85: alpha = 0.6
-			elif best < 1.1: alpha = 0.28
+			if best < 0.8: alpha = 1.0
+			elif best < 1.0: alpha = 0.45
 			image.set_pixel(x, y, Color(1, 1, 1, alpha))
 	return ImageTexture.create_from_image(image)
 
@@ -96,6 +99,7 @@ func _ready() -> void:
 	name = "AmbientLights"
 	_region = get_parent().get_parent()
 	_light_texture = banded_light_texture(128)
+	_soft_texture = banded_light_texture(128, false)
 	for variant in 3:
 		_dapple_textures.append(dapple_texture(variant))
 	call_deferred("_scan")
@@ -168,9 +172,10 @@ func apply_time(minutes: float, delta: float) -> void:
 	if is_instance_valid(_motes):
 		_motes.emitting = night < 0.75
 		_motes.color = mote_color(minutes)
-	var pulse := 0.85 + 0.15 * sin(_time * 3.1)
-	for light in _slime_lights:
+	for i in _slime_lights.size():
+		var light := _slime_lights[i]
 		if is_instance_valid(light):
+			var pulse := 0.86 + 0.09 * sin(_time * (2.3 + i * 0.37)) + 0.05 * sin(_time * 5.9 + i)
 			light.energy = (0.25 + 0.45 * night) * pulse
 	_update_dapples(minutes, night)
 
@@ -193,9 +198,10 @@ func _scan() -> void:
 		_motes = _make_motes(int(round(22 * _identity)))
 		player.add_child(_motes)
 		for i in MAX_DAPPLES:
-			var dapple := _make_light(Color(1.0, 0.92, 0.7), 4.0 + 0.6 * (i % 3))
+			var dapple := _make_light(Color(1.0, 0.95, 0.82), 1.6 + 0.3 * (i % 3))
 			dapple.name = "SunDapple%d" % i
 			dapple.texture = _dapple_textures[i % _dapple_textures.size()]
+			dapple.add_child(_make_sunbeam_dust())
 			add_child(dapple)
 			_dapples.append(dapple)
 	apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), 0.0)
@@ -219,17 +225,18 @@ func _consider(node: Node) -> void:
 				node.set_meta("ambient_light", true)
 				var spec: Array = SLIME_GLOWS[id]
 				var light := _make_light(spec[0], spec[1])
+				light.texture = _soft_texture
 				light.name = "SlimeGlow"
 				node.add_child(light)
 				_slime_lights.append(light)
-				if spec[2]:
-					node.add_child(_make_sparks())
+				node.add_child(_make_sparks(spec[2]))
 				break
 	elif node is Sprite2D and _glows.size() < MAX_GLOW_LIGHTS:
 		var texture: Texture2D = node.texture
 		if texture and texture.resource_path.ends_with(GLOW_TEXTURE_SUFFIX):
 			node.set_meta("ambient_light", true)
 			var light := _make_light(GLOW_COLOR, 0.55)
+			light.texture = _soft_texture
 			light.name = "GlowLight"
 			node.add_child(light)
 			_glows.append(light)
@@ -321,24 +328,28 @@ func _update_dapples(minutes: float, night: float) -> void:
 		return
 	var player := _region.get_node_or_null("Player") as Node2D
 	var center := player.global_position if player else Vector2.ZERO
-	if _dapple_anchor == Vector2.INF or center.distance_to(_dapple_anchor) > 360.0:
-		_dapple_anchor = center
+	var cell := Vector2(floorf(center.x / DAPPLE_CELL), floorf(center.y / DAPPLE_CELL))
+	if _dapple_anchor != cell:
+		_dapple_anchor = cell
+		var homes := dapple_homes(center, _dapples.size())
 		for i in _dapples.size():
-			var seed_angle := float(i) * 2.39996
-			var radius := 0.35 + 0.65 * fposmod(float(i) * 0.618, 1.0)
-			_dapples[i].set_meta("home", center + Vector2(cos(seed_angle), sin(seed_angle)) * DAPPLE_RADIUS * radius)
+			_dapples[i].set_meta("home", homes[i])
 	var sun: Vector2 = SHADOWS.profile_at(minutes)["vector"]
 	var low_sun := clampf(sun.length() / 40.0, 0.0, 1.0)
 	var day := 1.0 - night
-	var warm := Color(1.0, 0.93, 0.72).lerp(Color(1.0, 0.78, 0.5), smoothstep(13 * 60.0, 17.5 * 60.0, fposmod(minutes, 1440.0)))
+	var warm := Color(1.0, 0.95, 0.82).lerp(Color(1.0, 0.82, 0.6), smoothstep(13 * 60.0, 17.5 * 60.0, fposmod(minutes, 1440.0)))
 	for i in _dapples.size():
 		var dapple := _dapples[i]
 		var home: Vector2 = dapple.get_meta("home", center)
-		dapple.global_position = home + Vector2(sin(_time * 0.4 + i), cos(_time * 0.33 + i * 1.7)) * 6.0
+		# Folhas balançando: deslocamento de 1–2 px, sem sair do lugar no mundo.
+		dapple.global_position = (home + Vector2(sin(_time * 0.9 + i), cos(_time * 0.7 + i * 1.7)) * 1.5).round()
 		dapple.rotation = sun.angle() + PI / 2.0 if sun.length() > 0.5 else 0.0
-		dapple.scale = Vector2(1.0, 1.0 + 1.4 * low_sun)
+		dapple.scale = Vector2(1.0, 1.0 + 0.9 * low_sun)
 		dapple.color = warm
-		dapple.energy = 0.42 * day * (0.6 + 0.4 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
+		var dust := dapple.get_node_or_null("SunbeamDust") as CPUParticles2D
+		if dust:
+			dust.emitting = day > 0.5
+		dapple.energy = 0.34 * day * (0.6 + 0.4 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
 
 
 func _make_motes(amount: int) -> CPUParticles2D:
@@ -357,25 +368,77 @@ func _make_motes(amount: int) -> CPUParticles2D:
 	return motes
 
 
-func _make_sparks() -> CPUParticles2D:
+func _make_sparks(fire: bool) -> CPUParticles2D:
 	var sparks := CPUParticles2D.new()
 	sparks.name = "SlimeSparks"
-	sparks.amount = 6
+	sparks.amount = 7 if fire else 5
 	sparks.lifetime = 0.9
 	sparks.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
 	sparks.emission_sphere_radius = 6.0
 	sparks.direction = Vector2.UP
 	sparks.spread = 35.0
-	sparks.gravity = Vector2(0, -18)
+	sparks.gravity = Vector2(0, -18) if fire else Vector2(0, -4)
+	sparks.lifetime = 0.9 if fire else 1.6
+	sparks.local_coords = false  # deixa um pequeno rastro ao se mover
 	sparks.initial_velocity_min = 6.0
 	sparks.initial_velocity_max = 14.0
 	sparks.scale_amount_min = 1.0
 	sparks.scale_amount_max = 2.0
 	var ramp := Gradient.new()
-	ramp.colors = PackedColorArray([Color(1.0, 0.85, 0.4, 1.0), Color(1.0, 0.35, 0.1, 0.0)])
+	ramp.colors = PackedColorArray([Color(1.0, 0.85, 0.4, 1.0), Color(1.0, 0.35, 0.1, 0.0)]) if fire else PackedColorArray([Color(0.8, 0.95, 1.0, 0.9), Color(0.5, 0.75, 1.0, 0.0)])
 	sparks.color_ramp = ramp
 	var glow := CanvasItemMaterial.new()
 	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
 	sparks.material = glow
 	return sparks
+
+
+## Posições fixas no mundo para as manchas de sol: uma por célula próxima ao jogador,
+## deslocada por hash da célula. Mesmo lugar sempre que o jogador volta.
+static func dapple_homes(center: Vector2, count: int) -> Array[Vector2]:
+	var homes: Array[Vector2] = []
+	var base := Vector2(floorf(center.x / DAPPLE_CELL), floorf(center.y / DAPPLE_CELL))
+	var cells: Array[Vector2] = []
+	for dy in range(-2, 3):
+		for dx in range(-3, 4):
+			cells.append(base + Vector2(dx, dy))
+	cells.sort_custom(func(a, b): return a.distance_squared_to(base) < b.distance_squared_to(base))
+	for cell in cells:
+		if homes.size() >= count:
+			break
+		var h := hash(Vector2i(cell))
+		if (h & 3) == 0:
+			continue  # algumas células ficam na sombra: variação natural
+		var jitter := Vector2(float((h >> 4) & 255) / 255.0, float((h >> 12) & 255) / 255.0)
+		homes.append(((cell + jitter) * DAPPLE_CELL).round())
+	while homes.size() < count:
+		homes.append(((base + Vector2(homes.size(), 0)) * DAPPLE_CELL).round())
+	return homes
+
+
+func _make_sunbeam_dust() -> CPUParticles2D:
+	var dust := CPUParticles2D.new()
+	dust.name = "SunbeamDust"
+	dust.amount = 4
+	dust.lifetime = 5.0
+	dust.preprocess = 2.5
+	dust.local_coords = false
+	dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	dust.emission_sphere_radius = 20.0
+	dust.gravity = Vector2(1.5, -1.0)
+	dust.initial_velocity_min = 0.5
+	dust.initial_velocity_max = 2.5
+	dust.spread = 180.0
+	dust.tangential_accel_min = -1.5
+	dust.tangential_accel_max = 1.5
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.25, 0.6, 1.0])
+	ramp.colors = PackedColorArray([Color(1.0, 0.9, 0.55, 0.0), Color(1.0, 0.92, 0.6, 0.8), Color(1.0, 0.85, 0.5, 0.45), Color(1.0, 0.9, 0.55, 0.0)])
+	dust.color_ramp = ramp
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	dust.material = glow
+	dust.emitting = false
+	return dust

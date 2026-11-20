@@ -166,3 +166,23 @@ func test_fire_and_ice_slimes_emit_real_light() -> void:
 	var cold: PointLight2D = lights.filter(func(l): return l.color.b > l.color.r)[0]
 	assert_float(warm.energy).is_greater(0.3)
 	assert_float(cold.energy).is_greater(0.3)
+
+
+func test_dapples_are_anchored_to_world_cells_not_the_camera() -> void:
+	var a := Lights.dapple_homes(Vector2(1000, 800), 9)
+	var b := Lights.dapple_homes(Vector2(1040, 830), 9)
+	assert_array(a).is_equal(b)
+	var far := Lights.dapple_homes(Vector2(1300, 800), 9)
+	var shared := a.filter(func(p): return far.has(p))
+	assert_int(shared.size()).is_greater(0)
+
+
+func test_slime_halos_are_continuous_not_ringed() -> void:
+	var parts := _rig_in_region(false, 0)
+	var slime := AnimatedSprite2D.new()
+	slime.sprite_frames = load("res://assets/slimes/bestiary/brasinha/brasinha_frames.tres")
+	parts[0].add_child(slime)
+	await await_idle_frame()
+	await await_idle_frame()
+	var gradient: Gradient = parts[1].slime_lights()[0].texture.gradient
+	assert_int(gradient.interpolation_mode).is_not_equal(Gradient.GRADIENT_INTERPOLATE_CONSTANT)
