@@ -1,6 +1,6 @@
 extends RefCounted
 ## Integracao jogavel de culinaria - porcao de teste, sem efeitos/nome canonicamente aprovados.
-## Uma folha fresca da bolsa gera um preparo de teste; nao e item de inventario nem bonus de slime.
+## Uma folha fresca vira uma porcao de teste no inventario, sem bonus canonico.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const BOOK := preload("res://scripts/systems/cooking_recipe_book.gd")
 const LEDGER := preload("res://scripts/systems/cooking_serving_ledger.gd")
@@ -39,7 +39,7 @@ static func prepare(tree: SceneTree) -> String:
 		return "invalid_ledger"
 	if not replacement.record_preparation(RECIPE_ID, 1):
 		return "invalid_ledger"
-	if not BAG.spend_item(tree, BAG.LEAVES_ID, 1):
+	if not BAG.exchange_item(tree, BAG.LEAVES_ID, RECIPE_ID, 1):
 		return "needs_leaves"
 	tree.set_meta(LEDGER_KEY, replacement)
 	return "prepared"

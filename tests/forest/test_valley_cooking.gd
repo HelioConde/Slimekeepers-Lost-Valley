@@ -37,7 +37,7 @@ func test_multiple_preparations_share_single_stock() -> void:
 	assert_int(BAG.leaves(tree)).is_equal(0)
 	assert_int(BAG.seeds(tree)).is_equal(2)
 	assert_int(COOKING.portions(tree)).is_equal(2)
-	assert_dict(BAG.inventory_snapshot(tree)).is_equal({BAG.ITEM_ID: 2})
+	assert_dict(BAG.inventory_snapshot(tree)).is_equal({BAG.ITEM_ID: 2, COOKING.RECIPE_ID: 2})
 
 func test_invalid_bag_and_corrupted_ledger_do_not_consume() -> void:
 	var tree := get_tree()

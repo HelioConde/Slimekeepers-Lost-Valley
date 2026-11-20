@@ -5,6 +5,7 @@ const Living = preload("res://scripts/world/living_region.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const GARDEN_BED := preload("res://scripts/world/valley_garden_bed.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
+const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
 var ecosystem: Node2D
@@ -163,6 +164,22 @@ func _on_water_slime(slime: Node2D) -> void:
 	slime.tree_exiting.connect(func(): slimes.erase(slime))
 	_update_living_goal()
 
+func _offer_prototype_food(slime: Node2D) -> void:
+	var result: String = FOOD.offer(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")))
+	match result:
+		"offered":
+			bag_hud.call("refresh")
+			slime.set("_happy_time", 2.4)
+			_notify("Uma porcao de teste foi oferecida a " + slime.display_name() + ".")
+		"needs_friendship":
+			_notify("Primeiro conheca este slime usando E.")
+		"already_offered":
+			_notify("Este slime ja recebeu uma porcao nesta partida.")
+		"needs_portion":
+			_notify("Cozinhe folhas frescas no Vale antes de oferecer comida.")
+		_:
+			_notify("Nao foi possivel oferecer a porcao; nenhum alimento foi gasto.")
+
 func _update_living_goal() -> void:
 	friends_count = 0
 	for friend in get_tree().get_meta("valley_slime_friends",{}).values():
@@ -191,8 +208,10 @@ func _process(delta: float) -> void:
 		if not _handle_cooking_interaction() and not _handle_garden_interaction():
 			var closest := _closest_slime()
 			if closest != null:
-				hud_hint.text = "[E] Fazer amizade com "+closest.display_name() if not closest.befriended else "[E] Cumprimentar "+closest.display_name()
-				if Input.is_action_just_pressed("interact"):
+				hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Oferecer porcao"
+				if Input.is_action_just_pressed("feed"):
+					_offer_prototype_food(closest)
+				elif Input.is_action_just_pressed("interact"):
 					closest.make_friend()
 					_update_living_goal()
 					_notify("Bolhinha salta e espalha pequenas gotas de alegria.")
