@@ -287,12 +287,20 @@ jobs:
               "\n".join(lines)+"\n", encoding="utf-8"
           )
           PY
-          pr_url=$(gh pr create --base main --head "$DEV_BRANCH" \
-            --title "[AI/Godot] $DEV_TASK_TITLE" \
-            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md")
-          echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
+          # O codigo e o SHA sempre ficam disponiveis para QA, mesmo se
+          # o repositorio proibir que GITHUB_TOKEN crie Pull Requests.
           echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "PR criado para validacao independente: $pr_url"
+          if pr_url=$(gh pr create --base main --head "$DEV_BRANCH" \
+            --title "[AI/Godot] $DEV_TASK_TITLE" \
+            --body-file "$RUNNER_TEMP/slimekeepers-dev-pr.md" 2>"$RUNNER_TEMP/slimekeepers-pr-error.log"); then
+            echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
+            echo "PR criado para validacao independente: $pr_url"
+          else
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+            echo "::warning::GitHub nao permitiu abrir PR automaticamente; codigo preservado na branch e QA independente habilitado."
+            echo "## PR pendente de permissao do repositorio" >> "$GITHUB_STEP_SUMMARY"
+            echo "Codigo disponivel na branch \`$DEV_BRANCH\`; confirmar QA e abrir PR sem nova chamada de IA." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Arquivar resumo sem codigo ou credenciais
         if: always() && env.DEV_TASK_ID != ''
@@ -314,7 +322,7 @@ jobs:
 
   validate-generated:
     # O codigo gerado pelo modelo so executa em runner separado sem secrets.
-    if: needs.develop-one-task.outputs.pr_number != ''
+    if: needs.develop-one-task.outputs.head_sha != ''
     needs: develop-one-task
     runs-on: ubuntu-24.04
     timeout-minutes: 30
