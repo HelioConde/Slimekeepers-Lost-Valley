@@ -1,0 +1,82 @@
+extends GdUnitTestSuite
+
+## Movimento em 8 direções, animações montadas a partir dos assets e limites do mundo.
+
+const PlayerScene := preload("res://scenes/player.tscn")
+const MOVE_ACTIONS := ["move_left", "move_right", "move_up", "move_down", "sprint"]
+
+
+func after_test() -> void:
+	for action in MOVE_ACTIONS:
+		Input.action_release(action)
+
+
+func _spawn_player() -> CharacterBody2D:
+	var player: CharacterBody2D = PlayerScene.instantiate()
+	add_child(player)
+	auto_free(player)
+	return player
+
+
+func test_direction_names_cover_all_eight_sectors() -> void:
+	var player := _spawn_player()
+	var cases := {
+		Vector2.DOWN: "south", Vector2(1, 1): "south-east",
+		Vector2.RIGHT: "east", Vector2(1, -1): "north-east",
+		Vector2.UP: "north", Vector2(-1, -1): "north-west",
+		Vector2.LEFT: "west", Vector2(-1, 1): "south-west",
+	}
+	for direction in cases:
+		assert_str(player._get_direction_name(direction)).override_failure_message(str(direction)).is_equal(cases[direction])
+
+
+func test_frames_include_idle_walk_and_run_for_every_direction() -> void:
+	var player := _spawn_player()
+	var frames: SpriteFrames = player.sprite.sprite_frames
+	for direction in player.DIRS:
+		for prefix_and_count in [["idle_", 1], ["walk_", 6], ["run_", 8]]:
+			var anim: String = prefix_and_count[0] + direction
+			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
+			assert_int(frames.get_frame_count(anim)).override_failure_message(anim).is_equal(prefix_and_count[1])
+			for i in frames.get_frame_count(anim):
+				assert_object(frames.get_frame_texture(anim, i)).override_failure_message("%s[%d]" % [anim, i]).is_not_null()
+
+
+func test_starts_idle_facing_south_with_foot_collider() -> void:
+	var player := _spawn_player()
+	assert_str(player.current_animation).is_equal("idle_south")
+	var shape := player.get_node("CollisionShape2D").shape as RectangleShape2D
+	assert_object(shape).is_not_null()
+	assert_vector(shape.size).is_equal(Vector2(18, 12))
+
+
+func test_walk_and_sprint_speeds_and_facing() -> void:
+	var player := _spawn_player()
+	player.global_position = player.world_bounds.get_center()
+	Input.action_press("move_right")
+	player._physics_process(1.0 / 60.0)
+	assert_float(player.velocity.length()).is_equal_approx(player.WALK_SPEED, 0.01)
+	assert_str(player.facing).is_equal("east")
+	assert_str(player.current_animation).is_equal("walk_east")
+	Input.action_press("sprint")
+	player._physics_process(1.0 / 60.0)
+	assert_float(player.velocity.length()).is_equal_approx(player.RUN_SPEED, 0.01)
+	assert_str(player.current_animation).is_equal("run_east")
+
+
+func test_releasing_input_keeps_facing_and_returns_to_idle() -> void:
+	var player := _spawn_player()
+	player.global_position = player.world_bounds.get_center()
+	Input.action_press("move_up")
+	player._physics_process(1.0 / 60.0)
+	Input.action_release("move_up")
+	player._physics_process(1.0 / 60.0)
+	assert_vector(player.velocity).is_equal(Vector2.ZERO)
+	assert_str(player.current_animation).is_equal("idle_north")
+
+
+func test_position_is_clamped_to_world_bounds() -> void:
+	var player := _spawn_player()
+	player.global_position = Vector2(-500, 5000)
+	player._physics_process(1.0 / 60.0)
+	assert_vector(player.global_position).is_equal(Vector2(player.world_bounds.position.x, player.world_bounds.end.y))
