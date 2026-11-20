@@ -4,6 +4,7 @@ extends RefCounted
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const CALCULATOR := preload("res://scripts/systems/crop_stage_calculator.gd")
 const LEDGER := preload("res://scripts/systems/garden_harvest_ledger.gd")
+const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const KEY := "valley_starter_garden"
 const LEDGER_KEY := "valley_starter_garden_harvests"
 const BEDS := ["norte", "sul"]
@@ -41,6 +42,7 @@ static func plant(tree: SceneTree, clock: Node, bed_id: String) -> bool:
 	var beds: Dictionary = tree.get_meta(KEY, {}).duplicate(true)
 	beds[bed_id] = {"planted_at": elapsed_minutes(clock), "harvested": false}
 	tree.set_meta(KEY, beds)
+	PROGRESS.mark_event(tree, PROGRESS.GARDEN_PLANTED)
 	return true
 
 static func harvest_record(tree: SceneTree) -> Dictionary:
