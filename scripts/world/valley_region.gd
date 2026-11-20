@@ -5,6 +5,8 @@ const Living = preload("res://scripts/world/living_region.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const GARDEN_BED := preload("res://scripts/world/valley_garden_bed.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
+const COOKING := preload("res://scripts/systems/valley_cooking.gd")
+const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
@@ -13,6 +15,7 @@ var reduce_motion := false
 var found_zones: Dictionary = {}
 var bag_hud: Node
 var garden_beds: Array[Node2D] = []
+var cooking_station: Node2D
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -45,6 +48,7 @@ func _ready() -> void:
 	art.region_kind = "valley"
 	add_child(art)
 	_spawn_starter_garden()
+	_spawn_cooking_station()
 
 func _spawn_starter_garden() -> void:
 	var garden := Node2D.new()
@@ -58,6 +62,29 @@ func _spawn_starter_garden() -> void:
 		bed.configure(str(plot["id"]), plot["at"])
 		garden.add_child(bed)
 		garden_beds.append(bed)
+
+func _spawn_cooking_station() -> void:
+	cooking_station = COOKING_STATION.new()
+	cooking_station.position = Vector2(1515, 460)
+	add_child(cooking_station)
+
+func _handle_cooking_interaction() -> bool:
+	if not is_instance_valid(cooking_station):
+		return false
+	if player.global_position.distance_to(cooking_station.global_position) >= 68.0:
+		return false
+	var check: Dictionary = COOKING.availability(get_tree())
+	hud_hint.text = "[E] Preparar porcao de folhas (teste)" if bool(check.get("available", false)) else "Preparo: falta 1 folha fresca colhida"
+	if Input.is_action_just_pressed("interact"):
+		var result: String = COOKING.prepare(get_tree())
+		if result == "prepared":
+			bag_hud.call("refresh")
+			_notify("Preparo de teste pronto! Porcoes preparadas: %d" % COOKING.portions(get_tree()))
+		elif result == "needs_leaves":
+			_notify("Cultive e colha folhas frescas antes de preparar.")
+		else:
+			_notify("Nao foi possivel preparar; nenhum ingrediente foi gasto.")
+	return true
 
 func _nearest_garden_bed() -> Node2D:
 	var result: Node2D = null
@@ -161,7 +188,7 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("interact"):
 			_notify("O caminho segue pela ilha. Uma nova região chegará em breve.")
 	else:
-		if not _handle_garden_interaction():
+		if not _handle_cooking_interaction() and not _handle_garden_interaction():
 			var closest := _closest_slime()
 			if closest != null:
 				hud_hint.text = "[E] Fazer amizade com "+closest.display_name() if not closest.befriended else "[E] Cumprimentar "+closest.display_name()

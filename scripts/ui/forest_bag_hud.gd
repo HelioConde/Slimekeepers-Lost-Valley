@@ -1,6 +1,7 @@
 extends PanelContainer
 ## Exibe somente o inventario simples de sessao, em ambas as regioes.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
+const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
 const TOTAL_PATCHES := 3
 var _counter: Label
@@ -9,7 +10,7 @@ func _ready() -> void:
 	name = "ForagingBagPanel"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	offset_left = 18
-	offset_right = 450
+	offset_right = 600
 	offset_top = 100
 	offset_bottom = 135
 	var skin := StyleBoxFlat.new()
@@ -30,4 +31,4 @@ func _ready() -> void:
 
 func refresh() -> void:
 	if is_instance_valid(_counter):
-		_counter.text = "Bolsa · sementes %d/%d · folhas frescas %d" % [BAG.seeds(get_tree()), TOTAL_PATCHES, BAG.leaves(get_tree())]
+		_counter.text = "Bolsa · sementes %d/%d · folhas frescas %d · preparos %d" % [BAG.seeds(get_tree()), TOTAL_PATCHES, BAG.leaves(get_tree()), COOKING.portions(get_tree())]

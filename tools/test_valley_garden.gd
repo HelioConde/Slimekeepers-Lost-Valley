@@ -2,6 +2,7 @@ extends SceneTree
 ## Validacao nativa: Brotinho -> sementes -> plantar -> crescer -> colher -> viajar -> reset.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const GARDEN := preload("res://scripts/systems/valley_starter_garden.gd")
+const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const VALLEY_LAYOUT := preload("res://scripts/world/valley_layout.gd")
 const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
 const VALLEY := "res://scenes/regions/ValeDasNascentes.tscn"
@@ -95,6 +96,17 @@ func _run() -> void:
 		_check(VALLEY_LAYOUT.route_distance(bed.position, VALLEY_LAYOUT.routes()) < 80,
 			"Canteiro esta proximo do caminho percorrivel: " + str(bed.get("bed_id")))
 	_check(_bag_text(current_scene).contains("2/3"), "Vale mostra sementes trazidas da floresta")
+	var cooking_station: Node2D = current_scene.get_node_or_null("CookingStation")
+	_check(cooking_station != null, "Estacao de preparo aparece na cena real do Vale")
+	if cooking_station != null:
+		_check(VALLEY_LAYOUT.route_distance(cooking_station.position, VALLEY_LAYOUT.routes()) < 80,
+			"Estacao de preparo fica proxima a trilha do Vale")
+		current_scene.player.global_position = cooking_station.global_position
+		await _settle()
+		_check(current_scene.hud_hint.text.contains("falta"), "Sem folhas, HUD informa ingrediente faltante")
+		await _press_e()
+		_check(COOKING.portions(self) == 0 and BAG.leaves(self) == 0,
+			"Tentar preparar sem ingredientes nao cria porcao")
 	var north: Node2D = current_scene.garden_beds[0]
 	current_scene.player.global_position = north.global_position
 	await _settle()
@@ -142,6 +154,31 @@ func _run() -> void:
 	await _press_e()
 	_check(BAG.leaves(self) == 2 and BAG.seeds(self) == 0, "Bolsa recebe segunda colheita")
 	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza segunda colheita")
+	if cooking_station != null:
+		current_scene.player.global_position = cooking_station.global_position
+		await _settle()
+		_check(current_scene.hud_hint.text.contains("Preparar"), "Preparo de teste fica disponivel com folhas")
+		await _press_e()
+		_check(BAG.leaves(self) == 1 and COOKING.portions(self) == 1,
+			"Primeiro preparo gasta exatamente uma folha e registra uma porcao")
+		_check(_bag_text(current_scene).contains("preparos 1"), "HUD exibe porcao realmente produzida")
+		await _travel_to_forest()
+		_check(current_scene.scene_file_path == FOREST and COOKING.portions(self) == 1 and BAG.leaves(self) == 1,
+			"Porcao e folha restante persistem na viagem ao mapa anterior")
+		_check(_bag_text(current_scene).contains("preparos 1"), "HUD da floresta reconhece preparo da sessao")
+		await _travel_to_valley()
+		_check(current_scene.scene_file_path == VALLEY, "Retorno ao Vale apos preparar refeicao")
+		cooking_station = current_scene.get_node_or_null("CookingStation")
+		_check(cooking_station != null, "Estacao recriada com registro intacto")
+		if cooking_station != null:
+			current_scene.player.global_position = cooking_station.global_position
+			await _settle()
+			await _press_e()
+			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
+				"Segundo preparo consome so a ultima folha sem duplicar refeicao")
+			await _press_e()
+			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
+				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
 	_change_to_menu()
 	await _settle()
 	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/start_menu.tscn",
@@ -151,6 +188,7 @@ func _run() -> void:
 		await _settle()
 		_check(current_scene.scene_file_path == FOREST, "Novo Jogo retorna a floresta")
 		_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "Novo Jogo limpa sementes e folhas")
+		_check(COOKING.portions(self) == 0, "Novo Jogo limpa o registro de preparos da sessao")
 		_check(GARDEN.phase(self, clock, "norte") == "empty" and
 			GARDEN.phase(self, clock, "sul") == "empty", "Novo Jogo reinicia ambos os canteiros")
 		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
