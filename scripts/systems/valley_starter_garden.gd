@@ -46,7 +46,9 @@ static func plant(tree: SceneTree, clock: Node, bed_id: String) -> bool:
 static func harvest_record(tree: SceneTree) -> Dictionary:
 	var data: Variant = tree.get_meta(LEDGER_KEY, {"cycles": {}})
 	var ledger = LEDGER.new()
-	return ledger.get_save_data() if not ledger.load_save_data(data) else ledger.get_save_data()
+	if not ledger.load_save_data(data):
+		return {}
+	return ledger.get_save_data()
 
 static func harvest(tree: SceneTree, clock: Node, bed_id: String) -> bool:
 	if phase(tree, clock, bed_id) != "ready":
