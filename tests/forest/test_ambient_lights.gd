@@ -235,3 +235,87 @@ func test_slime_halos_are_continuous_not_ringed() -> void:
 	await await_idle_frame()
 	var gradient: Gradient = parts[1].slime_lights()[0].texture.gradient
 	assert_int(gradient.interpolation_mode).is_not_equal(Gradient.GRADIENT_INTERPOLATE_CONSTANT)
+
+
+func test_spots_are_classified_by_texture() -> void:
+	assert_str(Lights.classify_spot("res://assets/world/valley/reeds.png")).is_equal("water")
+	assert_str(Lights.classify_spot("res://assets/world/valley/lily_pad.png")).is_equal("water")
+	assert_str(Lights.classify_spot("res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png")).is_equal("vegetation")
+	assert_str(Lights.classify_spot("res://assets/world/forest/fern.png")).is_equal("vegetation")
+	assert_str(Lights.classify_spot("res://assets/menu/environment/flowers.png")).is_equal("bloom")
+	assert_str(Lights.classify_spot("res://assets/world/forest/mushroom_red.png")).is_equal("bloom")
+	assert_str(Lights.classify_spot("res://assets/world/forest/pine_crisp.png")).is_equal("")
+
+
+func test_special_blooms_are_rare_and_stable() -> void:
+	var special := 0
+	for x in 40:
+		for y in 25:
+			var at := Vector2(x * 37, y * 53)
+			if Lights.is_special_bloom(at): special += 1
+			assert_bool(Lights.is_special_bloom(at)).is_equal(Lights.is_special_bloom(at))
+	assert_float(special / 1000.0).is_between(0.03, 0.2)
+
+
+func _spot_rig() -> Array:
+	var parts := _rig_in_region(false, 0)
+	var region: Node2D = parts[0]
+	for at in [Vector2(120, 0), Vector2(-260, 60), Vector2(0, 220)]:
+		var bush := Sprite2D.new()
+		bush.texture = load("res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png")
+		bush.position = at
+		region.add_child(bush)
+	var reeds := Sprite2D.new()
+	reeds.texture = load("res://assets/world/valley/reeds.png")
+	reeds.position = Vector2(300, -150)
+	region.add_child(reeds)
+	for i in 120:
+		var flower := Sprite2D.new()
+		flower.texture = load("res://assets/menu/environment/flowers.png")
+		flower.position = Vector2((i % 12) * 41 - 240, (i / 12) * 37 - 180)
+		region.add_child(flower)
+	return parts
+
+
+func test_firefly_swarms_gather_at_vegetation_and_water_at_night_only() -> void:
+	var rig: Node2D = _spot_rig()[1]
+	await await_idle_frame()
+	rig.apply_time(23 * 60, 0.0)
+	var swarms: Array = rig.firefly_swarms()
+	assert_int(swarms.size()).is_greater(0)
+	var spots: Array = rig.spots("water") + rig.spots("vegetation")
+	var placed := 0
+	for swarm in swarms:
+		if not swarm.visible: continue
+		placed += 1
+		assert_bool(swarm.emitting).is_true()
+		var nearest := 9999.0
+		for spot in spots: nearest = minf(nearest, swarm.global_position.distance_to(spot))
+		assert_float(nearest).is_less(1.0)
+	assert_int(placed).is_equal(4)
+	# A margem d'água entra antes da vegetação comum.
+	assert_bool(swarms.any(func(s): return s.visible and s.global_position == Vector2(300, -150))).is_true()
+	rig.apply_time(12 * 60, 0.0)
+	for swarm in swarms: assert_bool(swarm.emitting).is_false()
+
+
+func test_magic_glints_sit_on_special_blooms_and_twinkle_rarely() -> void:
+	var rig: Node2D = _spot_rig()[1]
+	await await_idle_frame()
+	var glints: Array = rig.magic_glints()
+	assert_int(glints.size()).is_between(1, Lights.MAX_GLINTS)
+	var blooms: Array = rig.spots("bloom")
+	assert_int(blooms.size()).is_greater(0)
+	assert_int(blooms.size()).is_less(60)
+	var on_frames := 0
+	var frames := 0
+	for i in 200:
+		rig.apply_time(21 * 60, 0.25)
+		for glint in glints:
+			if not glint.visible: continue
+			frames += 1
+			assert_bool(blooms.has(glint.global_position + Vector2(0, 8))).is_true()
+			if glint.emitting: on_frames += 1
+	assert_int(frames).is_greater(0)
+	# Raros: piscam parte do tempo, nunca o tempo todo.
+	assert_float(float(on_frames) / frames).is_between(0.1, 0.6)

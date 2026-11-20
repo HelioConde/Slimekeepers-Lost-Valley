@@ -7,6 +7,13 @@ extends Node2D
 const MAX_GLOW_LIGHTS := 12
 const MAX_DAPPLES := 9
 const MAX_SLIME_LIGHTS := 10
+## Enxames de vagalumes (margens d'água primeiro, depois vegetação) e brilhos
+## mágicos raros em flores/cogumelos especiais, reposicionados perto do jogador.
+const MAX_SWARMS := 6
+const MAX_GLINTS := 5
+const SPOT_RADIUS := 720.0
+const SPOT_SEPARATION := 90.0
+const GLINT_LIFT := Vector2(0, -8)
 const SHADOWS := preload("res://scripts/world/day_shadows.gd")
 ## id de slime (no caminho dos SpriteFrames) -> [cor, escala, faíscas]
 const SLIME_GLOWS := {
@@ -46,6 +53,11 @@ var _dapple_material: CanvasItemMaterial
 var _player_dapple_light: PointLight2D
 var _dapple_anchor := Vector2.INF
 var _slime_lights: Array[PointLight2D] = []
+var _spots := {"water": [], "vegetation": [], "bloom": []}
+var _spots_dirty := true
+var _spot_anchor := Vector2.INF
+var _swarms: Array[CPUParticles2D] = []
+var _glints: Array[CPUParticles2D] = []
 var _identity := 1.0
 var _time := 0.0
 var _light_texture: GradientTexture2D
@@ -147,6 +159,41 @@ func motes() -> CPUParticles2D: return _motes
 func dapples() -> Array[Sprite2D]: return _dapples
 func dapple_strength(index: int) -> float: return _dapple_strengths[index] if index < _dapple_strengths.size() else 0.0
 func slime_lights() -> Array[PointLight2D]: return _slime_lights
+func firefly_swarms() -> Array[CPUParticles2D]: return _swarms
+func magic_glints() -> Array[CPUParticles2D]: return _glints
+func spots(kind: String) -> Array: return _spots.get(kind, [])
+
+
+## Onde vagalumes e brilhos se concentram, pelo nome da textura.
+static func classify_spot(path: String) -> String:
+	var p := path.to_lower()
+	if "reed" in p or "lily" in p or "water" in p: return "water"
+	if "bush" in p or "fern" in p or "shrub" in p: return "vegetation"
+	if "flower" in p or "mushroom" in p: return "bloom"
+	return ""
+
+
+## Só ~1 em 11 flores/cogumelos é "especial" (hash da posição: sempre o mesmo).
+static func is_special_bloom(at: Vector2) -> bool:
+	return posmod(hash(Vector2i(at.round())), 11) == 0
+
+
+## Pontos mais próximos do centro, até count, com distância mínima entre si.
+static func nearest_spots(points: Array, center: Vector2, count: int, taken: Array = [], separation: float = SPOT_SEPARATION) -> Array[Vector2]:
+	var near := points.filter(func(p): return p.distance_to(center) <= SPOT_RADIUS)
+	near.sort_custom(func(a, b): return a.distance_squared_to(center) < b.distance_squared_to(center))
+	var picked: Array[Vector2] = []
+	for point in near:
+		if picked.size() >= count:
+			break
+		var free := true
+		for other in picked + taken:
+			if point.distance_to(other) < separation:
+				free = false
+				break
+		if free:
+			picked.append(point)
+	return picked
 
 
 ## Força da luz filtrada por região: Floresta misteriosa, Clareira suave.
@@ -206,6 +253,7 @@ func apply_time(minutes: float, delta: float) -> void:
 			var pulse := 0.86 + 0.09 * sin(_time * (2.3 + i * 0.37)) + 0.05 * sin(_time * 5.9 + i)
 			light.energy = (0.25 + 0.45 * night) * pulse
 	_update_dapples(minutes, night)
+	_update_spots(night)
 
 
 func _scan() -> void:
@@ -220,8 +268,27 @@ func _scan() -> void:
 		_player_light.texture = banded_light_texture(128, false)
 		_player_light.name = "VisibilityLight"
 		player.add_child(_player_light)
-		_fireflies = _make_fireflies(firefly_amount(str(_region.name)))
+		# Poucos vagalumes soltos; o grosso fica nos enxames da vegetação e da água.
+		_fireflies = _make_fireflies(maxi(4, firefly_amount(str(_region.name)) / 3))
 		player.add_child(_fireflies)
+		for i in MAX_SWARMS:
+			var swarm := _make_fireflies(maxi(3, firefly_amount(str(_region.name)) / 5))
+			swarm.name = "FireflySwarm%d" % i
+			swarm.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+			swarm.emission_sphere_radius = 28.0
+			swarm.initial_velocity_max = 6.0
+			swarm.scale_amount_min = 2.0
+			swarm.scale_amount_max = 3.0
+			swarm.z_as_relative = false
+			swarm.z_index = 1
+			swarm.visible = false
+			add_child(swarm)
+			_swarms.append(swarm)
+		for i in MAX_GLINTS:
+			var glint := _make_glint()
+			glint.name = "MagicGlint%d" % i
+			add_child(glint)
+			_glints.append(glint)
 		_identity = region_identity(str(_region.name))
 		_motes = _make_motes(int(round(22 * _identity)))
 		player.add_child(_motes)
@@ -242,7 +309,10 @@ func _on_node_added(node: Node) -> void:
 
 
 func _consider(node: Node) -> void:
-	if not is_instance_valid(node) or node.has_meta("ambient_light"):
+	if not is_instance_valid(node):
+		return
+	_consider_spot(node)
+	if node.has_meta("ambient_light"):
 		return
 	if node.name == CAMPFIRE_NAME and node is Node2D:
 		node.set_meta("ambient_light", true)
@@ -269,6 +339,80 @@ func _consider(node: Node) -> void:
 			light.name = "GlowLight"
 			node.add_child(light)
 			_glows.append(light)
+
+
+func _consider_spot(node: Node) -> void:
+	if node.has_meta("ambient_spot") or not node is Node2D:
+		return
+	var kind := ""
+	if node.is_in_group("water_sources"):
+		kind = "water"
+	elif node is Sprite2D and node.texture:
+		kind = classify_spot(node.texture.resource_path)
+		if kind == "bloom" and not is_special_bloom(node.global_position):
+			kind = ""
+	if kind.is_empty():
+		return
+	node.set_meta("ambient_spot", true)
+	_spots[kind].append((node as Node2D).global_position.round())
+	_spots_dirty = true
+
+
+func _update_spots(night: float) -> void:
+	if _swarms.is_empty() or not is_instance_valid(_region):
+		return
+	var player := _region.get_node_or_null("Player") as Node2D
+	var center := player.global_position if player else Vector2.ZERO
+	var cell := Vector2(floorf(center.x / DAPPLE_CELL), floorf(center.y / DAPPLE_CELL))
+	if _spots_dirty or cell != _spot_anchor:
+		_spots_dirty = false
+		_spot_anchor = cell
+		var water := nearest_spots(_spots["water"], center, MAX_SWARMS)
+		var picks := water + nearest_spots(_spots["vegetation"], center, MAX_SWARMS - water.size(), water)
+		for i in _swarms.size():
+			_swarms[i].visible = i < picks.size()
+			if _swarms[i].visible:
+				_swarms[i].global_position = picks[i]
+		var blooms := nearest_spots(_spots["bloom"], center, MAX_GLINTS, [], 60.0)
+		for i in _glints.size():
+			_glints[i].visible = i < blooms.size()
+			if _glints[i].visible:
+				_glints[i].global_position = blooms[i] + GLINT_LIFT
+	for swarm in _swarms:
+		swarm.emitting = swarm.visible and night > 0.2
+	for i in _glints.size():
+		# Cintila de vez em quando, cada flor no seu ritmo; mais comum à noite.
+		_glints[i].emitting = _glints[i].visible and sin(_time * (0.45 + 0.04 * i) + i * 2.1) > 0.55 - 0.15 * night
+
+
+func _make_glint() -> CPUParticles2D:
+	var glint := CPUParticles2D.new()
+	glint.amount = 3
+	glint.lifetime = 1.2
+	glint.local_coords = false
+	glint.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	glint.emission_sphere_radius = 6.0
+	glint.direction = Vector2.UP
+	glint.spread = 60.0
+	glint.gravity = Vector2(0, -8)
+	glint.initial_velocity_min = 2.0
+	glint.initial_velocity_max = 6.0
+	glint.scale_amount_min = 1.0
+	glint.scale_amount_max = 2.0
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.2, 0.6, 1.0])
+	ramp.colors = PackedColorArray([Color(1, 1, 1, 0), Color(0.85, 1.0, 1.0, 1.0), Color(1.0, 0.8, 1.0, 0.6), Color(1, 1, 1, 0)])
+	glint.color_ramp = ramp
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	glint.material = glow
+	glint.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	glint.z_as_relative = false
+	glint.z_index = 1
+	glint.visible = false
+	glint.emitting = false
+	return glint
 
 
 func _add_campfire(station: Node2D) -> void:
