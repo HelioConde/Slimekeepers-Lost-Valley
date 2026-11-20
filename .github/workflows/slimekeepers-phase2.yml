@@ -1,0 +1,497 @@
+name: Slimekeepers - Fase 2 desenvolvimento Astra
+
+# Uma tarefa pequena por run; agendamento autorizado pelo criador em 19/11/2026.
+# Pause: Settings > Variables > SLIMEKEEPERS_PHASE2_PAUSED=true.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'plan = fila sem inferencia; develop = produzir uma PR'
+        type: choice
+        required: true
+        default: plan
+        options: [plan, develop]
+      task_id:
+        description: 'ID da tarefa ou auto para a primeira nao reservada'
+        type: string
+        required: true
+        default: auto
+      confirmation:
+        description: 'Para develop, escrever AUTHORIZE_ONE_DEV_TASK'
+        type: string
+        required: true
+        default: NO_INFERENCE
+  schedule:
+    # Tentativa por tarefa a cada ~20 min; o GitHub pode atrasar ou pular o cron.
+    # Checkpoints e dependencias impedem inferencia duplicada.
+    - cron: '7,27,47 * * * *'
+  # Acionamento pontual via issue do proprietario; o rotulo so e aplicado com permissao de escrita.
+  issues:
+    types: [labeled]
+  pull_request:
+    paths:
+      - 'tools/slimekeepers_phase2_agent.py'
+      - 'tools/slimekeepers_phase2_guard.py'
+      - 'automation/phase2_10h_queue.json'
+      - 'tests/test_slimekeepers_phase2_agent.py'
+      - '.github/workflows/slimekeepers-phase2.yml'
+      - 'docs/phase2/**'
+      - 'scripts/systems/**'
+      - 'scripts/world/**'
+      - 'scenes/regions/**'
+      - 'tests/forest/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: slimekeepers-phase2-single-lane
+  cancel-in-progress: false
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Testes locais de seleção e segurança
+        run: |
+          python -m unittest discover -s tests -p 'test_slimekeepers_codex_proxy.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_dev_agent.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_autonomy_guard.py' -v
+          python -m unittest discover -s tests -p 'test_phase2_queue.py' -v
+          python -m unittest discover -s tests -p 'test_slimekeepers_phase2_agent.py' -v
+          python -c 'import sys,os;sys.path.insert(0,os.path.join(os.getcwd(),"tools"));from slimekeepers_dev_agent import load_tasks;assert len(load_tasks()) >= 9;print("Legacy queue remains isolated: OK")'
+
+  queue-plan:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'plan'
+    needs: unit-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Mostrar fila sem inferencia
+        run: python tools/slimekeepers_phase2_agent.py --mode list
+
+  develop-one-task:
+    # Cron ligado a pedido do criador; variável PAUSED para interromper.
+    if: (github.event_name == 'schedule' && github.ref == 'refs/heads/main' && vars.SLIMEKEEPERS_PHASE2_PAUSED != 'true') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.mode == 'develop' && inputs.confirmation == 'AUTHORIZE_ONE_DEV_TASK') || (github.event_name == 'issues' && github.ref == 'refs/heads/main' && github.event.action == 'labeled' && github.event.label.name == 'slimekeepers-phase2-run-one-task' && github.event.issue.user.login == github.repository_owner && vars.SLIMEKEEPERS_PHASE2_PAUSED != 'true')
+    needs: unit-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    outputs:
+      task_id: ${{ steps.choose.outputs.task_id }}
+      branch: ${{ steps.choose.outputs.branch }}
+      base_sha: ${{ steps.choose.outputs.base_sha }}
+      head_sha: ${{ steps.submit.outputs.head_sha }}
+      pr_number: ${{ steps.submit.outputs.pr_number }}
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: read
+    env:
+      CODEX_PROXY_API_KEY: ${{ secrets.CODEX_PROXY_API_KEY }}
+      CODEX_PROXY_BASE_URL: ${{ secrets.CODEX_PROXY_BASE_URL }}
+      CODEX_PROXY_ACCOUNTS_JSON: ${{ secrets.CODEX_PROXY_ACCOUNTS_JSON }}
+      REQUEST_TASK_ID: ${{ (github.event_name == 'schedule' || github.event_name == 'issues') && 'auto' || inputs.task_id }}
+      AI_ENABLED: 'false'
+      PAID_CALLS_ENABLED: 'false'
+      CODEX_PROXY_TEXT_AUTHORIZED: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Selecionar proxima tarefa e expor checkpoint seguro
+        id: choose
+        shell: bash
+        run: |
+          python tools/slimekeepers_phase2_agent.py --mode select --task-id "$REQUEST_TASK_ID"
+
+      - name: Validar autorizacao e primeira tentativa
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_RUN_ATTEMPT" != "1" ]]; then
+            echo "::error::Nao repetir inferencia por rerun; conferir branch de reserva."
+            exit 2
+          fi
+          if [[ -z "$CODEX_PROXY_API_KEY" ]]; then
+            echo "::error::CODEX_PROXY_API_KEY ausente."
+            exit 2
+          fi
+          if [[ -n "$CODEX_PROXY_BASE_URL" ]]; then
+            echo 'PROXY_MODE=persistent' >> "$GITHUB_ENV"
+            echo "Proxy persistente selecionado."
+          elif [[ -n "$CODEX_PROXY_ACCOUNTS_JSON" ]]; then
+            echo 'PROXY_MODE=ephemeral' >> "$GITHUB_ENV"
+            echo 'CODEX_PROXY_BASE_URL=http://127.0.0.1:18080' >> "$GITHUB_ENV"
+            echo "Proxy efemero selecionado."
+          else
+            echo "::error::CODEX_PROXY_ACCOUNTS_JSON ou CODEX_PROXY_BASE_URL obrigatorio."
+            exit 2
+          fi
+
+      - name: Montar sessão OAuth privada no runner
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/slimekeepers-phase2-proxy-state"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          try:
+              state = json.loads(os.environ["CODEX_PROXY_ACCOUNTS_JSON"])
+              records = state.get("records") if isinstance(state, dict) else None
+              if not isinstance(records, list) or not records:
+                  raise ValueError()
+              if not all(isinstance(x, dict) and isinstance(x.get("token"), dict) for x in records):
+                  raise ValueError()
+              path = Path(os.environ["RUNNER_TEMP"]) / "slimekeepers-phase2-proxy-state" / "accounts.json"
+              path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+              path.chmod(0o600)
+              print("Sessao privada validada.")
+          except (ValueError, TypeError, KeyError):
+              raise SystemExit("Snapshot invalido; nenhuma inferencia executada.")
+          PY
+
+      - name: Iniciar mesmo proxy precompilado do VideoForge
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin >/dev/null
+          docker pull ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1
+          docker run -d --name slimekeepers-phase2-proxy --user "$(id -u):$(id -g)" \
+            --read-only --tmpfs /tmp:rw,nosuid,size=32m \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -p 127.0.0.1:18080:8080 \
+            -e PROXY_API_KEY="$CODEX_PROXY_API_KEY" \
+            -e DATA_DIR=/app/data -e DEBUG_LOG_PAYLOADS=false \
+            -v "$RUNNER_TEMP/slimekeepers-phase2-proxy-state:/app/data:rw" \
+            ghcr.io/helioconde/videoforge-codex-proxy:upstream-02f8ce3581c1 >/dev/null
+          for i in {1..30}; do
+            if curl --noproxy '*' -fsS --max-time 2 http://127.0.0.1:18080/health/live >/dev/null; then
+              echo "Proxy pronto."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::Proxy indisponivel."
+          exit 2
+
+      - name: Aguardar catalogo real de modelos do proxy
+        if: env.DEV_TASK_ID != '' && env.PROXY_MODE == 'ephemeral'
+        run: sleep 20
+
+      - name: Conferir GPT-6.2 principal e GPT-6 reserva por GET
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          python tools/proxy_preflight.py \
+            --output "$RUNNER_TEMP/slimekeepers-phase2-preflight.json" \
+            --prefer-model gpt-6.2-astra --fallback-model gpt-6-astra --list-models
+
+      - name: Consultar quota real antes de reservar tarefa e gastar tokens
+        if: env.DEV_TASK_ID != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/proxy_quota_diagnostics.py --live-usage \
+            --output "$RUNNER_TEMP/slimekeepers-phase2-live-quota.json"
+          python tools/proxy_model_watch.py \
+            --preflight "$RUNNER_TEMP/slimekeepers-phase2-preflight.json" \
+            --quota "$RUNNER_TEMP/slimekeepers-phase2-live-quota.json" \
+            --output "$RUNNER_TEMP/slimekeepers-phase2-quota-gate.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "slimekeepers-phase2-quota-gate.json"
+          report = json.loads(path.read_text(encoding="utf-8"))
+          ready = report.get("smoke_eligible") is True and report.get("quota_readiness") == "reported_available"
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("DEV_QUOTA_READY=" + ("true" if ready else "false") + "\n")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as out:
+              out.write("## Cota Astra antes da geração\n\n")
+              out.write("- Estado: " + ("disponível" if ready else "bloqueado — sem POST e sem reserva") + "\n")
+              out.write("- Próxima tarefa: " + os.environ["DEV_TASK_ID"] + "\n")
+          print("Cota verificada sem inferencia; prosseguir=" + str(ready))
+          PY
+
+      - name: Reservar branch remota depois do gate de quota, antes do POST
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "slimekeepers-ai-dev[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$DEV_BRANCH"
+          git push --set-upstream origin "$DEV_BRANCH"
+          echo "Checkpoint remoto reservado; nenhum retry do modelo para esta tarefa."
+
+      - name: Executar uma unica tarefa autorizada de codigo
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
+        shell: bash
+        env:
+          AI_ENABLED: 'true'
+          PAID_CALLS_ENABLED: 'true'
+          CODEX_PROXY_TEXT_AUTHORIZED: 'true'
+        run: |
+          python tools/slimekeepers_phase2_agent.py --mode implement \
+            --task-id "$DEV_TASK_ID" \
+            --preflight "$RUNNER_TEMP/slimekeepers-phase2-preflight.json" \
+            --output "$RUNNER_TEMP/slimekeepers-phase2-report.json"
+
+      - name: Criar PR da entrega isolada para validacao em runner sem segredos
+        id: submit
+        if: env.DEV_TASK_ID != '' && env.DEV_QUOTA_READY == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          report = json.loads((Path(os.environ["RUNNER_TEMP"])/"slimekeepers-phase2-report.json").read_text())
+          for entry in report["files"]:
+              subprocess.run(["git", "add", "--", entry["path"]], check=True)
+          PY
+          git diff --cached --check
+          git diff --cached --quiet && { echo "::error::Nenhuma alteracao gerada."; exit 2; }
+          git commit -m "feat(ai): $DEV_TASK_ID - proposta Godot"
+          git push origin "$DEV_BRANCH"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads((Path(os.environ["RUNNER_TEMP"])/"slimekeepers-phase2-report.json").read_text())
+          lines = [
+              "## Proposta automatizada para revisao",
+              "**Tarefa:** `" + report["task_id"] + "`",
+              "**Modelo:** `" + report["model"] + "`",
+              "**Resumo:** " + report["summary"],
+              "",
+              "**Verificacao:** o proximo job executara verificacao independente do Godot 4.7.2 antes de merge automatico restrito.",
+              "**Obrigatorio:** validação automática e proteção de escopo; conferir "
+              "compatibilidade com a Biblia Narrativa antes de integrar.",
+              "",
+              "Somente caminhos aprovados da tarefa; sem segredos, sprites ou mudanças narrativas.",
+          ]
+          (Path(os.environ["RUNNER_TEMP"])/"slimekeepers-phase2-pr.md").write_text(
+              "\n".join(lines)+"\n", encoding="utf-8"
+          )
+          PY
+          # O codigo e o SHA sempre ficam disponiveis para QA, mesmo se
+          # o repositorio proibir que GITHUB_TOKEN crie Pull Requests.
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          if pr_url=$(gh pr create --base main --head "$DEV_BRANCH" \
+            --title "[AI/Godot] $DEV_TASK_TITLE" \
+            --body-file "$RUNNER_TEMP/slimekeepers-phase2-pr.md" 2>"$RUNNER_TEMP/slimekeepers-pr-error.log"); then
+            echo "pr_number=${pr_url##*/}" >> "$GITHUB_OUTPUT"
+            echo "PR criado para validacao independente: $pr_url"
+          else
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+            echo "::warning::GitHub nao permitiu abrir PR automaticamente; codigo preservado na branch e QA independente habilitado."
+            echo "## PR pendente de permissao do repositorio" >> "$GITHUB_STEP_SUMMARY"
+            echo "Codigo disponivel na branch \`$DEV_BRANCH\`; confirmar QA e abrir PR sem nova chamada de IA." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Arquivar resumo sem codigo ou credenciais
+        if: always() && env.DEV_TASK_ID != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-phase2-dev-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/slimekeepers-phase2-report.json
+            ${{ runner.temp }}/slimekeepers-phase2-quota-gate.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Encerrar proxy temporario e limpar OAuth
+        if: always()
+        shell: bash
+        run: |
+          docker rm -f slimekeepers-phase2-proxy >/dev/null 2>&1 || true
+          rm -rf "$RUNNER_TEMP/slimekeepers-phase2-proxy-state"
+
+  validate-generated:
+    # O codigo gerado pelo modelo so executa em runner separado sem secrets.
+    if: needs.develop-one-task.outputs.head_sha != ''
+    needs: develop-one-task
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      TASK_ID: ${{ needs.develop-one-task.outputs.task_id }}
+      BASE_SHA: ${{ needs.develop-one-task.outputs.base_sha }}
+      GODOT_BINARY_NAME: Godot_v4.7.2-stable_linux.x86_64
+      GODOT_ARCHIVE_SHA256: cadd3204e728a35d3f13adb7fd0d7902636b79f6b95c40c265eb73b6c35329e4
+    steps:
+      - name: Checkout do commit exato da proposta sem credenciais persistentes
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.develop-one-task.outputs.head_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validar somente novos arquivos autorizados e selecionar suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/slimekeepers_phase2_guard.py --task-id "$TASK_ID" --base-sha "$BASE_SHA"
+          python - <<'PY'
+          import os, sys
+          sys.path.insert(0, os.path.join(os.getcwd(), "tools"))
+          from slimekeepers_phase2_agent import queue, kind, test_path
+          task = next(t for t in queue() if t["id"] == os.environ["TASK_ID"])
+          suite = ("res://" + test_path(task)) if kind(task) == "patch" else ""
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as out:
+              out.write("AUTONOMOUS_TEST_FILE=" + suite + "\n")
+          print("QA Phase2: " + ("suite GdUnit4 obrigatória" if suite else "auditoria sem GdUnit próprio"))
+          PY
+
+      - name: Instalar Godot 4.7.2 oficial com checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/autonomy-godot"
+          curl -fsSL --retry 2 \
+            "https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/$GODOT_BINARY_NAME.zip" \
+            -o "$RUNNER_TEMP/autonomy-godot/godot.zip"
+          echo "$GODOT_ARCHIVE_SHA256  $RUNNER_TEMP/autonomy-godot/godot.zip" | sha256sum -c --status
+          unzip -q "$RUNNER_TEMP/autonomy-godot/godot.zip" -d "$RUNNER_TEMP/autonomy-godot"
+          chmod +x "$RUNNER_TEMP/autonomy-godot/$GODOT_BINARY_NAME"
+          echo "GODOT_BIN=$RUNNER_TEMP/autonomy-godot/$GODOT_BINARY_NAME" >> "$GITHUB_ENV"
+
+      - name: Importar scripts em processo sem credenciais de IA
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 480 "$GODOT_BIN" --headless --editor --path . --import \
+            > "$RUNNER_TEMP/autonomy-import.log" 2>&1 || {
+              tail -n 65 "$RUNNER_TEMP/autonomy-import.log"
+              exit 1
+            }
+
+      - name: Executar testes GdUnit4 do patch, se existir
+        if: env.AUTONOMOUS_TEST_FILE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 240 "$GODOT_BIN" --headless --path . \
+            -s res://addons/gdUnit4/bin/GdUnitCmdTool.gd \
+            -a "$AUTONOMOUS_TEST_FILE" --ignoreHeadlessMode -c \
+            > "$RUNNER_TEMP/autonomy-gdunit.log" 2>&1 || {
+              tail -n 75 "$RUNNER_TEMP/autonomy-gdunit.log"
+              exit 1
+            }
+          if grep -qE 'No test cases found|Script errors were detected|Abnormal exit' "$RUNNER_TEMP/autonomy-gdunit.log"; then
+            echo "::error::Testes GdUnit4 vazios ou invalidos."
+            exit 2
+          fi
+          echo "Suite GdUnit4 executada."
+
+      - name: Validar regressao com as seis suites nativas
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A minimum=(
+            [test_menu]=61
+            [test_forest_v2]=157
+            [test_habitats]=37
+            [test_region_travel]=9
+            [test_forest_foraging]=23
+            [test_valley_garden]=42
+          )
+          {
+            echo "## Modulo isolado testado com Godot 4.7.2"
+            echo ""
+            echo "| Suite | Verificacoes |"
+            echo "|---|---:|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          for suite in test_menu test_forest_v2 test_habitats test_region_travel test_forest_foraging test_valley_garden; do
+            log="$RUNNER_TEMP/autonomy-$suite.log"
+            timeout 240 "$GODOT_BIN" --headless --path . \
+              --script "res://tools/$suite.gd" > "$log" 2>&1 || {
+                tail -n 60 "$log"
+                exit 1
+              }
+            checks="$(grep -cE '^PASS([ :]|$)' "$log" || true)"
+            if [[ "$suite" == test_forest_v2 ]]; then
+              checks="$(sed -nE 's/^FOREST_V2: checks=([0-9]+).*/\1/p' "$log" | tail -n 1)"
+            elif [[ "$suite" == test_habitats ]]; then
+              checks="$(sed -nE 's/^FOREST_HABITATS: ([0-9]+) checks.*/\1/p' "$log" | tail -n 1)"
+            fi
+            checks="${checks:-0}"
+            if [[ "$checks" -lt "${minimum[$suite]}" ]] || grep -qE '^(FAIL[ :]|SCRIPT ERROR:|Parse Error:|ERROR:)' "$log"; then
+              echo "::error::Reprovada suite $suite."
+              tail -n 60 "$log"
+              exit 2
+            fi
+            echo "| $suite | $checks |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "Validação independente de regressão da Fase 2 concluída."
+
+      - name: Arquivar evidencias tecnicas mesmo em caso de falha
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slimekeepers-autonomy-validation-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/autonomy-import.log
+            ${{ runner.temp }}/autonomy-gdunit.log
+            ${{ runner.temp }}/autonomy-*.log
+          retention-days: 14
+          if-no-files-found: ignore
+
+  review-phase2-pr:
+    # Proteção também para PR aberta manualmente após bloqueio do GITHUB_TOKEN.
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'p2/p2-')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    permissions:
+      contents: read
+    env:
+      REVIEW_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      REVIEW_HEAD_REF: ${{ github.head_ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Revalidar PR pelo SHA e escopo da tarefa
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVIEW_HEAD_SHA"
+          git fetch origin main --depth=100
+          base_sha="$(git merge-base "$REVIEW_HEAD_SHA" origin/main)"
+          test -n "$base_sha"
+          task_id="${REVIEW_HEAD_REF#p2/}"
+          python tools/slimekeepers_phase2_guard.py --task-id "$task_id" --base-sha "$base_sha"
+          echo "PR aprovada pelo guard da Fase 2; regressões Godot verificadas em workflow independente." >> "$GITHUB_STEP_SUMMARY"

@@ -20,7 +20,7 @@ As estimativas representam blocos de trabalho e validação, **não uma garantia
 
 ## Como esta fila funciona
 
-Esta é uma fila **de planejamento de integração (Fase 2)**; não é a fila inicial esgotada `automation/dev_tasks.json`. O workflow atual `slimekeepers-ai-dev.yml` ainda lê somente a fila inicial e limita as entregas automáticas a **arquivos novos**, por isso não pode executar diretamente mudanças em scripts/cenas já existentes.
+Esta é a fila de integração da **Fase 2** e não substitui a fila de nove módulos já concluída. A nova automação `slimekeepers-phase2.yml` a consome com guard de patches e revisão independente; a fila antiga continua isolada.
 
 As **cinco primeiras tarefas** preparam o inventário de integração, contrato dos sistemas, guard de patches, CI sem segredos e baseline de gameplay. Só depois de validar esse mecanismo a fila pode ser conectada ao proxy para tarefas que alteram cenas/scripts existentes. Os campos `candidate_paths` são **caminhos propostos para revisão**, e não uma autorização genérica de escrita. Cada execução deverá fixar explicitamente seu escopo e SHA da branch-base antes de gerar código.
 
@@ -39,3 +39,11 @@ A parte PixelLab começa pelo inventário dos PNGs existentes (Brotinho, Gelito,
 - O código gerado pelo proxy deve ser executado somente em runner separado, **sem credenciais**, com Godot 4.7.2, GdUnit4 e regressões nativas.
 - A automação atual do GitHub executa apenas duas verificações agendadas por dia (09h35/18h35 BRT); **não** promete terminar esta fila em 10 horas corridas. A nova fila exigirá agendamento/orquestrador próprios antes de produção autônoma de patches.
 - Avançar tarefas dependentes só depois de validar suas predecessoras. Gerar relatório por PR/run, sem afirmar conclusão por mera criação de tarefa.
+
+## Atualização: executor fase 2 controlado (PR #42)
+
+O workflow [`slimekeepers-phase2.yml`](../.github/workflows/slimekeepers-phase2.yml) agora executa **uma tarefa da Fase 2 por rodada** quando a quota permitir. Escolhe tarefas por dependências realmente integradas à `main`, reserva `p2/<id>` antes de qualquer POST, usa `gpt-6.2-astra` (fallback somente pelo catálogo) e **não repete uma inferência ambígua**. O trabalho ocorre em `docs/phase2/` (auditoria) ou em pequenos patches com substituição literal, no máximo dois scripts/cenas reais + suite GdUnit4.
+
+Um segundo runner **sem credenciais** confere base SHA, diff, escopo, Godot 4.7.2, GdUnit4 e regressões. O repositório ainda impede que `GITHUB_TOKEN` crie Pull Requests; a branch e os testes são preservados e uma PR pode ser aberta pela integração GitHub do ChatGPT. Por segurança **não há merge automático de cenas/scripts nesta Fase 2**. A automação não avança dependências até o merge.
+
+As tarefas `p2-scoped-change-guard` e `p2-native-ci-guard` estão concluídas pela própria infraestrutura da PR #42. As tarefas de geração PixelLab permanecem intencionalmente bloqueadas até existir controle real de créditos, deduplicação e QA visual. O cron tenta a cada ~20 minutos, mas a fila de **600 minutos estimados** não tem conclusão garantida em 10 horas corridas.
