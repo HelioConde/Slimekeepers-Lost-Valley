@@ -6,8 +6,8 @@
   "source_issue": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/issues/39",
   "estimated_total_minutes": 600,
   "planning_assumption": "Estimativas de esforço de implementação, revisão e QA; não são garantia de duração real nem equivalem a tempo de execução ininterrupta do proxy.",
-  "execution_status": "planned_not_enabled",
-  "execution_note": "A automação antiga lê somente automation/dev_tasks.json e cria arquivos novos em scripts/systems/ e tests/forest/. Esta fila da Fase 2 exige primeiro uma implementação de guard e runner de patches para arquivos existentes, com CI independente. Não executar esta fila através do fluxo antigo sem revisão e testes.",
+  "execution_status": "scoped_executor_enabled",
+  "execution_note": "A Fase 2 possui executor próprio em .github/workflows/slimekeepers-phase2.yml: gera relatórios novos ou patches pequenos em arquivos Godot reais de uma tarefa, sempre com checkpoint, preflight de quota e QA isolado sem segredos. Bloqueia PixelLab POST e tarefas visuais ainda sem produtor controlado. Uma tarefa gera uma PR; dependências só contam após integração à main. Intervalos de cron não garantem conclusão em 10 horas corridas.",
   "rules": [
     "Uma tarefa pequena por PR e uma inferência por tentativa sem reenvios cegos",
     "Nunca sobrescrever assets existentes nem alterar a Bíblia Narrativa automaticamente",
@@ -97,7 +97,7 @@
       "stage": "01",
       "title": "Criar guard de alterações existentes para Fase 2",
       "estimated_minutes": 25,
-      "status": "planned",
+      "status": "completed",
       "execution_mode": "scoped_code_review",
       "candidate_paths": [
         "tools/slimekeepers_autonomy_guard.py",
@@ -109,14 +109,15 @@
       "acceptance": [
         "Permitir alterações somente com SHA base, caminhos autorizados por tarefa e diff revisável; negar segredos, história e assets aprovados",
         "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
-      ]
+      ],
+      "evidence": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/42"
     },
     {
       "id": "p2-native-ci-guard",
       "stage": "01",
       "title": "Validar patches de integração em runner sem segredos",
       "estimated_minutes": 20,
-      "status": "planned",
+      "status": "completed",
       "execution_mode": "scoped_code_review",
       "candidate_paths": [
         ".github/workflows/slimekeepers-generated-qa.yml",
@@ -128,7 +129,8 @@
       "acceptance": [
         "Exigir Godot 4.7.2, importação, regressões e sem execução de código gerado no runner com OAuth",
         "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
-      ]
+      ],
+      "evidence": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/42"
     },
     {
       "id": "p2-playtest-baseline",
