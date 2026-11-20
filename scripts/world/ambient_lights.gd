@@ -25,6 +25,8 @@ const DAPPLE_PIXEL := 2
 const DAPPLE_SIZE := 56
 ## Força máxima (alfa aditivo) do miolo da mancha; o contorno usa metade.
 const DAPPLE_STRENGTH := 0.3
+## Variantes de recorte; cada mancha escolhe a sua pelo hash da posição no mundo.
+const DAPPLE_VARIANTS := 12
 ## Distância (px) em que o jogador dentro de uma mancha recebe luz fraca.
 const DAPPLE_PLAYER_REACH := 30.0
 ## Grade de mundo das manchas de sol: cada célula tem posição fixa (hash), não segue a câmera.
@@ -94,9 +96,16 @@ static func dapple_image(variant: int, sun: Vector2) -> Image:
 	var stretch := 1.0 + 1.3 * clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
 	var center := Vector2(size, size) * 0.5
 	var holes: Array = []
-	for i in rng.randi_range(6, 9):
-		var offset := Vector2(rng.randf_range(-9.0, 9.0), rng.randf_range(-9.0, 9.0))
-		holes.append([offset, rng.randf_range(1.4, 3.4)])
+	# Aglomerado irregular: alguns furos grandes no miolo, pequenos espalhados.
+	for i in rng.randi_range(5, 9):
+		var spread := rng.randf_range(3.0, 11.0)
+		var offset := Vector2.from_angle(rng.randf() * TAU) * spread
+		holes.append([offset, rng.randf_range(1.3, 3.6) * (1.25 if spread < 5.0 else 1.0)])
+	# Folhas na frente da abertura: recortam os furos em crescentes e bordas tortas.
+	var leaves: Array = []
+	for i in rng.randi_range(2, 4):
+		leaves.append([Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(2.0, 9.0), rng.randf_range(1.6, 3.2)])
+	var grain := rng.randi()
 	# Só percorre a caixa de cada furo (barato o bastante para gerar em jogo).
 	var best := PackedFloat32Array()
 	best.resize(size * size)
@@ -110,8 +119,19 @@ static func dapple_image(variant: int, sun: Vector2) -> Image:
 			for x in range(maxi(0, int(at.x) - reach), mini(size, int(at.x) + reach + 1)):
 				var d := Vector2(x, y) + Vector2(0.5, 0.5) - at
 				var value := Vector2(d.dot(along) / stretch, d.dot(across)).length() / radius
+				# Borda irregular controlada: ±12% por pixel, determinística.
+				value += (float(hash(Vector3i(x, y, grain)) % 100) / 100.0 - 0.5) * 0.24
 				var index := y * size + x
 				if value < best[index]: best[index] = value
+	for leaf in leaves:
+		var leaf_at: Vector2 = center + along * (leaf[0] as Vector2).dot(along) * stretch + across * (leaf[0] as Vector2).dot(across)
+		var leaf_r: float = leaf[1]
+		var reach := int(ceil(leaf_r * stretch)) + 1
+		for y in range(maxi(0, int(leaf_at.y) - reach), mini(size, int(leaf_at.y) + reach + 1)):
+			for x in range(maxi(0, int(leaf_at.x) - reach), mini(size, int(leaf_at.x) + reach + 1)):
+				var d := Vector2(x, y) + Vector2(0.5, 0.5) - leaf_at
+				if Vector2(d.dot(along) / stretch, d.dot(across)).length() < leaf_r:
+					best[y * size + x] = 9.0
 	for index in best.size():
 		var value := best[index]
 		if value < 1.0:
@@ -621,7 +641,7 @@ func _update_dapples(minutes: float, night: float) -> void:
 			continue
 		# Folhas balançando: 1–2 px, na grade de pixels, sem sair do lugar no mundo.
 		dapple.global_position = (home + Vector2(sin(_time * 0.9 + i), cos(_time * 0.7 + i * 1.7)) * 1.5).round()
-		dapple.texture = dapple_texture_for(i % 3, sun)
+		dapple.texture = dapple_texture_for(posmod(hash(Vector2i(home)), DAPPLE_VARIANTS), sun)
 		dapple.modulate = Color(warm.r, warm.g, warm.b, strength)
 		if player:
 			near_player = maxf(near_player, strength * (1.0 - clampf(player.global_position.distance_to(home) / DAPPLE_PLAYER_REACH, 0.0, 1.0)))

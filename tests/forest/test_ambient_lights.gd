@@ -394,3 +394,20 @@ func test_campfire_grows_after_sunset_and_throws_embers() -> void:
 	assert_int((embers.material as CanvasItemMaterial).blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
 	rig.apply_time(12 * 60, 0.0)
 	assert_bool(embers.emitting).is_false()
+
+
+func test_dapple_cutouts_vary_between_neighbours() -> void:
+	var seen := {}
+	for v in Lights.DAPPLE_VARIANTS:
+		seen[hash(Lights.dapple_image(v, Vector2(-0.8, 0.45)).get_data())] = true
+	assert_int(seen.size()).is_equal(Lights.DAPPLE_VARIANTS)
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	rig.apply_time(9 * 60, 0.0)
+	var textures := {}
+	var visible := 0
+	for dapple in rig.dapples():
+		if dapple.visible:
+			visible += 1
+			textures[dapple.texture.get_instance_id()] = true
+	assert_int(textures.size()).is_greater_equal(mini(visible, 6))
