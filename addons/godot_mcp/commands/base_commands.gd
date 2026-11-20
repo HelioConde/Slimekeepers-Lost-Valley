@@ -5,6 +5,7 @@ class_name MCPBaseCommands
 const NodeUtils = preload("res://addons/godot_mcp/utils/node_utils.gd")
 const ResourceUtils = preload("res://addons/godot_mcp/utils/resource_utils.gd")
 const TypeParser = preload("res://addons/godot_mcp/utils/type_parser.gd")
+const InputBridgeScript = preload("res://addons/godot_mcp/services/mcp_input_bridge.gd")
 
 var editor_plugin: EditorPlugin
 
@@ -68,10 +69,10 @@ func _runtime_call(action: String, params: Dictionary = {}, timeout_sec: float =
 	return _err("Runtime request timed out", -32011)
 
 
+## No editor o autoload MCPInputBridge não existe; a fila em user:// é o canal
+## que o MCPInputBridge do jogo consome.
 func _queue_input(events: Array) -> void:
-	var bridge = _get_input_bridge()
-	if bridge:
-		bridge.queue_events(events)
+	InputBridgeScript.queue_events(events)
 
 
 func _get_input_bridge() -> Node:

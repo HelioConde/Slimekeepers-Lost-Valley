@@ -14,10 +14,18 @@ func get_commands() -> Dictionary:
 	}
 
 
-func _get_project_info(_params: Dictionary) -> Dictionary:
+## Autoloads ficam em chaves individuais "autoload/<Nome>"; não existe a chave "autoload".
+static func collect_autoloads() -> Dictionary:
 	var autoloads := {}
-	for setting in ProjectSettings.get_setting("autoload", {}):
-		autoloads[setting] = ProjectSettings.get_setting("autoload/%s" % setting)
+	for property in ProjectSettings.get_property_list():
+		var key: String = property.get("name", "")
+		if key.begins_with("autoload/"):
+			autoloads[key.trim_prefix("autoload/")] = ProjectSettings.get_setting(key)
+	return autoloads
+
+
+func _get_project_info(_params: Dictionary) -> Dictionary:
+	var autoloads := collect_autoloads()
 
 	return _ok({
 		"name": ProjectSettings.get_setting("application/config/name", "Untitled"),

@@ -6,6 +6,11 @@ const RESPONSE_FILE := "mcp_screenshot_res.png"
 const META_FILE := "mcp_screenshot_meta.json"
 
 
+func _ready() -> void:
+	# Precisa responder ao MCP mesmo com o jogo pausado.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
 func _process(_delta: float) -> void:
 	if not Engine.is_editor_hint():
 		_check_game_request()
