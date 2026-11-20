@@ -8,6 +8,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
+const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
@@ -17,6 +18,7 @@ var found_zones: Dictionary = {}
 var bag_hud: Node
 var garden_beds: Array[Node2D] = []
 var cooking_station: Node2D
+var recipe_panel: PanelContainer
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -32,6 +34,8 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
+	recipe_panel = RECIPE_PANEL.new()
+	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
 	found_zones = get_tree().get_meta("valley_discoveries",{}).duplicate()
 	hud_goal.text = "Siga as águas e explore as margens" if found_zones.is_empty() else "Recantos descobertos: %d / 5" % found_zones.size()
@@ -74,12 +78,15 @@ func _handle_cooking_interaction() -> bool:
 		return false
 	if player.global_position.distance_to(cooking_station.global_position) >= 68.0:
 		return false
+	recipe_panel.refresh(get_tree())
+	recipe_panel.show()
 	var check: Dictionary = COOKING.availability(get_tree())
 	hud_hint.text = "[E] Preparar porcao de folhas (teste)" if bool(check.get("available", false)) else "Preparo: falta 1 folha fresca colhida"
 	if Input.is_action_just_pressed("interact"):
 		var result: String = COOKING.prepare(get_tree())
 		if result == "prepared":
 			bag_hud.call("refresh")
+			recipe_panel.refresh(get_tree())
 			_notify("Preparo de teste pronto! Porcoes preparadas: %d" % COOKING.portions(get_tree()))
 		elif result == "needs_leaves":
 			_notify("Cultive e colha folhas frescas antes de preparar.")
@@ -194,6 +201,8 @@ func _process(delta: float) -> void:
 	if message_time > 0:
 		message_time -= delta
 		if message_time <= 0: popup.text = ""
+	if is_instance_valid(recipe_panel):
+		recipe_panel.hide()
 	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: observar"
 	if player.position.distance_to(Vector2(1600,70)) < 100:
 		hud_hint.text = "[E] Voltar à Floresta do Despertar"

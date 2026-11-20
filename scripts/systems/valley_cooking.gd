@@ -15,6 +15,17 @@ static func _recipe_book() -> Variant:
 static func availability(tree: SceneTree) -> Dictionary:
 	return _recipe_book().check_availability(RECIPE_ID, BAG.inventory_snapshot(tree))
 
+## Lista de receitas atualmente disponíveis: nesta vertical slice existe só a opção de teste.
+## O resultado deriva sempre da bolsa real e nunca grava dados na interface.
+static func recipe_options(tree: SceneTree) -> Array[Dictionary]:
+	var state: Dictionary = availability(tree)
+	return [{
+		"id": RECIPE_ID,
+		"label": "Porcao de folhas (teste)",
+		"available": bool(state.get("available", false)),
+		"missing": state.get("missing", {}).duplicate(true),
+	}]
+
 static func portions(tree: SceneTree) -> int:
 	if not tree.has_meta(LEDGER_KEY):
 		return 0
