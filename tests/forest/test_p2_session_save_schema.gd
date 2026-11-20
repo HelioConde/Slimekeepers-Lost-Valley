@@ -70,7 +70,7 @@ func test_wrong_version_object_and_nonfinite_data_are_rejected() -> void:
 	wrong["clock"]["minutes"] = INF
 	assert_bool(SAVE.validate(wrong)).is_false()
 	wrong = snapshot.duplicate(true)
-	wrong["bag"]["unsafe"] = RefCounted.new()
+	wrong["bag"] = {"unsafe": RefCounted.new()}
 	assert_bool(SAVE.validate(wrong)).is_false()
 	wrong = snapshot.duplicate(true)
 	wrong["unexpected_key"] = "not allowed"
