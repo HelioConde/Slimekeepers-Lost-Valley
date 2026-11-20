@@ -3,6 +3,7 @@ extends SceneTree
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const GARDEN := preload("res://scripts/systems/valley_starter_garden.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
+const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const VALLEY_LAYOUT := preload("res://scripts/world/valley_layout.gd")
 const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
 const VALLEY := "res://scenes/regions/ValeDasNascentes.tscn"
@@ -32,6 +33,13 @@ func _press_e() -> void:
 	await process_frame
 	await process_frame
 	Input.action_release("interact")
+	await _settle()
+
+func _press_f() -> void:
+	Input.action_press("feed")
+	await process_frame
+	await process_frame
+	Input.action_release("feed")
 	await _settle()
 
 func _bag_text(region: Node2D) -> String:
@@ -179,6 +187,31 @@ func _run() -> void:
 			await _press_e()
 			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
 				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
+	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Dois preparos viram duas porcoes reais na bolsa")
+	await _travel_to_forest()
+	_check(current_scene.scene_file_path == FOREST, "Refeicoes preparadas chegam intactas a floresta")
+	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Duas porcoes preservadas entre regioes")
+	var fed_slime: Node2D = null
+	for candidate in current_scene.slimes:
+		if candidate.slime_type == "brotinho" and candidate.befriended:
+			fed_slime = candidate
+			break
+	_check(fed_slime != null, "Brotinho amigo segue disponivel para oferta")
+	if fed_slime != null:
+		current_scene.player.global_position = fed_slime.global_position + Vector2(0, 24)
+		await _settle()
+		_check(current_scene.hud_hint.text.contains("[F]"), "HUD oferece F para alimentar slime proximo")
+		await _press_f()
+		_check(BAG.count_item(self, COOKING.RECIPE_ID) == 1, "Primeira oferta consome apenas uma porcao")
+		_check(FOOD.first_food_for(self, fed_slime.persistent_id) == COOKING.RECIPE_ID,
+			"Primeira oferta registrada na identidade persistente certa")
+		await _press_f()
+		_check(BAG.count_item(self, COOKING.RECIPE_ID) == 1,
+			"Repetir F no mesmo slime nao consome alimento adicional")
+		_check(fed_slime.befriended, "Dar alimento nao desfaz amizade existente")
+		await _travel_to_valley()
+		_check(current_scene.scene_file_path == VALLEY and BAG.count_item(self, COOKING.RECIPE_ID) == 1,
+			"Porcao nao oferecida permanece na bolsa ao voltar ao Vale")
 	_change_to_menu()
 	await _settle()
 	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/start_menu.tscn",
@@ -189,6 +222,8 @@ func _run() -> void:
 		_check(current_scene.scene_file_path == FOREST, "Novo Jogo retorna a floresta")
 		_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "Novo Jogo limpa sementes e folhas")
 		_check(COOKING.portions(self) == 0, "Novo Jogo limpa o registro de preparos da sessao")
+		_check(BAG.count_item(self, COOKING.RECIPE_ID) == 0 and not has_meta(FOOD.OFFERS_KEY),
+			"Novo Jogo limpa porcoes e ofertas, sem conservar saldo de partida anterior")
 		_check(GARDEN.phase(self, clock, "norte") == "empty" and
 			GARDEN.phase(self, clock, "sul") == "empty", "Novo Jogo reinicia ambos os canteiros")
 		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
