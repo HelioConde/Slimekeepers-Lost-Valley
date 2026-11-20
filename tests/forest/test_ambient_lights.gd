@@ -119,8 +119,9 @@ func test_sun_dapples_light_the_ground_by_day_only_and_follow_sun_direction() ->
 	var rig: Node2D = _rig_in_region(false, 0)[1]
 	await await_idle_frame()
 	var dapples: Array = rig.dapples()
-	assert_int(dapples.size()).is_between(4, Lights.MAX_DAPPLES)
+	assert_int(dapples.size()).is_equal(Lights.MAX_DAPPLES)
 	rig.apply_time(9 * 60, 0.0)
+	assert_bool(dapples[0].visible).is_true()
 	var morning_texture: Texture2D = dapples[0].texture
 	assert_float(rig.dapple_strength(0)).is_greater(0.05)
 	rig.apply_time(16 * 60, 0.0)
@@ -218,10 +219,10 @@ func test_fire_and_ice_slimes_emit_real_light() -> void:
 
 
 func test_dapples_are_anchored_to_world_cells_not_the_camera() -> void:
-	var a := Lights.dapple_homes(Vector2(1000, 800), 9)
-	var b := Lights.dapple_homes(Vector2(1040, 830), 9)
+	var a := Lights.dapple_homes(Vector2(1000, 800), Lights.MAX_DAPPLES)
+	var b := Lights.dapple_homes(Vector2(1040, 830), Lights.MAX_DAPPLES)
 	assert_array(a).is_equal(b)
-	var far := Lights.dapple_homes(Vector2(1300, 800), 9)
+	var far := Lights.dapple_homes(Vector2(1300, 800), Lights.MAX_DAPPLES)
 	var shared := a.filter(func(p): return far.has(p))
 	assert_int(shared.size()).is_greater(0)
 
@@ -319,3 +320,77 @@ func test_magic_glints_sit_on_special_blooms_and_twinkle_rarely() -> void:
 	assert_int(frames).is_greater(0)
 	# Raros: piscam parte do tempo, nunca o tempo todo.
 	assert_float(float(on_frames) / frames).is_between(0.1, 0.6)
+
+
+func test_dapples_never_pop_inside_the_view_while_walking() -> void:
+	var view := Vector2(600 + 60, 338 + 60)  # meia vista com zoom 0,8 + tamanho da mancha
+	for step in 60:
+		var c1 := Vector2(37 + step * 17, 900 + step * 9)
+		var c2 := c1 + Vector2(17, 9)
+		var h1 := Lights.dapple_homes(c1, Lights.MAX_DAPPLES, 0.7)
+		var h2 := Lights.dapple_homes(c2, Lights.MAX_DAPPLES, 0.7)
+		for home in h1 + h2:
+			var d1 := (home - c1).abs()
+			var d2 := (home - c2).abs()
+			if d1.x < view.x and d1.y < view.y and d2.x < view.x and d2.y < view.y:
+				assert_bool(h1.has(home) and h2.has(home)) 					.override_failure_message("mancha %s pisca ao andar de %s" % [home, c1]).is_true()
+
+
+func test_valley_is_less_dappled_than_forest() -> void:
+	assert_float(Lights.dapple_density("ValeDasNascentes")).is_less(Lights.dapple_density("FlorestaDoDespertarV2"))
+	var forest := Lights.dapple_homes(Vector2(5000, 5000), 99, Lights.dapple_density("FlorestaDoDespertarV2")).size()
+	var valley := Lights.dapple_homes(Vector2(5000, 5000), 99, Lights.dapple_density("ValeDasNascentes")).size()
+	assert_int(valley).is_less(forest)
+
+
+func test_player_gets_faint_light_only_inside_a_sun_dapple() -> void:
+	var parts := _rig_in_region(false, 0)
+	var rig: Node2D = parts[1]
+	await await_idle_frame()
+	rig.apply_time(10 * 60, 0.0)
+	var player: Node2D = parts[0].get_node("Player")
+	var light: PointLight2D = player.get_node("DappleLight")
+	var home: Vector2 = rig.dapples()[0].get_meta("home")
+	player.global_position = home
+	rig.apply_time(10 * 60, 0.0)
+	assert_float(light.energy).is_greater(0.05)
+	player.global_position = home + Vector2(0, 9000)
+	rig.apply_time(10 * 60, 0.0)
+	player.global_position = home + Vector2(57, 41)
+	rig.apply_time(10 * 60, 0.0)
+	rig.apply_time(10 * 60, 0.0)
+	var far_from_all := true
+	for d in rig.dapples():
+		if d.visible and (d.get_meta("home") as Vector2).distance_to(player.global_position) < Lights.DAPPLE_PLAYER_REACH: far_from_all = false
+	if far_from_all:
+		assert_float(light.energy).is_equal(0.0)
+
+
+func test_campfire_light_is_smooth_local_and_without_rings() -> void:
+	var rig: Node2D = _rig_in_region(true, 0)[1]
+	await await_idle_frame()
+	var light: PointLight2D = rig.campfire_lights()[0]
+	var texture := light.texture as GradientTexture2D
+	assert_int(texture.gradient.interpolation_mode).is_not_equal(Gradient.GRADIENT_INTERPOLATE_CONSTANT)
+	# Raio em px do mundo: restrito ao entorno da fogueira.
+	assert_float(texture.width * light.texture_scale * 0.5).is_less_equal(Lights.CAMPFIRE_RADIUS + 0.01)
+	# Queda monotônica e rápida: metade do raio já bem mais fraca que o centro.
+	var g := texture.gradient
+	assert_float(g.sample(0.5).a).is_less(g.sample(0.0).a * 0.45)
+	for i in 20:
+		assert_float(g.sample(i / 20.0).a).is_greater_equal(g.sample((i + 1) / 20.0).a)
+
+
+func test_campfire_grows_after_sunset_and_throws_embers() -> void:
+	var rig: Node2D = _rig_in_region(true, 0)[1]
+	await await_idle_frame()
+	var light: PointLight2D = rig.campfire_lights()[0]
+	rig.apply_time(18 * 60 + 30, 0.0)
+	var dusk := light.energy
+	rig.apply_time(22 * 60, 0.0)
+	assert_float(dusk).is_less(light.energy * 0.7)
+	var embers: CPUParticles2D = rig.campfire_embers()[0]
+	assert_bool(embers.emitting).is_true()
+	assert_int((embers.material as CanvasItemMaterial).blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
+	rig.apply_time(12 * 60, 0.0)
+	assert_bool(embers.emitting).is_false()

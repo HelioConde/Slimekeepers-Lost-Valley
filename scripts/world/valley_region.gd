@@ -73,7 +73,9 @@ func _spawn_starter_garden() -> void:
 
 func _spawn_cooking_station() -> void:
 	cooking_station = COOKING_STATION.new()
-	cooking_station.position = Vector2(1515, 460)
+	# A oeste do pinheiro TreesBack/Tree_0210: a copa cobria a estação e o jogador
+	# no ponto de interação. 140 px do canteiro norte = raios 68 + 72 sem sobreposição.
+	cooking_station.position = Vector2(1440, 418)
 	add_child(cooking_station)
 
 func _handle_cooking_interaction() -> bool:

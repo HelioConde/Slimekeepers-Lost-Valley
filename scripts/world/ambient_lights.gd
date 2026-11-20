@@ -5,7 +5,7 @@ extends Node2D
 ## borrado) para combinar com a pixel art; quantidade limitada por desempenho.
 
 const MAX_GLOW_LIGHTS := 12
-const MAX_DAPPLES := 9
+const MAX_DAPPLES := 35  # = células da janela 7×5
 const MAX_SLIME_LIGHTS := 10
 ## Enxames de vagalumes (margens d'água primeiro, depois vegetação) e brilhos
 ## mágicos raros em flores/cogumelos especiais, reposicionados perto do jogador.
@@ -28,7 +28,11 @@ const DAPPLE_STRENGTH := 0.3
 ## Distância (px) em que o jogador dentro de uma mancha recebe luz fraca.
 const DAPPLE_PLAYER_REACH := 30.0
 ## Grade de mundo das manchas de sol: cada célula tem posição fixa (hash), não segue a câmera.
-const DAPPLE_CELL := 150.0
+const DAPPLE_CELL := 240.0
+## Janela de células em volta do jogador: cobre a vista toda (960×540 com zoom 0,8 =
+## 1200×675 px de mundo) com folga,
+## para as manchas nunca surgirem/sumirem dentro da vista ao trocar de célula.
+const DAPPLE_WINDOW := Vector2i(3, 2)
 const GLOW_TEXTURE_SUFFIX := "mushroom_glow.png"
 const CAMPFIRE_NAME := "CookingStation"
 const DUSK_START := 16.5 * 60.0
@@ -36,12 +40,15 @@ const DUSK_END := 19.5 * 60.0
 const DAWN_START := 4.5 * 60.0
 const DAWN_END := 6.5 * 60.0
 const CAMPFIRE_COLOR := Color(1.0, 0.55, 0.25)
+## Raio (px do mundo) da luz da fogueira: só o entorno, sem disco gigante no caminho.
+const CAMPFIRE_RADIUS := 92.0
 const GLOW_COLOR := Color(0.45, 0.95, 0.85)
 const PLAYER_COLOR := Color(1.0, 0.96, 0.88)
 
 var _region: Node
 var _campfires: Array[PointLight2D] = []
 var _fires: Array[CPUParticles2D] = []
+var _embers: Array[CPUParticles2D] = []
 var _glows: Array[PointLight2D] = []
 var _player_light: PointLight2D
 var _fireflies: CPUParticles2D
@@ -90,17 +97,25 @@ static func dapple_image(variant: int, sun: Vector2) -> Image:
 	for i in rng.randi_range(6, 9):
 		var offset := Vector2(rng.randf_range(-9.0, 9.0), rng.randf_range(-9.0, 9.0))
 		holes.append([offset, rng.randf_range(1.4, 3.4)])
-	for y in size:
-		for x in size:
-			var p := Vector2(x, y) + Vector2(0.5, 0.5) - center
-			var best := 9.0
-			for hole in holes:
-				var d: Vector2 = p - (along * (hole[0] as Vector2).dot(along) * stretch + across * (hole[0] as Vector2).dot(across))
-				best = minf(best, Vector2(d.dot(along) / stretch, d.dot(across)).length() / float(hole[1]))
-			var alpha := 0.0
-			if best < 0.72: alpha = 1.0
-			elif best < 1.0: alpha = 0.5
-			image.set_pixel(x, y, Color(1, 1, 1, alpha))
+	# Só percorre a caixa de cada furo (barato o bastante para gerar em jogo).
+	var best := PackedFloat32Array()
+	best.resize(size * size)
+	best.fill(9.0)
+	for hole in holes:
+		var offset: Vector2 = hole[0]
+		var radius: float = hole[1]
+		var at := center + along * offset.dot(along) * stretch + across * offset.dot(across)
+		var reach := int(ceil(radius * stretch)) + 1
+		for y in range(maxi(0, int(at.y) - reach), mini(size, int(at.y) + reach + 1)):
+			for x in range(maxi(0, int(at.x) - reach), mini(size, int(at.x) + reach + 1)):
+				var d := Vector2(x, y) + Vector2(0.5, 0.5) - at
+				var value := Vector2(d.dot(along) / stretch, d.dot(across)).length() / radius
+				var index := y * size + x
+				if value < best[index]: best[index] = value
+	for index in best.size():
+		var value := best[index]
+		if value < 1.0:
+			image.set_pixel(index % size, index / size, Color(1, 1, 1, 1.0 if value < 0.72 else 0.5))
 	return image
 
 
@@ -152,6 +167,26 @@ func _exit_tree() -> void:
 
 func campfire_lights() -> Array[PointLight2D]: return _campfires
 func campfire_fire() -> Array[CPUParticles2D]: return _fires
+func campfire_embers() -> Array[CPUParticles2D]: return _embers
+
+
+## Queda suave e rápida (≈ quadrática, interpolação cúbica): sem anéis concêntricos.
+static func campfire_light_texture() -> GradientTexture2D:
+	var gradient := Gradient.new()
+	gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CUBIC
+	gradient.offsets = PackedFloat32Array([0.0, 0.15, 0.35, 0.55, 0.75, 1.0])
+	gradient.colors = PackedColorArray([
+		Color(1, 1, 1, 1.0), Color(1, 1, 1, 0.78), Color(1, 1, 1, 0.42),
+		Color(1, 1, 1, 0.19), Color(1, 1, 1, 0.06), Color(1, 1, 1, 0.0),
+	])
+	var texture := GradientTexture2D.new()
+	texture.gradient = gradient
+	texture.fill = GradientTexture2D.FILL_RADIAL
+	texture.fill_from = Vector2(0.5, 0.5)
+	texture.fill_to = Vector2(1.0, 0.5)
+	texture.width = 256
+	texture.height = 256
+	return texture
 func glow_lights() -> Array[PointLight2D]: return _glows
 func player_light() -> PointLight2D: return _player_light
 func fireflies() -> CPUParticles2D: return _fireflies
@@ -231,12 +266,17 @@ func apply_time(minutes: float, delta: float) -> void:
 	_time += delta
 	var night := night_factor(minutes)
 	var flicker := 1.0 + 0.09 * sin(_time * 7.3) + 0.05 * sin(_time * 13.1 + 1.7)
+	# A fogueira só domina depois que o sol se põe; no anoitecer ainda é discreta.
+	var fire_glow := smoothstep(0.55, 1.0, night)
 	for light in _campfires:
 		if is_instance_valid(light):
-			light.energy = 0.8 * night * flicker
+			light.energy = 0.95 * fire_glow * flicker
 	for fire in _fires:
 		if is_instance_valid(fire):
 			fire.emitting = night > 0.15
+	for embers in _embers:
+		if is_instance_valid(embers):
+			embers.emitting = night > 0.15
 	for light in _glows:
 		if is_instance_valid(light):
 			light.energy = 0.55 * night
@@ -416,7 +456,9 @@ func _make_glint() -> CPUParticles2D:
 
 
 func _add_campfire(station: Node2D) -> void:
-	var light := _make_light(CAMPFIRE_COLOR, 2.0)
+	var light := _make_light(CAMPFIRE_COLOR, 1.0)
+	light.texture = campfire_light_texture()
+	light.texture_scale = CAMPFIRE_RADIUS * 2.0 / 256.0
 	light.name = "CampfireLight"
 	light.position = Vector2(0, -14)
 	station.add_child(light)
@@ -446,6 +488,42 @@ func _add_campfire(station: Node2D) -> void:
 	fire.emitting = false
 	station.add_child(fire)
 	_fires.append(fire)
+	station.add_child(_make_embers())
+
+
+## Brasas que sobem devagar, oscilam e apagam; faíscas raras mais rápidas.
+func _make_embers() -> CPUParticles2D:
+	var embers := CPUParticles2D.new()
+	embers.name = "CampfireEmbers"
+	embers.position = Vector2(0, -18)
+	embers.amount = 10
+	embers.lifetime = 2.4
+	embers.local_coords = false
+	embers.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	embers.emission_sphere_radius = 6.0
+	embers.direction = Vector2.UP
+	embers.spread = 25.0
+	embers.gravity = Vector2(0, -10)
+	embers.initial_velocity_min = 10.0
+	embers.initial_velocity_max = 28.0
+	embers.tangential_accel_min = -12.0
+	embers.tangential_accel_max = 12.0
+	embers.damping_min = 2.0
+	embers.damping_max = 5.0
+	embers.scale_amount_min = 1.0
+	embers.scale_amount_max = 2.0
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.15, 0.6, 1.0])
+	ramp.colors = PackedColorArray([Color(1.0, 0.95, 0.6, 0.0), Color(1.0, 0.8, 0.35, 1.0), Color(1.0, 0.45, 0.15, 0.7), Color(0.6, 0.15, 0.05, 0.0)])
+	embers.color_ramp = ramp
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	embers.material = glow
+	embers.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	embers.emitting = false
+	_embers.append(embers)
+	return embers
 
 
 func _make_light(color: Color, scale: float) -> PointLight2D:
@@ -522,9 +600,9 @@ func _update_dapples(minutes: float, night: float) -> void:
 	var cell := Vector2(floorf(center.x / DAPPLE_CELL), floorf(center.y / DAPPLE_CELL))
 	if _dapple_anchor != cell:
 		_dapple_anchor = cell
-		var homes := dapple_homes(center, _dapples.size())
+		var homes := dapple_homes(center, _dapples.size(), dapple_density(str(_region.name)))
 		for i in _dapples.size():
-			_dapples[i].set_meta("home", homes[i])
+			_dapples[i].set_meta("home", homes[i] if i < homes.size() else Vector2.INF)
 	var sun: Vector2 = SHADOWS.profile_at(minutes)["vector"]
 	var low_sun := clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
 	var day := 1.0 - night
@@ -532,8 +610,8 @@ func _update_dapples(minutes: float, night: float) -> void:
 	var near_player := 0.0
 	for i in _dapples.size():
 		var dapple := _dapples[i]
-		var home: Vector2 = dapple.get_meta("home", center)
-		var strength := DAPPLE_STRENGTH * day * (0.65 + 0.35 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
+		var home: Vector2 = dapple.get_meta("home", Vector2.INF)
+		var strength := 0.0 if home == Vector2.INF else DAPPLE_STRENGTH * day * (0.65 + 0.35 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
 		_dapple_strengths[i] = strength
 		dapple.visible = strength > 0.01
 		var dust := dapple.get_node_or_null("SunbeamDust") as CPUParticles2D
@@ -594,27 +672,33 @@ func _make_sparks(fire: bool) -> CPUParticles2D:
 	return sparks
 
 
-## Posições fixas no mundo para as manchas de sol: uma por célula próxima ao jogador,
-## deslocada por hash da célula. Mesmo lugar sempre que o jogador volta.
-static func dapple_homes(center: Vector2, count: int) -> Array[Vector2]:
+## Posições fixas no mundo para as manchas de sol: no máximo uma por célula da
+## janela em volta do jogador; a célula tem mancha conforme o hash e a densidade
+## da região. Mesmo lugar sempre que o jogador volta; as mais distantes saem primeiro.
+static func dapple_homes(center: Vector2, count: int, density: float = 0.75) -> Array[Vector2]:
 	var homes: Array[Vector2] = []
 	var base := Vector2(floorf(center.x / DAPPLE_CELL), floorf(center.y / DAPPLE_CELL))
 	var cells: Array[Vector2] = []
-	for dy in range(-2, 3):
-		for dx in range(-3, 4):
+	for dy in range(-DAPPLE_WINDOW.y, DAPPLE_WINDOW.y + 1):
+		for dx in range(-DAPPLE_WINDOW.x, DAPPLE_WINDOW.x + 1):
 			cells.append(base + Vector2(dx, dy))
 	cells.sort_custom(func(a, b): return a.distance_squared_to(base) < b.distance_squared_to(base))
 	for cell in cells:
 		if homes.size() >= count:
 			break
 		var h := hash(Vector2i(cell))
-		if (h & 3) == 0:
-			continue  # algumas células ficam na sombra: variação natural
-		var jitter := Vector2(float((h >> 4) & 255) / 255.0, float((h >> 12) & 255) / 255.0)
+		if posmod(h, 100) >= int(density * 100.0):
+			continue  # célula na sombra da copa: variação natural
+		var jitter := Vector2(float((h >> 8) & 255) / 255.0, float((h >> 16) & 255) / 255.0)
 		homes.append(((cell + jitter) * DAPPLE_CELL).round())
-	while homes.size() < count:
-		homes.append(((base + Vector2(homes.size(), 0)) * DAPPLE_CELL).round())
 	return homes
+
+
+## Densidade de aberturas na copa: Floresta fechada mais salpicada, Vale aberto menos.
+static func dapple_density(region_name: String) -> float:
+	if region_name.contains("Floresta"): return 0.85
+	if region_name.contains("Vale"): return 0.55
+	return 0.65
 
 
 func _make_sunbeam_dust() -> CPUParticles2D:
