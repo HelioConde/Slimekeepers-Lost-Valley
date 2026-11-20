@@ -16,6 +16,11 @@ const FIELDS := [
 static func _meta(tree: SceneTree, key: String, fallback: Variant) -> Variant:
 	return tree.get_meta(key) if tree.has_meta(key) else fallback
 
+static func _safe_copy(value: Variant) -> Variant:
+	if typeof(value) == TYPE_DICTIONARY or typeof(value) == TYPE_ARRAY:
+		return value.duplicate(true)
+	return value
+
 static func _valid_id(value: Variant) -> bool:
 	if typeof(value) != TYPE_STRING:
 		return false
@@ -170,13 +175,13 @@ static func capture(tree: SceneTree, clock: Node) -> Dictionary:
 		"version": VERSION,
 		"clock": clock.get_save_data().duplicate(true),
 		"bag": BAG.inventory_snapshot(tree),
-		"seed_patches": _meta(tree, BAG.PATCHES_KEY, {}).duplicate(true),
-		"garden": _meta(tree, GARDEN.KEY, {}).duplicate(true),
+		"seed_patches": _safe_copy(_meta(tree, BAG.PATCHES_KEY, {})),
+		"garden": _safe_copy(_meta(tree, GARDEN.KEY, {})),
 		"harvests": rows,
 		"meals_prepared": meals,
-		"food_offers": _meta(tree, FOOD.OFFERS_KEY, []).duplicate(true),
+		"food_offers": _safe_copy(_meta(tree, FOOD.OFFERS_KEY, [])),
 		"progress": PROGRESS.snapshot(tree),
-		"forest_friends": _meta(tree, BAG.FRIENDS_KEY, {}).duplicate(true),
-		"valley_friends": _meta(tree, "valley_slime_friends", {}).duplicate(true),
+		"forest_friends": _safe_copy(_meta(tree, BAG.FRIENDS_KEY, {})),
+		"valley_friends": _safe_copy(_meta(tree, "valley_slime_friends", {})),
 	}
 	return snapshot if validate(snapshot) else {}
