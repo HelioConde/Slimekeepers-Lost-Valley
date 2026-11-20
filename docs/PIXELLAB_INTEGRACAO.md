@@ -32,3 +32,20 @@ O argumento de confirmação é exigido para `export` a fim de manter o mesmo co
 
 ## Próxima fase (não incluída nesta migração)
 Adicionar perfis específicos do Slimekeepers (jogador, Gelito, Brotinho, Brasinha), sprites de 8 direções e pipeline de importação/QA para Godot, com revisão visual antes de substituir qualquer asset existente. O workflow de geração do VideoForge foi deixado de fora intencionalmente para não cobrar créditos nem gerar personagens da produtora de vídeo dentro do jogo.
+
+## Autorização de produção visual — 19/11/2026
+
+O criador **autorizou gerar todas as imagens necessárias ao jogo usando PixelLab**, inclusive personagens, slimes, objetos, cenários e animações, conforme a necessidade real do desenvolvimento. Esta autorização é ampla quanto à quantidade de imagens e **não exige uma nova confirmação para cada asset necessário**.
+
+A autorização **não significa que todos os sprites existentes devam ser regenerados** nem que se deva consumir créditos em massa sem um requisito concreto. Aplicar o seguinte procedimento:
+
+1. Cruzar cada nova necessidade do gameplay e das cenas com o inventário em `assets/`, os manifests de assets existentes e a Bíblia Narrativa; reutilizar assets aprovados antes de gerar.
+2. Registrar cada necessidade na fila visual com nome estável, categoria, referência aprovada, dimensões/escala compatíveis com o Godot, direções e animações exigidas, arquivo de destino, prioridade, status e dependências.
+3. Gerar via PixelLab somente o que faltar ou o que a revisão visual reprovar, incluindo variações/direções suficientes para a função no jogo; não há teto arbitrário de imagens necessárias. **Não repetir POST** em caso de timeout, 429 ou resposta ambígua: consultar primeiro o histórico/job.
+4. Antes de qualquer chamada paga, confirmar token e créditos reais, além de verificar se já existe job/arquivo para a mesma chave. Registrar ID/job, status, parâmetros não sigilosos e utilização/custo quando a API informar; nunca publicar token ou payload privado.
+5. Comparar os novos sprites às referências aprovadas: personagem reconhecível, proporções, pixel art consistente, orientação 2D do jogo, transparência válida, quadros/direções completos e animação sem saltos ou cortes. Separar geração concluída de qualidade visual aprovada.
+6. Conservar versões e SHA-256; disponibilizar prévias e relatórios para revisão antes de substituir arte já aprovada. Integração em cenas e testes Godot devem ocorrer em PRs verificadas, não em substituição silenciosa de PNGs.
+
+**Estado técnico nesta data:** o workflow `pixellab-connection.yml` continua apenas com `plan`, `inventory` e `export` e **não está autorizado tecnicamente a realizar POST nesse workflow** até que se implemente e teste o produtor controlado. O cliente `tools/pixellab_client.py` já tem métodos de geração de personagem/estado/animação, mas isso isoladamente não comprova que o token, quota ou qualquer geração estejam ativos. A autorização humana foi concedida; a execução deve demonstrar evidência real.
+
+**Prioridade:** concluir gameplay pelo proxy Astra e identificar lacunas visuais concretas. A produção de assets acompanha as dependências de cada cena, sem alterar a narrativa nem fabricar sprites desnecessários.
