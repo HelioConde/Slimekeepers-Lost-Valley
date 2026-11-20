@@ -11,3 +11,7 @@ assets/local_sprout/
 
 # PixelLab exportado localmente: não publicar ZIPs, IDs ou metadados privados
 output/pixellab/
+
+# Configuracoes e credenciais locais do Claude Code / MCP
+.claude/settings.local.json
+.mcp.local.json
