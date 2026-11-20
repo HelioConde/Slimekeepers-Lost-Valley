@@ -51,6 +51,15 @@ class GuardTests(unittest.TestCase):
             guard.validate_source("scripts/systems/example.gd",
                                   "extends RefCounted\nvar requester = HTTPRequest.new()\n")
 
+    def test_portuguese_comment_ending_os_does_not_trigger_os_api(self):
+        guard.validate_source("scripts/systems/example.gd",
+                              "extends RefCounted\n## IDs conhecidos.\nfunc valid() -> bool:\n\treturn true\n")
+
+    def test_real_os_singleton_remains_forbidden(self):
+        with self.assertRaises(DevTaskError):
+            guard.validate_source("scripts/systems/example.gd",
+                                  "extends RefCounted\nfunc dangerous():\n\tOS.execute('bad', [])\n")
+
     def test_no_file_access_in_generated_file(self):
         with self.assertRaises(DevTaskError):
             guard.validate_source("scripts/systems/example.gd",
