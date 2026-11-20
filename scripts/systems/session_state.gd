@@ -1,0 +1,27 @@
+extends RefCounted
+## Fonte única das chaves de estado de sessão guardadas como metas do SceneTree.
+## Viagens entre regiões preservam essas metas; somente o Novo Jogo as limpa.
+## tests/forest/test_p2_session_reset.gd falha se um script usar chave fora desta lista.
+
+const SESSION_META_KEYS: PackedStringArray = [
+	"clearing_friends",
+	"forest_slime_friends",
+	"valley_slime_friends",
+	"environment_conditions",
+	"forest_places",
+	"region_arrival",
+	"valley_discoveries",
+	"forest_bag_items",
+	"forest_seed_patches_collected",
+	"valley_starter_garden",
+	"valley_starter_garden_harvests",
+	"valley_cooking_ledger",
+	"slime_food_offers",
+	"session_progress_flags",
+]
+
+
+static func clear_session(tree: SceneTree) -> void:
+	for key in SESSION_META_KEYS:
+		if tree.has_meta(key):
+			tree.remove_meta(key)
