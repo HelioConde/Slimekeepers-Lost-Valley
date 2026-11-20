@@ -23,6 +23,7 @@ var bag_hud: Node
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	y_sort_enabled = true
+	add_child(PauseOverlay.new())
 	player = $Player
 	player.position = $SpawnPoints/PlayerSpawn.global_position
 	player.world_bounds = Rect2(Vector2(24,44),Forest.WORLD_SIZE-Vector2(48,68))

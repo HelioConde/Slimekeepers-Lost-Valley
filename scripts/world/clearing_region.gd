@@ -1,11 +1,13 @@
 extends "res://scripts/world.gd"
 ## The editable map is baked in ClareiraDoDespertar.tscn. Reuse existing friendship/HUD.
+const PauseOverlay := preload("res://scripts/ui/pause_overlay.gd")
 const Layout = preload("res://scripts/world/clearing_layout.gd")
 var _visited_exits: Dictionary = {}
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	y_sort_enabled = true
+	add_child(PauseOverlay.new())
 	player = $Player
 	player.position = $SpawnPoints/PlayerSpawn.position
 	player.world_bounds = Rect2(Vector2(24, 44), Layout.WORLD_SIZE - Vector2(48, 68))
