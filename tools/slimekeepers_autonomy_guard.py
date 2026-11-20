@@ -30,7 +30,13 @@ def validate_source(path: str, content: str) -> None:
     if not content.lstrip().startswith("extends "):
         raise DevTaskError("Classe base do script invalida.")
     lowered = content.lower()
+    # OS e um singleton Godot: verificar a chamada como identificador,
+    # nunca como sufixo da palavra "conhecidos." em comentario.
+    if re.search(r"(?<![A-Za-z0-9_])OS\s*\.", content):
+        raise DevTaskError("Chamadas com efeitos colaterais proibidas na entrega autonoma.")
     for fragment in DANGEROUS:
+        if fragment == "OS.":
+            continue  # Verificacao de token acima, sem falsos positivos lexicais.
         if fragment.lower() in lowered:
             raise DevTaskError("Chamadas com efeitos colaterais proibidas na entrega autonoma.")
     if path.startswith("tests/"):
