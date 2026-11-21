@@ -50,7 +50,7 @@ void fragment() {
 	vec2 sw = vec2(p.x * 0.8 + p.y * 0.5, p.y - t * 9.0);
 	float swell = sin(sw.y * 0.03 + f * 6.0 + sin(sw.x * 0.01 + t * 0.15) * 2.4);
 	float ridge = smoothstep(0.78, 0.97, swell) * smoothstep(0.25, 0.65, vnoise(p * 0.008 + t * 0.02));
-	deep = mix(deep, vec3(.16,.48,.72), floor(ridge * 3.0) / 3.0 * 0.5);
+	deep = mix(deep, vec3(.16,.48,.72), floor(ridge * 3.0) / 3.0 * 0.35);
 	// Halo claro em volta das cristas fortes (2 degraus).
 	float glow = smoothstep(0.55, 0.95, swell) * smoothstep(0.35, 0.7, vnoise(p * 0.006 - t * 0.015));
 	deep += vec3(.03,.08,.12) * floor(glow * 2.0) / 2.0;
@@ -80,6 +80,6 @@ void fragment() {
 	// Espuma clara bem na borda (correnteza raspando na margem).
 	float foam = (1.0 - smoothstep(.05, .12, depth)) * step(.55, hash(floor(p/4.0) + floor(t * 1.2)));
 	deep = mix(deep, vec3(.85,.95,1.0), foam * 0.7);
-	vec4 lit = vec4(deep,mix(.72,.95,depth));  // raso deixa ver o leito e as plantas
+	vec4 lit = vec4(deep,mix(.85,.96,depth));  // raso deixa ver o leito e as plantas
 	COLOR = mix(day,lit,night);
 }
