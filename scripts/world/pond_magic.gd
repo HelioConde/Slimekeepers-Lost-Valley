@@ -16,6 +16,9 @@ const GLOW_CYAN := Color(0.45, 0.9, 1.0)
 const PADS := [Vector2(-50, -12), Vector2(-28, 14), Vector2(36, 12), Vector2(58, -8), Vector2(-60, 6), Vector2(6, 18)]
 const GLOWING_LILIES := [Vector2(-40, 0), Vector2(46, 0), Vector2(-8, 22)]
 const REED_SPOTS := [Vector2(-88, -6), Vector2(-70, -34), Vector2(84, 22), Vector2(-60, 40)]
+## Moldura de flores na margem (refs. V9 do lago): todas mágicas (brilham à noite).
+const FLOWER_SPOTS := [Vector2(-104, 16), Vector2(-96, -30), Vector2(-40, -62), Vector2(30, -64), Vector2(100, -20), Vector2(104, 30), Vector2(40, 58), Vector2(-30, 60)]
+const FLOWERS := preload("res://assets/world/forest/wildflowers_cluster.png")
 
 var water: Polygon2D
 var pool: Node2D
@@ -64,6 +67,19 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 		_reflection(pool, LILY_GLOW, at + Vector2(0, 10), GLOW_LILAC, additive)
 		_halo(pool, at + Vector2(0, -2), 40, GLOW_LILAC, additive)
 		_particles(flower, GLOW_LILAC, i)
+	for i in FLOWER_SPOTS.size():
+		var holder := Node2D.new()
+		holder.name = "PondFlowers_%d" % i
+		holder.position = decorations.to_local(pool.global_position + FLOWER_SPOTS[i])
+		decorations.add_child(holder)
+		var flowers := Sprite2D.new()
+		flowers.name = "Sprite"
+		flowers.texture = FLOWERS
+		flowers.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		flowers.offset = Vector2(0, -16)
+		flowers.flip_h = i % 2 == 0
+		flowers.set_meta("magic_flower", true)
+		holder.add_child(flowers)
 	for i in REED_SPOTS.size():
 		var at: Vector2 = pool.global_position + REED_SPOTS[i]
 		var holder := Node2D.new()

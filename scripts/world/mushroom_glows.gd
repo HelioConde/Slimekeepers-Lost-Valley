@@ -114,7 +114,7 @@ func nearest(center: Vector2) -> Array:
 		# Base do que é desenhado (o sprite pode não ser centrado nem ter origem no pé).
 		var rect := sprite.get_rect()
 		var at := sprite.to_global(Vector2(rect.get_center().x, rect.end.y - 6.0))
-		if kind in ["lilac", "reed"] and not magic_flower(sprite.global_position): continue
+		if kind in ["lilac", "reed"] and not sprite.has_meta("magic_flower") and not magic_flower(sprite.global_position): continue
 		var d := at.distance_squared_to(center)
 		if d < REACH * REACH: found.append([d, at, kind])
 	found.sort_custom(func(a, b): return a[0] < b[0])
