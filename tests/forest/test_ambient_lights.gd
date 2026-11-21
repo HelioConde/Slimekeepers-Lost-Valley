@@ -564,3 +564,23 @@ func test_common_trees_do_not_glow_at_night() -> void:
 	var night: Dictionary = Lights.foliage_profile(23 * 60)
 	assert_float(night.glint_strength).is_equal(0.0)
 	assert_float(night.light_strength).is_less(day.light_strength * 0.6)
+
+
+func test_canopy_turns_golden_at_low_sun() -> void:
+	var noon: Dictionary = Lights.foliage_profile(12 * 60)
+	var dusk: Dictionary = Lights.foliage_profile(17 * 60 + 30)
+	assert_float(dusk.light_strength).is_greater(noon.light_strength + 0.2)
+	assert_float((dusk.light_color as Vector3).z).is_less((Lights.foliage_profile(12 * 60).light_color as Vector3).z - 0.05)
+
+
+func test_magic_sparkles_float_in_the_air_day_and_night() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	var field: CPUParticles2D = rig.sparkle_field()
+	assert_object(field).is_not_null()
+	rig.apply_time(9 * 60, 0.1)
+	assert_bool(field.emitting).is_true()
+	assert_float(field.color.b).is_less(field.color.r)  # dourado de dia
+	rig.apply_time(23 * 60, 0.1)
+	assert_float(field.color.b).is_greater_equal(field.color.r)  # branco-azulado à noite
+	assert_int(field.z_index).is_greater(20)

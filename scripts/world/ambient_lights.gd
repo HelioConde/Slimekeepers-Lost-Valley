@@ -60,6 +60,7 @@ var _spores: Array[CPUParticles2D] = []
 var _halos: Array[Sprite2D] = []
 var _mushrooms: Node2D  # poças de luz dos cogumelos (sprites e tilemaps)
 var _mist: Node2D  # névoa noturna baixa
+var _sparkles: CPUParticles2D  # cintilas mágicas brancas e douradas no ar
 var _halo_texture: GradientTexture2D
 ## Raios de sol: da copa (origem) até a mancha no chão. [{top, bottom, alpha, seed}]
 var shafts: Array = []
@@ -306,6 +307,10 @@ func apply_time(minutes: float, delta: float) -> void:
 	_time += delta
 	var night := night_factor(minutes)
 	_apply_foliage_light(minutes, night, delta)
+	if is_instance_valid(_sparkles):
+		_sparkles.emitting = true
+		_sparkles.color = Color(1.0, 0.88, 0.55).lerp(Color(0.8, 0.92, 1.0), night)
+		_sparkles.modulate.a = 0.55 + 0.45 * night
 	if is_instance_valid(_mushrooms) and is_instance_valid(_region):
 		var walker := _region.get_node_or_null("Player") as Node2D
 		if walker:
@@ -392,6 +397,8 @@ func _scan() -> void:
 		_identity = region_identity(str(_region.name))
 		_motes = _make_motes(int(round(22 * _identity)))
 		player.add_child(_motes)
+		_sparkles = _make_sparkle_field(int(round(40 * _identity)))
+		player.add_child(_sparkles)
 		for i in MAX_DAPPLES:
 			add_child(_make_dapple(i))
 		_shaft_layer = Node2D.new()
@@ -496,6 +503,43 @@ func _update_spots(night: float) -> void:
 	for i in _glints.size():
 		# Cintila de vez em quando, cada flor no seu ritmo; mais comum à noite.
 		_glints[i].emitting = _glints[i].visible and sin(_time * (0.45 + 0.04 * i) + i * 2.1) > 0.55 - 0.15 * night
+
+
+## Cintilas no ar (referências V9): cruzes de 1-2 px que acendem e somem num
+## instante, espalhadas pela vista; douradas de dia, branco-azuladas à noite.
+func _make_sparkle_field(amount: int) -> CPUParticles2D:
+	var field := CPUParticles2D.new()
+	field.name = "MagicSparkles"
+	field.amount = maxi(amount, 6)
+	field.lifetime = 1.6
+	field.randomness = 1.0
+	field.local_coords = false
+	field.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	field.emission_rect_extents = Vector2(420, 240)
+	field.direction = Vector2.UP
+	field.spread = 180.0
+	field.gravity = Vector2.ZERO
+	field.initial_velocity_min = 0.0
+	field.initial_velocity_max = 3.0
+	field.scale_amount_min = 1.0
+	field.scale_amount_max = 2.0
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.15, 0.3, 1.0])
+	ramp.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0), Color(1, 1, 1, 0)])
+	field.color_ramp = ramp
+	field.color = Color(1.0, 0.9, 0.6)
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	field.material = glow
+	field.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	field.z_as_relative = false
+	field.z_index = 30  # no ar, à frente das copas
+	field.set_meta("no_shadow", true)
+	return field
+
+
+func sparkle_field() -> CPUParticles2D: return _sparkles
 
 
 func _make_glint() -> CPUParticles2D:
@@ -769,7 +813,9 @@ static func foliage_profile(minutes: float) -> Dictionary:
 	var low_sun := clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
 	var toward_sun := (-sun.normalized() * 0.8 + Vector2(0, -0.7)).normalized() if sun.length() > 0.01 else Vector2(0, -1)
 	var m := fposmod(minutes, 1440.0)
-	var sun_color := Color(1.0, 0.94, 0.66).lerp(Color(1.0, 0.74, 0.44), smoothstep(15.5 * 60.0, 18.5 * 60.0, m))
+	# Dourado das referências V9: sol baixo pinta o topo das copas de ouro.
+	var golden := smoothstep(15.5 * 60.0, 17.5 * 60.0, m) * (1.0 - smoothstep(18.6 * 60.0, 19.2 * 60.0, m)) + (1.0 - smoothstep(6.0 * 60.0, 8.5 * 60.0, m)) * smoothstep(5.0 * 60.0, 6.0 * 60.0, m)
+	var sun_color := Color(1.0, 0.94, 0.66).lerp(Color(1.0, 0.8, 0.4), golden)
 	var moon := Color(0.6, 0.84, 1.0)
 	var color := sun_color.lerp(moon, night)
 	var direction := toward_sun.lerp(Vector2(0.45, -0.9).normalized(), night).normalized()
@@ -777,9 +823,9 @@ static func foliage_profile(minutes: float) -> Dictionary:
 		"light_dir": direction,
 		"light_color": Vector3(color.r, color.g, color.b),
 		# À noite só um fio de luar nas bordas: copa comum não pode parecer luminosa.
-		"light_strength": day * (0.32 + 0.2 * low_sun) + night * 0.16,
+		"light_strength": day * (0.32 + 0.2 * low_sun + 0.35 * golden) + night * 0.16,
 		"shade_strength": day * 0.45 + night * 0.4,
-		"glint_strength": day * 0.25,
+		"glint_strength": day * (0.25 + 0.3 * golden),
 	}
 
 
