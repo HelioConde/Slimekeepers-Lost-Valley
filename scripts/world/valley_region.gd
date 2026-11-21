@@ -337,6 +337,10 @@ func _process(delta: float) -> void:
 	var foliage_night := Color(1, 1, 1).lerp(VALLEY_NIGHT_FOLIAGE, water_night)
 	for group in [$TreesBack, $TreesFront, $LowVegetation]:
 		(group as CanvasItem).modulate = foliage_night
+	# Tábuas das pontes: madeira malva sob o luar (ref. V11), não cinza.
+	var bridge_night := Color(1, 1, 1).lerp(VALLEY_NIGHT_BRIDGE, water_night)
+	for bridge in $Bridges.get_children():
+		if bridge.name.begins_with("Bridge"): (bridge as CanvasItem).modulate = bridge_night
 	for fall in $Waterfalls.get_children():
 		var cascade := fall.get_node_or_null("Cascade") as CanvasItem
 		if cascade and cascade.material is ShaderMaterial:
@@ -359,3 +363,4 @@ var _tree_glow: Node  # árvores encantadas (tronco quente e vagalumes)
 const VALLEY_NIGHT_GROUND := 0.55
 const VALLEY_NIGHT_TINT := Vector3(0.5, 1.0, 1.35)  # azul-petróleo (ref. V11)
 const VALLEY_NIGHT_FOLIAGE := Color(0.66, 0.9, 0.98)
+const VALLEY_NIGHT_BRIDGE := Color(1.04, 0.86, 1.02)
