@@ -508,7 +508,7 @@
       "stage": "04",
       "title": "Testar regressão Novo Jogo, viagem e restauração",
       "estimated_minutes": 25,
-      "status": "planned",
+      "status": "completed",
       "execution_mode": "scoped_code_review",
       "candidate_paths": [
         "tools/test_region_travel.gd",
@@ -521,7 +521,9 @@
       "acceptance": [
         "Bolsa, plantio, alimentação e culinária preservam/limpam o estado no momento correto",
         "Registrar PR, commit, testes e artefatos; não alterar narrativa nem assets aprovados."
-      ]
+      ],
+      "evidence": "https://github.com/HelioConde/Slimekeepers-Lost-Valley/pull/54",
+      "completed_via": "reviewed_manual_gameplay"
     },
     {
       "id": "p2-art-inventory",
