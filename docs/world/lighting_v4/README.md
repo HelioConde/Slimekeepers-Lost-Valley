@@ -61,3 +61,48 @@ Custo de ~0,1–0,3 ms por quadro (dentro do ruído entre execuções); muito ab
 
 - Oclusão seletiva (`LightOccluder2D`) não foi feita.
 - Halo da fogueira do Vale às 18h30 ainda é um disco laranja grande (sistema V3, fora deste passo).
+
+## Auditoria V4.1 (fogueira, sombras do jogador, manchas orgânicas, atmosfera, HUD)
+
+"Antes" = V3 (`42527a4`, worktree temporário); "depois" = esta branch. Mesmo enquadramento
+(spawn de cada região e câmera no jogador) via `tools/capture_lighting.gd`. O Godot MCP da sessão
+não pôde controlar o editor (porta 6505 com outra sessão; ver correção do servidor abaixo).
+
+| Arquivo | O que mostra |
+|---|---|
+| `06_fogueira_*`, `14_fogueira_v3_x_v4_1830_2200.png` | Anéis concêntricos (gradiente em faixas, raio ~130 px) × luz suave de 92 px que só domina após o pôr do sol; estação fora da copa do pinheiro |
+| `07_sombra_jogador_quadros_0700/1630.png` | 8 direções × caminhada/corrida: sombra presa aos pés em todos os quadros |
+| `08_manchas_organicas_0700_zoom.png` | 12 recortes com bordas irregulares e folhas cortando a luz |
+| `09_atmosfera_noite_vale.png` | Noite: brasas, fogueira local, vagalumes e esporos |
+| `10_hud_jogador_sob_painel_antes_depois.png` | Jogador escondido pelos painéis × HUD compacto translúcido sobre o jogador |
+| `11_clareira_v3_x_v4_*.png`, `12_vale_v3_x_v4_*.png` | 07h, 12h, 16h30, 18h30, 22h — V3 à esquerda, V4 à direita |
+| `13_clareira_camadas_*.png` | 07h e 16h30: completo, sem luzes locais, sem sombras, sem tom ambiente |
+
+Causas encontradas:
+- **Anéis da fogueira**: `banded_light_texture` (interpolação constante) ampliada 2×. Agora `campfire_light_texture()` cúbica, raio 92 px, `smoothstep(0.55, 1.0, noite)`.
+- **Caminho laranja no Vale às 18h30**: tom ambiente do pôr do sol (`GameClock.LIGHTING_STOPS`) sobre a terra bege; a fogueira só soma no entorno (camadas comparadas). Mantido: decisão V3.
+- **Estação × pinheiro**: ordem por Y correta; a copa de `TreesBack/Tree_0210` (base 1534,634) cobria a estação em (1515,460) e o jogador ao interagir. Estação em (1440,418).
+- **Sombra do jogador pulando**: base por quadro varia até 11 px na corrida → `ground_bottom()` por animação.
+- **Manchas repetidas**: 3 variantes por índice → 12 por hash da posição, com folhas recortando.
+- **HUD**: faixa da bolsa de 742 px + guia de 398 px ocupavam o topo até y=168/540 → painéis encolhem ao texto (topo esquerdo até y≈65) e ficam com alfa 0,28 sobre o jogador.
+- **Água**: reflexos já existiam (`water_reflections`), não duplicados.
+- **Limitações**: não há slime "de luz" nas regiões atuais (Brasinha/Gelito só em `world.tscn`, obsoleto); a luz de slime em movimento é coberta por teste gdUnit. `LightOccluder2D` seletivo não foi feito.
+
+### Desempenho V3 × V4.1 (300 quadros, vsync off, RX 580)
+
+| Hora | Floresta V3 | Floresta V4.1 | Vale V3 | Vale V4.1 |
+|---|---|---|---|---|
+| 07h | 176 FPS / 556 dc | 169 / 526 | 371 / 488 | 366 / 417 |
+| 12h | 195 / 555 | 186 / 517 | 459 / 487 | 428 / 416 |
+| 16h30 | 196 / 556 | 194 / 517 | 445 / 489 | 436 / 416 |
+| 18h30 | 190 / 557 | 190 / 534 | 464 / 490 | 400 / 439 |
+| 22h | 190 / 548 | 198 / 497 | 470 / 492 | 415 / 406 |
+
+Custo ≤ 0,35 ms/quadro (pior caso Vale 18h30: 2,16 → 2,50 ms); draw calls caem em todas as cenas.
+
+### Testes
+gdUnit `tests/addons` + `tests/forest`: 137/137. `tools/`: DAY_NIGHT 80/0, DAY_SHADOWS 26/0, SHADOW_RENDER PASS,
+PLAYER_SHADOW_FRAMES 336/0, MAP_DEPTH 105/0 (precisa de janela), VISUAL_RULES 5526/0, VALLEY 41/0,
+VALLEY_GARDEN 88/0, FORAGING 23/0, REGION_TRAVEL 9/0, ENVIRONMENT_V3 23/0, ENVIRONMENT_REGIONS 8/0,
+LIVING_REGIONS 61/0, WATER_REFLECTIONS 30/0, HABITATS 37/0. `test_forest_v2` falha antes desta
+branch: carrega `scenes/world.tscn`, que depende da `ClareiraDoDespertar.tscn` removida.
