@@ -10,8 +10,13 @@ func configure(id: String, location: Vector2) -> void:
 	name = "SeedPatch_" + id
 
 func _ready() -> void:
+	add_to_group("shadow_boxes")
 	collected = BAG.is_collected(get_tree(), patch_id)
 	queue_redraw()
+
+## Tufo baixo de flores e sementes: sombra só enquanto não foi colhido.
+func shadow_footprint() -> Rect2: return Rect2(-11, -3, 22, 5) if not collected else Rect2()
+func shadow_height() -> float: return 6.0
 
 func harvest() -> bool:
 	if collected or not BAG.harvest(get_tree(), patch_id):

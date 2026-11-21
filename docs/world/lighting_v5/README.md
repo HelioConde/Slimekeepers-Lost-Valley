@@ -88,3 +88,22 @@ NATIVE_DEPTH 8/0, NATIVE_BRIDGES e CONTACT_DISTANCE exit 0. Nenhuma falha antiga
 - Blobs sob tufos de grama (169 no Vale) mantidos: têm dono, mas não projetam sombra direcional.
 - Slimes luminosos (Brasinha/Gelito) nas regiões atuais e `LightOccluder2D` seletivo: não feitos.
 - Pedras dentro do rio (`river_stones`, 6) sem sombra/contato na água.
+
+## 8. Sombra fora do lugar (relato com captura `05_relato_sombra_fora_do_local.jpg`)
+
+Investigação com `tools/debug_shadow_owners.gd` (sombra projetada em vermelho, contato em
+laranja, pé de cada objeto em ciano, `--probe`, `--only`, `--hide`, `--outline`):
+- A faixa circulada vinha só das árvores (`--only=VegetationHigh`), mas nenhum quad calculado
+  cobria aquele ponto. Isolando uma árvore espelhada: **retângulo de largura negativa no GL
+  Compatibility não espelha — desloca o desenho uma largura inteira** (192 px numa árvore).
+  Toda árvore com `flip_h` (e o contato dela) projetava a sombra no meio da clareira.
+  Correção: espelhamento por transform (`DayShadows.mirror_for`). `tools/test_shadow_flip.gd`
+  falhava (normal 422–598 × espelhada 610–788) e passa (418–596).
+- Altura real por tipo (`height_factor`): na arte 3/4, parte do sprite é a face de cima, não
+  altura. Personagens 1,0; árvores 0,42 (máx. 70 px); pedras/tocos/troncos 0,35;
+  arbustos 0,45; flores/cogumelos 0,55.
+- Objetos desenhados por código sem sombra: canteiros do Vale e brotos de sementes da
+  Floresta entram no grupo `shadow_boxes` e ganham sombra projetada + contato.
+
+`05_donos_das_sombras_depuracao_antes_depois_1630.png`: depuração antes × depois (Clareira e
+Vale). `05_clareira_sem_sombra_solta_0700_1630.png`: captura normal antes × depois.

@@ -35,7 +35,11 @@ func run():
 	root.get_node("GameClock").stop()
 	root.get_node("GameClock").set_time(18, 0)
 	lighting._process(0)
-	lighting.get_node("DayShadows").update_for_time(0)
+	var shadows: Node2D = lighting.get_node("DayShadows")
+	# Só a sombra projetada: o contato (mais escuro, na base) fica fora da medição.
+	shadows.get_node("StaticContactShadows").hide()
+	shadows.get_node("DynamicContactShadows").hide()
+	shadows.update_for_time(0)
 	var image: Image = await frame_image()
 	if OS.get_cmdline_user_args().size() > 0: image.save_png(OS.get_cmdline_user_args()[0])
 	var k := image.get_width() / 960.0
@@ -44,7 +48,7 @@ func run():
 	var darkest := 1.0
 	var lightest := 0.0
 	var shadow_pixels := 0
-	for y in range(366, 430, 2):  # além da sombra de contato
+	for y in range(334, 420, 2):  # abaixo da base das árvores
 		for x in range(380, 700, 2):
 			var g := image.get_pixel(int(x * k), int(y * k)).g
 			if g < ground_g - .02:

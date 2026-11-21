@@ -12,6 +12,8 @@ const STOPS := [
 ## Sombra de contato: faixa da base da silhueta (tronco, pedra, pés), projetada curta.
 ## Comprimento máximo (px) da sombra projetada: copas não cobrem a clareira e os caminhos.
 const MAX_CAST := 110.0
+## Copas: projeção curta, a sombra fica sob a árvore e colada ao tronco.
+const MAX_TREE_CAST := 70.0
 const CONTACT_MIN := 6.0
 const CONTACT_MAX := 18.0
 const CONTACT_SKIP := ["flower", "fern", "reed", "grass", "lily", "clover"]
@@ -23,6 +25,8 @@ const FLOATING := ["lily"]
 const EXTRA_CASTER_GROUPS := ["MapArt", "AwakeningLandmark", "NaturalSpring", "Waterfalls", "CookingStation"]
 var _casters: Dictionary = {}
 var _contacts: Dictionary = {}
+var _heights: Dictionary = {}
+var _boxes: Array[Node2D] = []
 var _hidden_blobs: Array[CanvasItem] = []
 var _contact := {"vector": Vector2.ZERO, "opacity": 0.0}
 var _kinds: Dictionary = {}
@@ -67,6 +71,8 @@ func _ready() -> void:
 	_dynamic_contact = _make_pass("DynamicContactShadows", self, func(): _draw_casters(_dynamic_contact,_dynamic_ids,true))
 	for node in _region.find_children("*", "", true, false):
 		if node is Sprite2D or node is AnimatedSprite2D: _register(node)
+	for node in get_tree().get_nodes_in_group("shadow_boxes"):
+		if _region.is_ancestor_of(node): _register_box(node)
 	get_tree().node_added.connect(_on_node_added)
 	_hide_floating_blobs()
 	_old_canopy = _region.get_node_or_null("CanopyShade")
@@ -83,7 +89,7 @@ func _exit_tree() -> void:
 	if get_tree().node_added.is_connected(_on_node_added): get_tree().node_added.disconnect(_on_node_added)
 
 func _on_node_added(node: Node) -> void:
-	if node is Sprite2D or node is AnimatedSprite2D: _pending.append(weakref(node))
+	if node is Sprite2D or node is AnimatedSprite2D or node.has_method("shadow_footprint"): _pending.append(weakref(node))
 
 func _register(sprite: Node2D) -> void:
 	if not is_instance_valid(sprite) or not _region.is_ancestor_of(sprite): return
@@ -111,6 +117,8 @@ func _register(sprite: Node2D) -> void:
 	_casters[sprite.get_instance_id()] = sprite
 	_kinds[sprite.get_instance_id()] = kind
 	_contacts[sprite.get_instance_id()] = _wants_contact(sprite)
+	var texture := _texture_for(sprite)
+	_heights[sprite.get_instance_id()] = height_factor(kind, texture.resource_path.get_file().to_lower() if texture else "")
 	# O blob elíptico fixo do mapa é trocado pela sombra de contato com silhueta.
 	for holder in [sprite, sprite.get_parent()]:
 		var blob := holder.get_node_or_null("ContactShadow") as CanvasItem
@@ -128,6 +136,50 @@ func _hide_floating_blobs() -> void:
 				blob.hide()
 				_hidden_blobs.append(blob)
 				break
+
+## Fração do sprite que é altura física. Na arte 3/4 top-down, parte do desenho de
+## pedras, arbustos e copas é a face de cima vista de frente — projetar o sprite
+## inteiro jogava sombras de árvores e pedras para o meio da clareira, longe do pé.
+static func height_factor(kind: String, file: String) -> float:
+	if kind in ["player", "slime", "animal"]: return 1.0
+	if kind == "tree": return 0.42
+	for word in ["rock", "stone", "boulder", "stump", "log", "ruin", "crystal", "campfire", "step"]:
+		if word in file: return 0.35
+	for word in ["bush", "shrub"]:
+		if word in file: return 0.45
+	return 0.55
+
+## Direção de projeção do sprite no horário atual, já com altura real e limite.
+func cast_direction(sprite: Node2D) -> Vector2:
+	var id := sprite.get_instance_id()
+	var texture := _texture_for(sprite)
+	if not texture: return Vector2.ZERO
+	var height: float = _rect_for(sprite, texture).size.y * sprite.global_scale.y
+	var direction: Vector2 = (_profile.vector as Vector2) * float(_heights.get(id, 1.0))
+	var limit := MAX_TREE_CAST if _kinds.get(id) == "tree" else MAX_CAST
+	if height * direction.length() > limit: direction *= limit / (height * direction.length())
+	return direction
+
+func has_box(node: Node2D) -> bool: return _boxes.has(node)
+
+func _register_box(node: Node2D) -> void:
+	if not _boxes.has(node) and node.has_method("shadow_footprint"):
+		_boxes.append(node)
+		_cull_age = 1.0
+
+## Caixa baixa desenhada por código: pegada + a mesma pegada deslocada pela altura.
+func _draw_box(target: Node2D, node: Node2D, contact: bool) -> void:
+	var footprint: Rect2 = node.shadow_footprint()
+	if footprint.size == Vector2.ZERO: return
+	var height: float = node.shadow_height()
+	var shift: Vector2 = (_contact.vector if contact else _profile.vector) * height * (0.6 if contact else 1.0)
+	var points := PackedVector2Array()
+	for corner in [footprint.position, Vector2(footprint.end.x, footprint.position.y), footprint.end, Vector2(footprint.position.x, footprint.end.y)]:
+		points.append(node.global_transform * corner)
+		points.append(node.global_transform * corner + shift)
+	var hull := Geometry2D.convex_hull(points)
+	target.draw_set_transform_matrix(target.global_transform.affine_inverse())
+	target.draw_colored_polygon(hull, Color(1, 1, 1, float(_contact.opacity) if contact else 1.0))
 
 func _wants_contact(sprite: Node2D) -> bool:
 	var texture := _texture_for(sprite)
@@ -148,7 +200,10 @@ func _is_wildlife_texture(sprite: Node2D) -> bool:
 func update_for_time(delta: float) -> void:
 	for ref in _pending:
 		var sprite = ref.get_ref()
-		if is_instance_valid(sprite): _register(sprite)
+		if not is_instance_valid(sprite): continue
+		if sprite.has_method("shadow_footprint"):
+			if _region.is_ancestor_of(sprite): _register_box(sprite)
+		else: _register(sprite)
 	_pending.clear()
 	_profile = profile_at(GameClock.get_save_data().minutes)
 	_contact = contact_profile(GameClock.get_save_data().minutes)
@@ -314,16 +369,25 @@ func _draw_casters(target: Node2D, ids: Array, contact: bool) -> void:
 			_draw_contact(target, sprite, texture, foot, source)
 			continue
 		var rect := _rect_for(sprite,texture)
-		var direction: Vector2 = _profile.vector
-		# Avoid enormous overlapping canopy projections while retaining tree silhouettes.
-		var height: float = rect.size.y * sprite.global_scale.y
-		if height*direction.length()>MAX_CAST: direction *= MAX_CAST/(height*direction.length())
-		target.draw_set_transform_matrix(target.global_transform.affine_inverse()*projection_for(sprite,foot,direction))
-		if sprite.flip_h: rect.position.x += rect.size.x; rect.size.x = -rect.size.x
-		if sprite.flip_v: rect.position.y += rect.size.y; rect.size.y = -rect.size.y
+		var direction := cast_direction(sprite)
+		target.draw_set_transform_matrix(target.global_transform.affine_inverse()*projection_for(sprite,foot,direction)*mirror_for(sprite,rect))
 		target.draw_texture_rect_region(texture,rect,source,Color(1,1,1,sprite.modulate.a))
 		drawn_casters += 1
+	if target == _static_pass or target == _static_contact:
+		_boxes = _boxes.filter(func(b): return is_instance_valid(b) and b.is_inside_tree())
+		for box in _boxes:
+			if box.is_visible_in_tree() and view.has_point(box.global_position): _draw_box(target, box, contact)
 	target.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+## Espelhamento do sprite como transform, dentro do próprio retângulo. No GL
+## Compatibility um retângulo de largura negativa NÃO espelha: desloca o desenho uma
+## largura inteira (192 px numa árvore), e a sombra de toda árvore com flip_h
+## aparecia no meio da clareira, longe do tronco.
+static func mirror_for(sprite: Node2D, rect: Rect2, vertical: bool = true) -> Transform2D:
+	var h: bool = sprite.get("flip_h") == true
+	var v: bool = vertical and sprite.get("flip_v") == true
+	return Transform2D(Vector2(-1.0 if h else 1.0, 0), Vector2(0, -1.0 if v else 1.0),
+		Vector2(2.0 * rect.position.x + rect.size.x if h else 0.0, 2.0 * rect.position.y + rect.size.y if v else 0.0))
 
 func _texture_key(id: int) -> int:
 	var sprite = _casters.get(id)
@@ -343,6 +407,5 @@ func _draw_contact(target: Node2D, sprite: Node2D, texture: Texture2D, foot: Vec
 	if strip.size.y <= 0.0 or full.size.y <= 0.0: return
 	var ratio := source.size.y/full.size.y
 	var src := Rect2(source.position.x,source.position.y+(strip.position.y-full.position.y)*ratio,source.size.x,strip.size.y*ratio)
-	target.draw_set_transform_matrix(target.global_transform.affine_inverse()*projection_for(sprite,foot,_contact.vector))
-	if sprite.flip_h: strip.position.x += strip.size.x; strip.size.x = -strip.size.x
+	target.draw_set_transform_matrix(target.global_transform.affine_inverse()*projection_for(sprite,foot,_contact.vector)*mirror_for(sprite,full,false))
 	target.draw_texture_rect_region(texture,strip,src,Color(1,1,1,float(_contact.opacity)*sprite.modulate.a))
