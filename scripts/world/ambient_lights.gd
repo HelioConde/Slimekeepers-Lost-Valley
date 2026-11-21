@@ -298,9 +298,9 @@ static func mote_color(minutes: float) -> Color:
 
 ## Mais vagalumes na Floresta e no Vale; poucos na Clareira (visibilidade para iniciantes).
 static func firefly_amount(region_name: String) -> int:
-	if region_name.contains("Floresta"): return 28
-	if region_name.contains("Vale"): return 20
-	return 8
+	if region_name.contains("Floresta"): return 40
+	if region_name.contains("Vale"): return 32
+	return 12
 
 
 func _process(delta: float) -> void:
@@ -383,7 +383,8 @@ func _scan() -> void:
 		_player_light.name = "VisibilityLight"
 		player.add_child(_player_light)
 		# Poucos vagalumes soltos; o grosso fica nos enxames da vegetação e da água.
-		_fireflies = _make_fireflies(maxi(4, firefly_amount(str(_region.name)) / 3))
+		# Referências V9: a noite tem dezenas de vagalumes na tela.
+		_fireflies = _make_fireflies(maxi(6, firefly_amount(str(_region.name))))
 		player.add_child(_fireflies)
 		for i in MAX_SWARMS:
 			var swarm := _make_fireflies(maxi(3, firefly_amount(str(_region.name)) / 5))
@@ -690,8 +691,8 @@ func _make_fireflies(amount: int) -> CPUParticles2D:
 	flies.gravity = Vector2.ZERO
 	flies.initial_velocity_min = 3.0
 	flies.initial_velocity_max = 9.0
-	flies.scale_amount_min = 1.5
-	flies.scale_amount_max = 2.5
+	flies.scale_amount_min = 2.0
+	flies.scale_amount_max = 3.0
 	flies.tangential_accel_min = -8.0
 	flies.tangential_accel_max = 8.0
 	flies.damping_min = 1.0
