@@ -29,6 +29,10 @@ const DAPPLE_STRENGTH := 0.3
 const DAPPLE_VARIANTS := 12
 ## Distância (px) em que o jogador dentro de uma mancha recebe luz fraca.
 const DAPPLE_PLAYER_REACH := 30.0
+## Vento: onda que atravessa as manchas vizinhas em sequência (px, rad/s, rad/px).
+const WIND_SWAY := 1.6
+const WIND_SPEED := 1.1
+const WIND_WAVELENGTH := 0.012
 ## Grade de mundo das manchas de sol: cada célula tem posição fixa (hash), não segue a câmera.
 const DAPPLE_CELL := 240.0
 ## Janela de células em volta do jogador: cobre a vista toda (960×540 com zoom 0,8 =
@@ -623,6 +627,49 @@ func _make_dapple(index: int) -> Sprite2D:
 	return dapple
 
 
+## Onde a luz de uma abertura na copa cai: dentro da sombra projetada da própria
+## árvore (o sol entra pela copa e chega ao chão junto com a sombra dela).
+static func canopy_gap_spot(foot: Vector2, height: float, sun: Vector2, along: float, side: float) -> Vector2:
+	var direction := sun
+	if height * direction.length() > SHADOWS.MAX_CAST:
+		direction *= SHADOWS.MAX_CAST / (height * direction.length())
+	var across := direction.orthogonal().normalized() if direction.length() > 0.01 else Vector2.RIGHT
+	return foot + direction * height * along + across * side
+
+
+## Aberturas determinísticas: cada árvore tem (ou não) uma, pelo hash do pé.
+static func canopy_gaps(trees: Array, center: Vector2, count: int, density: float) -> Array[Dictionary]:
+	var gaps: Array[Dictionary] = []
+	for tree in trees:
+		var foot: Vector2 = tree["foot"]
+		var h := hash(Vector2i(foot))
+		if posmod(h, 100) >= int(density * 100.0):
+			continue
+		gaps.append({
+			"foot": foot, "height": float(tree["height"]),
+			"along": 0.35 + float((h >> 8) & 255) / 255.0 * 0.5,
+			"side": (float((h >> 16) & 255) / 255.0 - 0.5) * 70.0,
+			"variant": posmod(h >> 4, DAPPLE_VARIANTS),
+		})
+	gaps.sort_custom(func(a, b): return (a["foot"] as Vector2).distance_squared_to(center) < (b["foot"] as Vector2).distance_squared_to(center))
+	return gaps.slice(0, count)
+
+
+func _assign_dapples(center: Vector2) -> void:
+	var shadows := get_parent().get_node_or_null("DayShadows")
+	var density := dapple_density(str(_region.name))
+	if shadows and shadows.has_method("trees_near"):
+		var half := Vector2(DAPPLE_WINDOW) * DAPPLE_CELL + Vector2(DAPPLE_CELL, DAPPLE_CELL) * 0.5
+		var gaps := canopy_gaps(shadows.trees_near(center, half), center, _dapples.size(), density)
+		for i in _dapples.size():
+			_dapples[i].set_meta("gap", gaps[i] if i < gaps.size() else {})
+		return
+	# Sem DayShadows (testes isolados): células fixas do mundo.
+	var homes := dapple_homes(center, _dapples.size(), density)
+	for i in _dapples.size():
+		_dapples[i].set_meta("gap", {"home": homes[i], "variant": posmod(hash(Vector2i(homes[i])), DAPPLE_VARIANTS)} if i < homes.size() else {})
+
+
 func _update_dapples(minutes: float, night: float) -> void:
 	if _dapples.is_empty() or not is_instance_valid(_region):
 		return
@@ -631,29 +678,36 @@ func _update_dapples(minutes: float, night: float) -> void:
 	var cell := Vector2(floorf(center.x / DAPPLE_CELL), floorf(center.y / DAPPLE_CELL))
 	if _dapple_anchor != cell:
 		_dapple_anchor = cell
-		var homes := dapple_homes(center, _dapples.size(), dapple_density(str(_region.name)))
-		for i in _dapples.size():
-			_dapples[i].set_meta("home", homes[i] if i < homes.size() else Vector2.INF)
+		_assign_dapples(center)
 	var sun: Vector2 = SHADOWS.profile_at(minutes)["vector"]
 	var low_sun := clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
 	var day := 1.0 - night
 	var warm := Color(1.0, 0.95, 0.8).lerp(Color(1.0, 0.8, 0.55), smoothstep(13 * 60.0, 17.5 * 60.0, fposmod(minutes, 1440.0)))
+	var wind := Vector2(1.0, 0.35).normalized()
 	var near_player := 0.0
 	for i in _dapples.size():
 		var dapple := _dapples[i]
-		var home: Vector2 = dapple.get_meta("home", Vector2.INF)
+		var gap: Dictionary = dapple.get_meta("gap", {})
+		var home := Vector2.INF
+		if gap.has("foot"):
+			home = canopy_gap_spot(gap["foot"], gap["height"], sun, gap["along"], gap["side"]).round()
+		elif gap.has("home"):
+			home = gap["home"]
+		dapple.set_meta("home", home)
 		var strength := 0.0 if home == Vector2.INF else DAPPLE_STRENGTH * day * (0.65 + 0.35 * low_sun) * _identity * (0.85 + 0.15 * sin(_time * 0.7 + i))
 		_dapple_strengths[i] = strength
 		dapple.visible = strength > 0.01
 		var dust := dapple.get_node_or_null("SunbeamDust") as CPUParticles2D
 		if dust:
-			dust.emitting = day > 0.5
+			dust.emitting = day > 0.5 and dapple.visible
 		if not dapple.visible:
 			continue
-		# Folhas balançando: 1–2 px, na grade de pixels, sem sair do lugar no mundo.
-		dapple.global_position = (home + Vector2(sin(_time * 0.9 + i), cos(_time * 0.7 + i * 1.7)) * 1.5).round()
-		dapple.texture = dapple_texture_for(posmod(hash(Vector2i(home)), DAPPLE_VARIANTS), sun)
-		dapple.modulate = Color(warm.r, warm.g, warm.b, strength)
+		# Vento: a mesma rajada passa pelas manchas vizinhas com atraso (onda), 1–2 px.
+		var phase := _time * WIND_SPEED - (home.x + home.y) * WIND_WAVELENGTH
+		var sway := wind * sin(phase) * WIND_SWAY + wind.orthogonal() * cos(phase * 0.6 + i) * 0.6
+		dapple.global_position = (home + sway).round()
+		dapple.texture = dapple_texture_for(int(gap.get("variant", 0)), sun)
+		dapple.modulate = Color(warm.r, warm.g, warm.b, strength * (0.9 + 0.1 * sin(phase * 1.7)))
 		if player:
 			near_player = maxf(near_player, strength * (1.0 - clampf(player.global_position.distance_to(home) / DAPPLE_PLAYER_REACH, 0.0, 1.0)))
 	if is_instance_valid(_player_dapple_light):

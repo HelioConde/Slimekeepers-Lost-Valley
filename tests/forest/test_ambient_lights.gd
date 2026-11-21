@@ -435,3 +435,61 @@ func test_fireflies_wander_organically() -> void:
 	var swarm: CPUParticles2D = rig.firefly_swarms()[0]
 	assert_float(absf(swarm.orbit_velocity_min) + absf(swarm.orbit_velocity_max)).is_greater(0.0)
 	assert_float(swarm.hue_variation_max).is_greater(0.0)
+
+
+func _canopy_rig() -> Array:
+	var region: Node2D = auto_free(Node2D.new())
+	add_child(region)
+	var player := Node2D.new()
+	player.name = "Player"
+	region.add_child(player)
+	var art := Node2D.new()
+	art.name = "MapArt"
+	region.add_child(art)
+	for i in 30:
+		var tree := Node2D.new()
+		tree.position = Vector2((i % 6) * 170 - 420, (i / 6) * 150 - 330)
+		art.add_child(tree)
+		var sprite := Sprite2D.new()
+		sprite.name = "Sprite"
+		sprite.texture = load("res://assets/world/forest/pine_crisp.png")
+		sprite.centered = false
+		sprite.position = Vector2(-96, -182)
+		sprite.scale = Vector2(2, 2)
+		tree.add_child(sprite)
+	var holder := Node2D.new()
+	region.add_child(holder)
+	var shadows: Node2D = preload("res://scripts/world/day_shadows.gd").new()
+	shadows.name = "DayShadows"
+	holder.add_child(shadows)
+	var rig: Node2D = Lights.new()
+	holder.add_child(rig)
+	return [region, rig]
+
+
+func test_dapples_fall_inside_the_shadow_of_their_own_canopy() -> void:
+	var rig: Node2D = _canopy_rig()[1]
+	await await_idle_frame()
+	await await_idle_frame()
+	for minutes in [7 * 60, 12 * 60, 16 * 60 + 30]:
+		rig.apply_time(minutes, 0.0)
+		var sun: Vector2 = preload("res://scripts/world/day_shadows.gd").profile_at(minutes)["vector"]
+		var visible := 0
+		for dapple in rig.dapples():
+			if not dapple.visible: continue
+			visible += 1
+			var gap: Dictionary = dapple.get_meta("gap")
+			assert_bool(gap.has("foot")).override_failure_message("mancha sem copa de origem").is_true()
+			var offset: Vector2 = (dapple.get_meta("home") as Vector2) - (gap["foot"] as Vector2)
+			# Do lado da sombra, a no máximo o comprimento da sombra (+ largura da copa).
+			assert_float(offset.dot(sun.normalized())).is_greater(0.0)
+			assert_float(offset.length()).is_less_equal(preload("res://scripts/world/day_shadows.gd").MAX_CAST + 40.0)
+		assert_int(visible).is_greater(5)
+
+
+func test_wind_reaches_neighbouring_dapples_with_a_delay() -> void:
+	var near := Lights.canopy_gap_spot(Vector2(0, 0), 180.0, Vector2(-0.8, 0.45), 0.5, 0.0)
+	var far := Lights.canopy_gap_spot(Vector2(400, 0), 180.0, Vector2(-0.8, 0.45), 0.5, 0.0)
+	var phase_near := -(near.x + near.y) * Lights.WIND_WAVELENGTH
+	var phase_far := -(far.x + far.y) * Lights.WIND_WAVELENGTH
+	assert_float(absf(phase_near - phase_far)).is_greater(1.0)

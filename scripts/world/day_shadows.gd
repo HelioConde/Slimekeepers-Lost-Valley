@@ -185,6 +185,22 @@ func contact_strip(sprite: Node2D) -> Rect2:
 	height = minf(height, visible_height)
 	return Rect2(rect.position.x, bottom - height, rect.size.x, height)
 
+## Árvores (pé e altura em px do mundo) com pé dentro do retângulo: as manchas de
+## sol nascem nas aberturas dessas copas.
+func trees_near(center: Vector2, half: Vector2) -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
+	var box := Rect2(center - half, half * 2.0)
+	for id in _static_ids:
+		if _kinds.get(id) != "tree": continue
+		var sprite = _casters.get(id)
+		if not is_instance_valid(sprite) or not sprite.is_visible_in_tree(): continue
+		var foot := foot_for(sprite)
+		if not box.has_point(foot): continue
+		var texture := _texture_for(sprite)
+		var height := _rect_for(sprite, texture).size.y * absf(sprite.global_scale.y) if texture else 120.0
+		found.append({"foot": foot, "height": height})
+	return found
+
 func has_caster(sprite: Node2D) -> bool: return _casters.has(sprite.get_instance_id())
 func count_category(kind: String) -> int: return _kinds.values().count(kind)
 
