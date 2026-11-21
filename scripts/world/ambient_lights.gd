@@ -302,7 +302,7 @@ static func mote_color(minutes: float) -> Color:
 ## Mais vagalumes na Floresta e no Vale; poucos na Clareira (visibilidade para iniciantes).
 static func firefly_amount(region_name: String) -> int:
 	if region_name.contains("Floresta"): return 40
-	if region_name.contains("Vale"): return 32
+	if region_name.contains("Vale"): return 48  # ref. V11 da ponte: dezenas de vagalumes dourados
 	return 12
 
 
@@ -348,7 +348,10 @@ func apply_time(minutes: float, delta: float) -> void:
 	if is_instance_valid(_player_light):
 		_player_light.energy = 0.22 * night
 	if is_instance_valid(_fireflies):
-		_fireflies.emitting = night > 0.2
+		var on := night > 0.2
+		if on and not _fireflies.emitting:
+			_fireflies.restart()  # preprocess: já chega com o céu cheio (ex.: save carregado à noite)
+		_fireflies.emitting = on
 	if is_instance_valid(_motes):
 		_motes.emitting = night < 0.75
 		_motes.color = mote_color(minutes)
@@ -389,6 +392,7 @@ func _scan() -> void:
 		# Poucos vagalumes soltos; o grosso fica nos enxames da vegetação e da água.
 		# Referências V9: a noite tem dezenas de vagalumes na tela.
 		_fireflies = _make_fireflies(maxi(6, firefly_amount(str(_region.name))))
+		if str(_region.name).contains("Vale"): _valley_firefly(_fireflies)
 		player.add_child(_fireflies)
 		for i in MAX_SWARMS:
 			var swarm := _make_fireflies(maxi(3, firefly_amount(str(_region.name)) / 5))
@@ -398,6 +402,7 @@ func _scan() -> void:
 			swarm.initial_velocity_max = 6.0
 			swarm.scale_amount_min = 2.0
 			swarm.scale_amount_max = 3.0
+			if str(_region.name).contains("Vale"): _valley_firefly(swarm)
 			swarm.z_as_relative = false
 			swarm.z_index = 1
 			swarm.visible = false
@@ -684,6 +689,23 @@ func _make_light(color: Color, scale: float) -> PointLight2D:
 	light.energy = 0.0
 	light.shadow_enabled = false
 	return light
+
+
+## Vagalumes do Vale (ref. V11): amarelo-dourado quente, não verde-limão.
+static func gold_firefly_ramp() -> Gradient:
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.2, 0.5, 0.8, 1.0])
+	ramp.colors = PackedColorArray([
+		Color(1.0, 0.85, 0.35, 0.0), Color(1.0, 0.9, 0.45, 0.95), Color(1.0, 0.75, 0.3, 0.3),
+		Color(1.0, 0.92, 0.5, 0.9), Color(1.0, 0.85, 0.35, 0.0),
+	])
+	return ramp
+
+
+static func _valley_firefly(flies: CPUParticles2D) -> void:
+	flies.color_ramp = gold_firefly_ramp()
+	flies.scale_amount_min = 3.0
+	flies.scale_amount_max = 4.0
 
 
 func _make_fireflies(amount: int) -> CPUParticles2D:
