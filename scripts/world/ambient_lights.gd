@@ -840,7 +840,7 @@ static func foliage_profile(minutes: float) -> Dictionary:
 	var toward_sun := (-sun.normalized() * 0.8 + Vector2(0, -0.7)).normalized() if sun.length() > 0.01 else Vector2(0, -1)
 	var m := fposmod(minutes, 1440.0)
 	# Dourado das referências V9: sol baixo pinta o topo das copas de ouro.
-	var golden := smoothstep(15.5 * 60.0, 17.5 * 60.0, m) * (1.0 - smoothstep(18.6 * 60.0, 19.2 * 60.0, m)) + (1.0 - smoothstep(6.0 * 60.0, 8.5 * 60.0, m)) * smoothstep(5.0 * 60.0, 6.0 * 60.0, m)
+	var golden := smoothstep(16.5 * 60.0, 18.2 * 60.0, m) * (1.0 - smoothstep(18.6 * 60.0, 19.2 * 60.0, m)) + (1.0 - smoothstep(6.0 * 60.0, 8.5 * 60.0, m)) * smoothstep(5.0 * 60.0, 6.0 * 60.0, m)
 	var sun_color := Color(1.0, 0.94, 0.66).lerp(Color(1.0, 0.8, 0.4), golden)
 	var moon := Color(0.6, 0.84, 1.0)
 	var color := sun_color.lerp(moon, night)

@@ -79,7 +79,7 @@ void fragment() {
 			float near = smoothstep(0.0, 0.55, forest_near(world_pixel));
 			float leaves = moss(px / 22.0) * 0.7 + moss(px / 9.0) * 0.3;
 			float shade = step(leaves, near * 1.1);  // sombra recortada, sem degradê
-			vec3 sun = g * mix(vec3(1.06, 1.04, 0.94), vec3(1.22, 1.1, 0.72), golden);
+			vec3 sun = g * mix(vec3(1.06, 1.04, 0.94), vec3(1.38, 1.08, 0.6), golden);
 			vec3 cool = g * vec3(0.74, 0.82, 0.9);
 			g = mix(g, mix(sun, cool, shade), canopy_shade * (1.0 - night_dim));
 		}
@@ -112,7 +112,7 @@ void fragment() {
 			float beam = step(0.62, fract(sin(beam_lane * 78.233) * 12345.678));
 			float along = dot(world_pixel, dir);
 			beam *= step(0.3, fract(sin(beam_lane * 3.7) * 999.1 + along / 520.0));  // feixes que começam e acabam
-			g = mix(g, g * vec3(1.5, 1.32, 0.72) + vec3(0.07, 0.055, 0.0), beam * (1.0 - s) * (1.0 - here_forest) * long_shadow * golden * (1.0 - night_dim));
+			g = mix(g, g * vec3(1.3, 1.2, 0.85) + vec3(0.04, 0.03, 0.0), beam * (1.0 - s) * (1.0 - here_forest) * long_shadow * golden * (1.0 - night_dim));
 		}
 		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.9, 1.25) * 0.9, night_dim);
 		COLOR.rgb = g;
