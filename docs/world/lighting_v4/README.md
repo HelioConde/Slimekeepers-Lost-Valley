@@ -60,13 +60,14 @@ Custo de ~0,1–0,3 ms por quadro (dentro do ruído entre execuções); muito ab
 ## Pendências
 
 - Oclusão seletiva (`LightOccluder2D`) não foi feita.
-- Halo da fogueira do Vale às 18h30 ainda é um disco laranja grande (sistema V3, fora deste passo).
+- ~~Halo da fogueira do Vale como disco laranja grande~~ — resolvido na V4.1 (abaixo).
 
 ## Auditoria V4.1 (fogueira, sombras do jogador, manchas orgânicas, atmosfera, HUD)
 
 "Antes" = V3 (`42527a4`, worktree temporário); "depois" = esta branch. Mesmo enquadramento
 (spawn de cada região e câmera no jogador) via `tools/capture_lighting.gd`. O Godot MCP da sessão
-não pôde controlar o editor (porta 6505 com outra sessão; ver correção do servidor abaixo).
+não pôde controlar o editor: a porta 6505 estava com outra sessão do Claude Code (o servidor
+`godot-mcp` foi corrigido para não cair nesse caso e explicar o motivo).
 
 | Arquivo | O que mostra |
 |---|---|
