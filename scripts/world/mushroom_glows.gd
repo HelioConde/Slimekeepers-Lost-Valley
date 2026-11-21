@@ -8,11 +8,12 @@ extends Node2D
 const CYAN := Color(0.35, 0.85, 1.0)
 const WARM := Color(1.0, 0.55, 0.35)
 const LILAC := Color(0.78, 0.55, 1.0)  # flores mágicas (1 em 4 touceiras)
+const PINK := Color(1.0, 0.55, 0.85)  # vitórias-régias com flor (rio do Vale)
 const POOL_SIZE := 36
 const REACH := 720.0
-const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm", "wildflowers_cluster": "lilac"}
+const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm", "wildflowers_cluster": "lilac", "lily_pad_flower": "pink", "reeds": "reed"}
 
-var points := {"cyan": [] as Array[Vector2], "warm": [] as Array[Vector2], "lilac": [] as Array[Vector2]}  # células de tilemap
+var points := {"cyan": [] as Array[Vector2], "warm": [] as Array[Vector2], "lilac": [] as Array[Vector2], "pink": [] as Array[Vector2], "reed": [] as Array[Vector2]}  # células de tilemap
 var cells := {}  # ponto -> [TileMapLayer, célula]: a célula pode ser apagada depois
 var sprites: Array[Sprite2D] = []  # validados ao usar: outro sistema pode trocar ou esconder
 var pools: Array[Sprite2D] = []   # poças no chão (atrás de tudo)
@@ -66,7 +67,7 @@ func setup(region: Node2D) -> void:
 				if source == null or source.texture == null: continue
 				var kind := kind_of(source.texture.resource_path)
 				var at := layer.to_global(layer.map_to_local(cell))
-				if kind == "lilac" and not magic_flower(at): continue
+				if kind in ["lilac", "reed"] and not magic_flower(at): continue
 				if kind != "":
 					points[kind].append(at)
 					cells[at] = [layer, cell]
@@ -113,7 +114,7 @@ func nearest(center: Vector2) -> Array:
 		# Base do que é desenhado (o sprite pode não ser centrado nem ter origem no pé).
 		var rect := sprite.get_rect()
 		var at := sprite.to_global(Vector2(rect.get_center().x, rect.end.y - 6.0))
-		if kind == "lilac" and not magic_flower(sprite.global_position): continue
+		if kind in ["lilac", "reed"] and not magic_flower(sprite.global_position): continue
 		var d := at.distance_squared_to(center)
 		if d < REACH * REACH: found.append([d, at, kind])
 	found.sort_custom(func(a, b): return a[0] < b[0])
@@ -136,7 +137,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 				caps[i].position = (at + Vector2(0, -6)).round()
 				pools[i].set_meta("warm", warm)
 				pools[i].set_meta("kind", near[i][2])
-				pools[i].scale = Vector2(0.6, 0.6) if warm or near[i][2] == "lilac" else Vector2.ONE
+				pools[i].scale = Vector2(0.6, 0.6) if warm or near[i][2] in ["lilac", "pink", "reed"] else Vector2.ONE
 	var night: float = preload("res://scripts/world/ambient_lights.gd").night_factor(minutes)
 	# O quente já acende ao entardecer (referência das 18h); o ciano é da noite.
 	var dusk := smoothstep(16.5 * 60.0, 18.5 * 60.0, fposmod(minutes, 1440.0)) if fposmod(minutes, 1440.0) > 12 * 60 else 0.0
@@ -145,7 +146,9 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 		var warm: bool = pools[i].get_meta("warm", false)
 		var on := maxf(night, dusk * 0.6) if warm else night
 		var pulse := 0.88 + 0.12 * sin(_time * 1.1 + i * 1.7)
-		var lilac: bool = pools[i].get_meta("kind", "") == "lilac"
-		var color := LILAC if lilac else (WARM if warm else CYAN)
+		var kind: String = pools[i].get_meta("kind", "")
+		var lilac := kind == "lilac" or kind == "pink"
+		var color := LILAC if kind == "lilac" else (PINK if kind == "pink" else (WARM if warm else CYAN))
+		if kind == "reed": lilac = true  # mesma intensidade suave
 		pools[i].modulate = Color(color.r, color.g, color.b, (0.3 if lilac else (0.35 if warm else 0.55)) * on * pulse)
 		caps[i].modulate = Color(color.r, color.g, color.b, (0.6 if warm else 0.75) * on * pulse)

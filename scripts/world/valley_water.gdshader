@@ -19,7 +19,7 @@ void fragment() {
 	// A transparent film above the real mineral bed, submerged plants and fish.
 	vec4 day = vec4(mix(water,vec3(.68,.89,.82),shine*.58),mix(.20,.36,depth)+shine*.20);
 	// --- Noite ---
-	vec3 deep = mix(vec3(.10,.30,.40),vec3(.03,.10,.24),depth);
+	vec3 deep = mix(vec3(.14,.42,.60),vec3(.05,.17,.40),depth);  // raso azul-ciano, fundo marinho (ref. V9 do rio)
 	// Calma (igual ao lago): linhas finas de 2 px, lentas, fase própria por linha.
 	float row = floor(p.y/4.0);
 	float thin = step(mod(p.y,4.0),1.0);
