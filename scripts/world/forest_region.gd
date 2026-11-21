@@ -163,6 +163,8 @@ func _add_ground_detail() -> void:
 		if tree is Node2D and tree.visible: detail.tree_feet.append((tree as Node2D).position)
 	detail.wind_material = ecosystem.get_wind_material("plant")
 	detail.bush_parent = $Decorations
+	var pond := $NaturalSpring as Node2D
+	detail.avoid.append({"center": pond.global_position - detail.position, "radius": Vector2(86, 46)})
 	detail.build()
 	add_child(detail)
 
@@ -186,6 +188,9 @@ func _process(delta: float) -> void:
 	if water_time != _last_water_time:
 		_last_water_time = water_time
 		$SouthernBrook/Water.material.set_shader_parameter("elapsed",water_time)
+		var pond := $NaturalSpring/Pool/Water.material as ShaderMaterial
+		pond.set_shader_parameter("elapsed", water_time)
+		pond.set_shader_parameter("night", preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute()))
 	var zone_name := Forest.zone(player.position)
 	if zone_name != _last_zone:
 		_last_zone = zone_name

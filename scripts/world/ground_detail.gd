@@ -28,6 +28,9 @@ var area := Rect2()  # vazio = clareira inteira
 var tree_feet: Array[Vector2] = []
 var wind_material: Material
 var bush_parent: Node2D  # arbustos são de pé: vão para um grupo com ordenação por Y
+## Áreas reservadas (água etc.): [{center: Vector2, radius: Vector2}] em coordenadas
+## locais; nada é posto dentro da elipse ampliada pela margem do objeto.
+var avoid: Array[Dictionary] = []
 var placed: Array[Dictionary] = []  # {kind, at} para testes e depuração
 
 var _noise := FastNoiseLite.new()
@@ -48,6 +51,9 @@ func _init() -> void:
 ## Zona de um ponto: "trail_bed", "trail_edge", "root", "rim", "open" ou "" (fora).
 func zone_at(at: Vector2, paths: Dictionary) -> String:
 	if at.distance_to(Layout.SPAWN) < SPAWN_FREE: return ""
+	for area in avoid:
+		var margin := Vector2(70, 60)  # cobre a copa de um arbusto em pé
+		if ((at - area.center) / (area.radius + margin)).length() < 1.0: return ""
 	for slime in Layout.SLIME_POSITIONS:
 		if at.distance_to(slime) < SLIME_FREE: return ""
 	var trail := Layout.trail_distance(at, paths)

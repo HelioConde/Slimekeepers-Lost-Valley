@@ -86,3 +86,13 @@ func test_open_clearing_stays_mostly_open() -> void:
 	var flowers: Array = detail.placed.filter(func(item): return str(item.kind).begins_with("wildflower"))
 	# Flores são destaque, não tapete: minoria do que foi posto.
 	assert_float(float(flowers.size()) / maxf(1.0, detail.placed.size())).is_less(0.5)
+
+
+func test_nothing_is_placed_in_reserved_water() -> void:
+	var detail: Node2D = auto_free(Detail.new())
+	var pond := {"center": Vector2(1905, 1425), "radius": Vector2(86, 46)}
+	detail.avoid.append(pond)
+	detail.build()
+	for item in detail.placed:
+		var at: Vector2 = item.at
+		assert_float(((at - pond.center) / (pond.radius + Vector2(70, 60))).length()).is_greater_equal(0.9)
