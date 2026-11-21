@@ -874,6 +874,11 @@ func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
 	var profile := foliage_profile(minutes)
 	# Bordas das copas com luar: proporcionais ao luar real (fase × altura da Lua).
 	profile.light_strength = float(profile.light_strength) * lerpf(1.0, 0.35 + 0.65 * float(ASTRONOMY.now().moonlight), night)
+	# Vale (ref. V11): borda de luar turquesa forte nas copas, que lá ficam mais escuras.
+	if is_instance_valid(_region) and str(_region.name).contains("Vale"):
+		profile.light_strength = float(profile.light_strength) * lerpf(1.0, 5.0, night)
+		var c: Vector3 = profile.light_color
+		profile.light_color = c.lerp(Vector3(0.45, 1.0, 0.95), night * 0.7)
 	for ground in get_tree().get_nodes_in_group("v8_ground"):
 		if is_instance_valid(_region) and _region.is_ancestor_of(ground):
 			((ground as CanvasItem).material as ShaderMaterial).set_shader_parameter("night_dim", night)

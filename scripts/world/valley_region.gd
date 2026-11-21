@@ -351,4 +351,4 @@ func _process(delta: float) -> void:
 var _lanterns: Node2D  # plantas-lanterna nas pontes
 const VALLEY_NIGHT_GROUND := 0.4
 const VALLEY_NIGHT_TINT := Vector3(0.45, 0.9, 1.45)  # azul-petróleo (ref. V11)
-const VALLEY_NIGHT_FOLIAGE := Color(0.74, 0.86, 1.0)
+const VALLEY_NIGHT_FOLIAGE := Color(0.66, 0.9, 0.98)
