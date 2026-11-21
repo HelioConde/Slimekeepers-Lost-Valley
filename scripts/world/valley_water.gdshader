@@ -34,7 +34,7 @@ void fragment() {
 	// Profundidade em faixas (raso → turquesa; fundo → azul-marinho), com o campo
 	// de corrente tingindo manchas mais claras e mais escuras.
 	float band = floor(clamp(depth * 0.8 + (f - 0.5) * 0.35, 0.0, 0.999) * 5.0) / 4.0;
-	vec3 deep = mix(vec3(.04,.42,.50), vec3(.01,.15,.24), band);
+	vec3 deep = mix(vec3(.04,.42,.42), vec3(.01,.15,.17), band);
 	// Fios de corrente: curvas de nível do campo, finos (2 px) e quebrados.
 	float c1 = fract(f * 10.0);
 	float thinline = step(mod(p.y, 4.0), 1.0) + step(c1, 0.03);
