@@ -6,6 +6,8 @@ extends "res://scripts/world/clearing_region.gd"
 const Travel = preload("res://scripts/world/region_travel.gd")
 const FARM_FIELD := preload("res://scripts/world/farm_field.gd")
 const ENERGY := preload("res://scripts/systems/energy_state.gd")
+const SHIP := preload("res://scripts/systems/shipping_state.gd")
+const BIN_ART := "res://assets/objects/shipping_bin/shipping_bin.png"
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const SURFACE := preload("res://scripts/world/forest_surface.gdshader")
 const ATLAS := preload("res://assets/tilesets/grass_dirt_v3_32x32.png")
@@ -24,6 +26,7 @@ const WORLD_SIZE := Vector2(1600, 1216)
 const SPAWN := Vector2(520, 380)  # em frente à porta
 const DOOR := Vector2(520, 330)
 const WEST_GATE := Vector2(60, 640)
+const SHIPPING_BIN := Vector2(620, 368)
 const FIELD_ORIGIN := Vector2i(20, 13)
 const FIELD_SIZE := Vector2i(16, 10)
 const GRASS_COLOR := Color(0.447, 0.553, 0.271)
@@ -73,6 +76,13 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("interact"):
 			sleep()
 		return
+	if player.global_position.distance_to(SHIPPING_BIN) < 44:
+		var value := SHIP.bin_value(get_tree())
+		hud_hint.text = "[E] Colocar colheitas na caixa de venda" + ("   •   amanhã: %d moedas" % value if value > 0 else "")
+		if Input.is_action_just_pressed("interact"):
+			var moved := SHIP.ship_all(get_tree())
+			_notify("%d colheitas na caixa. Pagamento amanhã cedo." % moved if moved > 0 else "Nenhuma colheita para vender.")
+		return
 	if player.global_position.distance_to(WEST_GATE) < 70:
 		hud_hint.text = "[E] Ir para o Vale das Nascentes"
 		if Input.is_action_just_pressed("interact"):
@@ -95,7 +105,8 @@ func sleep() -> void:
 	GameClock.advance_minutes(until_morning)
 	ENERGY.restore(get_tree())
 	if is_instance_valid(farm_field): farm_field.refresh()
-	_notify("Bom dia! Começou o dia %d." % GameClock.day_number)
+	var earned := SHIP.pay_out(get_tree())
+	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  A caixa rendeu %d moedas." % earned if earned > 0 else ""))
 
 
 func _update_hud() -> void:
@@ -191,6 +202,10 @@ func _build_house() -> void:
 	var house := _prop(group, COTTAGE, DOOR + Vector2(0, -4))
 	house.name = "House"
 	_solid(house, Vector2(170, 56), Vector2(0, -30))
+	if ResourceLoader.exists(BIN_ART):
+		var bin := _prop(group, load(BIN_ART), SHIPPING_BIN)
+		bin.name = "ShippingBin"
+		_solid(bin, Vector2(36, 16), Vector2(0, -6))
 	var lantern := _prop(group, LANTERN, DOOR + Vector2(60, 8))
 	lantern.name = "Lantern"
 	var sign_post := _prop(group, SIGN, WEST_GATE + Vector2(40, -40))

@@ -24,13 +24,21 @@ func run() -> void:
 	check(farm.get_node_or_null("HUD/Interface/Hotbar") != null and farm.get_node_or_null("HUD/Interface/EnergyBar") != null, "Barra e energia no HUD")
 	var shadows = farm.get_node("DayNightLighting/DayShadows")
 	check(shadows.has_caster(farm.get_node("MapArt/House/Sprite")), "Casa projeta sombra")
-	# Dormir: dia seguinte às 06:00, energia cheia.
+	check(farm.get_node_or_null("MapArt/ShippingBin/SolidBase") != null, "Caixa de venda na fazenda")
+	check(farm.get_node_or_null("HUD/Interface/MoneyPanel") != null, "Dinheiro no HUD")
+	var Ship = load("res://scripts/systems/shipping_state.gd")
+	var Bag = load("res://scripts/systems/forest_bag.gd")
+	Bag.add_item(self, "cenoura", 2)
+	Ship.ship_all(self)
+	var before: int = Ship.money(self)
+	# Dormir: dia seguinte às 06:00, energia cheia, caixa paga.
 	var clock := root.get_node("GameClock")
 	var day: int = clock.day_number
 	set_meta("player_energy", 10)
 	farm.sleep()
 	check(clock.day_number == day + 1 and clock.get_hour() == 6, "Dormir leva ao dia seguinte 06:00")
 	check(int(get_meta("player_energy")) == 100, "Dormir recupera energia")
+	check(Ship.money(self) == before + 2 * 35, "Caixa paga ao dormir")
 	# Vale <-> fazenda.
 	farm.player.global_position = farm.WEST_GATE
 	Travel.travel(farm, Travel.VALLEY, "valley_farm_gate")

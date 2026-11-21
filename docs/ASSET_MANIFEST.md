@@ -97,3 +97,5 @@ PixelLab `create_map_object`, 32×32, fundo transparente, 1 geração cada (7 no
 `assets/ui/items/` — `enxada`, `regador`, `semente_cenoura`, `semente_beterraba`,
 `semente_repolho`, `sementes_silvestres`, `moeda`. Colheitas usam o último estágio das
 culturas já exportadas (recortado em `item_catalog.gd`).
+
+`assets/objects/shipping_bin/shipping_bin.png` — caixa de venda, PixelLab `create_map_object` 48×48 (1 geração).

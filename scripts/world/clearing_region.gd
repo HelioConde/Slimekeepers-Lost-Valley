@@ -81,6 +81,7 @@ func _compact_hud() -> void:
 	# Barra rápida de itens (ferramentas, sementes, colheitas) acima da linha de dicas.
 	$HUD/Interface.add_child(preload("res://scripts/ui/hotbar_hud.gd").new())
 	$HUD/Interface.add_child(preload("res://scripts/ui/energy_hud.gd").new())
+	$HUD/Interface.add_child(preload("res://scripts/ui/money_hud.gd").new())
 	var hint: PanelContainer = $HUD/Interface/InteractionHint
 	hint.anchor_left = 0.5
 	hint.anchor_right = 0.5

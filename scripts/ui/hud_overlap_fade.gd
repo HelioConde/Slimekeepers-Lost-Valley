@@ -8,7 +8,7 @@ const FADED_ALPHA := 0.28
 const SPEED := 6.0
 ## Caixa do personagem em px do mundo a partir dos pés: largura e altura até a cabeça.
 const BODY := Vector2(44, 70)
-const PANELS := [&"MissionPanel", &"ForagingBagPanel", &"DayClock", &"CookingGuidance", &"ReturnToMenu", &"Hotbar", &"EnergyBar"]
+const PANELS := [&"MissionPanel", &"ForagingBagPanel", &"DayClock", &"CookingGuidance", &"ReturnToMenu", &"Hotbar", &"EnergyBar", &"MoneyPanel"]
 
 var target: Node2D
 
