@@ -169,3 +169,7 @@ Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-do
 | `assets/world/forest/bush_lush.png` | `B0235FAE49E730E597B93484D48CAD550383BAA8D843ACC9B0653977B679C4C7` |
 | `assets/world/forest/bush_lush_round.png` | `3D1CF48117265DA4AC4060B372B8FD39B4768CA76BB8FC9894CA13E6AF1A2AFD` |
 | `assets/world/forest/plant_rosette.png` | `FCD50B7971BEA2F6C54C7CA95A864785FB60E30F3F2AA35A99ACEE2CF0954C3A` |
+
+## Touceira de flores V8 — 2026-11-21
+
+`assets/world/forest/wildflowers_cluster.png` (48×48): composição local de `wildflower_lilac` + `wildflower_yellow` com base alinhada à de `flowers.png`. Substitui `flowers.png` na Floresta V2 (sprites e tiles) e no Vale. Sem gerações novas. SHA-256 `80BEC0048DD400D4280F102E7CCE2E378917647F7671722F969C2EEC14386B03`.

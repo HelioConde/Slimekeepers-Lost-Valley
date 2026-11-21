@@ -17,7 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://b1x8hwkqkhg3f" path="res://assets/world/forest/fern.png" id="15_2pmea"]
 [ext_resource type="Texture2D" uid="uid://bpy0bn6byxmtf" path="res://assets/world/valley/reeds.png" id="16_72jqy"]
 [ext_resource type="Texture2D" uid="uid://1heaurnxhx82" path="res://assets/menu/environment/grass.png" id="17_t676j"]
-[ext_resource type="Texture2D" uid="uid://bnv28huffkwbk" path="res://assets/menu/environment/flowers.png" id="18_w6iif"]
+[ext_resource type="Texture2D" path="res://assets/world/forest/wildflowers_cluster.png" id="18_w6iif"]
 [ext_resource type="Texture2D" uid="uid://ciiawj4ty1lag" path="res://assets/world/forest/mushroom_glow.png" id="19_4w42f"]
 [ext_resource type="Texture2D" path="res://assets/world/forest/bush_lush.png" id="20_1rnae"]
 [ext_resource type="Texture2D" uid="uid://cepglpibwbb5b" path="res://assets/world/forest/mushroom_brown.png" id="21_xj6lw"]

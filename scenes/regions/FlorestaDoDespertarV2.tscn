@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/world/forest/pine_lush.png" id="v6_pine_lush"]
 [ext_resource type="Texture2D" uid="uid://ckad6a1gvngaf" path="res://assets/tilesets/grass_dirt_v3_32x32.png" id="3_ectdh"]
 [ext_resource type="Texture2D" uid="uid://1heaurnxhx82" path="res://assets/menu/environment/grass.png" id="4_l2ncc"]
-[ext_resource type="Texture2D" uid="uid://bnv28huffkwbk" path="res://assets/menu/environment/flowers.png" id="5_cfu6o"]
+[ext_resource type="Texture2D" path="res://assets/world/forest/wildflowers_cluster.png" id="5_cfu6o"]
 [ext_resource type="Texture2D" path="res://assets/world/forest/plant_rosette.png" id="6_h3ubd"]
 [ext_resource type="Texture2D" uid="uid://wltda4yuwhtg" path="res://assets/menu/environment/stone.png" id="7_el83g"]
 [ext_resource type="Texture2D" uid="uid://cwn14w74d4w5n" path="res://assets/world/forest/mushroom_red.png" id="8_wgvk4"]
