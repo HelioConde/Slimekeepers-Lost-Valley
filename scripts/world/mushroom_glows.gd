@@ -17,6 +17,9 @@ var points := {"cyan": [] as Array[Vector2], "warm": [] as Array[Vector2], "lila
 var cells := {}  # ponto -> [TileMapLayer, célula]: a célula pode ser apagada depois
 var sprites: Array[Sprite2D] = []  # validados ao usar: outro sistema pode trocar ou esconder
 var pools: Array[Sprite2D] = []   # poças no chão (atrás de tudo)
+## Poça ciano dos cogumelos: larga na Floresta (ref. V9), menor no Vale (ref. V11).
+var cyan_pool_scale := 1.5
+var cyan_pool_alpha := 0.7
 var caps: Array[Sprite2D] = []    # brilho junto ao chapéu
 var _anchor := Vector2.INF
 var _time := 0.0
@@ -140,7 +143,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 				caps[i].position = (at + Vector2(0, -6)).round()
 				pools[i].set_meta("warm", warm)
 				pools[i].set_meta("kind", near[i][2])
-				pools[i].scale = Vector2(0.6, 0.6) if warm or near[i][2] in ["lilac", "pink", "reed"] else Vector2(1.5, 1.5)  # ciano: poça larga (ref. V9)
+				pools[i].scale = Vector2(0.6, 0.6) if warm or near[i][2] in ["lilac", "pink", "reed"] else Vector2(cyan_pool_scale, cyan_pool_scale)  # ciano: poça larga (ref. V9)
 	var night: float = preload("res://scripts/world/ambient_lights.gd").night_factor(minutes)
 	# O quente já acende ao entardecer (referência das 18h); o ciano é da noite.
 	var dusk := smoothstep(16.5 * 60.0, 18.5 * 60.0, fposmod(minutes, 1440.0)) if fposmod(minutes, 1440.0) > 12 * 60 else 0.0
@@ -153,7 +156,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 		var lilac := kind == "lilac" or kind == "pink"
 		var color := LILAC if kind == "lilac" else (PINK if kind == "pink" else (WARM if warm else CYAN))
 		if kind == "reed": lilac = true  # mesma intensidade suave
-		pools[i].modulate = Color(color.r, color.g, color.b, (0.3 if lilac else (0.35 if warm else 0.7)) * on * pulse)
+		pools[i].modulate = Color(color.r, color.g, color.b, (0.3 if lilac else (0.35 if warm else cyan_pool_alpha)) * on * pulse)
 		# Flores (lilás/rosa/juncos): só um ponto de luz pequeno — a folha e a flor ficam legíveis.
 		caps[i].modulate = Color(color.r, color.g, color.b, (0.5 if lilac else (0.6 if warm else 0.75)) * on * pulse)
 		caps[i].scale = Vector2(0.55, 0.55) if lilac else Vector2.ONE

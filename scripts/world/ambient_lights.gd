@@ -376,7 +376,10 @@ func _scan() -> void:
 		_consider(node)
 	if not is_instance_valid(_mushrooms):
 		_mushrooms = preload("res://scripts/world/mushroom_glows.gd").new()
-		if str(_region.name).contains("Vale"): _mushrooms.magic_ratio = 2  # Vale à noite mais florido de luz (ref. V11)
+		if str(_region.name).contains("Vale"):
+			_mushrooms.magic_ratio = 2  # Vale à noite mais florido de luz (ref. V11)
+			_mushrooms.cyan_pool_scale = 0.9  # brilho discreto no chão, não disco largo (ref. V11)
+			_mushrooms.cyan_pool_alpha = 0.5
 		_mushrooms.setup(_region)
 		add_child(_mushrooms)
 	if not is_instance_valid(_mist):
