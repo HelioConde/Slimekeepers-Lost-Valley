@@ -84,3 +84,19 @@ func test_starter_seed_pack_is_given_once() -> void:
 	assert_int(carrots).is_greater(0)
 	assert_bool(Farm.grant_starter_seeds(tree)).is_false()
 	assert_int(Bag.count_item(tree, "semente_cenoura")).is_equal(carrots)
+
+
+func test_days_passed_elsewhere_are_caught_up() -> void:
+	var tree := get_tree()
+	if tree.has_meta(Farm.LAST_DAY_KEY): tree.remove_meta(Farm.LAST_DAY_KEY)
+	var cell := Vector2i(2, 2)
+	Farm.till(tree, cell, "fazenda")
+	Bag.add_item(tree, "semente_cenoura", 1)
+	Farm.plant(tree, cell, "cenoura", "fazenda")
+	Farm.water(tree, cell, "fazenda")
+	assert_int(Farm.catch_up(tree, 3)).is_equal(0)  # primeira vez só marca o dia
+	assert_int(Farm.catch_up(tree, 5)).is_equal(2)  # dias 4 e 5 passaram longe do campo
+	assert_int(Farm.stage(tree, cell, "fazenda")).is_equal(1)  # só o dia regado conta
+	assert_bool(Farm.is_watered(tree, cell, "fazenda")).is_false()
+	assert_bool(Farm.is_tilled(tree, cell, "vale")).is_false()  # campos separados
+	tree.remove_meta(Farm.LAST_DAY_KEY)

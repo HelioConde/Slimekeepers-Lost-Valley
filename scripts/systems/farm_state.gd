@@ -7,111 +7,136 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const CROPS := preload("res://scripts/systems/crop_catalog.gd")
 const KEY := "farm_cells"
 const STARTER_KEY := "farm_starter_seeds_given"
+const LAST_DAY_KEY := "farm_last_day"
 ## Kit inicial enquanto não existe loja.
 const STARTER_SEEDS := {"semente_cenoura": 8, "semente_beterraba": 6, "semente_repolho": 4}
 
 
-static func _cells(tree: SceneTree) -> Dictionary:
+## Campos separados (Vale, fazenda...): meta KEY = {campo: {célula: dados}}.
+static func _fields(tree: SceneTree) -> Dictionary:
 	return tree.get_meta(KEY, {}).duplicate(true)
 
 
-static func _save(tree: SceneTree, cells: Dictionary) -> void:
-	tree.set_meta(KEY, cells)
+static func cells(tree: SceneTree, field: String = "vale") -> Dictionary:
+	return tree.get_meta(KEY, {}).get(field, {})
 
 
-static func cell_data(tree: SceneTree, cell: Vector2i) -> Dictionary:
-	return tree.get_meta(KEY, {}).get(cell, {})
+static func _cells(tree: SceneTree, field: String) -> Dictionary:
+	return cells(tree, field).duplicate(true)
 
 
-static func is_tilled(tree: SceneTree, cell: Vector2i) -> bool:
-	return not cell_data(tree, cell).is_empty()
+static func _save(tree: SceneTree, data: Dictionary, field: String) -> void:
+	var fields := _fields(tree)
+	fields[field] = data
+	tree.set_meta(KEY, fields)
 
 
-static func is_watered(tree: SceneTree, cell: Vector2i) -> bool:
-	return bool(cell_data(tree, cell).get("watered", false))
+static func cell_data(tree: SceneTree, cell: Vector2i, field: String = "vale") -> Dictionary:
+	return cells(tree, field).get(cell, {})
 
 
-static func crop(tree: SceneTree, cell: Vector2i) -> String:
-	return str(cell_data(tree, cell).get("crop", ""))
+static func is_tilled(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	return not cell_data(tree, cell, field).is_empty()
 
 
-static func stage(tree: SceneTree, cell: Vector2i) -> int:
-	return int(cell_data(tree, cell).get("stage", 0))
+static func is_watered(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	return bool(cell_data(tree, cell, field).get("watered", false))
 
 
-static func is_ready(tree: SceneTree, cell: Vector2i) -> bool:
-	var id := crop(tree, cell)
-	return not id.is_empty() and stage(tree, cell) >= CROPS.last_stage(id)
+static func crop(tree: SceneTree, cell: Vector2i, field: String = "vale") -> String:
+	return str(cell_data(tree, cell, field).get("crop", ""))
+
+
+static func stage(tree: SceneTree, cell: Vector2i, field: String = "vale") -> int:
+	return int(cell_data(tree, cell, field).get("stage", 0))
+
+
+static func is_ready(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	var id := crop(tree, cell, field)
+	return not id.is_empty() and stage(tree, cell, field) >= CROPS.last_stage(id)
 
 
 ## O que [E] faz nesta célula: colher > regar > plantar > arar.
-static func action_for(tree: SceneTree, cell: Vector2i, seed_crop: String) -> String:
-	if not is_tilled(tree, cell):
+static func action_for(tree: SceneTree, cell: Vector2i, seed_crop: String, field: String = "vale") -> String:
+	if not is_tilled(tree, cell, field):
 		return "till"
-	if not crop(tree, cell).is_empty():
-		if is_ready(tree, cell):
+	if not crop(tree, cell, field).is_empty():
+		if is_ready(tree, cell, field):
 			return "harvest"
-		return "water" if not is_watered(tree, cell) else "wait"
+		return "water" if not is_watered(tree, cell, field) else "wait"
 	return "plant"
 
 
-static func till(tree: SceneTree, cell: Vector2i) -> bool:
-	if is_tilled(tree, cell):
+static func till(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	if is_tilled(tree, cell, field):
 		return false
-	var cells := _cells(tree)
+	var cells := _cells(tree, field)
 	cells[cell] = {"watered": false, "crop": "", "stage": 0}
-	_save(tree, cells)
+	_save(tree, cells, field)
 	return true
 
 
-static func plant(tree: SceneTree, cell: Vector2i, crop_id: String) -> bool:
+static func plant(tree: SceneTree, cell: Vector2i, crop_id: String, field: String = "vale") -> bool:
 	var info := CROPS.get_crop(crop_id)
-	if info.is_empty() or not is_tilled(tree, cell) or not crop(tree, cell).is_empty():
+	if info.is_empty() or not is_tilled(tree, cell, field) or not crop(tree, cell, field).is_empty():
 		return false
 	if not BAG.spend_item(tree, str(info.seed), 1):
 		return false
-	var cells := _cells(tree)
+	var cells := _cells(tree, field)
 	var data: Dictionary = cells[cell]
 	data.crop = crop_id
 	data.stage = 0
 	cells[cell] = data
-	_save(tree, cells)
+	_save(tree, cells, field)
 	return true
 
 
-static func water(tree: SceneTree, cell: Vector2i) -> bool:
-	if not is_tilled(tree, cell) or is_watered(tree, cell):
+static func water(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	if not is_tilled(tree, cell, field) or is_watered(tree, cell, field):
 		return false
-	var cells := _cells(tree)
+	var cells := _cells(tree, field)
 	cells[cell].watered = true
-	_save(tree, cells)
+	_save(tree, cells, field)
 	return true
 
 
-static func harvest(tree: SceneTree, cell: Vector2i) -> bool:
-	if not is_ready(tree, cell):
+static func harvest(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	if not is_ready(tree, cell, field):
 		return false
-	var info := CROPS.get_crop(crop(tree, cell))
+	var info := CROPS.get_crop(crop(tree, cell, field))
 	if not BAG.add_item(tree, str(info.harvest), 1):
 		return false
-	var cells := _cells(tree)
+	var cells := _cells(tree, field)
 	cells[cell].crop = ""
 	cells[cell].stage = 0
-	_save(tree, cells)
+	_save(tree, cells, field)
 	return true
 
 
 ## Virada do dia: cultura regada sobe um estágio; toda a terra seca de novo.
 static func advance_day(tree: SceneTree) -> void:
-	var cells := _cells(tree)
-	for cell in cells:
-		var data: Dictionary = cells[cell]
-		var id := str(data.get("crop", ""))
-		if not id.is_empty() and bool(data.get("watered", false)):
-			data.stage = mini(int(data.stage) + 1, CROPS.last_stage(id))
-		data.watered = false
-		cells[cell] = data
-	_save(tree, cells)
+	var fields := _fields(tree)
+	for field in fields:
+		var cells: Dictionary = fields[field]
+		for cell in cells:
+			var data: Dictionary = cells[cell]
+			var id := str(data.get("crop", ""))
+			if not id.is_empty() and bool(data.get("watered", false)):
+				data.stage = mini(int(data.stage) + 1, CROPS.last_stage(id))
+			data.watered = false
+			cells[cell] = data
+	tree.set_meta(KEY, fields)
+
+
+## Processa os dias que passaram desde a última vez (o jogador pode estar em outro
+## mapa quando o dia vira). Devolve quantos dias foram aplicados.
+static func catch_up(tree: SceneTree, current_day: int) -> int:
+	var last := int(tree.get_meta(LAST_DAY_KEY, current_day))
+	var days := maxi(0, current_day - last)
+	for i in days:
+		advance_day(tree)
+	tree.set_meta(LAST_DAY_KEY, current_day)
+	return days
 
 
 static func grant_starter_seeds(tree: SceneTree) -> bool:

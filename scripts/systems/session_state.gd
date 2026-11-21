@@ -19,6 +19,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"farm_starter_seeds_given",
 	"hotbar_selected",
 	"player_energy",
+	"farm_last_day",
 	"valley_cooking_ledger",
 	"slime_food_offers",
 	"session_progress_flags",

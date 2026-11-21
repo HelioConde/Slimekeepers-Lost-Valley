@@ -22,6 +22,8 @@ const FACING := {"north": Vector2(0, -1), "south": Vector2(0, 1), "east": Vector
 ## Primeira célula (grade do mundo, em células de 32 px) e tamanho do campo.
 @export var origin_cell := Vector2i(24, 12)
 @export var size_cells := Vector2i(6, 4)
+## Nome do campo no estado da sessão (cada mapa tem o seu).
+@export var field_id := "vale"
 
 var last_action := ""
 var player: Node2D
@@ -43,6 +45,8 @@ func _ready() -> void:
 	_soil.draw.connect(_draw_soil)
 	add_child(_soil)
 	FARM.grant_starter_seeds(get_tree())
+	if FARM.catch_up(get_tree(), GameClock.day_number) > 0:
+		ENERGY.restore(get_tree())
 	if not GameClock.day_changed.is_connected(_on_day_changed):
 		GameClock.day_changed.connect(_on_day_changed)
 	_clear_decor.call_deferred()
@@ -85,14 +89,14 @@ func has_target(actor: Node2D) -> bool:
 ## Ação do item na célula: harvest, till, water, plant ou "" (nada a fazer).
 func action_with(cell: Vector2i, item: String) -> String:
 	var tree := get_tree()
-	if FARM.is_ready(tree, cell):
+	if FARM.is_ready(tree, cell, field_id):
 		return "harvest"
 	match ITEMS.kind(item):
 		"tool":
-			if item == "enxada" and not FARM.is_tilled(tree, cell): return "till"
-			if item == "regador" and FARM.is_tilled(tree, cell) and not FARM.is_watered(tree, cell): return "water"
+			if item == "enxada" and not FARM.is_tilled(tree, cell, field_id): return "till"
+			if item == "regador" and FARM.is_tilled(tree, cell, field_id) and not FARM.is_watered(tree, cell, field_id): return "water"
 		"seed":
-			if FARM.is_tilled(tree, cell) and FARM.crop(tree, cell).is_empty() and BAG.count_item(tree, item) > 0: return "plant"
+			if FARM.is_tilled(tree, cell, field_id) and FARM.crop(tree, cell, field_id).is_empty() and BAG.count_item(tree, item) > 0: return "plant"
 	return ""
 
 
@@ -100,16 +104,16 @@ func hint(actor: Node2D) -> String:
 	var cell := target_cell(actor)
 	var tree := get_tree()
 	var item := HOTBAR.selected_item(tree)
-	var crop_name := str(CROPS.get_crop(FARM.crop(tree, cell)).get("name", ""))
+	var crop_name := str(CROPS.get_crop(FARM.crop(tree, cell, field_id)).get("name", ""))
 	match action_with(cell, item):
 		"harvest": return "[E] Colher " + crop_name
 		"till": return "[E] Arar com a enxada"
 		"water": return "[E] Regar" + (" " + crop_name if not crop_name.is_empty() else " a terra")
 		"plant": return "[E] Plantar " + str(ITEMS.info(item).name).to_lower()
-	if not FARM.is_tilled(tree, cell): return "Grama · selecione a enxada [1]"
+	if not FARM.is_tilled(tree, cell, field_id): return "Grama · selecione a enxada [1]"
 	if not crop_name.is_empty():
-		return crop_name + (" regada hoje · cresce amanhã" if FARM.is_watered(tree, cell) else " com sede · selecione o regador [2]")
-	return "Terra arada · selecione uma semente" if not FARM.is_watered(tree, cell) else "Terra arada e regada · selecione uma semente"
+		return crop_name + (" regada hoje · cresce amanhã" if FARM.is_watered(tree, cell, field_id) else " com sede · selecione o regador [2]")
+	return "Terra arada · selecione uma semente" if not FARM.is_watered(tree, cell, field_id) else "Terra arada e regada · selecione uma semente"
 
 
 ## Usa o item selecionado na célula à frente; devolve a mensagem para o jogador.
@@ -124,32 +128,32 @@ func interact(actor: Node2D) -> String:
 		return last_action
 	match action:
 		"harvest":
-			var harvested := str(CROPS.get_crop(FARM.crop(tree, cell)).name)
-			if FARM.harvest(tree, cell): message = "%s colhida e guardada na bolsa!" % harvested
+			var harvested := str(CROPS.get_crop(FARM.crop(tree, cell, field_id)).name)
+			if FARM.harvest(tree, cell, field_id): message = "%s colhida e guardada na bolsa!" % harvested
 		"till":
-			if FARM.till(tree, cell): message = "Terra arada."
+			if FARM.till(tree, cell, field_id): message = "Terra arada."
 			if actor.has_method("play_tool"): actor.play_tool("hoe")
 		"water":
-			if FARM.water(tree, cell): message = "Terra regada."
+			if FARM.water(tree, cell, field_id): message = "Terra regada."
 			if actor.has_method("play_tool"): actor.play_tool("water")
 		"plant":
 			var crop_id := str(ITEMS.info(item).crop)
-			if FARM.plant(tree, cell, crop_id): message = "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
+			if FARM.plant(tree, cell, crop_id, field_id): message = "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
 	last_action = message
 	refresh()
 	return message
 
 
-func _on_day_changed(_day: int) -> void:
-	FARM.advance_day(get_tree())
-	ENERGY.restore(get_tree())
+func _on_day_changed(day: int) -> void:
+	if FARM.catch_up(get_tree(), day) > 0:
+		ENERGY.restore(get_tree())
 	refresh()
 
 
 func refresh() -> void:
 	if is_instance_valid(_soil):
 		_soil.queue_redraw()
-	var cells: Dictionary = get_tree().get_meta(FARM.KEY, {}) if is_inside_tree() else {}
+	var cells: Dictionary = FARM.cells(get_tree(), field_id) if is_inside_tree() else {}
 	for cell in _crop_nodes.keys():
 		var crop_id := str(cells.get(cell, {}).get("crop", ""))
 		if crop_id.is_empty() or not contains(cell):
@@ -208,7 +212,7 @@ func _clear_decor() -> void:
 
 
 func _draw_soil() -> void:
-	var cells: Dictionary = get_tree().get_meta(FARM.KEY, {})
+	var cells: Dictionary = FARM.cells(get_tree(), field_id)
 	for cell in cells:
 		if not contains(cell):
 			continue
