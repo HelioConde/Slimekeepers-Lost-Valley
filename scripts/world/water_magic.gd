@@ -6,6 +6,7 @@ extends RefCounted
 ## WaterReflections a cada quadro; tudo em coordenadas de mundo.
 
 const SHADER := preload("res://scripts/world/water_magic.gdshader")
+const LIP_SHADER := preload("res://scripts/world/bank_lip.gdshader")
 const CELL := 4.0
 const EDGE_SCALE := 64.0
 const MAX_LIGHTS := 24
@@ -71,7 +72,7 @@ static func edge_map(water: Polygon2D) -> Dictionary:
 	return {"image": image, "rect": bounds}
 
 
-static func make_overlay(water: Polygon2D, flow_dir: Vector2) -> Polygon2D:
+static func make_overlay(water: Polygon2D, flow_dir: Vector2, bank_lip: bool = false) -> Polygon2D:
 	var map := edge_map(water)
 	var material := ShaderMaterial.new()
 	material.shader = SHADER
@@ -88,6 +89,22 @@ static func make_overlay(water: Polygon2D, flow_dir: Vector2) -> Polygon2D:
 	overlay.material = material
 	overlay.set_meta("no_shadow", true)
 	overlay.set_meta("world_rect", rect)
+	if bank_lip:
+		# Borda de terra (ref. V11): opaca, por baixo da camada mágica.
+		var lip_material := ShaderMaterial.new()
+		lip_material.shader = LIP_SHADER
+		lip_material.set_shader_parameter("edge_map", material.get_shader_parameter("edge_map"))
+		lip_material.set_shader_parameter("edge_rect", Vector4(rect.position.x, rect.position.y, rect.size.x, rect.size.y))
+		lip_material.set_shader_parameter("edge_scale", EDGE_SCALE)
+		var lip := Polygon2D.new()
+		lip.name = "BankLip"
+		lip.polygon = water.polygon
+		lip.polygons = water.polygons
+		lip.offset = water.offset
+		lip.material = lip_material
+		lip.set_meta("no_shadow", true)
+		water.add_child(lip)
+		overlay.set_meta("lip", lip_material)
 	water.add_child(overlay)
 	return overlay
 

@@ -158,7 +158,8 @@ func add_surface(water: Polygon2D, blockers: Array = []) -> void:
 	materials.append(material)
 	# Rios grandes correm para baixo; lagos pequenos derivam de leve.
 	var big := maxf(world_bounds(water).size.x, world_bounds(water).size.y) > 600.0
-	magic_overlays.append(MAGIC.make_overlay(water, Vector2(0.08, 1.0) if big else Vector2(1.0, 0.25)))
+	var valley := is_inside_tree() and get_parent() != null and get_parent().get_parent() != null and str(get_parent().get_parent().name).contains("Vale")
+	magic_overlays.append(MAGIC.make_overlay(water, Vector2(0.08, 1.0) if big else Vector2(1.0, 0.25), valley))
 	cells.append(sample_cells(water, blockers))
 
 
@@ -183,6 +184,7 @@ func update_magic(delta: float) -> void:
 		var m := overlay.material as ShaderMaterial
 		m.set_shader_parameter("elapsed", floorf(elapsed * 8.0) / 8.0)
 		m.set_shader_parameter("night", night)
+		if overlay.has_meta("lip"): (overlay.get_meta("lip") as ShaderMaterial).set_shader_parameter("night", night)
 		if not refresh: continue
 		var lights := PackedVector4Array()
 		var colors := PackedVector4Array()
