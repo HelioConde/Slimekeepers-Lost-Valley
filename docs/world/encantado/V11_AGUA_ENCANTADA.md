@@ -20,3 +20,16 @@ Referência: `referencias_v11/ref_ponte_noite.webp`. Capturas: `39_` (água viva
 
 ## Diferenças que permanecem
 Margens da referência têm barranco de terra escura e pedras molhadas; névoa sobre a água mais densa; coluna de luar mais larga à direita da ponte; mais vitórias-régias. Ponte da referência sem plantas-lanterna.
+
+## Medição final da água × referência (21h16, ponte oeste)
+
+Desvio-padrão do canal azul **só em pixels de água** (B > G + 25 e B > 45), para não misturar margem, juncos e terra no recorte:
+
+| Recorte | Referência | Jogo |
+|---|---|---|
+| 1 | 23,6 (média 93) | 29,9 (média 107) |
+| 2 | 28,0 (média 96) | 30,9 (média 109) |
+| 3 | 35,1 (média 117) | 30,1 (média 85) |
+| 4 | 29,0 (média 105) | 30,2 (média 108) |
+
+A água do jogo fica dentro da faixa da referência (23,6–35,1). Medições anteriores de 32–43 usavam recortes que incluíam margem e terra. Ajustes que chegaram aqui: faixas de profundidade e tufos com menos contraste, raso menos transparente, cristas com 70% da amplitude, névoa 0,10 e fios 0,22 (commits eb58d6d, 63fce66, f8cdd5c, d6a59c3).
