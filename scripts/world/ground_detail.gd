@@ -110,9 +110,14 @@ func _rim(at: Vector2, key: Vector2i, paths: Dictionary) -> void:
 
 func _root(at: Vector2, key: Vector2i) -> void:
 	var r := _rand(key, 11)
-	if r < 0.45: _put("fallen_leaves", at, key)
-	elif r < 0.7: _put("clover_sprig", at, key)
-	elif r < 0.82: _put("pebbles", at, key)
+	# Refs. V9: flores sob a borda das copas (o centro aberto continua livre).
+	if r < 0.3: _put("fallen_leaves", at, key)
+	elif r < 0.55:
+		var kind := "wildflower_lilac" if _rand(key, 13) < 0.6 else "wildflower_yellow"
+		_put(kind, at, key)
+		_put(kind, at + Vector2(10, 4), key, 1)
+	elif r < 0.72: _put("clover_sprig", at, key)
+	elif r < 0.8: _put("pebbles", at, key)
 
 
 ## Arbusto novo não cobre pedra, toco ou arbusto que já estão na cena.
