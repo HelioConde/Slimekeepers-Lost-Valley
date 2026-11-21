@@ -10,6 +10,8 @@ const STOPS := [
 	[1320.0, Vector2(-.5,.27), .11], [1440.0, Vector2(-.22,.22), .09]
 ]
 ## Sombra de contato: faixa da base da silhueta (tronco, pedra, pés), projetada curta.
+## Comprimento máximo (px) da sombra projetada: copas não cobrem a clareira e os caminhos.
+const MAX_CAST := 110.0
 const CONTACT_MIN := 6.0
 const CONTACT_MAX := 18.0
 const CONTACT_SKIP := ["flower", "fern", "reed", "grass", "lily", "clover"]
@@ -30,6 +32,13 @@ var _dynamic_ids: Array = []
 var _static_ids: Array = []
 var _visible_static: Array = []
 var _static_pass: Node2D
+var _dynamic_pass: Node2D
+var _static_contact: Node2D
+var _dynamic_contact: Node2D
+## Sombras projetadas são desenhadas opacas dentro deste grupo e a opacidade do
+## horário é aplicada uma única vez: onde várias copas se sobrepõem não há acúmulo
+## (antes, faixas diagonais mais escuras dividiam o chão).
+var cast_group: CanvasGroup
 var _cull_age := 1.0
 var _shade_age := 1.0
 
@@ -43,11 +52,13 @@ func _ready() -> void:
 	var shade := ShaderMaterial.new()
 	shade.shader = preload("res://scripts/world/day_shadows.gdshader")
 	material = shade
-	_static_pass = Node2D.new()
-	_static_pass.name = "StaticGroundShadows"
-	_static_pass.use_parent_material = true
-	_static_pass.draw.connect(func(): _draw_casters(_static_pass,_visible_static))
-	add_child(_static_pass)
+	cast_group = CanvasGroup.new()
+	cast_group.name = "CastShadows"
+	add_child(cast_group)
+	_static_pass = _make_pass("StaticGroundShadows", cast_group, func(): _draw_casters(_static_pass,_visible_static,false))
+	_dynamic_pass = _make_pass("DynamicGroundShadows", cast_group, func(): _draw_casters(_dynamic_pass,_dynamic_ids,false))
+	_static_contact = _make_pass("StaticContactShadows", self, func(): _draw_casters(_static_contact,_visible_static,true))
+	_dynamic_contact = _make_pass("DynamicContactShadows", self, func(): _draw_casters(_dynamic_contact,_dynamic_ids,true))
 	for node in _region.find_children("*", "", true, false):
 		if node is Sprite2D or node is AnimatedSprite2D: _register(node)
 	get_tree().node_added.connect(_on_node_added)
@@ -140,7 +151,11 @@ func update_for_time(delta: float) -> void:
 	if _shade_age >= .1 or delta == 0:
 		_shade_age = 0.0
 		_static_pass.queue_redraw()
-	queue_redraw()
+		_static_contact.queue_redraw()
+	cast_group.self_modulate.a = float(_profile.opacity) * .85
+	drawn_casters = 0
+	_dynamic_pass.queue_redraw()
+	_dynamic_contact.queue_redraw()
 
 static func profile_at(minutes: float) -> Dictionary:
 	var value := fposmod(minutes,1440.0) if is_finite(minutes) else 420.0
@@ -236,34 +251,40 @@ func projection_for(sprite: Node2D, foot: Vector2, direction: Vector2) -> Transf
 	var projection := Transform2D(Vector2.RIGHT,-direction,foot)
 	return projection * source
 
-func _draw() -> void:
-	drawn_casters = 0
-	_draw_casters(self,_dynamic_ids)
+func _make_pass(pass_name: String, parent: Node, painter: Callable) -> Node2D:
+	var node := Node2D.new()
+	node.name = pass_name
+	node.material = material
+	node.draw.connect(painter)
+	parent.add_child(node)
+	return node
 
-func _draw_casters(target: Node2D, ids: Array) -> void:
-	if _profile.opacity < .001 and _contact.opacity < .001: return
+## contact = false: silhueta projetada opaca (opacidade vem do CastShadows);
+## contact = true: faixa da base, com a opacidade do contato.
+func _draw_casters(target: Node2D, ids: Array, contact: bool) -> void:
+	if (not contact and _profile.opacity < .001) or (contact and _contact.opacity < .001): return
 	var view := (get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()).grow(170)
 	for id in ids:
 		var sprite = _casters.get(id)
 		if not is_instance_valid(sprite) or not casts_on_ground(sprite): continue
+		if contact and (not _contacts.get(id, false) or sprite.flip_v): continue
 		var foot := foot_for(sprite)
 		if not view.has_point(foot): continue
 		var texture := _texture_for(sprite)
 		if not texture: continue
+		var source := _source_for(sprite, texture)
+		if contact:
+			_draw_contact(target, sprite, texture, foot, source)
+			continue
 		var rect := _rect_for(sprite,texture)
 		var direction: Vector2 = _profile.vector
 		# Avoid enormous overlapping canopy projections while retaining tree silhouettes.
 		var height: float = rect.size.y * sprite.global_scale.y
-		if height*direction.length()>140: direction *= 140/(height*direction.length())
-		var opacity: float = _profile.opacity * (.70 if _kinds[id]=="tree" else 1.0)
+		if height*direction.length()>MAX_CAST: direction *= MAX_CAST/(height*direction.length())
 		target.draw_set_transform_matrix(target.global_transform.affine_inverse()*projection_for(sprite,foot,direction))
 		if sprite.flip_h: rect.position.x += rect.size.x; rect.size.x = -rect.size.x
 		if sprite.flip_v: rect.position.y += rect.size.y; rect.size.y = -rect.size.y
-		var tint := Color(1,1,1,opacity*sprite.modulate.a)
-		var source := _source_for(sprite, texture)
-		if tint.a > .001: target.draw_texture_rect_region(texture,rect,source,tint)
-		if _contacts.get(id, false) and not sprite.flip_v:
-			_draw_contact(target, sprite, texture, foot, source)
+		target.draw_texture_rect_region(texture,rect,source,Color(1,1,1,sprite.modulate.a))
 		drawn_casters += 1
 	target.draw_set_transform_matrix(Transform2D.IDENTITY)
 

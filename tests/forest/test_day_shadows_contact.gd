@@ -137,3 +137,18 @@ func test_running_shadow_keeps_one_ground_line_across_frames() -> void:
 	assert_float(bottoms.max() - bottoms.min()).is_greater(5.0)
 	assert_float(lines.max() - lines.min()).is_equal(0.0)
 	assert_float(lines[0]).is_equal(bottoms.max())
+
+
+func test_cast_shadows_share_one_opacity_group_and_contacts_stay_outside() -> void:
+	var parts := _rig()
+	await await_idle_frame()
+	var shadows: Node2D = parts[1]
+	var group: CanvasGroup = shadows.cast_group
+	assert_object(group).is_not_null()
+	assert_object(group.get_node_or_null("StaticGroundShadows")).is_not_null()
+	assert_object(group.get_node_or_null("DynamicGroundShadows")).is_not_null()
+	assert_object(group.get_node_or_null("StaticContactShadows")).is_null()
+	assert_object(shadows.get_node_or_null("StaticContactShadows")).is_not_null()
+	GameClock.set_time(7, 0)
+	shadows.update_for_time(0.016)
+	assert_float(group.self_modulate.a).is_equal_approx(Shadows.profile_at(7 * 60)["opacity"] * .85, 0.01)
