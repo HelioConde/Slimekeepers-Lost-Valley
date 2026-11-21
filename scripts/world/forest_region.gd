@@ -49,6 +49,7 @@ func _ready() -> void:
 	_update_hud()
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
 	_setup_ecosystem()
+	_add_ground_detail()
 	$PointsOfInterest/leaves.set_meta("description",Forest.points_of_interest()[0].description)
 	habitat_manager = preload("res://scripts/world/forest_habitats.gd").new()
 	habitat_manager.name = "HabitatManager"
@@ -153,6 +154,18 @@ func _on_forest_slime(slime: Node2D) -> void:
 	ecosystem.register_reactor(slime)
 	slime.tree_exiting.connect(func(): slimes.erase(slime))
 	_update_hud()
+
+## Protótipo V6: detalhe de chão por terreno na borda oeste da Clareira (mesma área
+## das árvores novas). Expandir só depois da validação visual.
+const GROUND_DETAIL_AREA := Rect2(1230, 1280, 380, 640)
+func _add_ground_detail() -> void:
+	var detail := preload("res://scripts/world/ground_detail.gd").new()
+	detail.area = GROUND_DETAIL_AREA
+	for tree in $VegetationHigh.get_children():
+		if tree is Node2D and tree.visible: detail.tree_feet.append((tree as Node2D).position)
+	detail.wind_material = ecosystem.get_wind_material("plant")
+	detail.build()
+	add_child(detail)
 
 func _setup_ecosystem() -> void:
 	var flowers: Array[Vector2] = []

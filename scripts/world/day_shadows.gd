@@ -22,7 +22,7 @@ const FLOATING := ["lily"]
 ## Grupos com objetos sólidos fora de PROP_GROUPS: pedras da borda das cachoeiras
 ## (só os nós "Sprite"; o véu d'água e as paredes de rocha não projetam no chão)
 ## e a fogueira da estação de culinária.
-const EXTRA_CASTER_GROUPS := ["MapArt", "AwakeningLandmark", "NaturalSpring", "Waterfalls", "CookingStation", "FarmField"]
+const EXTRA_CASTER_GROUPS := ["GroundDetail", "MapArt", "AwakeningLandmark", "NaturalSpring", "Waterfalls", "CookingStation", "FarmField"]
 var _casters: Dictionary = {}
 var _contacts: Dictionary = {}
 var _heights: Dictionary = {}
@@ -213,7 +213,7 @@ func has_contact(sprite: Node2D) -> bool:
 ## deslocada para o lado oposto ao sol, abraçando o contorno. Projetar a silhueta
 ## achatada (como numa árvore) virava uma lâmina fina descolada do objeto.
 const MOUNDS := {"crop_growth": 5.0, "campfire": 4.0, "flower": 4.0, "fern": 5.0, "clover": 3.0, "mushroom": 6.0,
-	"log": 6.0, "rock": 8.0, "stone": 8.0, "boulder": 9.0, "stump": 9.0, "bush": 10.0, "shrub": 10.0}
+	"log": 6.0, "rock": 8.0, "stone": 8.0, "pebble": 3.0, "boulder": 9.0, "stump": 9.0, "bush": 10.0, "shrub": 10.0}
 static func mound_height(kind: String, file: String) -> float:
 	if kind != "object" or "steps" in file: return 0.0
 	for word in MOUNDS:

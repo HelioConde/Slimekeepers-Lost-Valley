@@ -107,3 +107,16 @@ Geradas no PixelLab (`create_map_object`, 96×96, high top-down, detailed shadin
 |---|---|
 | `assets/world/forest/oak_lush.png` | `86FF4CF4AA7AECE8E69739AB8D45F7FA036829B5CF4036771EF6E3AF82D17BC5` |
 | `assets/world/forest/pine_lush.png` | `FF1B9624C8EA7718492CA71FE37C87B280C3A9ADC9AE7558370D7CCDEC9523B1` |
+
+## Detalhe de chão V6 (protótipo) — 2026-11-21
+
+Gerados no PixelLab (`create_map_object`, 32×32, high top-down; 6 gerações). Pós-processo local: as folhas caídas foram recoloridas para paleta de outono, o capim perdeu o monte de terra e as pedrinhas foram clareadas para cinza quente. Usados por `scripts/world/ground_detail.gd` só na borda oeste da Clareira. O raminho (`clover_sprig`) saiu como broto, não como trevo, e é usado assim.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/ground/wildflower_yellow.png` | `1B775FA4498B358F45A8B6E8BD0B95EAF84A7A0BA329E8AC532437996D075F50` |
+| `assets/world/ground/wildflower_lilac.png` | `25D3B4EC45B1234980AFEB073E8511258C73A6A68319B9D4435E9F38849AE507` |
+| `assets/world/ground/fallen_leaves.png` | `2DBD6E6C0DCD50A911CAE385CD8E714BC0DF14D79CC43F2E3B8C78DFE770B0FB` |
+| `assets/world/ground/pebbles.png` | `034F43C2EB3C4F973987D138C20BC36603B30DBE215B726630E81F7F4BDE7887` |
+| `assets/world/ground/clover_sprig.png` | `C51EC1E1AD1EA235C1515E171D5CE4DD191DFCDCBFF17610EEF10D0245C221D1` |
+| `assets/world/ground/grass_tuft_sunlit.png` | `3B90736BB3AAED857342468CDAEABDA81ABBFE1EBF82071CAF3F15163F4139EF` |
