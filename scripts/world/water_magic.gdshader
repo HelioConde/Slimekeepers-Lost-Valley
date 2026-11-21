@@ -60,7 +60,7 @@ void fragment() {
 		// Segmentos que acendem e apagam: janela que corre pelo fio.
 		float seg = vnoise(vec2(fs.x * 0.02, fs.y * 0.008) + vec2(0.0, t * 0.15));
 		float fade = smoothstep(0.42, 0.7, seg);
-		col += vec3(0.25, 0.75, 1.0) * min(thick, 1.0) * fade * 0.3;
+		col += vec3(0.25, 0.75, 1.0) * min(thick, 1.0) * fade * 0.22;
 		// Escala fina: reflexos rápidos e curtos.
 		vec2 q2 = vec2(fs.x * 0.012, (fs.y - t * flow_speed * 2.5) * 0.03);
 		float g = vnoise(q2 + warp * 2.0);
@@ -131,7 +131,7 @@ void fragment() {
 		float wisp = vnoise(vec2(world.x * 0.006, world.y * 0.03) + vec2(t * 0.02, vnoise(world * 0.004) * 3.0));
 		veil = smoothstep(0.38, 0.8, veil) * (0.35 + 0.65 * smoothstep(0.45, 0.7, wisp));
 		veil = floor(veil * 6.0) / 6.0;
-		col += vec3(0.15, 0.14, 0.2) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
+		col += vec3(0.1, 0.1, 0.14) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
 	}
 	// Nada fora da água nem na própria linha da margem.
 	col *= step(0.5, e) * lum_scale;
