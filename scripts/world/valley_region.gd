@@ -8,6 +8,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
+const FARM_FIELD := preload("res://scripts/world/farm_field.gd")
 const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
@@ -18,6 +19,7 @@ var found_zones: Dictionary = {}
 var bag_hud: Node
 var garden_beds: Array[Node2D] = []
 var cooking_station: Node2D
+var farm_field: Node2D
 var recipe_panel: PanelContainer
 
 func _ready() -> void:
@@ -54,6 +56,7 @@ func _ready() -> void:
 	add_child(art)
 	_spawn_starter_garden()
 	_spawn_cooking_station()
+	_spawn_farm_field()
 
 func _spawn_starter_garden() -> void:
 	var garden := Node2D.new()
@@ -74,6 +77,25 @@ func _spawn_cooking_station() -> void:
 	# no ponto de interação. 140 px do canteiro norte = raios 68 + 72 sem sobreposição.
 	cooking_station.position = Vector2(1440, 418)
 	add_child(cooking_station)
+
+## Campo de cultivo no platô a leste do riacho, ao lado da cachoeira (6×4 células
+## livres de troncos, água, caminhos e colisões).
+func _spawn_farm_field() -> void:
+	farm_field = FARM_FIELD.new()
+	farm_field.origin_cell = Vector2i(24, 12)
+	farm_field.size_cells = Vector2i(6, 4)
+	farm_field.player = player
+	add_child(farm_field)
+
+func _handle_farm_interaction() -> bool:
+	if not is_instance_valid(farm_field) or not farm_field.has_target(player):
+		return false
+	hud_hint.text = farm_field.hint(player)
+	if Input.is_action_just_pressed("interact"):
+		var message: String = farm_field.interact(player)
+		if not message.is_empty(): _notify(message)
+		bag_hud.refresh()
+	return true
 
 func _handle_cooking_interaction() -> bool:
 	if not is_instance_valid(cooking_station):
@@ -216,7 +238,7 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("interact"):
 			_notify("O caminho segue pela ilha. Uma nova região chegará em breve.")
 	else:
-		if not _handle_cooking_interaction() and not _handle_garden_interaction():
+		if not _handle_farm_interaction() and not _handle_cooking_interaction() and not _handle_garden_interaction():
 			var closest := _closest_slime()
 			if closest != null:
 				hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Oferecer porcao"

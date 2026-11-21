@@ -35,4 +35,9 @@ func _ready() -> void:
 
 func refresh() -> void:
 	if is_instance_valid(_counter):
-		_counter.text = "Bolsa · sementes %d/%d · folhas frescas %d · porções %d · preparos %d" % [BAG.seeds(get_tree()), TOTAL_PATCHES, BAG.leaves(get_tree()), BAG.count_item(get_tree(), COOKING.RECIPE_ID), COOKING.portions(get_tree())]
+		var text := "Bolsa · sementes %d/%d · folhas frescas %d · porções %d · preparos %d" % [BAG.seeds(get_tree()), TOTAL_PATCHES, BAG.leaves(get_tree()), BAG.count_item(get_tree(), COOKING.RECIPE_ID), COOKING.portions(get_tree())]
+		# Colheitas da fazenda aparecem quando existem.
+		for crop in ["cenoura", "beterraba", "repolho"]:
+			var amount := BAG.count_item(get_tree(), crop)
+			if amount > 0: text += " · %s %d" % [crop, amount]
+		_counter.text = text
