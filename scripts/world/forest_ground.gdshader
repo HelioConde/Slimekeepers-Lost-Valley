@@ -121,7 +121,7 @@ void fragment() {
 			vec2 msz = vec2(textureSize(corner_mask_soft, 0));
 			float under = 1.0 - texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / msz).r;
 			under = floor(under * 4.0 + hash(floor(world_pixel / 2.0)) * 0.99) / 4.0;  // degraus com pontilhado de 2 px
-			g = mix(g, g * 1.9, under * night_forest_lift * night_dim);
+			g = mix(g, g * vec3(2.4, 3.4, 1.7), under * night_forest_lift * night_dim);  // mais claro e verde (ref.: grama sob a copa)
 		}
 		g = mix(g, mix(vec3(luma), g, 0.6) * night_tint * night_value, night_dim);
 		COLOR.rgb = g;
