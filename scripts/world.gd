@@ -99,6 +99,7 @@ func _create_hud() -> void:
     _install_day_night_lighting()
     var layer := CanvasLayer.new()
     layer.name = "HUD"
+    layer.layer = 2  # acima da grade de cor do mundo (WorldGrade, camada 1)
     add_child(layer)
 
     var interface := Control.new()
