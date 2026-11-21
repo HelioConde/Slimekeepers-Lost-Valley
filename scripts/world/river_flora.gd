@@ -62,7 +62,7 @@ func setup(waters: Array, bridges: Array, decorations: Node2D, water_layer: Node
 			var r := _rand(key, 3)
 			if land > 0 and r < 0.28:
 				_add(decorations, REEDS, at, Vector2(0, -21), "reeds", key)
-			elif land == 0 and r < 0.24:
+			elif land == 0 and r < 0.36:  # ref. V11: muitas vitórias-régias
 				var near_shore := false
 				for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
 					if not _in_water(at + dir * SHORE * 5.0, waters): near_shore = true
