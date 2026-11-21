@@ -52,6 +52,7 @@ var _campfires: Array[PointLight2D] = []
 var _fires: Array[CPUParticles2D] = []
 var _embers: Array[CPUParticles2D] = []
 var _glows: Array[PointLight2D] = []
+var _spores: Array[CPUParticles2D] = []
 var _player_light: PointLight2D
 var _fireflies: CPUParticles2D
 var _motes: CPUParticles2D
@@ -208,6 +209,7 @@ static func campfire_light_texture() -> GradientTexture2D:
 	texture.height = 256
 	return texture
 func glow_lights() -> Array[PointLight2D]: return _glows
+func glow_spores() -> Array[CPUParticles2D]: return _spores
 func player_light() -> PointLight2D: return _player_light
 func fireflies() -> CPUParticles2D: return _fireflies
 func motes() -> CPUParticles2D: return _motes
@@ -300,6 +302,9 @@ func apply_time(minutes: float, delta: float) -> void:
 	for light in _glows:
 		if is_instance_valid(light):
 			light.energy = 0.55 * night
+	for spores in _spores:
+		if is_instance_valid(spores):
+			spores.emitting = night > 0.35
 	if is_instance_valid(_player_light):
 		_player_light.energy = 0.22 * night
 	if is_instance_valid(_fireflies):
@@ -399,6 +404,7 @@ func _consider(node: Node) -> void:
 			light.name = "GlowLight"
 			node.add_child(light)
 			_glows.append(light)
+			node.add_child(_make_spores())
 
 
 func _consider_spot(node: Node) -> void:
@@ -583,6 +589,11 @@ func _make_fireflies(amount: int) -> CPUParticles2D:
 		Color(0.9, 1.0, 0.55, 0.85), Color(0.8, 1.0, 0.45, 0.0),
 	])
 	flies.color_ramp = ramp
+	# Voo orgânico: leve órbita, cada um num tom entre verde-limão e amarelo.
+	flies.orbit_velocity_min = -0.06
+	flies.orbit_velocity_max = 0.06
+	flies.hue_variation_min = -0.03
+	flies.hue_variation_max = 0.04
 	var glow := CanvasItemMaterial.new()
 	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
@@ -664,6 +675,39 @@ func _make_motes(amount: int) -> CPUParticles2D:
 	ramp.colors = PackedColorArray([Color(1, 1, 1, 0), Color(1, 1, 1, 0.75), Color(1, 1, 1, 0.5), Color(1, 1, 1, 0)])
 	motes.color_ramp = ramp
 	return motes
+
+
+## Esporos que sobem devagar dos cogumelos luminosos: brilho azul-esverdeado local.
+func _make_spores() -> CPUParticles2D:
+	var spores := CPUParticles2D.new()
+	spores.name = "GlowSpores"
+	spores.position = Vector2(0, -6)
+	spores.amount = 3
+	spores.lifetime = 3.2
+	spores.local_coords = false
+	spores.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	spores.emission_sphere_radius = 7.0
+	spores.direction = Vector2.UP
+	spores.spread = 40.0
+	spores.gravity = Vector2(0, -3)
+	spores.initial_velocity_min = 2.0
+	spores.initial_velocity_max = 5.0
+	spores.tangential_accel_min = -3.0
+	spores.tangential_accel_max = 3.0
+	spores.scale_amount_min = 1.0
+	spores.scale_amount_max = 2.0
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.3, 0.75, 1.0])
+	ramp.colors = PackedColorArray([Color(0.4, 1.0, 0.85, 0.0), Color(0.45, 1.0, 0.9, 0.85), Color(0.4, 0.8, 1.0, 0.45), Color(0.4, 0.7, 1.0, 0.0)])
+	spores.color_ramp = ramp
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	spores.material = glow
+	spores.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	spores.emitting = false
+	_spores.append(spores)
+	return spores
 
 
 func _make_sparks(fire: bool) -> CPUParticles2D:

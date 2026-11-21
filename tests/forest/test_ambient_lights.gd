@@ -411,3 +411,27 @@ func test_dapple_cutouts_vary_between_neighbours() -> void:
 			visible += 1
 			textures[dapple.texture.get_instance_id()] = true
 	assert_int(textures.size()).is_greater_equal(mini(visible, 6))
+
+
+func test_glow_mushrooms_release_blue_green_spores_after_dusk() -> void:
+	var rig: Node2D = _rig_in_region(false, 3)[1]
+	await await_idle_frame()
+	var spores: Array = rig.glow_spores()
+	assert_int(spores.size()).is_equal(3)
+	var first: CPUParticles2D = spores[0]
+	var color: Color = first.color_ramp.sample(0.4)
+	assert_float(color.g).is_greater(color.r)
+	assert_float(color.b).is_greater(color.r)
+	assert_int((first.material as CanvasItemMaterial).light_mode).is_equal(CanvasItemMaterial.LIGHT_MODE_UNSHADED)
+	rig.apply_time(12 * 60, 0.0)
+	assert_bool(first.emitting).is_false()
+	rig.apply_time(22 * 60, 0.0)
+	assert_bool(first.emitting).is_true()
+
+
+func test_fireflies_wander_organically() -> void:
+	var rig: Node2D = _spot_rig()[1]
+	await await_idle_frame()
+	var swarm: CPUParticles2D = rig.firefly_swarms()[0]
+	assert_float(absf(swarm.orbit_velocity_min) + absf(swarm.orbit_velocity_max)).is_greater(0.0)
+	assert_float(swarm.hue_variation_max).is_greater(0.0)

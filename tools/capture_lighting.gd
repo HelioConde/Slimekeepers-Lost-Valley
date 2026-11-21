@@ -42,7 +42,9 @@ func run() -> void:
 		var hm := time_text.split(":")
 		clock.set_time(int(hm[0]), int(hm[1]) if hm.size() > 1 else 0)
 		if camera: camera.reset_smoothing()
-		for i in 40: await process_frame
+		# Partículas (chama, brasas, vagalumes) precisam de ~1,5 s para encher depois
+		# de ligadas; capturar antes disso mostra a fogueira "acabando de acender".
+		for i in 90: await process_frame
 		var stamp := "%02d%02d" % [int(hm[0]), int(hm[1]) if hm.size() > 1 else 0]
 		var image: Image = await frame_image()
 		image.save_png("%s/%s_%s_%s.png" % [out, tag, scene, stamp])
