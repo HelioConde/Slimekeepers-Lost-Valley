@@ -843,7 +843,7 @@ static func foliage_profile(minutes: float) -> Dictionary:
 	var golden := smoothstep(16.5 * 60.0, 18.2 * 60.0, m) * (1.0 - smoothstep(18.6 * 60.0, 19.2 * 60.0, m)) + (1.0 - smoothstep(6.0 * 60.0, 8.5 * 60.0, m)) * smoothstep(5.0 * 60.0, 6.0 * 60.0, m)
 	var sun_color := Color(1.0, 0.94, 0.66).lerp(Color(1.0, 0.8, 0.4), golden)
 	var moon := Color(0.6, 0.84, 1.0)
-	var color := sun_color.lerp(moon, night)
+	var color := sun_color.lerp(moon, smoothstep(0.5, 1.0, night))  # dourado dura o crepúsculo
 	var direction := toward_sun.lerp(Vector2(0.45, -0.9).normalized(), night).normalized()
 	return {
 		"light_dir": direction,
