@@ -778,6 +778,9 @@ func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
 			if material and material.shader == WIND_SHADER and material not in _foliage_materials:
 				_foliage_materials.append(material)
 	var profile := foliage_profile(minutes)
+	for ground in get_tree().get_nodes_in_group("v8_ground"):
+		if is_instance_valid(_region) and _region.is_ancestor_of(ground):
+			((ground as CanvasItem).material as ShaderMaterial).set_shader_parameter("night_dim", night)
 	for material in _foliage_materials:
 		for key in profile:
 			material.set_shader_parameter(key, profile[key])

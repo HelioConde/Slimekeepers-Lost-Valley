@@ -50,6 +50,7 @@ func _ready() -> void:
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
 	_setup_ecosystem()
 	_add_ground_detail()
+	preload("res://scripts/world/ground_art.gd").apply(self, [$VegetationHigh, $ExpandedForest], func(at: Vector2) -> bool: return Forest.open_area(at))
 	$PointsOfInterest/leaves.set_meta("description",Forest.points_of_interest()[0].description)
 	habitat_manager = preload("res://scripts/world/forest_habitats.gd").new()
 	habitat_manager.name = "HabitatManager"

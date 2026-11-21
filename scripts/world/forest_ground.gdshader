@@ -1,14 +1,53 @@
 shader_type canvas_item;
 // Participate in CanvasModulate so terrain and water follow the global clock.
 varying vec2 ground_pixel;
+// Chão V8 (ground_art.gd): tile Wang escolhido pelos 4 cantos da máscara
+// (1 = grama, 0 = chão de mata). Desligado (use_wang = 0) mantém o tile antigo.
+uniform sampler2D wang_atlas : filter_nearest, repeat_disable;
+uniform sampler2D corner_mask : filter_nearest, repeat_disable;
+uniform float use_wang = 0.0;
+// 0 de dia, 1 à noite (AmbientLights): a grama pintada não pode brilhar sob a lua.
+uniform float night_dim = 0.0;
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
 float moss(vec2 p) {
 	vec2 cell = floor(p);
 	vec2 f = fract(p); f = f*f*(3.0-2.0*f);
 	return mix(mix(hash(cell),hash(cell+vec2(1,0)),f.x),mix(hash(cell+vec2(0,1)),hash(cell+vec2(1,1)),f.x),f.y);
 }
-void vertex() { ground_pixel = VERTEX; }
+varying vec2 world_pixel;
+void vertex() {
+	ground_pixel = VERTEX;
+	// O TileMapLayer desenha por quadrantes: VERTEX é local a cada um.
+	world_pixel = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
+}
+vec3 wang_ground(vec2 world) {
+	vec2 cell = floor(world / 32.0);
+	ivec2 c = ivec2(cell);
+	ivec2 size = textureSize(corner_mask, 0) - ivec2(1);
+	c = clamp(c, ivec2(0), size - ivec2(1));
+	int nw = int(texelFetch(corner_mask, c, 0).r > 0.5);
+	int ne = int(texelFetch(corner_mask, c + ivec2(1, 0), 0).r > 0.5);
+	int sw = int(texelFetch(corner_mask, c + ivec2(0, 1), 0).r > 0.5);
+	int se = int(texelFetch(corner_mask, c + ivec2(1, 1), 0).r > 0.5);
+	int index = nw * 8 + ne * 4 + sw * 2 + se;
+	ivec2 local = ivec2(mod(floor(world), 32.0));
+	// Tiles cheios (só grama ou só mata) espelhados por célula: quebra a grade.
+	if (index == 0 || index == 15) {
+		float h = hash(cell);
+		if (h > 0.5) { local.x = 31 - local.x; }
+		if (fract(h * 7.0) > 0.5) { local.y = 31 - local.y; }
+	}
+	return texelFetch(wang_atlas, ivec2((index % 4) * 32, (index / 4) * 32) + local, 0).rgb;
+}
+
 void fragment() {
+	if (use_wang > 0.5) {
+		vec3 g = wang_ground(floor(world_pixel));
+		float luma = dot(g, vec3(0.299, 0.587, 0.114));
+		// Noite: menos saturação e valor, puxando para o azul do luar.
+		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.82, 1.0) * 0.8, night_dim);
+		COLOR.rgb = g;
+	}
 	vec2 p = floor(ground_pixel / 2.0) * 2.0;
 	float patches = moss(p / 86.0) * 0.65 + moss(p / 27.0) * 0.35;
 	// Variação de musgo sem virar "sombra sem dono": o tom muda, o valor quase não

@@ -144,3 +144,12 @@ O `wildflower_yellow.png` teve as pétalas clareadas (+25% de valor) para ler co
 | `assets/world/forest/oak_lush_open.png` | `6CED844989314B691C07404D67817DDFF40526119F85021B8C19874E6D760E54` |
 | `assets/world/forest/oak_lush_tall.png` | `7B9A7AF593A13CF5C8D04014F8667C0CE51904DA4D66C11717274BE7AC094A24` |
 | `assets/world/forest/pine_lush.png` | `9A6FBDB87C8536290A10A1328D725EA5A6D0239143C58A0401734CA9C2B46D2F` |
+
+## Chão V8 — 2026-11-21
+
+Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-down, borda orgânica; 30 gerações): chão de mata musgoso ↔ grama de campo, e terra de trilha ↔ a mesma grama (encadeados pelo tile base da grama). Organizados no atlas canônico (índice = NW·8 + NE·4 + SW·2 + SE) e harmonizados com `tools/tone_ground_tiles.py`: grama com valor ×0,8 e saturação ×0,9, para casar com a luminância do chão antigo; mata com valor ×1,2; terra com valor ×1,18 e saturação ×0,75. O atlas antigo `grass_dirt_v3_32x32.png` continua intacto.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/tilesets/v8/forest_grass_wang.png` | `70D39C80CEE071E927898448FDF6561361E6251D60D0D27F68A0167055FB8FC6` |
+| `assets/tilesets/v8/dirt_tile.png` | `AB726435DB045C86FF500B0CC5C939CF427E526345DFC7A79EB3742F41F295BB` |

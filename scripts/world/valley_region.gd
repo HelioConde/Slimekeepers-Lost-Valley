@@ -191,6 +191,7 @@ func _setup_living_valley() -> void:
 	ecosystem.configure(player,flowers,water)
 	var routes := Valley.routes()
 	ecosystem.open_area_test = func(at: Vector2) -> bool: return Valley.route_distance(at,routes)<90
+	preload("res://scripts/world/ground_art.gd").apply(self, [$TreesBack, $TreesFront], Callable(), 1)  # árvores esparsas: sombra de mata sob cada uma
 	environmental_audio = Living.connect_environment(self,ecosystem,[$TreesBack,$TreesFront],[$LowVegetation,$WaterDecorations],water,Rect2(32,32,3136,3136),func(_at: Vector2) -> String: return "Vale das Nascentes")
 	habitat_manager = preload("res://scripts/world/forest_habitats.gd").new()
 	habitat_manager.name = "AquaticHabitatManager"

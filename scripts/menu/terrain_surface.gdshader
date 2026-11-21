@@ -3,6 +3,9 @@ shader_type canvas_item;
 uniform sampler2D terrain_atlas : filter_nearest, repeat_disable;
 uniform vec2 atlas_origin = vec2(0.0, 0.0);
 uniform float texture_strength = 0.72;
+// Terra V8 (scripts/world/ground_art.gd): textura nova de terra; desligada no menu.
+uniform sampler2D dirt_texture : filter_nearest, repeat_enable;
+uniform float use_dirt_texture = 0.0;
 varying vec2 ground_pixel;
 void vertex() {
 	ground_pixel = VERTEX;
@@ -15,5 +18,9 @@ void fragment() {
 	if (mod(tile.x * 3.0 + tile.y, 3.0) > 1.0) { pixel.y = 31.0 - pixel.y; }
 	vec2 uv = (atlas_origin + pixel + vec2(0.5)) / vec2(textureSize(terrain_atlas, 0));
 	vec4 texel = texture(terrain_atlas, uv);
-	COLOR = vec4(mix(COLOR.rgb, texel.rgb, texture_strength), COLOR.a);
+	if (use_dirt_texture > 0.5) {
+		COLOR = vec4(texture(dirt_texture, (pixel + vec2(0.5)) / 32.0).rgb, COLOR.a);
+	} else {
+		COLOR = vec4(mix(COLOR.rgb, texel.rgb, texture_strength), COLOR.a);
+	}
 }
