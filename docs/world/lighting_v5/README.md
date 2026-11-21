@@ -107,3 +107,19 @@ laranja, pé de cada objeto em ciano, `--probe`, `--only`, `--hide`, `--outline`
 
 `05_donos_das_sombras_depuracao_antes_depois_1630.png`: depuração antes × depois (Clareira e
 Vale). `05_clareira_sem_sombra_solta_0700_1630.png`: captura normal antes × depois.
+
+## 9. Encaixe das sombras nos objetos (mato, arbusto, samambaia, fogueira)
+
+- Objetos baixos e arredondados (arbusto, pedra, toco, tronco caído, fogueira, cogumelo, flor,
+  samambaia) não projetam mais a silhueta achatada — isso virava uma lâmina fina descolada.
+  A sombra é a própria silhueta deslocada para o lado oposto ao sol (`mound_offset`, altura
+  real 4–10 px por tipo), abraçando o contorno; à tarde à direita, de manhã à esquerda, ao
+  meio-dia embaixo.
+- Mato (`grass.png`, z −2): camada própria `UnderCoverShadows` em z −3, logo abaixo do tufo,
+  com a silhueta achatada sobre a base — a sombra fica embaixo da grama.
+- `tools/test_shadow_fit.gd` (com janela): arbusto, pedra, fogueira, samambaia e mato às 07h,
+  12h e 16h30 — sombra presente, encostada no objeto e a no máx. 8 px do contorno.
+  Antes: 15/15 falhas; agora: 15/15 aprovados.
+
+`06_objetos_baixos_antes_depois_07_12_1630.png` (1ª linha antes, 16h30; depois 07h/12h/16h30)
+e `06_mato_sombra_embaixo_antes_depois.png` (em cima ao lado, embaixo sob o tufo).

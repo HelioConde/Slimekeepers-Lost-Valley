@@ -76,13 +76,19 @@ func test_contact_strip_is_the_visual_base_of_the_silhouette() -> void:
 	assert_float(world_height).is_between(6.0, 18.0)
 
 
-func test_solid_objects_get_contact_but_ground_flowers_do_not() -> void:
+func test_every_object_has_a_base_shadow_with_the_right_shape() -> void:
 	var parts := _rig()
 	await await_idle_frame()
 	var shadows: Node2D = parts[1]
-	assert_bool(shadows.has_contact(parts[2])).is_true()
-	assert_bool(shadows.has_contact(parts[3])).is_true()
-	assert_bool(shadows.has_contact(parts[4])).is_false()
+	# Todos têm sombra na base...
+	for index in [2, 3, 4]:
+		assert_bool(shadows.has_contact(parts[index])).is_true()
+	# ...mas objetos baixos (pedra, flores) usam a silhueta deslocada, não a projeção
+	# achatada; a árvore continua projetando.
+	assert_float(Shadows.mound_height("object", "mossy_rock.png")).is_greater(0.0)
+	assert_float(Shadows.mound_height("object", "flowers.png")).is_greater(0.0)
+	assert_float(Shadows.mound_height("tree", "pine_crisp.png")).is_equal(0.0)
+	assert_float(Shadows.mound_height("object", "stone_steps.png")).is_equal(0.0)
 
 
 func test_generic_blob_is_replaced_and_restored_on_exit() -> void:

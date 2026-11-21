@@ -26,6 +26,10 @@ const EXTRA_CASTER_GROUPS := ["MapArt", "AwakeningLandmark", "NaturalSpring", "W
 var _casters: Dictionary = {}
 var _contacts: Dictionary = {}
 var _heights: Dictionary = {}
+var _mounds: Dictionary = {}
+## Tufos de mato (z -2): sombra numa camada própria logo abaixo deles (z -3).
+var _undercover: Dictionary = {}
+var _undercover_pass: Node2D
 var _boxes: Array[Node2D] = []
 var _hidden_blobs: Array[CanvasItem] = []
 var _contact := {"vector": Vector2.ZERO, "opacity": 0.0}
@@ -69,6 +73,9 @@ func _ready() -> void:
 	_dynamic_pass = _make_pass("DynamicGroundShadows", cast_group, func(): _draw_casters(_dynamic_pass,_dynamic_ids,false))
 	_static_contact = _make_pass("StaticContactShadows", self, func(): _draw_casters(_static_contact,_visible_static,true))
 	_dynamic_contact = _make_pass("DynamicContactShadows", self, func(): _draw_casters(_dynamic_contact,_dynamic_ids,true))
+	_undercover_pass = _make_pass("UnderCoverShadows", self, func(): _draw_undercover(_undercover_pass))
+	_undercover_pass.z_as_relative = false
+	_undercover_pass.z_index = -3
 	for node in _region.find_children("*", "", true, false):
 		if node is Sprite2D or node is AnimatedSprite2D: _register(node)
 	for node in get_tree().get_nodes_in_group("shadow_boxes"):
@@ -108,7 +115,9 @@ func _register(sprite: Node2D) -> void:
 			node = node.get_parent()
 		if kind == "object" and sprite is Sprite2D and sprite.texture:
 			var path: String = sprite.texture.resource_path.to_lower()
-			if RULES.is_ground_cover(path): return
+			# Tufos de mato são cobertura de chão para a ordem de desenho, mas são de pé:
+			# projetam sombra (só abaixo da base, sem escurecer o próprio tufo).
+			if RULES.is_ground_cover(path) and not path.ends_with("/grass.png"): return
 			if ("oak" in path or "pine" in path or "tree" in path) and not "log" in path: kind = "tree"
 	if kind.is_empty(): return
 	if not _casters.has(sprite.get_instance_id()):
@@ -118,11 +127,16 @@ func _register(sprite: Node2D) -> void:
 	_kinds[sprite.get_instance_id()] = kind
 	_contacts[sprite.get_instance_id()] = _wants_contact(sprite)
 	var texture := _texture_for(sprite)
-	_heights[sprite.get_instance_id()] = height_factor(kind, texture.resource_path.get_file().to_lower() if texture else "")
+	var file := texture.resource_path.get_file().to_lower() if texture else ""
+	_heights[sprite.get_instance_id()] = height_factor(kind, file)
+	if file == "grass.png": _undercover[sprite.get_instance_id()] = true
+	var mound := mound_height(kind, file)
+	if mound > 0.0: _mounds[sprite.get_instance_id()] = mound
+	else: _mounds.erase(sprite.get_instance_id())
 	# O blob elíptico fixo do mapa é trocado pela sombra de contato com silhueta.
 	for holder in [sprite, sprite.get_parent()]:
 		var blob := holder.get_node_or_null("ContactShadow") as CanvasItem
-		if blob and blob.visible and _contacts[sprite.get_instance_id()]:
+		if blob and blob.visible and (_contacts[sprite.get_instance_id()] or _mounds.has(sprite.get_instance_id())):
 			blob.hide()
 			_hidden_blobs.append(blob)
 
@@ -143,6 +157,9 @@ func _hide_floating_blobs() -> void:
 static func height_factor(kind: String, file: String) -> float:
 	if kind in ["player", "slime", "animal"]: return 1.0
 	if kind == "tree": return 0.42
+	# Tufo de mato: fica abaixo dos atores (z -2), então a sombra só pode sair da base
+	# para baixo e curta, sem cobrir o próprio tufo.
+	if "grass" in file: return 0.09
 	for word in ["rock", "stone", "boulder", "stump", "log", "ruin", "crystal", "campfire", "step"]:
 		if word in file: return 0.35
 	for word in ["bush", "shrub"]:
@@ -189,7 +206,23 @@ func _wants_contact(sprite: Node2D) -> bool:
 		if word in path: return false
 	return true
 
-func has_contact(sprite: Node2D) -> bool: return _contacts.get(sprite.get_instance_id(), false)
+func has_contact(sprite: Node2D) -> bool:
+	return _contacts.get(sprite.get_instance_id(), false) or _mounds.has(sprite.get_instance_id())
+
+## Objetos baixos e arredondados (altura real em px): a sombra é a própria silhueta
+## deslocada para o lado oposto ao sol, abraçando o contorno. Projetar a silhueta
+## achatada (como numa árvore) virava uma lâmina fina descolada do objeto.
+const MOUNDS := {"campfire": 4.0, "flower": 4.0, "fern": 5.0, "clover": 3.0, "mushroom": 6.0,
+	"log": 6.0, "rock": 8.0, "stone": 8.0, "boulder": 9.0, "stump": 9.0, "bush": 10.0, "shrub": 10.0}
+static func mound_height(kind: String, file: String) -> float:
+	if kind != "object" or "steps" in file: return 0.0
+	for word in MOUNDS:
+		if word in file: return MOUNDS[word]
+	return 0.0
+
+## Deslocamento da sombra de um objeto baixo: segue o sol, nunca some ao meio-dia.
+func mound_offset(id: int) -> Vector2:
+	return ((_profile.vector as Vector2) * .55 + Vector2(0, .25)) * float(_mounds.get(id, 0.0))
 
 func _is_wildlife_texture(sprite: Node2D) -> bool:
 	var texture := _texture_for(sprite)
@@ -228,6 +261,7 @@ func update_for_time(delta: float) -> void:
 		_shade_age = 0.0
 		_static_pass.queue_redraw()
 		_static_contact.queue_redraw()
+		_undercover_pass.queue_redraw()
 	cast_group.self_modulate.a = float(_profile.opacity) * .85
 	drawn_casters = 0
 	_dynamic_pass.queue_redraw()
@@ -359,12 +393,20 @@ func _draw_casters(target: Node2D, ids: Array, contact: bool) -> void:
 	for id in ids:
 		var sprite = _casters.get(id)
 		if not is_instance_valid(sprite) or not casts_on_ground(sprite): continue
-		if contact and (not _contacts.get(id, false) or sprite.flip_v): continue
+		var mound: bool = _mounds.has(id)
+		if contact and not mound and (not _contacts.get(id, false) or sprite.flip_v): continue
+		if not contact and mound: continue  # objeto baixo: só a sombra deslocada (passe de contato)
+		if _undercover.has(id): continue  # mato: camada própria, por baixo do tufo
 		var foot := foot_for(sprite)
 		if not view.has_point(foot): continue
 		var texture := _texture_for(sprite)
 		if not texture: continue
 		var source := _source_for(sprite, texture)
+		if contact and mound:
+			var box := _rect_for(sprite, texture)
+			target.draw_set_transform_matrix(target.global_transform.affine_inverse() * Transform2D(0.0, mound_offset(id)) * sprite.global_transform * mirror_for(sprite, box))
+			target.draw_texture_rect_region(texture, box, source, Color(1, 1, 1, float(_contact.opacity) * 1.25 * sprite.modulate.a))
+			continue
 		if contact:
 			_draw_contact(target, sprite, texture, foot, source)
 			continue
@@ -388,6 +430,30 @@ static func mirror_for(sprite: Node2D, rect: Rect2, vertical: bool = true) -> Tr
 	var v: bool = vertical and sprite.get("flip_v") == true
 	return Transform2D(Vector2(-1.0 if h else 1.0, 0), Vector2(0, -1.0 if v else 1.0),
 		Vector2(2.0 * rect.position.x + rect.size.x if h else 0.0, 2.0 * rect.position.y + rect.size.y if v else 0.0))
+
+## Sombra embaixo do tufo: a silhueta achatada sobre a base (poça), puxada 1–3 px
+## para o lado oposto ao sol e um pouco para baixo. O tufo é desenhado por cima.
+func undercover_transform(sprite: Node2D) -> Transform2D:
+	var base := sprite.global_transform * Vector2(0, ground_bottom(sprite))
+	var shift := Vector2((_profile.vector as Vector2).x * 3.0, 2.0)
+	var flatten := Transform2D(Vector2(1, 0), Vector2(0, 0.3), Vector2.ZERO)
+	return Transform2D(0.0, base + shift) * flatten * Transform2D(0.0, -base) * sprite.global_transform
+
+func _draw_undercover(target: Node2D) -> void:
+	if _contact.opacity < .001: return
+	var view := (get_viewport().get_canvas_transform().affine_inverse() * get_viewport_rect()).grow(170)
+	for id in _visible_static:
+		if not _undercover.has(id): continue
+		var sprite = _casters.get(id)
+		if not is_instance_valid(sprite) or not casts_on_ground(sprite) or not view.has_point(sprite.global_position): continue
+		var texture := _texture_for(sprite)
+		if not texture: continue
+		var rect := _rect_for(sprite, texture)
+		target.draw_set_transform_matrix(target.global_transform.affine_inverse() * undercover_transform(sprite) * mirror_for(sprite, rect))
+		target.draw_texture_rect_region(texture, rect, _source_for(sprite, texture), Color(1, 1, 1, float(_contact.opacity) * 1.4 * sprite.modulate.a))
+	target.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+func has_undercover(sprite: Node2D) -> bool: return _undercover.has(sprite.get_instance_id())
 
 func _texture_key(id: int) -> int:
 	var sprite = _casters.get(id)
