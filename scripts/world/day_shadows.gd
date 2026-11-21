@@ -5,7 +5,7 @@ const STOPS := [
 	[0.0, Vector2(-.22,.22), .09], [180.0, Vector2(.22,.30), .07],
 	[300.0, Vector2(.65,.42), 0.0], [360.0, Vector2(-1.1,.55), .15],
 	[420.0, Vector2(-.85,.48), .25], [720.0, Vector2(.04,.19), .19],
-	[990.0, Vector2(.8,.42), .26], [1110.0, Vector2(1.18,.55), .22],
+	[990.0, Vector2(.8,.42), .26], [1110.0, Vector2(1.18,.55), .27],
 	[1170.0, Vector2(1.3,.65), 0.0], [1200.0, Vector2(-.4,.35), .06],
 	[1320.0, Vector2(-.5,.27), .11], [1440.0, Vector2(-.22,.22), .09]
 ]
@@ -167,6 +167,11 @@ static func height_factor(kind: String, file: String) -> float:
 		if word in file: return 0.45
 	return 0.55
 
+## Copas: curtas com sol alto; com sol baixo (manhã cedo e entardecer) os troncos
+## projetam faixas longas atravessando a grama, como na referência das 18h.
+static func tree_cast_limit(sun: Vector2) -> float:
+	return MAX_TREE_CAST * lerpf(1.0, 2.4, smoothstep(0.9, 1.3, sun.length()))
+
 ## Direção de projeção do sprite no horário atual, já com altura real e limite.
 func cast_direction(sprite: Node2D) -> Vector2:
 	var id := sprite.get_instance_id()
@@ -174,7 +179,7 @@ func cast_direction(sprite: Node2D) -> Vector2:
 	if not texture: return Vector2.ZERO
 	var height: float = _rect_for(sprite, texture).size.y * sprite.global_scale.y
 	var direction: Vector2 = (_profile.vector as Vector2) * float(_heights.get(id, 1.0))
-	var limit := MAX_TREE_CAST if _kinds.get(id) == "tree" else MAX_CAST
+	var limit := tree_cast_limit(_profile.vector) if _kinds.get(id) == "tree" else MAX_CAST
 	if height * direction.length() > limit: direction *= limit / (height * direction.length())
 	return direction
 

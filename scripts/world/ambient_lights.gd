@@ -58,6 +58,8 @@ var _embers: Array[CPUParticles2D] = []
 var _glows: Array[PointLight2D] = []
 var _spores: Array[CPUParticles2D] = []
 var _halos: Array[Sprite2D] = []
+var _mushrooms: Node2D  # poças de luz dos cogumelos (sprites e tilemaps)
+var _mist: Node2D  # névoa noturna baixa
 var _halo_texture: GradientTexture2D
 ## Raios de sol: da copa (origem) até a mancha no chão. [{top, bottom, alpha, seed}]
 var shafts: Array = []
@@ -304,6 +306,11 @@ func apply_time(minutes: float, delta: float) -> void:
 	_time += delta
 	var night := night_factor(minutes)
 	_apply_foliage_light(minutes, night, delta)
+	if is_instance_valid(_mushrooms) and is_instance_valid(_region):
+		var walker := _region.get_node_or_null("Player") as Node2D
+		if walker:
+			_mushrooms.apply_time(minutes, walker.global_position, delta)
+			if is_instance_valid(_mist): _mist.apply_time(night, walker.global_position, delta)
 	var flicker := 1.0 + 0.09 * sin(_time * 7.3) + 0.05 * sin(_time * 13.1 + 1.7)
 	# A fogueira só domina depois que o sol se põe; no anoitecer ainda é discreta.
 	var fire_glow := smoothstep(0.55, 1.0, night)
@@ -347,6 +354,13 @@ func _scan() -> void:
 		return
 	for node in _region.find_children("*", "", true, false):
 		_consider(node)
+	if not is_instance_valid(_mushrooms):
+		_mushrooms = preload("res://scripts/world/mushroom_glows.gd").new()
+		_mushrooms.setup(_region)
+		add_child(_mushrooms)
+	if not is_instance_valid(_mist):
+		_mist = preload("res://scripts/world/night_mist.gd").new()
+		add_child(_mist)
 	var player := _region.get_node_or_null("Player")
 	if player and not is_instance_valid(_player_light):
 		_player_light = _make_light(PLAYER_COLOR, 2.6)

@@ -107,8 +107,10 @@ func test_tree_shadow_stays_under_its_own_canopy() -> void:
 		shadows.update_for_time(0.016)
 		var direction: Vector2 = shadows.cast_direction(oak)
 		var height := oak.get_rect().size.y * oak.global_scale.y
-		# Deslocamento do topo da copa: curto, a sombra fica colada ao tronco.
-		assert_float((direction * height).length()).is_less_equal(Shadows.MAX_TREE_CAST + 0.5)
+		# Deslocamento do topo da copa: limitado (mais longo só com sol baixo), colado ao tronco.
+		var sun: Vector2 = Shadows.profile_at(minutes)["vector"]
+		assert_float((direction * height).length()).is_less_equal(Shadows.tree_cast_limit(sun) + 0.5)
+		if minutes == 12 * 60: assert_float((direction * height).length()).is_less_equal(Shadows.MAX_TREE_CAST + 0.5)
 	# Personagens continuam com a altura inteira (a sombra do jogador não muda).
 	assert_float(Shadows.height_factor("player", "")).is_equal(1.0)
 	assert_float(Shadows.height_factor("tree", "oak.png")).is_less(0.5)
