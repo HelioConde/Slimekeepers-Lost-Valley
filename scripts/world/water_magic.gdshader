@@ -25,6 +25,7 @@ uniform float layer_threads = 1.0;
 uniform float layer_edges = 1.0;
 uniform float layer_stars = 1.0;
 uniform float layer_plants = 1.0;
+uniform float layer_mist = 1.0;
 varying vec2 world;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -116,6 +117,14 @@ void fragment() {
 		}
 	}
 
+	// ---------- 5. Névoa rente à água (ref. da ponte) ----------
+	// Véus largos que derivam devagar, em degraus de 1/6 (sem degradê liso).
+	if (layer_mist > 0.0) {
+		vec2 m = world * vec2(0.0035, 0.007) + vec2(t * 0.012, t * 0.004);
+		float veil = vnoise(m) * 0.7 + vnoise(m * 2.3 + 5.0) * 0.3;
+		veil = floor(smoothstep(0.5, 0.85, veil) * 6.0) / 6.0;
+		col += vec3(0.10, 0.13, 0.19) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
+	}
 	// Nada fora da água nem na própria linha da margem.
 	col *= step(0.5, e) * lum_scale;
 	COLOR = vec4(col, 1.0);

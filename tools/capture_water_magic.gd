@@ -21,6 +21,7 @@ func set_layers(overlays: Array, values: Array) -> void:
 		m.set_shader_parameter("layer_edges", values[1])
 		m.set_shader_parameter("layer_stars", values[2])
 		m.set_shader_parameter("layer_plants", values[3])
+		m.set_shader_parameter("layer_mist", values[3])
 		o.visible = values.max() > 0.0
 
 

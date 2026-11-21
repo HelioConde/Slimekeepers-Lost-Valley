@@ -49,10 +49,10 @@ func setup(waters: Array, bridges: Array, decorations: Node2D, water_layer: Node
 			var r := _rand(key, 3)
 			if land > 0 and r < 0.28:
 				_add(decorations, REEDS, at, Vector2(0, -21), "reeds", key)
-			elif land == 0 and r < 0.12:
+			elif land == 0 and r < 0.24:
 				var near_shore := false
 				for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-					if not _in_water(at + dir * SHORE * 3.0, waters): near_shore = true
+					if not _in_water(at + dir * SHORE * 5.0, waters): near_shore = true
 				if near_shore:
 					_add(water_layer, LILY if _rand(key, 4) < 0.5 else PAD, at, Vector2.ZERO, "lily", key)
 
