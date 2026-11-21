@@ -33,29 +33,36 @@ func _run() -> void:
 	# The shipped Player prefab sets the active 0.8 zoom; the older 1.14 CI expectation was stale.
 	check(camera.zoom.is_equal_approx(Vector2(0.8, 0.8)), "Gameplay zoom matches the active Player prefab")
 	check(region.get_node("VegetationHigh").get_child_count() > 900, "Original tree population preserved")
-	var legacy := load("res://scenes/world.tscn").instantiate() as Node2D
+	# Células pintadas pelo usuário na Clareira original. A cena antiga foi removida
+	# (61bba30); o fixture guarda só os dados dela, sem recriar a cena.
+	var legacy: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://tests/fixtures/clareira_legacy_core.json"))
+	check(legacy != null and legacy.has("layers"), "Legacy core fixture readable")
+	var shift := Vector2i(int(legacy.offset[0]), int(legacy.offset[1]))
 	for layer_name in ["GroundDetails","VegetationLow"]:
-		var original: TileMapLayer = legacy.get_node(layer_name)
 		var expanded: TileMapLayer = region.get_node(layer_name)
 		var preserved := true
-		for cell in original.get_used_cells():
-			var translated := cell+Vector2i(50,50)
+		for entry in legacy.layers[layer_name]:
+			var cell := Vector2i(int(entry[0]), int(entry[1]))
+			var source_id := int(entry[2])
+			var coords := Vector2i(int(entry[3]), int(entry[4]))
+			var alternative := int(entry[5])
+			var translated := cell+shift
 			# The expanded pond intentionally relocates terrestrial tiles rooted in water.
 			if layer_name == "VegetationLow":
 				var water: Polygon2D = region.get_node("NaturalSpring/Pool/Water")
-				var atlas := original.tile_set.get_source(original.get_cell_source_id(cell)) as TileSetAtlasSource
-				var data := original.get_cell_tile_data(cell)
+				var atlas := expanded.tile_set.get_source(source_id) as TileSetAtlasSource
+				var data := atlas.get_tile_data(coords, alternative)
 				var foot_y := atlas.texture.get_image().get_used_rect().end.y - atlas.texture_region_size.y * .5 - data.texture_origin.y
 				var foot := expanded.to_global(expanded.map_to_local(translated) + Vector2(0, foot_y))
 				if Geometry2D.is_point_in_polygon(water.to_local(foot), water.polygon): continue
-			if original.get_cell_source_id(cell) != expanded.get_cell_source_id(translated) or original.get_cell_atlas_coords(cell) != expanded.get_cell_atlas_coords(translated) or original.get_cell_alternative_tile(cell) != expanded.get_cell_alternative_tile(translated):
+			if source_id != expanded.get_cell_source_id(translated) or coords != expanded.get_cell_atlas_coords(translated) or alternative != expanded.get_cell_alternative_tile(translated):
 				preserved = false
 		check(preserved,"User painted core cells preserved: "+layer_name)
 	var visibility_preserved := true
-	for tree in legacy.get_node("VegetationHigh").get_children():
-		if tree.visible != region.get_node("VegetationHigh").get_node(str(tree.name)).visible: visibility_preserved=false
+	for tree_name in legacy.tree_visibility:
+		var tree := region.get_node("VegetationHigh").get_node_or_null(NodePath(tree_name))
+		if tree == null or tree.visible != bool(legacy.tree_visibility[tree_name]): visibility_preserved=false
 	check(visibility_preserved,"User tree visibility overrides preserved")
-	legacy.free()
 	for water_path in ["NaturalSpring/Pool/Water","SouthernBrook/Water"]:
 		var water: Polygon2D = region.get_node(water_path)
 		var trees_in_water := 0
