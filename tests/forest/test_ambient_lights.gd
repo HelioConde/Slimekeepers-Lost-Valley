@@ -65,7 +65,8 @@ func test_flicker_is_gentle() -> void:
 		rig.apply_time(22 * 60, 1.0 / 30.0)
 		low = minf(low, light.energy)
 		high = maxf(high, light.energy)
-	assert_float(high - low).is_less(0.35)
+	# Tremor proporcional à intensidade: no máximo ~25% do pico.
+	assert_float((high - low) / high).is_less(0.3)
 	assert_float(low).is_greater(0.5)
 
 
