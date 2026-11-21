@@ -20,6 +20,10 @@ const MAX_SNAP := 400.0
 const SAMPLE_STEP := 16.0
 
 var materials: Array[ShaderMaterial] = []
+## Camada encantada (water_magic) por superfície.
+const MAGIC := preload("res://scripts/world/water_magic.gd")
+var magic_overlays: Array[Polygon2D] = []
+var _light_refresh := 0.0
 var surfaces: Array[Polygon2D] = []
 ## Por superfície: Array de {rect: Rect2, samples: PackedVector2Array} (mundo).
 var cells: Array = []
@@ -152,6 +156,9 @@ func add_surface(water: Polygon2D, blockers: Array = []) -> void:
 	water.add_child(overlay)
 	surfaces.append(overlay)
 	materials.append(material)
+	# Rios grandes correm para baixo; lagos pequenos derivam de leve.
+	var big := maxf(world_bounds(water).size.x, world_bounds(water).size.y) > 600.0
+	magic_overlays.append(MAGIC.make_overlay(water, Vector2(0.08, 1.0) if big else Vector2(1.0, 0.25)))
 	cells.append(sample_cells(water, blockers))
 
 
@@ -159,6 +166,35 @@ func update_for_time(delta: float) -> void:
 	if materials.is_empty(): return
 	if not reduce_motion: elapsed += maxf(delta, 0.0)
 	apply_sky(ASTRONOMY.now())
+	update_magic(delta)
+
+
+## Camada encantada: tempo, noite e fontes de luz próximas (mundo).
+func update_magic(delta: float) -> void:
+	var night: float = preload("res://scripts/world/ambient_lights.gd").night_factor(float(last_sky.get("minutes", 540.0)))
+	_light_refresh -= delta
+	var refresh := _light_refresh <= 0.0
+	if refresh: _light_refresh = 0.2
+	var region := get_parent().get_parent()
+	var view := Vector2.ZERO
+	var player := region.get_node_or_null("Player") as Node2D
+	if player: view = player.global_position
+	for overlay in magic_overlays:
+		var m := overlay.material as ShaderMaterial
+		m.set_shader_parameter("elapsed", floorf(elapsed * 8.0) / 8.0)
+		m.set_shader_parameter("night", night)
+		if not refresh: continue
+		var lights := PackedVector4Array()
+		var colors := PackedVector4Array()
+		for source in MAGIC.gather_lights(region, overlay.get_meta("world_rect"), view):
+			var c: Color = source.get_meta("light_color", Color(0.5, 0.85, 1.0))
+			lights.append(Vector4(source.global_position.x, source.global_position.y, float(source.get_meta("light_radius", 14.0)), float(source.get_meta("light_strength", 1.0))))
+			colors.append(Vector4(c.r, c.g, c.b, 1.0))
+		m.set_shader_parameter("light_count", lights.size())
+		lights.resize(MAGIC.MAX_LIGHTS)
+		colors.resize(MAGIC.MAX_LIGHTS)
+		m.set_shader_parameter("lights", lights)
+		m.set_shader_parameter("light_colors", colors)
 
 
 func apply_sky(sky: Dictionary) -> void:

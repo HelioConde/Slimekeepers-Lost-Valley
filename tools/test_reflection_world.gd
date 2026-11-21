@@ -72,11 +72,14 @@ func run() -> void:
 	for i in 20: await process_frame
 	var clock := root.get_node("GameClock")
 	clock.stop()
-	var hour := int(OS.get_cmdline_user_args()[0]) if OS.get_cmdline_user_args().size() > 0 else 19
+	var hour := int(OS.get_cmdline_user_args()[0]) if OS.get_cmdline_user_args().size() > 0 and OS.get_cmdline_user_args()[0].is_valid_int() else 19
 	clock.load_save_data({"version": 1, "day": 3, "minutes": hour * 60 + 30})
 	var reflections := region.find_child("WaterReflections", true, false)
 	reflections.reduce_motion = true  # congela a animação: só a posição importa
-	var overlays: Array = reflections.surfaces
+	var overlays: Array = reflections.surfaces.duplicate()
+	if "magic" in OS.get_cmdline_user_args():
+		overlays = reflections.magic_overlays.duplicate()  # camada encantada (V11)
+		for o in reflections.surfaces: o.visible = false
 	# A interface não é mundo: escondida para não cobrir pixels do reflexo.
 	for layer in region.find_children("*", "CanvasLayer", true, false):
 		if layer.name != "WorldGrade": layer.visible = false

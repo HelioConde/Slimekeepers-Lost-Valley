@@ -472,6 +472,11 @@ func _consider(node: Node) -> void:
 				aura.set_meta("strength", float(spec[1]))
 				aura.set_meta("no_shadow", true)
 				node.add_child(aura)
+				# Slime luminoso reflete na água (WaterReflections lê a posição a cada 0,2 s).
+				node.add_to_group("water_light_sources")
+				node.set_meta("light_color", spec[0])
+				node.set_meta("light_radius", 16.0)
+				node.set_meta("light_strength", float(spec[1]))
 				_slime_halos.append(aura)
 				node.add_child(_make_sparks(spec[2]))
 				break

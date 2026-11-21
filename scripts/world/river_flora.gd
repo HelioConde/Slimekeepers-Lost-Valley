@@ -71,6 +71,10 @@ func _add(parent: Node2D, texture: Texture2D, at: Vector2, offset: Vector2, kind
 	if kind == "lily":
 		sprite.scale = Vector2(0.75, 0.75)
 		sprite.set_meta("no_shadow", true)
-	if texture != PAD: sprite.set_meta("magic_flower", true)
+	if texture != PAD:
+		sprite.set_meta("magic_flower", true)
+		holder.add_to_group("water_light_sources")
+		holder.set_meta("light_color", Color(0.4, 0.85, 1.0) if kind == "reeds" else Color(0.75, 0.5, 1.0))
+		holder.set_meta("light_radius", 12.0)
 	holder.add_child(sprite)
 	placed.append({"kind": kind, "at": at})

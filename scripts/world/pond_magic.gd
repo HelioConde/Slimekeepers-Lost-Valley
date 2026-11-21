@@ -66,6 +66,9 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 		_reflection(pool, LILY_GLOW, at + Vector2(0, 10), GLOW_LILAC, additive)
 		_halo(pool, at + Vector2(0, -2), 40, GLOW_LILAC, additive)
 		_particles(flower, GLOW_LILAC, i)
+		flower.add_to_group("water_light_sources")
+		flower.set_meta("light_color", GLOW_LILAC)
+		flower.set_meta("light_radius", 12.0)
 	for i in FLOWER_SPOTS.size():
 		var holder := Node2D.new()
 		holder.name = "PondFlowers_%d" % i
@@ -93,6 +96,9 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 		reeds.flip_h = i % 2 == 0
 		holder.add_child(reeds)
 		_halo(holder, Vector2(0, -36), 28, GLOW_CYAN, additive)
+		holder.add_to_group("water_light_sources")
+		holder.set_meta("light_color", GLOW_CYAN)
+		holder.set_meta("light_radius", 10.0)
 		_particles(holder, GLOW_CYAN, i + 3, Vector2(0, -36))
 	# Luz fria do lago sobre pedras, arbustos e o personagem próximos.
 	light = PointLight2D.new()
