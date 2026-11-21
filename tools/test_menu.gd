@@ -12,6 +12,8 @@ func _initialize() -> void:
 	call_deferred("_run")
 
 func _run() -> void:
+	# Sem save: o save real do jogador (se houver) não interfere no teste.
+	load("res://scripts/systems/save_game.gd").path = "user://test_menu_no_save.txt"
 	_prefs_existed = FileAccess.file_exists("user://presentation.cfg")
 	if _prefs_existed:
 		_prefs_before = FileAccess.get_file_as_bytes("user://presentation.cfg")

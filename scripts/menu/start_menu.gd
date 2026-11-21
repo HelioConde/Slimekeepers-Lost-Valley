@@ -6,6 +6,7 @@ const LogoPlaque = preload("res://scripts/menu/logo_plaque.gd")
 const ValleySky = preload("res://scripts/menu/valley_sky.gd")
 const Farm = preload("res://scripts/menu/farm_foreground.gd")
 const SessionState = preload("res://scripts/systems/session_state.gd")
+const SaveGame = preload("res://scripts/systems/save_game.gd")
 var panorama: Node2D
 var logo: Panel
 var buttons: VBoxContainer
@@ -136,16 +137,20 @@ func _build_buttons() -> void:
 		match caption:
 			"Novo Jogo": button.pressed.connect(_start_game)
 			"Continuar":
-				button.disabled = true
-				button.tooltip_text = "Salvamento indisponível nesta versão."
-				button.focus_mode = Control.FOCUS_NONE
+				# Ativo quando há save em disco (gravado ao dormir na fazenda).
+				if SaveGame.has_save():
+					button.pressed.connect(_continue_game)
+				else:
+					button.disabled = true
+					button.tooltip_text = "Durma na sua fazenda para salvar o jogo."
+					button.focus_mode = Control.FOCUS_NONE
 			"Opções": button.pressed.connect(_show_options)
 			"Sair": button.pressed.connect(func(): get_tree().quit())
-	var active := [buttons.get_child(0),buttons.get_child(2),buttons.get_child(3)]
+	var active := buttons.get_children().filter(func(b): return not (b as Button).disabled)
 	for i in range(active.size()):
 		var button := active[i] as Button
-		button.focus_neighbor_top = button.get_path_to(active[(i+2)%3])
-		button.focus_neighbor_bottom = button.get_path_to(active[(i+1)%3])
+		button.focus_neighbor_top = button.get_path_to(active[(i+active.size()-1)%active.size()])
+		button.focus_neighbor_bottom = button.get_path_to(active[(i+1)%active.size()])
 		button.focus_next = button.focus_neighbor_bottom
 		button.focus_previous = button.focus_neighbor_top
 
@@ -195,6 +200,13 @@ func _layout() -> void:
 		var panel := options_layer.get_node("Card") as PanelContainer
 		panel.scale = Vector2.ONE * ui_scale
 		panel.position = ((size - panel.size*ui_scale)/2).round()
+
+func _continue_game() -> void:
+	var region := SaveGame.restore(get_tree(), GameClock)
+	if region.is_empty():
+		return
+	get_window().content_scale_size = Vector2i(960,540)
+	get_tree().change_scene_to_file(region)
 
 func _start_game() -> void:
 	GameClock.reset_new_game()

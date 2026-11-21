@@ -7,6 +7,7 @@ const Travel = preload("res://scripts/world/region_travel.gd")
 const FARM_FIELD := preload("res://scripts/world/farm_field.gd")
 const ENERGY := preload("res://scripts/systems/energy_state.gd")
 const SHIP := preload("res://scripts/systems/shipping_state.gd")
+const SAVE := preload("res://scripts/systems/save_game.gd")
 const BIN_ART := "res://assets/objects/shipping_bin/shipping_bin.png"
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const SURFACE := preload("res://scripts/world/forest_surface.gdshader")
@@ -106,7 +107,8 @@ func sleep() -> void:
 	ENERGY.restore(get_tree())
 	if is_instance_valid(farm_field): farm_field.refresh()
 	var earned := SHIP.pay_out(get_tree())
-	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  A caixa rendeu %d moedas." % earned if earned > 0 else ""))
+	var saved := SAVE.save(get_tree(), GameClock, scene_file_path)
+	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  A caixa rendeu %d moedas." % earned if earned > 0 else "") + ("  Jogo salvo." if saved else ""))
 
 
 func _update_hud() -> void:

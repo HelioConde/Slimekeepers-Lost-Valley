@@ -13,6 +13,9 @@ func settle() -> void:
 	for i in 12: await process_frame
 func run() -> void:
 	var Travel = load("res://scripts/world/region_travel.gd")
+	var Save = load("res://scripts/systems/save_game.gd")
+	Save.path = "user://test_farm_region_save.txt"
+	Save.delete()
 	change_scene_to_file(Travel.FARM)
 	await settle()
 	var farm: Node2D = current_scene
@@ -39,6 +42,8 @@ func run() -> void:
 	check(clock.day_number == day + 1 and clock.get_hour() == 6, "Dormir leva ao dia seguinte 06:00")
 	check(int(get_meta("player_energy")) == 100, "Dormir recupera energia")
 	check(Ship.money(self) == before + 2 * 35, "Caixa paga ao dormir")
+	check(Save.has_save() and Save.read().region == Travel.FARM, "Dormir salva o jogo na fazenda")
+	Save.delete()
 	# Vale <-> fazenda.
 	farm.player.global_position = farm.WEST_GATE
 	Travel.travel(farm, Travel.VALLEY, "valley_farm_gate")
