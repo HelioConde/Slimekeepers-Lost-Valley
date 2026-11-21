@@ -4,7 +4,8 @@ extends SceneTree
 ##     --scene=FlorestaDoDespertarV2 --out=C:/tmp/shots --tag=antes --times=9:00,12:00,18:30,22:00
 ## Opcional: --at=x,y (posição do jogador), --walk (faixa com o jogador andando),
 ## --fps (mede tempo de quadro com vsync desligado, 300 quadros por horário),
-## --layers (mesma cena sem luzes locais, sem sombras e sem tom ambiente).
+## --layers (mesma cena sem luzes locais, sem sombras e sem tom ambiente),
+## --anim=N (N quadros a cada 5 frames, para provar movimento em GIF).
 
 var args := {}
 
@@ -50,20 +51,28 @@ func run() -> void:
 		image.save_png("%s/%s_%s_%s.png" % [out, tag, scene, stamp])
 		if args.has("layers"):
 			await _capture_layers(region, "%s/%s_%s_%s" % [out, tag, scene, stamp])
+		if args.has("anim"):
+			# Sequência com o relógio parado: só partículas, shaders e água se movem.
+			for index in int(args["anim"]):
+				for i in 5: await process_frame
+				var still: Image = await frame_image()
+				still.save_png("%s/%s_%s_%s_anim%02d.png" % [out, tag, scene, stamp, index])
 		if args.has("fps"):
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 			for i in 30: await process_frame
 			var start := Time.get_ticks_usec()
 			var worst := 0
+			var slow := 0
 			var last := start
 			for i in 300:
 				await process_frame
 				var now := Time.get_ticks_usec()
 				worst = maxi(worst, now - last)
+				if now - last > 20000: slow += 1
 				last = now
 			var avg_ms := float(Time.get_ticks_usec() - start) / 300.0 / 1000.0
-			print("FPS %s %s %s avg_ms=%.2f fps=%.0f worst_ms=%.2f draw_calls=%d objects=%d" % [
-				tag, scene, stamp, avg_ms, 1000.0 / avg_ms, worst / 1000.0,
+			print("FPS %s %s %s avg_ms=%.2f fps=%.0f worst_ms=%.2f slow_frames=%d draw_calls=%d objects=%d" % [
+				tag, scene, stamp, avg_ms, 1000.0 / avg_ms, worst / 1000.0, slow,
 				Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
 				Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME)])
 			DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)

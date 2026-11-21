@@ -147,6 +147,8 @@ func update_for_time(delta: float) -> void:
 		_static_ids = _static_ids.filter(func(id): return _casters.has(id))
 		for id in _static_ids:
 			if view.has_point(_casters[id].global_position): _visible_static.append(id)
+		# Mesma textura em sequência = um lote só (pinheiros/carvalhos se repetem muito).
+		_visible_static.sort_custom(func(a, b): return _texture_key(a) < _texture_key(b))
 		_shade_age = 1.0
 	if _shade_age >= .1 or delta == 0:
 		_shade_age = 0.0
@@ -303,6 +305,11 @@ func _draw_casters(target: Node2D, ids: Array, contact: bool) -> void:
 		target.draw_texture_rect_region(texture,rect,source,Color(1,1,1,sprite.modulate.a))
 		drawn_casters += 1
 	target.draw_set_transform_matrix(Transform2D.IDENTITY)
+
+func _texture_key(id: int) -> int:
+	var sprite = _casters.get(id)
+	var texture := _texture_for(sprite) if is_instance_valid(sprite) else null
+	return texture.get_rid().get_id() if texture else 0
 
 func _source_for(sprite: Node2D, texture: Texture2D) -> Rect2:
 	if sprite is Sprite2D and sprite.region_enabled: return sprite.region_rect
