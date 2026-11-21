@@ -13,23 +13,27 @@ func _ready() -> void:
 	name = "CookingGuidance"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	offset_left = -400
+	# Sob o relógio, crescendo para a esquerda só o necessário para o texto.
+	grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	offset_left = -18
 	offset_right = -18
-	offset_top = 140
-	offset_bottom = 168
+	offset_top = 128
+	offset_bottom = 128
 	var skin := StyleBoxFlat.new()
 	skin.bg_color = Color("#f6e8c2")
 	skin.border_color = Color("#694657")
 	skin.set_border_width_all(2)
 	skin.set_corner_radius_all(4)
-	skin.set_content_margin_all(5)
+	skin.set_content_margin_all(4)
+	skin.content_margin_left = 7
+	skin.content_margin_right = 7
 	add_theme_stylebox_override("panel", skin)
 	label = Label.new()
 	label.name = "NextStep"
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	label.add_theme_font_override("font", FONT)
-	label.add_theme_font_size_override("font_size", 14)
+	label.add_theme_font_size_override("font_size", 13)
 	label.add_theme_color_override("font_color", Color("#3e5c43"))
 	add_child(label)
 	refresh()

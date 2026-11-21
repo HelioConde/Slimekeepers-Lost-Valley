@@ -62,13 +62,23 @@ func _update_hud() -> void:
 func _compact_hud() -> void:
 	var panel: PanelContainer = $HUD/Interface/MissionPanel
 	panel.anchor_right = 0.0
-	panel.offset_right = 360
-	panel.offset_bottom = 80
+	panel.offset_right = 18
+	panel.offset_bottom = 16
 	var style := panel.get_theme_stylebox("panel").duplicate() as StyleBoxFlat
-	style.set_content_margin_all(10)
+	style.set_content_margin_all(6)
+	style.content_margin_left = 9
+	style.content_margin_right = 9
 	panel.add_theme_stylebox_override("panel",style)
-	hud_title.add_theme_font_size_override("font_size",17)
-	hud_goal.add_theme_font_size_override("font_size",15)
+	hud_title.add_theme_font_size_override("font_size",15)
+	hud_goal.add_theme_font_size_override("font_size",13)
+	# O painel encolhe até o texto: sem quebra automática (senão vira uma coluna).
+	hud_title.autowrap_mode = TextServer.AUTOWRAP_OFF
+	hud_goal.autowrap_mode = TextServer.AUTOWRAP_OFF
+	# Painéis ficam translúcidos quando o jogador passa por baixo deles.
+	var fade := preload("res://scripts/ui/hud_overlap_fade.gd").new()
+	fade.name = "HudOverlapFade"
+	fade.target = player
+	$HUD/Interface.add_child(fade)
 	var hint: PanelContainer = $HUD/Interface/InteractionHint
 	hint.anchor_left = 0.5
 	hint.anchor_right = 0.5
