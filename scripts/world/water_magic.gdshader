@@ -60,13 +60,13 @@ void fragment() {
 		// Segmentos que acendem e apagam: janela que corre pelo fio.
 		float seg = vnoise(vec2(fs.x * 0.02, fs.y * 0.008) + vec2(0.0, t * 0.15));
 		float fade = smoothstep(0.42, 0.7, seg);
-		col += vec3(0.25, 0.75, 1.0) * min(thick, 1.0) * fade * 0.38;
+		col += vec3(0.25, 0.75, 1.0) * min(thick, 1.0) * fade * 0.3;
 		// Escala fina: reflexos rápidos e curtos.
 		vec2 q2 = vec2(fs.x * 0.012, (fs.y - t * flow_speed * 2.5) * 0.03);
 		float g = vnoise(q2 + warp * 2.0);
 		float c2 = abs(fract(g * 5.0) - 0.5);
 		float quick = step(c2, 0.02) * step(0.6, hash(floor(p / vec2(10.0, 4.0)) + floor(t * 1.5)));
-		col += vec3(0.45, 0.85, 1.0) * quick * 0.35;
+		col += vec3(0.45, 0.85, 1.0) * quick * 0.12;
 		col *= layer_threads;
 	}
 
@@ -95,6 +95,11 @@ void fragment() {
 		float blob = 1.0 - smoothstep(0.55, 1.0, length(r));
 		float dash = step(mod(p.y, 4.0), 1.0) * step(0.35, hash(vec2(floor(p.x / 4.0), floor(p.y / 4.0) + floor(t * 0.8))));
 		plant += light_colors[i].rgb * blob * dash * L.w;
+		// Anéis de ondulação em volta (vitórias-régias, juncos): 2 anéis finos que se abrem.
+		float rad = length(d / vec2(1.0, 0.6));
+		float grow = fract(t * 0.35 + float(i) * 0.37);
+		float ring = step(abs(rad - (L.z * 0.9 + grow * L.z * 1.2)), 1.0) * (1.0 - grow);
+		plant += vec3(0.45, 0.8, 1.0) * ring * 0.9;
 	}
 	col += plant * 0.7 * layer_plants * step(1.5, e) * night;
 
@@ -102,7 +107,7 @@ void fragment() {
 	if (layer_stars > 0.0) {
 		vec2 cell = floor(p / 22.0);
 		float h = hash(cell);
-		float chance = 0.035 + near_light * 0.25;
+		float chance = 0.06 + near_light * 0.25;
 		if (h < chance) {
 			vec2 c0 = cell * 22.0 + floor(vec2(hash(cell + 3.0), hash(cell + 7.0)) * 9.0) * 2.0 + 4.0;
 			float period = 2.0 + hash(cell + 11.0) * 4.0;

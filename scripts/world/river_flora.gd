@@ -71,6 +71,11 @@ func _add(parent: Node2D, texture: Texture2D, at: Vector2, offset: Vector2, kind
 	if kind == "lily":
 		sprite.scale = Vector2(0.75, 0.75)
 		sprite.set_meta("no_shadow", true)
+	if texture == PAD:
+		holder.add_to_group("water_light_sources")
+		holder.set_meta("light_color", Color(0.2, 0.35, 0.45))
+		holder.set_meta("light_radius", 10.0)
+		holder.set_meta("light_strength", 0.25)
 	if texture != PAD:
 		sprite.set_meta("magic_flower", true)
 		holder.add_to_group("water_light_sources")

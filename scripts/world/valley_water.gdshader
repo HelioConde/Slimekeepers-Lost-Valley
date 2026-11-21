@@ -35,24 +35,27 @@ void fragment() {
 	// de corrente tingindo manchas mais claras e mais escuras.
 	float band = floor(clamp(depth * 0.8 + (f - 0.5) * 0.35, 0.0, 0.999) * 5.0) / 4.0;
 	vec3 deep = mix(vec3(.04,.42,.42), vec3(.01,.15,.17), band);
-	// Fios de corrente: curvas de nível do campo, finos (2 px) e quebrados.
-	float c1 = fract(f * 10.0);
-	float thinline = step(mod(p.y, 4.0), 1.0) + step(c1, 0.03);
-	float line = step(c1, 0.06) * step(0.45, hash(floor(p / vec2(8.0, 4.0)) + floor(t * 0.5))) * min(thinline, 1.0);
-	// Fios mais vivos onde a corrente é forte (campo alto), quase somem no remanso.
-	deep = mix(deep, vec3(.40,.72,.95), line * (0.35 + 0.65 * smoothstep(0.3, 0.7, f)) * 0.8);
-	// Ondulações: traços horizontais curvos (linhas de 2 px), deformados pela
-	// corrente e com fase própria por linha — a superfície nunca fica parada.
-	float rrow = floor(p.y / 4.0);
-	float rwave = sin(p.x * 0.045 + f * 16.0 + t * (0.6 + hash(vec2(rrow, 5.0)) * 0.6) + rrow * 0.9);
-	float rstroke = step(0.9, rwave) * step(mod(p.y, 4.0), 1.0) * step(0.3, hash(vec2(floor(p.x / 14.0), rrow)));
-	deep = mix(deep, vec3(.30,.56,.88), rstroke * (0.35 + 0.4 * f));
-	// Brilhos nas cristas: pontos que correm com a água.
-	float crest = step(0.985, hash(floor((p - vec2(0.0, t * 6.0)) / 4.0))) * step(0.45, f);
-	deep = mix(deep, vec3(.82,.93,1.0), crest);
+	// Faixas de luz (ref.): cristas curvas e diagonais que correm rio abaixo,
+	// estreitas (4–6 px) e suaves nas pontas — nada de blocos chapados.
+	vec2 sw = vec2(p.x * 0.8 + p.y * 0.5, p.y - t * 9.0);
+	float swell = sin(sw.y * 0.03 + f * 6.0 + sin(sw.x * 0.01 + t * 0.15) * 2.4);
+	float ridge = smoothstep(0.82, 0.97, swell) * smoothstep(0.25, 0.65, vnoise(p * 0.008 + t * 0.02));
+	deep = mix(deep, vec3(.16,.48,.72), floor(ridge * 3.0) / 3.0 * 0.6);
 	// Vegetação submersa no raso: tufos escuros-esverdeados sob a superfície.
-	float weed = step(0.72, vnoise(p * 0.05)) * step(0.6, hash(floor(p / vec2(4.0, 10.0)))) * (1.0 - smoothstep(.15, .45, depth));
-	deep = mix(deep, vec3(.05,.24,.30), weed * 0.6);
+	// Plantas submersas: tufos de folhas verticais (2 px) em células de 40 px.
+	vec2 wc = floor(p / 40.0);
+	float tuft = 0.0;
+	if (hash(wc + 31.0) < 0.3) {
+		vec2 base = wc * 40.0 + vec2(8.0 + floor(hash(wc + 2.0) * 12.0) * 2.0, 30.0);
+		vec2 d = p - base;
+		for (int k = 0; k < 4; k++) {
+			float fk = float(k);
+			float x = fk * 4.0 - 6.0 + floor(sin(t * 0.8 + fk + d.y * 0.3) * 1.0) * 2.0;
+			float h = 10.0 + hash(wc + fk) * 10.0;
+			tuft = max(tuft, step(abs(d.x - x), 1.0) * step(-h, d.y) * step(d.y, 0.0));
+		}
+	}
+	deep = mix(deep, vec3(.07,.34,.32), tuft * 0.7);
 	// Margem: ondinhas ciano descontínuas que vêm e vão contra a borda.
 	float thin = step(mod(p.y,4.0),1.0);
 	float edge = 1.0 - smoothstep(.08, .3, depth);
@@ -61,6 +64,6 @@ void fragment() {
 	// Espuma clara bem na borda (correnteza raspando na margem).
 	float foam = (1.0 - smoothstep(.05, .12, depth)) * step(.55, hash(floor(p/4.0) + floor(t * 1.2)));
 	deep = mix(deep, vec3(.85,.95,1.0), foam * 0.7);
-	vec4 lit = vec4(deep,mix(.82,.95,depth));
+	vec4 lit = vec4(deep,mix(.72,.95,depth));  // raso deixa ver o leito e as plantas
 	COLOR = mix(day,lit,night);
 }
