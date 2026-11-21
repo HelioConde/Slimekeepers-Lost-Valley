@@ -153,3 +153,7 @@ Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-do
 |---|---|
 | `assets/tilesets/v8/forest_grass_wang.png` | `70D39C80CEE071E927898448FDF6561361E6251D60D0D27F68A0167055FB8FC6` |
 | `assets/tilesets/v8/dirt_tile.png` | `AB726435DB045C86FF500B0CC5C939CF427E526345DFC7A79EB3742F41F295BB` |
+
+## Trilhas naturais V8 — 2026-11-21
+
+`assets/tilesets/v8/dirt_grass_wang.png`: atlas canônico do tileset Wang terra ↔ grama (o mesmo da seção "Chão V8"), harmonizado com `tools/tone_ground_tiles.py`. Sem gerações novas. SHA-256 `689ABCF06460488E5C3FD4149B0E2674E243110F31BCFA8E2CEFA0A9CFCEC5C2`. As trilhas viram passagens de bicho (mundo sem gente): só manchas de terra gasta no miolo do traçado, com borda Wang.

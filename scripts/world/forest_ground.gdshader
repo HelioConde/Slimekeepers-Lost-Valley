@@ -4,7 +4,8 @@ varying vec2 ground_pixel;
 // Chão V8 (ground_art.gd): tile Wang escolhido pelos 4 cantos da máscara
 // (1 = grama, 0 = chão de mata). Desligado (use_wang = 0) mantém o tile antigo.
 uniform sampler2D wang_atlas : filter_nearest, repeat_disable;
-uniform sampler2D corner_mask : filter_nearest, repeat_disable;
+uniform sampler2D corner_mask : filter_nearest, repeat_disable;  // R grama, G terra gasta
+uniform sampler2D dirt_wang_atlas : filter_nearest, repeat_disable;
 uniform float use_wang = 0.0;
 // 0 de dia, 1 à noite (AmbientLights): a grama pintada não pode brilhar sob a lua.
 uniform float night_dim = 0.0;
@@ -25,11 +26,15 @@ vec3 wang_ground(vec2 world) {
 	ivec2 c = ivec2(cell);
 	ivec2 size = textureSize(corner_mask, 0) - ivec2(1);
 	c = clamp(c, ivec2(0), size - ivec2(1));
-	int nw = int(texelFetch(corner_mask, c, 0).r > 0.5);
-	int ne = int(texelFetch(corner_mask, c + ivec2(1, 0), 0).r > 0.5);
-	int sw = int(texelFetch(corner_mask, c + ivec2(0, 1), 0).r > 0.5);
-	int se = int(texelFetch(corner_mask, c + ivec2(1, 1), 0).r > 0.5);
-	int index = nw * 8 + ne * 4 + sw * 2 + se;
+	vec3 m_nw = texelFetch(corner_mask, c, 0).rgb;
+	vec3 m_ne = texelFetch(corner_mask, c + ivec2(1, 0), 0).rgb;
+	vec3 m_sw = texelFetch(corner_mask, c + ivec2(0, 1), 0).rgb;
+	vec3 m_se = texelFetch(corner_mask, c + ivec2(1, 1), 0).rgb;
+	// Terra gasta tem prioridade: a borda dela é sempre grama (o tile terra↔grama).
+	bool dirt = max(max(m_nw.g, m_ne.g), max(m_sw.g, m_se.g)) > 0.5;
+	int index = dirt
+		? int(m_nw.g < 0.5) * 8 + int(m_ne.g < 0.5) * 4 + int(m_sw.g < 0.5) * 2 + int(m_se.g < 0.5)
+		: int(m_nw.r > 0.5) * 8 + int(m_ne.r > 0.5) * 4 + int(m_sw.r > 0.5) * 2 + int(m_se.r > 0.5);
 	ivec2 local = ivec2(mod(floor(world), 32.0));
 	// Tiles cheios (só grama ou só mata) espelhados por célula: quebra a grade.
 	if (index == 0 || index == 15) {
@@ -37,7 +42,8 @@ vec3 wang_ground(vec2 world) {
 		if (h > 0.5) { local.x = 31 - local.x; }
 		if (fract(h * 7.0) > 0.5) { local.y = 31 - local.y; }
 	}
-	return texelFetch(wang_atlas, ivec2((index % 4) * 32, (index / 4) * 32) + local, 0).rgb;
+	ivec2 at = ivec2((index % 4) * 32, (index / 4) * 32) + local;
+	return dirt ? texelFetch(dirt_wang_atlas, at, 0).rgb : texelFetch(wang_atlas, at, 0).rgb;
 }
 
 void fragment() {
