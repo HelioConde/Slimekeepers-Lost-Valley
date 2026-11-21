@@ -127,8 +127,8 @@ void fragment() {
 	if (layer_mist > 0.0) {
 		vec2 m = world * vec2(0.0035, 0.007) + vec2(t * 0.012, t * 0.004);
 		float veil = vnoise(m) * 0.7 + vnoise(m * 2.3 + 5.0) * 0.3;
-		veil = floor(smoothstep(0.5, 0.85, veil) * 6.0) / 6.0;
-		col += vec3(0.10, 0.13, 0.19) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
+		veil = floor(smoothstep(0.42, 0.8, veil) * 6.0) / 6.0;
+		col += vec3(0.13, 0.16, 0.22) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
 	}
 	// Nada fora da água nem na própria linha da margem.
 	col *= step(0.5, e) * lum_scale;

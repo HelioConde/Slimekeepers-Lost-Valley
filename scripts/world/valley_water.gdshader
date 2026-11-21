@@ -39,7 +39,9 @@ void fragment() {
 	// transição): borda de manchas sem degrau duro e sem textura na água toda.
 	vec2 dc = mod(floor(p / 2.0), 2.0);
 	float dither = (dc.x * 2.0 + dc.y + 0.5) / 4.0 - 0.5;
-	float raw = clamp(depth * 0.8 + (f - 0.5) * 0.35, 0.0, 0.999) * 5.0;
+	// Profundidade orgânica: o mapa (baixa resolução, bordas retas) pesa menos
+	// que o campo de corrente e um ruído largo.
+	float raw = clamp(depth * 0.45 + f * 0.35 + vnoise(p * 0.004) * 0.25, 0.0, 0.999) * 5.0;
 	float near_edge = 1.0 - step(0.08, abs(fract(raw) - 0.5) - 0.38);
 	float band = floor(clamp(raw + dither * 0.3 * near_edge, 0.0, 4.999)) / 4.0;
 	vec3 deep = mix(vec3(.04,.42,.42), vec3(.01,.15,.17), band);
@@ -49,6 +51,9 @@ void fragment() {
 	float swell = sin(sw.y * 0.03 + f * 6.0 + sin(sw.x * 0.01 + t * 0.15) * 2.4);
 	float ridge = smoothstep(0.78, 0.97, swell) * smoothstep(0.25, 0.65, vnoise(p * 0.008 + t * 0.02));
 	deep = mix(deep, vec3(.16,.48,.72), floor(ridge * 3.0) / 3.0 * 0.5);
+	// Halo claro em volta das cristas fortes (2 degraus).
+	float glow = smoothstep(0.55, 0.95, swell) * smoothstep(0.35, 0.7, vnoise(p * 0.006 - t * 0.015));
+	deep += vec3(.03,.08,.12) * floor(glow * 2.0) / 2.0;
 	// Segunda família de cristas, mais fina e em outro ângulo: ondas que se cruzam.
 	float swell2 = sin((p.y * 0.6 - p.x * 0.8) * 0.045 - t * 0.5 + f * 4.0);
 	deep = mix(deep, vec3(.30,.66,.90), step(0.97, swell2) * step(0.55, vnoise(p * 0.02 + 7.0)) * step(0.5, hash(floor(p / 8.0) + floor(t * 0.4))) * step(mod(p.y, 4.0), 1.0) * 0.45);
