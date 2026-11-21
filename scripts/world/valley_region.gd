@@ -201,6 +201,10 @@ func _setup_living_valley() -> void:
 		for point in frame.polygon: box = box.expand(point)
 		bridge_rects.append(Rect2(frame.global_transform * box.position, box.size))
 	_lanterns.setup(bridge_rects, $Decorations)
+	var flora := preload("res://scripts/world/river_flora.gd").new()
+	var waters: Array = $Water.get_children().filter(func(n): return n is Polygon2D)
+	flora.setup(waters, preload("res://scripts/world/valley_layout.gd").BRIDGES, $Decorations, $WaterDecorations)
+	add_child(flora)
 	add_child(_lanterns)  # árvores esparsas: sombra de mata sob cada uma
 	environmental_audio = Living.connect_environment(self,ecosystem,[$TreesBack,$TreesFront],[$LowVegetation,$WaterDecorations],water,Rect2(32,32,3136,3136),func(_at: Vector2) -> String: return "Vale das Nascentes")
 	habitat_manager = preload("res://scripts/world/forest_habitats.gd").new()

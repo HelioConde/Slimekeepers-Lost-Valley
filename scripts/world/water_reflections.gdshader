@@ -57,7 +57,7 @@ void fragment() {
 	// ---- Lua ----
 	if (moon_strength > 0.003) {
 		vec2 a = floor(nearest(p, true) / 2.0) * 2.0;
-		float c = column(p, a, 20.0, 14.0, 110.0, 1.0);
+		float c = column(p, a, 34.0, 18.0, 220.0, 1.0);  // coluna larga e longa (ref. da ponte)
 		// Disco estilizado e discreto, com a fase (lado iluminado pela fase).
 		vec2 q = (p - a) / vec2(10.0, 7.0);
 		float disk = 0.0;

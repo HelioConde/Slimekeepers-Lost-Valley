@@ -11,7 +11,7 @@ const LILAC := Color(0.78, 0.55, 1.0)  # flores mágicas (1 em 4 touceiras)
 const PINK := Color(1.0, 0.55, 0.85)  # vitórias-régias com flor (rio do Vale)
 const POOL_SIZE := 36
 const REACH := 720.0
-const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm", "wildflowers_cluster": "lilac", "lily_pad_flower": "pink", "reeds": "reed"}
+const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm", "wildflowers_cluster": "lilac", "lily_pad_flower": "pink", "reeds": "reed", "reeds_glow": "reed", "lily_glow": "lilac"}
 
 var points := {"cyan": [] as Array[Vector2], "warm": [] as Array[Vector2], "lilac": [] as Array[Vector2], "pink": [] as Array[Vector2], "reed": [] as Array[Vector2]}  # células de tilemap
 var cells := {}  # ponto -> [TileMapLayer, célula]: a célula pode ser apagada depois
