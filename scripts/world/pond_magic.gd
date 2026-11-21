@@ -227,6 +227,7 @@ func apply_time(minutes: float, delta: float) -> void:
 	var material := water.material as ShaderMaterial
 	if material:
 		material.set_shader_parameter("moon_strength", smoothstep(0.4, 1.0, night))
+		material.set_shader_parameter("golden", float(LIGHTS.foliage_profile(minutes).get("golden", 0.0)))
 	for i in glows.size():
 		var item := glows[i]
 		var pulse := 0.85 + 0.15 * sin(_time * 1.4 + i * 1.9)

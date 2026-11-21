@@ -27,7 +27,7 @@ const LIGHTING_STOPS = [
 	[900, Color(1.0, 1.0, 1.0)],
 	# Fim de tarde: verde preservado, dourado vem da luz (referências V9 17h30/18h).
 	[1020, Color(0.98, 0.98, 0.9)],
-	[1080, Color(1.0, 0.88, 0.62)],
+	[1080, Color(1.0, 0.8, 0.6)],
 	[1140, Color(0.88, 0.70, 0.74)],
 	[1170, Color(0.68, 0.58, 0.78)],
 	[1200, Color(0.50, 0.53, 0.73)],

@@ -8,7 +8,8 @@ shader_type canvas_item;
 uniform float elapsed = 0.0;
 uniform vec2 pool_radius = vec2(85.0, 48.0);
 uniform float night = 0.0;
-uniform float moon_strength = 1.0;  // reflexo da lua (horário/céu); plantas brilham à parte
+uniform float moon_strength = 1.0;
+uniform float golden = 0.0;  // fim de tarde: borda do lago dourada (ref. V9 das 18h)  // reflexo da lua (horário/céu); plantas brilham à parte
 varying vec2 pixel;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -39,6 +40,10 @@ void fragment() {
 	// Espuma na borda: anel recortado que pulsa.
 	float foam = step(0.92, d) * step(0.5, hash(floor(p / 4.0) + floor(t * 0.4)));
 	water = mix(water, vec3(0.62, 0.86, 0.8), foam * 0.75);
+	// Fim de tarde: anel dourado na borda e brilhos quentes na superfície.
+	float rim_gold = step(0.86, d) * step(0.35, hash(vec2(floor(atan(p.y, p.x) * 30.0), floor(t * 0.5))));
+	water = mix(water, vec3(1.0, 0.82, 0.4), rim_gold * golden * 0.85);
+	water = mix(water, vec3(1.0, 0.9, 0.55), step(0.985, hash(floor(p / 4.0) + vec2(floor(t * 0.8), 0.0))) * golden);
 	// Brilhos de sol: poucos pontos de 2 px que piscam (somem à noite).
 	float glint = step(0.994, hash(floor(p / 6.0) + vec2(floor(t * 0.8), 0.0)));
 	water = mix(water, vec3(1.0, 0.98, 0.86), glint * (1.0 - night) * (1.0 - far_bank));
