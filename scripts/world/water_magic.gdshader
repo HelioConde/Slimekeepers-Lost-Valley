@@ -131,7 +131,7 @@ void fragment() {
 		float wisp = vnoise(vec2(world.x * 0.006, world.y * 0.03) + vec2(t * 0.02, vnoise(world * 0.004) * 3.0));
 		veil = smoothstep(0.38, 0.8, veil) * (0.35 + 0.65 * smoothstep(0.45, 0.7, wisp));
 		veil = floor(veil * 6.0) / 6.0;
-		col += vec3(0.25, 0.24, 0.33) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
+		col += vec3(0.15, 0.14, 0.2) * veil * night * layer_mist * smoothstep(4.0, 20.0, e);
 	}
 	// Nada fora da água nem na própria linha da margem.
 	col *= step(0.5, e) * lum_scale;
