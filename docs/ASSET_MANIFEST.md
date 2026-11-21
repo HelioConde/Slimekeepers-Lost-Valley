@@ -177,3 +177,13 @@ Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-do
 ## Nenúfar com flor V9 — 2026-11-21
 
 `assets/world/valley/lily_pad_flower.png` (PixelLab, 32×32, 1 geração): nenúfares com flor rosa, no lugar de `lily_pad.png` no Vale (mesmo canvas e tamanho). SHA-256 `9A325FEF9C4543FD41E7507CDE9096BD5D37A85ECB7B6D418444BFCA4A4EFCC7`.
+
+## Lago encantado V9 — 2026-11-21
+
+PixelLab (`create_map_object`, 3 gerações): vitória-régia com flor luminosa lilás (32×32), juncos com pontas ciano luminosas (32×48; poça azul da base removida localmente) e folha de vitória-régia (32×32). Usados por `scripts/world/pond_magic.gd` no lago da Clareira.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/pond/lily_glow.png` | `186D8479C84BEA11941471429F9A028C3A4F3FAE9D937BA364BCC3F3779A50EE` |
+| `assets/world/pond/reeds_glow.png` | `D6458ADB606BCDDF2F9BAFEFD7A030123C1591C0FD455A8164A177101F5F3D49` |
+| `assets/world/pond/lily_pad.png` | `1B1D6D91E48C8DDB59C30F8516AAE212853B8D102D0964FF11C30441C783AA77` |

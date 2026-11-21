@@ -70,6 +70,9 @@ func _ready() -> void:
 	_add_habitat_flora(habitats)
 	preload("res://scripts/world/visual_rules.gd").new().apply(self,Forest.trails())
 	_arrange_pond_banks()
+	var pond_magic := preload("res://scripts/world/pond_magic.gd").new()
+	pond_magic.setup($NaturalSpring, $Decorations)
+	$NaturalSpring.add_child(pond_magic)
 	var art := preload("res://scripts/world/map_art_enrichment.gd").new()
 	art.region_kind = "forest"
 	add_child(art)
