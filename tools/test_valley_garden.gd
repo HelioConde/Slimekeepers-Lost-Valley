@@ -270,6 +270,22 @@ func _run() -> void:
 		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
 		_check(PROGRESS.count(self) == 0 and not has_meta(PROGRESS.KEY),
 			"Novo Jogo remove os quatro marcos sem afetar o proximo ciclo")
+		_check(not BAG.has_brotinho_friend(self),
+			"Novo Jogo nao herda a amizade que liberava coleta na partida anterior")
+		_check(current_scene.friends_count == 0,
+			"Novo Jogo reinicia o contador de amizades da floresta")
+		var fresh_slimes := true
+		for slime in current_scene.slimes:
+			if slime.befriended:
+				fresh_slimes = false
+				break
+		_check(fresh_slimes, "Novo Jogo recria todos os slimes sem amizade herdada")
+		var fresh_patches := true
+		for patch in current_scene.seed_patches:
+			if bool(patch.get("collected")):
+				fresh_patches = false
+				break
+		_check(fresh_patches, "Novo Jogo recria pontos de coleta sem marcacao anterior")
 	_finish()
 
 func _change_to_menu() -> void:
