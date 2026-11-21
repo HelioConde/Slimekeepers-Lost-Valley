@@ -40,6 +40,9 @@ func run():
 	shadows.get_node("StaticContactShadows").hide()
 	shadows.get_node("DynamicContactShadows").hide()
 	shadows.update_for_time(0)
+	# A grade de cor (vinheta) é pós-processo de tela: mede-se a sombra crua.
+	var grade := region.get_node_or_null("WorldGrade")
+	if grade: grade.visible = false
 	var image: Image = await frame_image()
 	if OS.get_cmdline_user_args().size() > 0: image.save_png(OS.get_cmdline_user_args()[0])
 	var k := image.get_width() / 960.0

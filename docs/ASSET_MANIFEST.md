@@ -98,3 +98,12 @@ PixelLab `create_map_object`, 32×32, fundo transparente, 1 geração cada (7 no
 `semente_repolho`, `sementes_silvestres`, `porcao_folhas`. Colheitas usam o último estágio das
 culturas já exportadas (recortado em `item_catalog.gd`).
 
+
+## Árvores V6 (protótipo) — 2026-11-21
+
+Geradas no PixelLab (`create_map_object`, 96×96, high top-down, detailed shading, selective outline; 4 gerações da assinatura, 2 aprovadas). Pós-processo local: removido o tufo de grama na base, tronco alinhado à base dos sprites antigos (`oak.png`/`pine_crisp.png`) e realces amarelo-lima suavizados (−32% saturação, −12% valor). Desenhadas em escala 2, como as demais árvores. Em uso só na borda oeste da Clareira (FlorestaDoDespertarV2, 9 carvalhos e 6 pinheiros) até a validação.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/forest/oak_lush.png` | `86FF4CF4AA7AECE8E69739AB8D45F7FA036829B5CF4036771EF6E3AF82D17BC5` |
+| `assets/world/forest/pine_lush.png` | `FF1B9624C8EA7718492CA71FE37C87B280C3A9ADC9AE7558370D7CCDEC9523B1` |

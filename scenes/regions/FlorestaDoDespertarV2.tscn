@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://blmps44cmsm0n" path="res://scripts/world/forest_region.gd" id="1_5l1pt"]
 [ext_resource type="Shader" uid="uid://j2a2ecvuil5p" path="res://scripts/world/forest_ground.gdshader" id="2_efgt1"]
+[ext_resource type="Texture2D" path="res://assets/world/forest/oak_lush.png" id="v6_oak_lush"]
+[ext_resource type="Texture2D" path="res://assets/world/forest/pine_lush.png" id="v6_pine_lush"]
 [ext_resource type="Texture2D" uid="uid://ckad6a1gvngaf" path="res://assets/tilesets/grass_dirt_v3_32x32.png" id="3_ectdh"]
 [ext_resource type="Texture2D" uid="uid://1heaurnxhx82" path="res://assets/menu/environment/grass.png" id="4_l2ncc"]
 [ext_resource type="Texture2D" uid="uid://bnv28huffkwbk" path="res://assets/menu/environment/flowers.png" id="5_cfu6o"]
@@ -3954,7 +3956,7 @@ modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-95, -178)
 scale = Vector2(2, 2)
-texture = ExtResource("13_2oxlg")
+texture = ExtResource("v6_oak_lush")
 centered = false
 flip_h = true
 
@@ -6293,7 +6295,7 @@ polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
+texture = ExtResource("v6_pine_lush")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_0223" unique_id=482210005]
@@ -6544,7 +6546,7 @@ polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
+texture = ExtResource("v6_pine_lush")
 centered = false
 flip_h = true
 
@@ -6683,7 +6685,7 @@ modulate = Color(0.92, 1.03, 0.86, 1)
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
+texture = ExtResource("v6_pine_lush")
 centered = false
 flip_h = true
 
@@ -8080,7 +8082,7 @@ modulate = Color(0.92, 1.03, 0.86, 1)
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
+texture = ExtResource("v6_pine_lush")
 centered = false
 flip_h = true
 
@@ -8726,7 +8728,7 @@ modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("14_qmerx")
+texture = ExtResource("v6_oak_lush")
 centered = false
 flip_h = true
 
@@ -9166,7 +9168,7 @@ modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
+texture = ExtResource("v6_pine_lush")
 centered = false
 flip_h = true
 
@@ -10420,7 +10422,7 @@ polygon = PackedVector2Array(44, -2, 46, 0, 42, 3, 34, 4, 26, 5, 19, 6, 14, 7, 8
 texture_filter = 1
 position = Vector2(-97, -178)
 scale = Vector2(2, 2)
-texture = ExtResource("13_2oxlg")
+texture = ExtResource("v6_oak_lush")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_0439" unique_id=501182243]
@@ -14079,7 +14081,7 @@ polygon = PackedVector2Array(22, -2, 23, -1, 21, 0, 17, 1, 13, 1, 10, 2, 7, 3, 4
 modulate = Color(0.83, 0.96, 0.9, 1)
 texture_filter = 1
 position = Vector2(-47.5, -89)
-texture = ExtResource("13_2oxlg")
+texture = ExtResource("v6_oak_lush")
 centered = false
 flip_h = true
 
@@ -14650,7 +14652,7 @@ polygon = PackedVector2Array(16, -2, 17, -1, 16, 0, 13, 0, 9, 1, 7, 1, 5, 1, 3, 
 modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-48, -91)
-texture = ExtResource("12_ccfny")
+texture = ExtResource("v6_pine_lush")
 centered = false
 flip_h = true
 
@@ -17868,7 +17870,7 @@ modulate = Color(0.83, 0.96, 0.9, 1)
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("14_qmerx")
+texture = ExtResource("v6_oak_lush")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_0852" unique_id=1153656246]
@@ -17957,7 +17959,7 @@ polygon = PackedVector2Array(49, -2, 51, 1, 47, 3, 38, 5, 28, 6, 21, 7, 16, 8, 9
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("14_qmerx")
+texture = ExtResource("v6_oak_lush")
 centered = false
 flip_h = true
 
@@ -18951,7 +18953,7 @@ modulate = Color(0.92, 1.03, 0.86, 1)
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("14_qmerx")
+texture = ExtResource("v6_oak_lush")
 centered = false
 flip_h = true
 
@@ -22776,7 +22778,7 @@ polygon = PackedVector2Array(24, -2, 26, -1, 24, 1, 19, 1, 14, 2, 11, 2, 8, 3, 5
 modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-48, -90)
-texture = ExtResource("14_qmerx")
+texture = ExtResource("v6_oak_lush")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_1112" unique_id=900430789]
@@ -22935,7 +22937,7 @@ polygon = PackedVector2Array(44, -2, 46, 0, 42, 3, 34, 4, 26, 5, 19, 6, 14, 7, 8
 texture_filter = 1
 position = Vector2(-97, -178)
 scale = Vector2(2, 2)
-texture = ExtResource("13_2oxlg")
+texture = ExtResource("v6_oak_lush")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_1120" unique_id=520409908]

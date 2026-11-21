@@ -72,6 +72,7 @@ func get_wind_material(kind: String = "oak") -> ShaderMaterial:
 		material.set_shader_parameter("sway_rate", 1.9 if kind == "pine" else 1.6)
 		material.set_shader_parameter("flexibility", 0.8 if kind == "pine" else 1.2)
 		material.set_shader_parameter("plant_reaction", 1.0 if kind == "plant" else 0.0)
+		material.set_shader_parameter("foliage_light", 0.45 if kind == "plant" else 1.0)
 		_materials[kind] = material
 		_update_wind()
 	return _materials[kind]

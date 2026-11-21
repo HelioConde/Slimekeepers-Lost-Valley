@@ -64,6 +64,9 @@ var shafts: Array = []
 var _shaft_layer: Node2D
 var _shaft_age := 1.0
 const MAX_SHAFTS := 6
+const WIND_SHADER := preload("res://scripts/world/forest_wind.gdshader")
+var _foliage_materials: Array[ShaderMaterial] = []
+var _foliage_rescan := 0.0
 const SHAFT_ALPHA := 0.42
 const SHAFT_LENGTH := 300.0
 var _player_light: PointLight2D
@@ -300,6 +303,7 @@ func _process(delta: float) -> void:
 func apply_time(minutes: float, delta: float) -> void:
 	_time += delta
 	var night := night_factor(minutes)
+	_apply_foliage_light(minutes, night, delta)
 	var flicker := 1.0 + 0.09 * sin(_time * 7.3) + 0.05 * sin(_time * 13.1 + 1.7)
 	# A fogueira só domina depois que o sol se põe; no anoitecer ainda é discreta.
 	var fire_glow := smoothstep(0.55, 1.0, night)
@@ -739,6 +743,42 @@ func _update_dapples(minutes: float, night: float) -> void:
 		_player_dapple_light.color = warm
 		_player_dapple_light.energy = 0.9 * near_player
 	_update_shafts(sun, day, low_sun, warm)
+
+
+## Luz das copas: o lado das folhas voltado ao sol ganha realce (dourado de manhã e
+## no fim da tarde), a base de cada tufo fica sombreada; à noite, luar frio nas bordas.
+## Não é emissão: só ilumina folhas que já existem, no material de vento compartilhado.
+static func foliage_profile(minutes: float) -> Dictionary:
+	var night := night_factor(minutes)
+	var day := 1.0 - night
+	var sun: Vector2 = SHADOWS.profile_at(minutes)["vector"]
+	var low_sun := clampf((sun.length() - 0.15) / 1.0, 0.0, 1.0)
+	var toward_sun := (-sun.normalized() * 0.8 + Vector2(0, -0.7)).normalized() if sun.length() > 0.01 else Vector2(0, -1)
+	var m := fposmod(minutes, 1440.0)
+	var sun_color := Color(1.0, 0.94, 0.66).lerp(Color(1.0, 0.74, 0.44), smoothstep(15.5 * 60.0, 18.5 * 60.0, m))
+	var moon := Color(0.6, 0.84, 1.0)
+	var color := sun_color.lerp(moon, night)
+	var direction := toward_sun.lerp(Vector2(0.45, -0.9).normalized(), night).normalized()
+	return {
+		"light_dir": direction,
+		"light_color": Vector3(color.r, color.g, color.b),
+		"light_strength": day * (0.45 + 0.25 * low_sun) + night * 0.45,
+		"shade_strength": day * 0.45 + night * 0.35,
+	}
+
+
+func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
+	_foliage_rescan -= delta
+	if _foliage_materials.is_empty() and _foliage_rescan <= 0.0 and is_instance_valid(_region):
+		_foliage_rescan = 2.0
+		for node in _region.find_children("*", "Sprite2D", true, false):
+			var material := (node as Sprite2D).material as ShaderMaterial
+			if material and material.shader == WIND_SHADER and material not in _foliage_materials:
+				_foliage_materials.append(material)
+	var profile := foliage_profile(minutes)
+	for material in _foliage_materials:
+		for key in profile:
+			material.set_shader_parameter(key, profile[key])
 
 
 ## Raios saem do alto da copa que abre a mancha e descem até ela; fortes com sol

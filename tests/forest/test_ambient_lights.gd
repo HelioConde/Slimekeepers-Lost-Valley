@@ -524,3 +524,36 @@ func test_sun_shafts_start_at_canopy_follow_low_sun_and_vanish_at_night() -> voi
 	var layer: Node2D = rig.get_node("SunShafts")
 	assert_int((layer.material as CanvasItemMaterial).blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
 	assert_int((layer.material as CanvasItemMaterial).light_mode).is_equal(CanvasItemMaterial.LIGHT_MODE_UNSHADED)
+
+
+func test_foliage_light_follows_sun_warm_at_dusk_cool_moon_at_night() -> void:
+	var morning: Dictionary = Lights.foliage_profile(8 * 60)
+	var noon: Dictionary = Lights.foliage_profile(12 * 60)
+	var dusk: Dictionary = Lights.foliage_profile(17 * 60 + 30)
+	var night: Dictionary = Lights.foliage_profile(23 * 60)
+	# Luz vem de cima (folhas de cima recebem mais luz).
+	for profile in [morning, noon, dusk, night]:
+		assert_float((profile.light_dir as Vector2).y).is_less(0.0)
+		assert_float(profile.light_strength).is_greater(0.0)
+	# Sol baixo realça mais que o meio-dia; fim de tarde é mais quente (menos azul).
+	assert_float(morning.light_strength).is_greater(noon.light_strength)
+	assert_float((dusk.light_color as Vector3).z).is_less((noon.light_color as Vector3).z)
+	# Luar: frio (azul domina o vermelho).
+	assert_float((night.light_color as Vector3).z).is_greater((night.light_color as Vector3).x)
+
+
+func test_foliage_light_reaches_shared_wind_materials() -> void:
+	var region: Node2D = _rig_in_region(false, 0)[0]
+	var rig: Node2D = region.get_child(region.get_child_count() - 1).get_child(0)
+	var tree := Sprite2D.new()
+	var material := ShaderMaterial.new()
+	material.shader = Lights.WIND_SHADER
+	material.set_shader_parameter("foliage_light", 1.0)
+	tree.material = material
+	region.add_child(tree)
+	await await_idle_frame()
+	rig.apply_time(9 * 60, 0.1)
+	assert_float(material.get_shader_parameter("light_strength")).is_greater(0.0)
+	rig.apply_time(23 * 60, 0.1)
+	var moon: Vector3 = material.get_shader_parameter("light_color")
+	assert_float(moon.z).is_greater(moon.x)
