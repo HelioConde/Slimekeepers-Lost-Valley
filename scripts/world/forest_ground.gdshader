@@ -9,6 +9,24 @@ uniform sampler2D dirt_wang_atlas : filter_nearest, repeat_disable;
 uniform float use_wang = 0.0;
 // 0 de dia, 1 à noite (AmbientLights): a grama pintada não pode brilhar sob a lua.
 uniform float night_dim = 0.0;
+// Sol e sombra no chão aberto: a copa da mata sombreia a grama vizinha (fria),
+// com manchas de luz recortadas na faixa de transição; longe dela, sol quente.
+uniform float canopy_shade = 0.0;
+
+uniform sampler2D corner_mask_soft : filter_linear, repeat_disable;  // a mesma máscara, filtrada
+
+float forest_near(vec2 world) {
+	vec2 size = vec2(textureSize(corner_mask_soft, 0));
+	vec2 cell = world / 32.0;
+	float forest = 0.0;
+	for (int dy = -1; dy <= 1; dy++) {
+		for (int dx = -1; dx <= 1; dx++) {
+			vec2 at = cell + vec2(float(dx), float(dy)) * 3.0;
+			forest += 1.0 - texture(corner_mask_soft, (at + vec2(0.5)) / size).r;
+		}
+	}
+	return forest / 9.0;
+}
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7))) * 43758.5453); }
 float moss(vec2 p) {
 	vec2 cell = floor(p);
@@ -51,6 +69,15 @@ void fragment() {
 		vec3 g = wang_ground(floor(world_pixel));
 		float luma = dot(g, vec3(0.299, 0.587, 0.114));
 		// Noite: menos saturação e valor, puxando para o azul do luar.
+		if (canopy_shade > 0.0) {
+			vec2 px = floor(world_pixel / 2.0) * 2.0;  // manchas na grade de 2 px
+			float near = smoothstep(0.0, 0.55, forest_near(world_pixel));
+			float leaves = moss(px / 22.0) * 0.7 + moss(px / 9.0) * 0.3;
+			float shade = step(leaves, near * 1.1);  // sombra recortada, sem degradê
+			vec3 sun = g * vec3(1.06, 1.04, 0.94);
+			vec3 cool = g * vec3(0.74, 0.82, 0.9);
+			g = mix(g, mix(sun, cool, shade), canopy_shade * (1.0 - night_dim));
+		}
 		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.82, 1.0) * 0.8, night_dim);
 		COLOR.rgb = g;
 	}

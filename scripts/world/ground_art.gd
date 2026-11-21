@@ -127,8 +127,11 @@ static func apply(region: Node2D, tree_groups: Array, open_test: Callable, min_t
 	material = material.duplicate() as ShaderMaterial
 	material.set_shader_parameter("wang_atlas", WANG)
 	material.set_shader_parameter("dirt_wang_atlas", DIRT_WANG)
-	material.set_shader_parameter("corner_mask", ImageTexture.create_from_image(mask))
+	var mask_texture := ImageTexture.create_from_image(mask)
+	material.set_shader_parameter("corner_mask", mask_texture)
+	material.set_shader_parameter("corner_mask_soft", mask_texture)
 	material.set_shader_parameter("use_wang", 1.0)
+	material.set_shader_parameter("canopy_shade", 1.0)
 	ground.material = material
 	ground.add_to_group("v8_ground")
 	region.set_meta("ground_corner_mask", mask)

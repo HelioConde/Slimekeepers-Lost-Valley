@@ -19,7 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://1heaurnxhx82" path="res://assets/menu/environment/grass.png" id="17_t676j"]
 [ext_resource type="Texture2D" uid="uid://bnv28huffkwbk" path="res://assets/menu/environment/flowers.png" id="18_w6iif"]
 [ext_resource type="Texture2D" uid="uid://ciiawj4ty1lag" path="res://assets/world/forest/mushroom_glow.png" id="19_4w42f"]
-[ext_resource type="Texture2D" uid="uid://br83lty2h62t4" path="res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png" id="20_1rnae"]
+[ext_resource type="Texture2D" path="res://assets/world/forest/bush_lush.png" id="20_1rnae"]
 [ext_resource type="Texture2D" uid="uid://cepglpibwbb5b" path="res://assets/world/forest/mushroom_brown.png" id="21_xj6lw"]
 [ext_resource type="Texture2D" path="res://assets/world/forest/oak_lush_open.png" id="22_qgc31"]
 [ext_resource type="Texture2D" path="res://assets/world/forest/oak_lush_tall.png" id="23_12y1r"]

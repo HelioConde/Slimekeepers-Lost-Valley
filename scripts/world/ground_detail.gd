@@ -21,7 +21,7 @@ const RIM_DEPTH := 60.0  # faixa junto à borda da clareira: arbustos e folhas
 ## Tipos fora de assets/world/ground.
 const PATHS := {
 	"grass": "res://assets/menu/environment/grass.png",
-	"bush": "res://assets/sprites/objects/bush_small_compact_leafy_for/rotations/bush_small_compact_leafy_for.png",
+	"bush": "res://assets/world/forest/bush_lush_round.png",
 }
 
 var area := Rect2()  # vazio = clareira inteira

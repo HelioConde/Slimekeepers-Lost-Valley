@@ -157,3 +157,15 @@ Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-do
 ## Trilhas naturais V8 — 2026-11-21
 
 `assets/tilesets/v8/dirt_grass_wang.png`: atlas canônico do tileset Wang terra ↔ grama (o mesmo da seção "Chão V8"), harmonizado com `tools/tone_ground_tiles.py`. Sem gerações novas. SHA-256 `689ABCF06460488E5C3FD4149B0E2674E243110F31BCFA8E2CEFA0A9CFCEC5C2`. As trilhas viram passagens de bicho (mundo sem gente): só manchas de terra gasta no miolo do traçado, com borda Wang.
+
+## Plantas e arbustos V8 — 2026-11-21
+
+- `assets/world/forest/bush_lush.png` e `bush_lush_round.png`: recortados das copas aprovadas (`oak_lush`, `oak_lush_tall`), sem tronco, com base arredondada e borda inferior sombreada, centralizados no canvas 96×96 do arbusto antigo (mesma base). O arbusto gerado pelo PixelLab saiu cônico e foi rejeitado.
+- `assets/world/forest/plant_rosette.png`: roseta de folhas verdes (PixelLab, 48×48, 1 geração) no lugar de `crops.png`, que era uma planta azul-petróleo fora da paleta. A pedra gerada saiu em formato de ovo e foi rejeitada.
+- Tingimentos fortes das flores (azul 0.65–0.7 / 1.3–1.4, magenta 1.2 / 0.82) suavizados na cena e nos tiles alternativos: pintavam as folhas inteiras.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/forest/bush_lush.png` | `B0235FAE49E730E597B93484D48CAD550383BAA8D843ACC9B0653977B679C4C7` |
+| `assets/world/forest/bush_lush_round.png` | `3D1CF48117265DA4AC4060B372B8FD39B4768CA76BB8FC9894CA13E6AF1A2AFD` |
+| `assets/world/forest/plant_rosette.png` | `FCD50B7971BEA2F6C54C7CA95A864785FB60E30F3F2AA35A99ACEE2CF0954C3A` |
