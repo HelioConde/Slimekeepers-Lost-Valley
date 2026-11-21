@@ -31,10 +31,13 @@ func setup(tree_groups: Array, landmarks: Array = []) -> void:
 			if not (tree is Node2D) or not tree.has_node("Sprite"): continue
 			var at := (tree as Node2D).global_position
 			var near_landmark := false
+			var grand_ok := false  # tronco não fica ao sul da ponte: a copa não cobre o tabuleiro
 			for r: Rect2 in landmarks:
-				if r.grow(260.0).has_point(at): near_landmark = true  # árvores junto às pontes
+				if r.grow(260.0).has_point(at):
+					near_landmark = true  # árvores junto às pontes
+					if at.y <= r.end.y: grand_ok = true
 			if not (near_landmark or chosen(at)): continue
-			if near_landmark:
+			if grand_ok:
 				var sprite := tree.get_node("Sprite") as Sprite2D
 				sprite.texture = GRAND_OAK
 				sprite.position = GRAND_OFFSET
