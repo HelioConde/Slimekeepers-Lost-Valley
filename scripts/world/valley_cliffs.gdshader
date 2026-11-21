@@ -6,6 +6,7 @@ uniform sampler2D grass_atlas : filter_nearest;
 uniform vec2 grass_origin = vec2(96.0);
 uniform float use_grass = 0.0;
 uniform float night_dim = 0.0;
+uniform float night_value = 0.8;
 varying vec2 p_world;
 void vertex() { p_world = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy; }
 void fragment(){
@@ -18,6 +19,6 @@ void fragment(){
 		c.rgb=texture(grass_atlas,(grass_origin+q+vec2(.5))/vec2(textureSize(grass_atlas,0))).rgb;
 	}
 	float luma=dot(c.rgb,vec3(.299,.587,.114));
-	c.rgb=mix(c.rgb,mix(vec3(luma),c.rgb,.6)*vec3(.72,.82,1.0)*.8,night_dim);
+	c.rgb=mix(c.rgb,mix(vec3(luma),c.rgb,.6)*vec3(.72,.82,1.0)*night_value,night_dim);
 	COLOR=c;
 }

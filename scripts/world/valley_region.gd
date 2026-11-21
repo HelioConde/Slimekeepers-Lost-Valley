@@ -192,6 +192,10 @@ func _setup_living_valley() -> void:
 	var routes := Valley.routes()
 	ecosystem.open_area_test = func(at: Vector2) -> bool: return Valley.route_distance(at,routes)<90
 	preload("res://scripts/world/ground_art.gd").apply(self, [$TreesBack, $TreesFront], Callable(), 1)
+	# Vale à noite: chão mais escuro (ref. V11 da ponte) para a água se destacar.
+	for node in [$Ground, get_node_or_null("WaterBankTiles")] + $Elevations.get_children():
+		if node is CanvasItem and node.material is ShaderMaterial:
+			node.material.set_shader_parameter("night_value", VALLEY_NIGHT_GROUND)
 	_lanterns = preload("res://scripts/world/lantern_flowers.gd").new()
 	var bridge_rects: Array[Rect2] = []
 	for bridge in $Bridges.get_children():
@@ -339,3 +343,4 @@ func _process(delta: float) -> void:
 
 
 var _lanterns: Node2D  # plantas-lanterna nas pontes
+const VALLEY_NIGHT_GROUND := 0.42

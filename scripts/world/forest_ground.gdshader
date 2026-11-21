@@ -9,6 +9,7 @@ uniform sampler2D dirt_wang_atlas : filter_nearest, repeat_disable;
 uniform float use_wang = 0.0;
 // 0 de dia, 1 à noite (AmbientLights): a grama pintada não pode brilhar sob a lua.
 uniform float night_dim = 0.0;
+uniform float night_value = 0.9;  // brilho do chão à noite (Vale mais escuro: água em destaque)
 // Sol e sombra no chão aberto: a copa da mata sombreia a grama vizinha (fria),
 // com manchas de luz recortadas na faixa de transição; longe dela, sol quente.
 uniform float canopy_shade = 0.0;
@@ -114,7 +115,7 @@ void fragment() {
 			beam *= step(0.3, fract(sin(beam_lane * 3.7) * 999.1 + along / 520.0));  // feixes que começam e acabam
 			g = mix(g, g * vec3(1.3, 1.2, 0.85) + vec3(0.04, 0.03, 0.0), beam * (1.0 - s) * (1.0 - here_forest) * long_shadow * golden * (1.0 - night_dim));
 		}
-		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.9, 1.25) * 0.9, night_dim);
+		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.9, 1.25) * night_value, night_dim);
 		COLOR.rgb = g;
 	}
 	vec2 p = floor(ground_pixel / 2.0) * 2.0;
