@@ -15,6 +15,12 @@ const MAX_CAST := 110.0
 const CONTACT_MIN := 6.0
 const CONTACT_MAX := 18.0
 const CONTACT_SKIP := ["flower", "fern", "reed", "grass", "lily", "clover"]
+## Objetos que boiam: um blob escuro pintado sob eles parece sombra sem origem.
+const FLOATING := ["lily"]
+## Grupos com objetos sólidos fora de PROP_GROUPS: pedras da borda das cachoeiras
+## (só os nós "Sprite"; o véu d'água e as paredes de rocha não projetam no chão)
+## e a fogueira da estação de culinária.
+const EXTRA_CASTER_GROUPS := ["MapArt", "AwakeningLandmark", "NaturalSpring", "Waterfalls", "CookingStation"]
 var _casters: Dictionary = {}
 var _contacts: Dictionary = {}
 var _hidden_blobs: Array[CanvasItem] = []
@@ -62,6 +68,7 @@ func _ready() -> void:
 	for node in _region.find_children("*", "", true, false):
 		if node is Sprite2D or node is AnimatedSprite2D: _register(node)
 	get_tree().node_added.connect(_on_node_added)
+	_hide_floating_blobs()
 	_old_canopy = _region.get_node_or_null("CanopyShade")
 	if _old_canopy:
 		_old_canopy_visible = _old_canopy.visible
@@ -88,8 +95,9 @@ func _register(sprite: Node2D) -> void:
 	else:
 		var node: Node = sprite
 		while node and node != _region:
-			if str(node.name) in RULES.PROP_GROUPS or str(node.name) in ["MapArt", "AwakeningLandmark", "NaturalSpring"]:
+			if str(node.name) in RULES.PROP_GROUPS or str(node.name) in EXTRA_CASTER_GROUPS:
 				kind = "object"
+				if str(node.name) == "Waterfalls" and sprite.name != &"Sprite": kind = ""
 				break
 			node = node.get_parent()
 		if kind == "object" and sprite is Sprite2D and sprite.texture:
@@ -109,6 +117,17 @@ func _register(sprite: Node2D) -> void:
 		if blob and blob.visible and _contacts[sprite.get_instance_id()]:
 			blob.hide()
 			_hidden_blobs.append(blob)
+
+func _hide_floating_blobs() -> void:
+	for blob in _region.find_children("ContactShadow", "CanvasItem", true, false):
+		var owner_sprite := blob.get_parent().get_node_or_null("Sprite") as Sprite2D
+		if not owner_sprite or not owner_sprite.texture or not blob.visible: continue
+		var path := owner_sprite.texture.resource_path.to_lower()
+		for word in FLOATING:
+			if word in path:
+				blob.hide()
+				_hidden_blobs.append(blob)
+				break
 
 func _wants_contact(sprite: Node2D) -> bool:
 	var texture := _texture_for(sprite)

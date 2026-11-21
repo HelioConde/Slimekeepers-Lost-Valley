@@ -17,7 +17,8 @@ void fragment() {
 	vec3 texel=texture(terrain_atlas,(atlas_origin+pixel+vec2(0.5))/vec2(textureSize(terrain_atlas,0))).rgb;
 	vec3 base=mix(COLOR.rgb,texel,texture_strength);
 	float patches=noise(floor(p/2.0)*2.0/58.0);
-	base*=mix(0.88,1.09,patches);
+	// Variação suave: manchas escuras de -12% liam como sombras sem origem.
+	base*=mix(vec3(0.95,0.98,0.95),vec3(1.04,1.04,1.01),patches);
 	// Single-pixel gravel and broken leaf litter preserve the original pixel scale.
 	float fleck=hash(p);
 	if (atlas_origin.x>0.0 && fleck>0.993) { base*=0.82; }

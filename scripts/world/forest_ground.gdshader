@@ -11,7 +11,9 @@ void vertex() { ground_pixel = VERTEX; }
 void fragment() {
 	vec2 p = floor(ground_pixel / 2.0) * 2.0;
 	float patches = moss(p / 86.0) * 0.65 + moss(p / 27.0) * 0.35;
-	COLOR.rgb *= mix(vec3(0.86,0.94,0.88),vec3(1.06,1.04,0.99),patches);
+	// Variação de musgo sem virar "sombra sem dono": o tom muda, o valor quase não
+	// (antes até -14% em manchas de ~86 px que pareciam sombras soltas no chão).
+	COLOR.rgb *= mix(vec3(0.95,0.99,0.94),vec3(1.03,1.02,0.99),patches);
 	float clearing = 1.0-smoothstep(260.0,600.0,length(p-vec2(1600.0)));
 	COLOR.rgb *= mix(vec3(0.94,0.97,0.96),vec3(1.04,1.03,0.98),clearing);
 }
