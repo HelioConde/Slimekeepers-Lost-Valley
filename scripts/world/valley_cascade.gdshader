@@ -39,7 +39,7 @@ void fragment(){
 		// Noite: compensa o escurecimento global com azul-prateado claro, mantendo
 		// as faixas de fluxo (claras ainda mais claras).
 		float lum=dot(c.rgb,vec3(.3,.59,.11));
-		vec3 moonlit=mix(vec3(.30,.55,.85),vec3(.85,.95,1.0),smoothstep(.35,.75,lum));
+		vec3 moonlit=mix(vec3(.34,.62,.74),vec3(.88,.97,1.0),smoothstep(.3,.7,lum));
 		c.rgb=mix(c.rgb,moonlit,night*.85);
 	}
 	if(c.r>.74 && c.g>.78 && c.b>.75){c.rgb=mix(c.rgb,mix(vec3(.80,.91,.85),vec3(.92,.97,1.0),night),.72);}
