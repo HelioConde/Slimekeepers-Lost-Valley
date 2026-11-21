@@ -13,10 +13,10 @@ const ITEMS := {
 	"semente_beterraba": {"name": "Sementes de beterraba", "kind": "seed", "icon": "semente_beterraba", "crop": "beterraba"},
 	"semente_repolho": {"name": "Sementes de repolho", "kind": "seed", "icon": "semente_repolho", "crop": "repolho"},
 	"sementes_silvestres": {"name": "Sementes silvestres", "kind": "seed", "icon": "sementes_silvestres", "crop": "folhas_silvestres"},
-	"cenoura": {"name": "Cenoura", "kind": "crop", "crop_art": "cenoura", "price": 35},
-	"beterraba": {"name": "Beterraba", "kind": "crop", "crop_art": "beterraba", "price": 45},
-	"repolho": {"name": "Repolho", "kind": "crop", "crop_art": "repolho", "price": 80},
-	"folhas_frescas": {"name": "Folhas frescas", "kind": "crop", "crop_art": "folhas_silvestres", "price": 15},
+	"cenoura": {"name": "Cenoura", "kind": "crop", "crop_art": "cenoura"},
+	"beterraba": {"name": "Beterraba", "kind": "crop", "crop_art": "beterraba"},
+	"repolho": {"name": "Repolho", "kind": "crop", "crop_art": "repolho"},
+	"folhas_frescas": {"name": "Folhas frescas", "kind": "crop", "crop_art": "folhas_silvestres"},
 }
 ## Ordem dos itens na barra depois das ferramentas.
 const ORDER := ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres",
@@ -31,10 +31,6 @@ static func info(item_id: String) -> Dictionary:
 
 static func kind(item_id: String) -> String:
 	return str(info(item_id).get("kind", "other"))
-
-
-static func price(item_id: String) -> int:
-	return int(info(item_id).get("price", 0))
 
 
 static func icon(item_id: String) -> Texture2D:
