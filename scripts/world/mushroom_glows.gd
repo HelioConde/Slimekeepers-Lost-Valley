@@ -9,7 +9,7 @@ const CYAN := Color(0.35, 0.85, 1.0)
 const WARM := Color(1.0, 0.55, 0.35)
 const LILAC := Color(0.78, 0.55, 1.0)  # flores mágicas (1 em 4 touceiras)
 const PINK := Color(1.0, 0.55, 0.85)  # vitórias-régias com flor (rio do Vale)
-const POOL_SIZE := 36
+const POOL_SIZE := 48
 const REACH := 720.0
 const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm", "wildflowers_cluster": "lilac", "lily_pad_flower": "pink", "reeds": "reed", "reeds_glow": "reed", "lily_glow": "lilac"}
 
@@ -43,8 +43,11 @@ static func radial(width: int, height: int, stops: PackedFloat32Array, alphas: P
 
 
 ## Só parte das flores é mágica: escolha estável pela posição.
-static func magic_flower(at: Vector2) -> bool:
-	return posmod(hash(Vector2i(at.round())), 4) == 0
+## Fração de flores mágicas: 1 em 4 por padrão; regiões noturnas especiais
+## (Vale, ref. V11) podem subir via `magic_ratio` do nó.
+var magic_ratio := 4
+static func magic_flower(at: Vector2, ratio: int = 4) -> bool:
+	return posmod(hash(Vector2i(at.round())), ratio) == 0
 
 
 static func kind_of(path: String) -> String:
@@ -67,7 +70,7 @@ func setup(region: Node2D) -> void:
 				if source == null or source.texture == null: continue
 				var kind := kind_of(source.texture.resource_path)
 				var at := layer.to_global(layer.map_to_local(cell))
-				if kind in ["lilac", "reed"] and not magic_flower(at): continue
+				if kind in ["lilac", "reed"] and not magic_flower(at, magic_ratio): continue
 				if kind != "":
 					points[kind].append(at)
 					cells[at] = [layer, cell]
@@ -114,7 +117,7 @@ func nearest(center: Vector2) -> Array:
 		# Base do que é desenhado (o sprite pode não ser centrado nem ter origem no pé).
 		var rect := sprite.get_rect()
 		var at := sprite.to_global(Vector2(rect.get_center().x, rect.end.y - 6.0))
-		if kind in ["lilac", "reed"] and not sprite.has_meta("magic_flower") and not magic_flower(sprite.global_position): continue
+		if kind in ["lilac", "reed"] and not sprite.has_meta("magic_flower") and not magic_flower(sprite.global_position, magic_ratio): continue
 		var d := at.distance_squared_to(center)
 		if d < REACH * REACH: found.append([d, at, kind])
 	found.sort_custom(func(a, b): return a[0] < b[0])

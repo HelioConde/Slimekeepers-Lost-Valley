@@ -69,8 +69,17 @@ void fragment() {
 		}
 		// Pontos prateados ao redor (ondulação fina).
 		float spark = step(0.993, hash(floor(p / 4.0) + vec2(floor(elapsed * 0.6), 3.0))) * (1.0 - smoothstep(10.0, 60.0, length(p - a)));
-		float lum = clamp(disk * 0.95 + c * 0.75 + spark * 0.8, 0.0, 1.0) * moon_strength;
-		vec3 col = mix(vec3(0.62, 0.8, 1.0), vec3(0.94, 0.97, 1.0), clamp(disk + spark, 0.0, 1.0));
+		// Campo de brilhos largo (ref.): traços horizontais curtos e intensos numa
+		// faixa de ~180 px que se abre rio abaixo; cada traço pisca no seu ritmo.
+		vec2 g = p - a;
+		float spread = 50.0 + max(g.y, 0.0) * 0.35;
+		float in_field = step(abs(g.x), spread) * step(-30.0, g.y) * step(g.y, 320.0);
+		vec2 gc = floor(p / vec2(10.0, 4.0));
+		float blink = step(0.55, fract(elapsed * (0.3 + hash(gc) * 0.5) + hash(gc + 9.0)));
+		float glitter = in_field * step(0.62 + abs(g.x) / spread * 0.3, hash(gc + 5.0)) * blink * step(mod(p.y, 4.0), 1.0)
+			* (1.0 - smoothstep(180.0, 320.0, g.y));
+		float lum = clamp(disk * 0.95 + c * 0.75 + spark * 0.8 + glitter * 0.85, 0.0, 1.0) * moon_strength;
+		vec3 col = mix(vec3(0.62, 0.8, 1.0), vec3(0.94, 0.97, 1.0), clamp(disk + spark + glitter, 0.0, 1.0));
 		outc = vec4(col, lum);
 	}
 	// ---- Sol ----
