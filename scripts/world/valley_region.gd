@@ -326,6 +326,11 @@ func _process(delta: float) -> void:
 	for level in $Elevations.get_children():
 		if level is CanvasItem and level.material is ShaderMaterial:
 			level.material.set_shader_parameter("night_dim", water_night)
+	# Copas e arbustos: mais escuros e frios à noite (ref. V11). Fontes mágicas
+	# são aditivas e não escurecem.
+	var foliage_night := Color(1, 1, 1).lerp(VALLEY_NIGHT_FOLIAGE, water_night)
+	for group in [$TreesBack, $TreesFront, $LowVegetation]:
+		(group as CanvasItem).modulate = foliage_night
 	for fall in $Waterfalls.get_children():
 		var cascade := fall.get_node_or_null("Cascade") as CanvasItem
 		if cascade and cascade.material is ShaderMaterial:
@@ -346,3 +351,4 @@ func _process(delta: float) -> void:
 var _lanterns: Node2D  # plantas-lanterna nas pontes
 const VALLEY_NIGHT_GROUND := 0.4
 const VALLEY_NIGHT_TINT := Vector3(0.45, 0.9, 1.45)  # azul-petróleo (ref. V11)
+const VALLEY_NIGHT_FOLIAGE := Color(0.74, 0.86, 1.0)
