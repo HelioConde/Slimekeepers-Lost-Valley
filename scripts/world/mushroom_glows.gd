@@ -7,11 +7,13 @@ extends Node2D
 
 const CYAN := Color(0.35, 0.85, 1.0)
 const WARM := Color(1.0, 0.55, 0.35)
-const POOL_SIZE := 28
+const LILAC := Color(0.78, 0.55, 1.0)  # flores mágicas (1 em 4 touceiras)
+const POOL_SIZE := 36
 const REACH := 720.0
-const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm"}
+const KINDS := {"mushroom_glow": "cyan", "mushroom_red": "warm", "wildflowers_cluster": "lilac"}
 
-var points := {"cyan": [] as Array[Vector2], "warm": [] as Array[Vector2]}  # células de tilemap
+var points := {"cyan": [] as Array[Vector2], "warm": [] as Array[Vector2], "lilac": [] as Array[Vector2]}  # células de tilemap
+var cells := {}  # ponto -> [TileMapLayer, célula]: a célula pode ser apagada depois
 var sprites: Array[Sprite2D] = []  # validados ao usar: outro sistema pode trocar ou esconder
 var pools: Array[Sprite2D] = []   # poças no chão (atrás de tudo)
 var caps: Array[Sprite2D] = []    # brilho junto ao chapéu
@@ -39,6 +41,11 @@ static func radial(width: int, height: int, stops: PackedFloat32Array, alphas: P
 	return texture
 
 
+## Só parte das flores é mágica: escolha estável pela posição.
+static func magic_flower(at: Vector2) -> bool:
+	return posmod(hash(Vector2i(at.round())), 4) == 0
+
+
 static func kind_of(path: String) -> String:
 	for key in KINDS:
 		if path.ends_with(key + ".png"): return KINDS[key]
@@ -58,7 +65,11 @@ func setup(region: Node2D) -> void:
 				var source := layer.tile_set.get_source(layer.get_cell_source_id(cell)) as TileSetAtlasSource
 				if source == null or source.texture == null: continue
 				var kind := kind_of(source.texture.resource_path)
-				if kind != "": points[kind].append(layer.to_global(layer.map_to_local(cell)))
+				var at := layer.to_global(layer.map_to_local(cell))
+				if kind == "lilac" and not magic_flower(at): continue
+				if kind != "":
+					points[kind].append(at)
+					cells[at] = [layer, cell]
 	_ground_texture = radial(96, 48, PackedFloat32Array([0.0, 0.3, 0.55, 0.8]), PackedFloat32Array([0.5, 0.3, 0.14, 0.0]))
 	_cap_texture = radial(28, 24, PackedFloat32Array([0.0, 0.35, 0.7]), PackedFloat32Array([0.9, 0.5, 0.0]))
 	var additive := CanvasItemMaterial.new()
@@ -91,12 +102,18 @@ func nearest(center: Vector2) -> Array:
 	for kind in points:
 		for at: Vector2 in points[kind]:
 			var d := at.distance_squared_to(center)
-			if d < REACH * REACH: found.append([d, at, kind])
+			if d >= REACH * REACH: continue
+			var ref: Array = cells.get(at, [])
+			if not ref.is_empty() and (not is_instance_valid(ref[0]) or (ref[0] as TileMapLayer).get_cell_source_id(ref[1]) == -1): continue
+			found.append([d, at, kind])
 	for sprite in sprites:
 		if not is_instance_valid(sprite) or not sprite.is_visible_in_tree() or sprite.texture == null: continue
 		var kind := kind_of(sprite.texture.resource_path)
 		if kind == "": continue
-		var at := sprite.global_position
+		# Base do que é desenhado (o sprite pode não ser centrado nem ter origem no pé).
+		var rect := sprite.get_rect()
+		var at := sprite.to_global(Vector2(rect.get_center().x, rect.end.y - 6.0))
+		if kind == "lilac" and not magic_flower(sprite.global_position): continue
 		var d := at.distance_squared_to(center)
 		if d < REACH * REACH: found.append([d, at, kind])
 	found.sort_custom(func(a, b): return a[0] < b[0])
@@ -118,7 +135,8 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 				pools[i].position = (at + Vector2(0, -2)).round()
 				caps[i].position = (at + Vector2(0, -6)).round()
 				pools[i].set_meta("warm", warm)
-				pools[i].scale = Vector2(0.6, 0.6) if warm else Vector2.ONE
+				pools[i].set_meta("kind", near[i][2])
+				pools[i].scale = Vector2(0.6, 0.6) if warm or near[i][2] == "lilac" else Vector2.ONE
 	var night: float = preload("res://scripts/world/ambient_lights.gd").night_factor(minutes)
 	# O quente já acende ao entardecer (referência das 18h); o ciano é da noite.
 	var dusk := smoothstep(16.5 * 60.0, 18.5 * 60.0, fposmod(minutes, 1440.0)) if fposmod(minutes, 1440.0) > 12 * 60 else 0.0
@@ -127,6 +145,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 		var warm: bool = pools[i].get_meta("warm", false)
 		var on := maxf(night, dusk * 0.6) if warm else night
 		var pulse := 0.88 + 0.12 * sin(_time * 1.1 + i * 1.7)
-		var color := WARM if warm else CYAN
-		pools[i].modulate = Color(color.r, color.g, color.b, (0.35 if warm else 0.55) * on * pulse)
+		var lilac: bool = pools[i].get_meta("kind", "") == "lilac"
+		var color := LILAC if lilac else (WARM if warm else CYAN)
+		pools[i].modulate = Color(color.r, color.g, color.b, (0.3 if lilac else (0.35 if warm else 0.55)) * on * pulse)
 		caps[i].modulate = Color(color.r, color.g, color.b, (0.6 if warm else 0.75) * on * pulse)

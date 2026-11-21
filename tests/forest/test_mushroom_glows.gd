@@ -55,3 +55,26 @@ func test_halos_never_draw_over_canopy_and_cast_no_shadow() -> void:
 	for p in glows.pools:
 		assert_int(p.z_index).is_less(0)
 		assert_bool(p.has_meta("no_shadow")).is_true()
+
+
+func test_only_some_flowers_are_magic_and_glow_at_their_base() -> void:
+	var region: Node2D = auto_free(Node2D.new())
+	add_child(region)
+	var magic := 0
+	for i in 40:
+		var flower := Sprite2D.new()
+		flower.texture = load("res://assets/world/forest/wildflowers_cluster.png")
+		flower.centered = false
+		flower.position = Vector2(i * 37, 0)
+		region.add_child(flower)
+		if Glows.magic_flower(flower.global_position): magic += 1
+	var glows: Node2D = Glows.new()
+	glows.setup(region)
+	region.add_child(glows)
+	glows.apply_time(23 * 60, Vector2(700, 0), 0.1)
+	var lit: Array = glows.pools.filter(func(p): return p.visible)
+	assert_int(lit.size()).is_equal(magic)
+	assert_int(magic).is_between(4, 20)
+	for p in lit:
+		# Na base do desenho (sprite não centrado): ~40 px abaixo da origem.
+		assert_float(p.position.y).is_greater(20.0)
