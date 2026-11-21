@@ -846,9 +846,10 @@ static func foliage_profile(minutes: float) -> Dictionary:
 		"light_dir": direction,
 		"light_color": Vector3(color.r, color.g, color.b),
 		# À noite só um fio de luar nas bordas: copa comum não pode parecer luminosa.
-		"light_strength": day * (0.32 + 0.2 * low_sun + 0.35 * golden) + night * 0.16,
+		"light_strength": day * (0.32 + 0.2 * low_sun + 0.55 * golden) + night * 0.16,
 		"shade_strength": day * 0.45 + night * 0.4,
 		"glint_strength": day * (0.25 + 0.3 * golden),
+		"golden": golden * (1.0 - smoothstep(0.45, 0.85, night)),
 	}
 
 
@@ -868,6 +869,7 @@ func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
 			var gm := (ground as CanvasItem).material as ShaderMaterial
 			gm.set_shader_parameter("sun_vector", sun_now)
 			gm.set_shader_parameter("long_shadow", smoothstep(0.85, 1.05, sun_now.length()))
+			gm.set_shader_parameter("golden", float(foliage_profile(minutes).get("golden", 0.0)))
 	for material in _foliage_materials:
 		for key in profile:
 			material.set_shader_parameter(key, profile[key])

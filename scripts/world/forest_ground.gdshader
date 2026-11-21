@@ -16,6 +16,7 @@ uniform float canopy_shade = 0.0;
 // altura e força. Faixas: troncos projetam listras longas sobre a grama aberta.
 uniform vec2 sun_vector = vec2(0.0);
 uniform float long_shadow = 0.0;
+uniform float golden = 0.0;  // sol baixo: grama ao sol puxa para o dourado
 
 uniform sampler2D corner_mask_soft : filter_linear, repeat_disable;  // a mesma máscara, filtrada
 
@@ -78,7 +79,7 @@ void fragment() {
 			float near = smoothstep(0.0, 0.55, forest_near(world_pixel));
 			float leaves = moss(px / 22.0) * 0.7 + moss(px / 9.0) * 0.3;
 			float shade = step(leaves, near * 1.1);  // sombra recortada, sem degradê
-			vec3 sun = g * vec3(1.06, 1.04, 0.94);
+			vec3 sun = g * mix(vec3(1.06, 1.04, 0.94), vec3(1.22, 1.1, 0.72), golden);
 			vec3 cool = g * vec3(0.74, 0.82, 0.9);
 			g = mix(g, mix(sun, cool, shade), canopy_shade * (1.0 - night_dim));
 		}
@@ -105,6 +106,13 @@ void fragment() {
 			float here_forest = 1.0 - texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / sz).r;
 			float s = step(0.5, caster) * stripe * (1.0 - step(0.5, here_forest));
 			g = mix(g, g * vec3(0.5, 0.55, 0.68), s * long_shadow * (1.0 - night_dim));
+			// Feixes de luz pelas frestas das copas: faixas largas douradas na grama aberta,
+			// paralelas às sombras, com borda em degraus de 2 px (referência das 18h).
+			float beam_lane = floor((dot(world_pixel, across) + (hash(floor(world_pixel / 8.0)) - 0.5) * 6.0) / 34.0);
+			float beam = step(0.62, fract(sin(beam_lane * 78.233) * 12345.678));
+			float along = dot(world_pixel, dir);
+			beam *= step(0.3, fract(sin(beam_lane * 3.7) * 999.1 + along / 520.0));  // feixes que começam e acabam
+			g = mix(g, g * vec3(1.5, 1.32, 0.72) + vec3(0.07, 0.055, 0.0), beam * (1.0 - s) * (1.0 - here_forest) * long_shadow * golden * (1.0 - night_dim));
 		}
 		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.82, 1.0) * 0.8, night_dim);
 		COLOR.rgb = g;
