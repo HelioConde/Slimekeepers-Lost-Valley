@@ -90,6 +90,8 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	var tree := get_tree()
+	if tree.get_meta("build_mode", false):
+		return  # no modo construir, roda e teclas são da construção
 	var key := event as InputEventKey
 	if key and key.pressed and not key.echo and key.physical_keycode >= KEY_0 and key.physical_keycode <= KEY_9:
 		HOTBAR.select(tree, (key.physical_keycode - KEY_1) if key.physical_keycode != KEY_0 else 9)

@@ -22,11 +22,16 @@ func run() -> void:
 	check(farm != null and farm.name == "Fazenda", "Fazenda carrega")
 	var field = farm.get_node_or_null("FarmField")
 	check(field != null and field.field_id == "fazenda" and field.size_cells == Vector2i(16, 10), "Campo grande próprio")
-	check(farm.get_node_or_null("MapArt/House/SolidBase") != null, "Casa tem base sólida")
+	var house = farm.get_node_or_null("PlayerHouse")
+	check(house != null and house.get_node("HouseCollision").get_child_count() > 20, "Casa construída tem paredes sólidas")
+	check(house.get_node("Furniture").get_child_count() >= 5, "Casa inicial mobiliada")
+	check(house.get_node("Walls").get_child_count() > 3, "Paredes em fileiras ordenadas por Y")
 	check(farm.get_node("VegetationHigh").get_child_count() > 30, "Borda de árvores")
 	check(farm.get_node_or_null("HUD/Interface/Hotbar") != null and farm.get_node_or_null("HUD/Interface/EnergyBar") != null, "Barra e energia no HUD")
 	var shadows = farm.get_node("DayNightLighting/DayShadows")
-	check(shadows.has_caster(farm.get_node("MapArt/House/Sprite")), "Casa projeta sombra")
+	# Dormir na cama: o jogador perto da cama recebe a ação.
+	farm.player.global_position = Vector2(14 * 32 + 16, 9 * 32)
+	check(house.near_bed(farm.player), "Jogador ao lado da cama pode dormir")
 	# Dormir: dia seguinte às 06:00, energia cheia.
 	var clock := root.get_node("GameClock")
 	var day: int = clock.day_number

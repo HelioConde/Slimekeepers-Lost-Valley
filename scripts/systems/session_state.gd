@@ -21,6 +21,8 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"player_energy",
 	"farm_last_day",
 	"slime_affinity",
+	"player_house",
+	"build_mode",
 	"slime_fed_day",
 	"valley_cooking_ledger",
 	"slime_food_offers",

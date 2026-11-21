@@ -10,7 +10,7 @@ const SAVE := preload("res://scripts/systems/save_game.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const SURFACE := preload("res://scripts/world/forest_surface.gdshader")
 const ATLAS := preload("res://assets/tilesets/grass_dirt_v3_32x32.png")
-const COTTAGE := preload("res://assets/menu/environment/cottage.png")
+const HOUSE_BUILDER := preload("res://scripts/world/house_builder.gd")
 const FENCE := preload("res://assets/menu/environment/fence.png")
 const SIGN := preload("res://assets/menu/provided/wood_sign.png")
 const LANTERN := preload("res://assets/menu/environment/lantern.png")
@@ -22,14 +22,15 @@ const BUSH := preload("res://assets/sprites/objects/bush_small_compact_leafy_for
 const FLOWERS := preload("res://assets/menu/environment/flowers.png")
 
 const WORLD_SIZE := Vector2(1600, 1216)
-const SPAWN := Vector2(520, 380)  # em frente à porta
-const DOOR := Vector2(520, 330)
+const SPAWN := Vector2(528, 400)  # em frente à porta da casa inicial
+const DOOR := Vector2(528, 368)
 const WEST_GATE := Vector2(60, 640)
-const FIELD_ORIGIN := Vector2i(20, 13)
+const FIELD_ORIGIN := Vector2i(24, 15)
 const FIELD_SIZE := Vector2i(16, 10)
 const GRASS_COLOR := Color(0.447, 0.553, 0.271)
 
 var farm_field: Node2D
+var house: Node2D
 var bag_hud: Node
 
 
@@ -68,9 +69,12 @@ func _process(delta: float) -> void:
 	if message_time > 0:
 		message_time -= delta
 		if message_time <= 0: popup.text = ""
-	hud_hint.text = "WASD / Setas: andar   •   1–0: item   •   E: usar"
-	if player.global_position.distance_to(DOOR) < 46:
-		hud_hint.text = "[E] Dormir até amanhã"
+	hud_hint.text = ""
+	if is_instance_valid(house) and house.building:
+		hud_hint.text = house.build_hint()
+		return
+	if is_instance_valid(house) and house.near_bed(player):
+		hud_hint.text = "[E] Dormir até amanhã   •   [B] Construir"
 		if Input.is_action_just_pressed("interact"):
 			sleep()
 		return
@@ -190,10 +194,11 @@ func _build_house() -> void:
 	group.name = "MapArt"
 	group.y_sort_enabled = true
 	add_child(group)
-	var house := _prop(group, COTTAGE, DOOR + Vector2(0, -4))
-	house.name = "House"
-	_solid(house, Vector2(170, 56), Vector2(0, -30))
-	var lantern := _prop(group, LANTERN, DOOR + Vector2(60, 8))
+	# Casa construída pelo jogador (começa com a casa inicial; [B] para construir).
+	house = HOUSE_BUILDER.new()
+	house.player = player
+	add_child(house)
+	var lantern := _prop(group, LANTERN, DOOR + Vector2(72, 132))  # fora, ao lado do caminho, longe do beiral
 	lantern.name = "Lantern"
 	var sign_post := _prop(group, SIGN, WEST_GATE + Vector2(40, -40))
 	sign_post.name = "GateSign"
