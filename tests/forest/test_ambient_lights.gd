@@ -520,7 +520,8 @@ func test_sun_shafts_start_at_canopy_follow_low_sun_and_vanish_at_night() -> voi
 	var noon: float = _shaft_alpha(rig) / maxi(1, rig.shafts.size())
 	assert_float(low_sun).is_greater(noon * 1.5)
 	rig.apply_time(23 * 60, 0.0)
-	assert_int(rig.shafts.size()).is_equal(0)
+	# À noite não há raio de sol (só os feixes frios de luar, testados à parte).
+	assert_int(rig.shafts.filter(func(sh): return (sh.color as Color).r >= (sh.color as Color).b).size()).is_equal(0)
 	var layer: Node2D = rig.get_node("SunShafts")
 	assert_int((layer.material as CanvasItemMaterial).blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
 	assert_int((layer.material as CanvasItemMaterial).light_mode).is_equal(CanvasItemMaterial.LIGHT_MODE_UNSHADED)
@@ -603,3 +604,14 @@ func test_glowing_slimes_get_an_aura_only_at_night() -> void:
 	rig.apply_time(23 * 60, 0.1)
 	assert_float(rig.slime_halos()[0].modulate.a).is_greater(0.3)
 	assert_bool(rig.slime_halos()[0].show_behind_parent).is_true()
+
+
+func test_moon_shafts_only_at_night_and_cool() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	rig.apply_time(23 * 60, 0.1)
+	var moon: Array = rig.shafts.filter(func(s): return (s.color as Color).b > (s.color as Color).r)
+	assert_int(moon.size()).is_greater(0)
+	for s in moon: assert_float(s.alpha).is_less_equal(Lights.MOON_SHAFT_ALPHA)
+	rig.apply_time(12 * 60, 0.1)
+	assert_int(rig.shafts.filter(func(s): return (s.color as Color).b > (s.color as Color).r).size()).is_equal(0)

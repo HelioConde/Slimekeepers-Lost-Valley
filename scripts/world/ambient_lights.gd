@@ -74,6 +74,8 @@ var _foliage_materials: Array[ShaderMaterial] = []
 var _foliage_rescan := 0.0
 const SHAFT_ALPHA := 0.42
 const SHAFT_LENGTH := 300.0
+const MOON_SHAFT_CELL := 320.0
+const MOON_SHAFT_ALPHA := 0.16
 var _player_light: PointLight2D
 var _fireflies: CPUParticles2D
 var _motes: CPUParticles2D
@@ -896,6 +898,23 @@ func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> vo
 			# Sol baixo: feixes mais longos e largos (referências V9 das 17h30/18h).
 			var bottom := top + (home - top).normalized() * maxf(top.distance_to(home), SHAFT_LENGTH * (1.0 + 0.6 * low_sun))
 			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm, "width": 1.0 + 0.8 * low_sun})
+	# Luar (referências V9 noturnas): poucos feixes largos e azulados, presos a
+	# células do mundo perto do jogador, descendo na diagonal das copas.
+	var night := 1.0 - day
+	if night > 0.3 and is_instance_valid(_region):
+		var walker := _region.get_node_or_null("Player") as Node2D
+		if walker:
+			var moon_dir := Vector2(0.55, 1.0).normalized()
+			var cell := (walker.global_position / MOON_SHAFT_CELL).floor()
+			for dy in range(-1, 2):
+				for dx in range(-2, 2):
+					var key := Vector2i(cell) + Vector2i(dx, dy)
+					var h := posmod(hash(key), 1000) / 1000.0
+					if h > 0.38: continue  # só algumas células têm fresta de luar
+					var base := (Vector2(key) + Vector2(0.3 + h, 0.5)) * MOON_SHAFT_CELL
+					shafts.append({"top": base - moon_dir * 260.0, "bottom": base + moon_dir * 120.0,
+						"alpha": MOON_SHAFT_ALPHA * smoothstep(0.3, 0.9, night) * (0.8 + 0.2 * sin(_time * 0.3 + h * 9.0)),
+						"color": Color(0.55, 0.8, 1.0), "width": 1.6})
 	_shaft_age += get_process_delta_time()
 	if _shaft_age >= 0.1:
 		_shaft_age = 0.0
