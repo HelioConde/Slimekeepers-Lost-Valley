@@ -47,8 +47,8 @@ const DAWN_START := 4.5 * 60.0
 const DAWN_END := 6.5 * 60.0
 const CAMPFIRE_COLOR := Color(1.0, 0.55, 0.25)
 ## Raio (px do mundo) da luz da fogueira: só o entorno, sem disco gigante no caminho.
-const CAMPFIRE_RADIUS := 92.0
-const GLOW_COLOR := Color(0.45, 0.95, 0.85)
+const CAMPFIRE_RADIUS := 112.0
+const GLOW_COLOR := Color(0.35, 0.82, 1.0)  # ciano-azulado da referência noturna
 const PLAYER_COLOR := Color(1.0, 0.96, 0.88)
 
 var _region: Node
@@ -57,6 +57,8 @@ var _fires: Array[CPUParticles2D] = []
 var _embers: Array[CPUParticles2D] = []
 var _glows: Array[PointLight2D] = []
 var _spores: Array[CPUParticles2D] = []
+var _halos: Array[Sprite2D] = []
+var _halo_texture: GradientTexture2D
 var _player_light: PointLight2D
 var _fireflies: CPUParticles2D
 var _motes: CPUParticles2D
@@ -296,7 +298,7 @@ func apply_time(minutes: float, delta: float) -> void:
 	var fire_glow := smoothstep(0.55, 1.0, night)
 	for light in _campfires:
 		if is_instance_valid(light):
-			light.energy = 0.95 * fire_glow * flicker
+			light.energy = 1.6 * fire_glow * flicker
 	for fire in _fires:
 		if is_instance_valid(fire):
 			fire.emitting = night > 0.15
@@ -305,7 +307,11 @@ func apply_time(minutes: float, delta: float) -> void:
 			embers.emitting = night > 0.15
 	for light in _glows:
 		if is_instance_valid(light):
-			light.energy = 0.55 * night
+			light.energy = 0.05 + 0.45 * night  # ilumina o chão em volta; o brilho ciano vem do halo
+	for halo in _halos:
+		if is_instance_valid(halo):
+			# Aura ciano aditiva (a luz sobre a grama verde sairia verde): leve de dia, viva à noite.
+			halo.modulate.a = 0.12 + 0.55 * night * (0.9 + 0.1 * sin(_time * 1.3 + halo.get_instance_id() % 7))
 	for spores in _spores:
 		if is_instance_valid(spores):
 			spores.emitting = night > 0.35
@@ -403,12 +409,13 @@ func _consider(node: Node) -> void:
 		var texture: Texture2D = node.texture
 		if texture and texture.resource_path.ends_with(GLOW_TEXTURE_SUFFIX):
 			node.set_meta("ambient_light", true)
-			var light := _make_light(GLOW_COLOR, 0.55)
+			var light := _make_light(GLOW_COLOR, 1.0)
 			light.texture = _soft_texture
 			light.name = "GlowLight"
 			node.add_child(light)
 			_glows.append(light)
 			node.add_child(_make_spores())
+			node.add_child(_make_halo())
 
 
 func _consider_spot(node: Node) -> void:
@@ -732,6 +739,33 @@ func _make_motes(amount: int) -> CPUParticles2D:
 
 
 ## Esporos que sobem devagar dos cogumelos luminosos: brilho azul-esverdeado local.
+func _make_halo() -> Sprite2D:
+	if _halo_texture == null:
+		var gradient := Gradient.new()
+		gradient.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CUBIC
+		gradient.offsets = PackedFloat32Array([0.0, 0.35, 0.7, 1.0])
+		gradient.colors = PackedColorArray([Color(0.55, 0.92, 1.0, 0.9), Color(0.35, 0.8, 1.0, 0.45), Color(0.3, 0.7, 1.0, 0.12), Color(0.3, 0.7, 1.0, 0.0)])
+		_halo_texture = GradientTexture2D.new()
+		_halo_texture.gradient = gradient
+		_halo_texture.fill = GradientTexture2D.FILL_RADIAL
+		_halo_texture.fill_from = Vector2(0.5, 0.5)
+		_halo_texture.fill_to = Vector2(1.0, 0.5)
+		_halo_texture.width = 48
+		_halo_texture.height = 32
+	var halo := Sprite2D.new()
+	halo.name = "GlowHalo"
+	halo.texture = _halo_texture
+	halo.position = Vector2(0, -6)
+	halo.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+	halo.material = glow
+	halo.modulate.a = 0.0
+	_halos.append(halo)
+	return halo
+
+
 func _make_spores() -> CPUParticles2D:
 	var spores := CPUParticles2D.new()
 	spores.name = "GlowSpores"
