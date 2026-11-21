@@ -32,3 +32,11 @@ Comparadas com as capturas reais das etapas V8 (`09`–`13` nesta pasta).
 | 10 | Noite azul-petróleo mais clara | Feito: cor média igual à das referências (07bb5b0) |
 
 Ainda diferente: as referências são ilustrações com mais densidade de flores e brilho (bloom) do que o jogo usa; mantemos pixel art nítida. Acampamento com fogueira na Clareira e ponte com lanternas não existem no mapa (decisão de design pendente). `MAP_DEPTH` mantém 1 falha antiga (cogumelo do Vale), anterior a esta etapa.
+
+## Fechamento (2026-11-21, até 9ea5b20)
+
+- Entardecer 18h: média 81/88/29 contra 92/83/34 na ref_4; contraste (desvio de luminância) 46.3 contra 45.3. Feixes dourados, sombras longas, lago com borda dourada.
+- Noite: média 26/63/76 contra 29/63/79 na ref_6 e 23/63/78 contra 24/65/75 na ref_2. Luar em feixes, poças ciano, flores mágicas, vagalumes.
+- Rio à noite: 22/53/89 contra 33/67/86 na ref_7. Lua, vitórias-régias rosa, juncos ciano, cachoeira branco-ciano e **plantas-lanterna** nos quatro cantos das pontes. Faz o papel das lanternas sem presença humana.
+- Fogueira: existe no acampamento/estação de cozinha do Vale; não foi criado acampamento novo na Clareira (o mundo não tem humanos e a Clareira fica aberta).
+- Diferenças mantidas de propósito: sem bloom borrado (pixel art nítida, pedido do usuário); centro da Clareira aberto (pedido da V8), com flores na borda das copas e na margem do lago.
