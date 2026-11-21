@@ -196,6 +196,7 @@ func _setup_living_valley() -> void:
 	for node in [$Ground, get_node_or_null("WaterBankTiles")] + $Elevations.get_children():
 		if node is CanvasItem and node.material is ShaderMaterial:
 			node.material.set_shader_parameter("night_value", VALLEY_NIGHT_GROUND)
+			node.material.set_shader_parameter("night_tint", VALLEY_NIGHT_TINT)
 	_lanterns = preload("res://scripts/world/lantern_flowers.gd").new()
 	var bridge_rects: Array[Rect2] = []
 	for bridge in $Bridges.get_children():
@@ -343,4 +344,5 @@ func _process(delta: float) -> void:
 
 
 var _lanterns: Node2D  # plantas-lanterna nas pontes
-const VALLEY_NIGHT_GROUND := 0.42
+const VALLEY_NIGHT_GROUND := 0.4
+const VALLEY_NIGHT_TINT := Vector3(0.45, 0.9, 1.45)  # azul-petróleo (ref. V11)

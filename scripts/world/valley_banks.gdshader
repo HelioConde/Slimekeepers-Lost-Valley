@@ -8,6 +8,7 @@ uniform vec2 grass_origin = vec2(0.0);
 uniform float grass_tile = 0.0;  // 1 = grass_atlas é o Wang 128x128
 uniform float night_dim = 0.0;
 uniform float night_value = 0.8;
+uniform vec3 night_tint = vec3(.72,.82,1.0);
 uniform sampler2D depth_map : filter_linear, repeat_disable;
 varying vec2 p_world;
 float hash(vec2 p) { return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
@@ -30,6 +31,6 @@ void fragment() {
 		texel.a*=.16;
 	}
 	float luma=dot(texel.rgb,vec3(.299,.587,.114));
-	texel.rgb=mix(texel.rgb,mix(vec3(luma),texel.rgb,.6)*vec3(.72,.82,1.0)*night_value,night_dim);
+	texel.rgb=mix(texel.rgb,mix(vec3(luma),texel.rgb,.6)*night_tint*night_value,night_dim);
 	COLOR=texel;
 }
