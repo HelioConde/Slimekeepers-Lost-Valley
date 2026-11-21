@@ -2,6 +2,7 @@ extends RefCounted
 ## Session-only region travel. Does not claim to be a save-game system.
 const CLEARING := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
 const VALLEY := "res://scenes/regions/ValeDasNascentes.tscn"
+const FARM := "res://scenes/regions/Fazenda.tscn"
 
 static func travel(scene: Node2D, destination: String, arrival: String) -> void:
 	var tree := scene.get_tree()

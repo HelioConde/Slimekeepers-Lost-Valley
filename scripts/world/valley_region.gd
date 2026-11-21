@@ -9,6 +9,8 @@ const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
 const FARM_FIELD := preload("res://scripts/world/farm_field.gd")
+## Placa do caminho para a fazenda, a leste da chegada da Floresta.
+const FARM_GATE := Vector2(1700, 230)
 const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
@@ -48,7 +50,11 @@ func _ready() -> void:
 	for fall in $Waterfalls.get_children():
 		var life:=fall.get_node_or_null("LivingFoam")
 		if life:life.set_reduced_motion(reduce_motion)
+	if get_tree().get_meta("region_arrival","") == "valley_farm_gate":
+		player.position = FARM_GATE + Vector2(0, 40)
+		camera.reset_smoothing()
 	if get_tree().has_meta("region_arrival"): get_tree().remove_meta("region_arrival")
+	_spawn_farm_gate()
 	_setup_living_valley()
 	preload("res://scripts/world/visual_rules.gd").new().apply(self,Valley.routes())
 	var art := preload("res://scripts/world/map_art_enrichment.gd").new()
@@ -77,6 +83,17 @@ func _spawn_cooking_station() -> void:
 	# no ponto de interação. 140 px do canteiro norte = raios 68 + 72 sem sobreposição.
 	cooking_station.position = Vector2(1440, 418)
 	add_child(cooking_station)
+
+func _spawn_farm_gate() -> void:
+	var gate := Node2D.new()
+	gate.name = "FarmGate"
+	gate.position = FARM_GATE
+	add_child(gate)
+	var sign_sprite := Sprite2D.new()
+	sign_sprite.name = "Sprite"
+	sign_sprite.texture = preload("res://assets/menu/provided/wood_sign.png")
+	sign_sprite.offset.y = -sign_sprite.texture.get_height() * 0.5 + 6
+	gate.add_child(sign_sprite)
 
 ## Campo de cultivo no platô a leste do riacho, ao lado da cachoeira (6×4 células
 ## livres de troncos, água, caminhos e colisões).
@@ -234,6 +251,11 @@ func _process(delta: float) -> void:
 		hud_hint.text = "[E] Voltar à Floresta do Despertar"
 		if Input.is_action_just_pressed("interact"):
 			Travel.travel(self,Travel.CLEARING,"clearing_south")
+			return
+	elif player.position.distance_to(FARM_GATE) < 60:
+		hud_hint.text = "[E] Ir para a sua fazenda"
+		if Input.is_action_just_pressed("interact"):
+			Travel.travel(self,Travel.FARM,"farm_west")
 			return
 	elif player.position.distance_to(Vector2(1780,3160)) < 100:
 		hud_hint.text = "[E] Observar o caminho ao sul"
