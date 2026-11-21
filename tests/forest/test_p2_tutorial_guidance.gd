@@ -73,6 +73,7 @@ func test_hud_shows_step_hides_when_done_and_ignores_mouse() -> void:
 	assert_bool(hud.visible).is_false()
 
 
-func test_forest_and_valley_install_the_guidance_hud() -> void:
+func test_regions_show_no_mission_guidance() -> void:
+	# Missões removidas do jogo: o sistema de próximo passo existe, mas não é instalado.
 	for path in ["res://scripts/world/forest_region.gd", "res://scripts/world/valley_region.gd"]:
-		assert_str(FileAccess.get_file_as_string(path)).override_failure_message(path).contains("GUIDANCE_HUD.new()")
+		assert_str(FileAccess.get_file_as_string(path)).override_failure_message(path).not_contains("GUIDANCE_HUD")

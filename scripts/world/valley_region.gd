@@ -9,7 +9,6 @@ const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
 const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
-const GUIDANCE_HUD := preload("res://scripts/ui/cooking_guidance_hud.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
@@ -36,12 +35,10 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
-	$HUD/Interface.add_child(GUIDANCE_HUD.new())
 	recipe_panel = RECIPE_PANEL.new()
 	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
 	found_zones = get_tree().get_meta("valley_discoveries",{}).duplicate()
-	hud_goal.text = "Siga as águas e explore as margens" if found_zones.is_empty() else "Recantos descobertos: %d / 5" % found_zones.size()
 	var cfg := ConfigFile.new()
 	if cfg.load("user://presentation.cfg") == OK:
 		reduce_motion = cfg.get_value("accessibility","reduce_motion",false)
@@ -196,7 +193,7 @@ func _update_living_goal() -> void:
 	friends_count = 0
 	for friend in get_tree().get_meta("valley_slime_friends",{}).values():
 		if friend: friends_count += 1
-	hud_goal.text = "Amizades %d/8 · recantos %d/5" % [friends_count,found_zones.size()]
+	# Sem missões no HUD: amizades e recantos continuam registrados, sem objetivo na tela.
 
 func set_environment_conditions(period: String, rain: float=0.0, wind: float=1.0, fog: float=0.0) -> void:
 	Living.conditions(self,period,rain,wind,fog)

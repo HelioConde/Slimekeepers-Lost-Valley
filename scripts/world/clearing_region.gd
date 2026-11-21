@@ -53,11 +53,8 @@ func _on_exit_entered(body: Node2D, exit_name: StringName) -> void:
 	_notify(messages[exit_name])
 
 func _update_hud() -> void:
-	if friends_count < 3:
-		hud_goal.text = "Conheça os três slimes da clareira (%d/3)" % friends_count
-	else:
-		hud_goal.text = "MISSÃO CONCLUÍDA! Os 3 slimes são seus amigos."
-		_notify("Três novos amigos! Explore as trilhas da Clareira do Despertar.")
+	# Sem missões: o jogo é livre (cultivar, explorar, fazer amizades no seu ritmo).
+	pass
 
 func _compact_hud() -> void:
 	var panel: PanelContainer = $HUD/Interface/MissionPanel
@@ -74,6 +71,8 @@ func _compact_hud() -> void:
 	# O painel encolhe até o texto: sem quebra automática (senão vira uma coluna).
 	hud_title.autowrap_mode = TextServer.AUTOWRAP_OFF
 	hud_goal.autowrap_mode = TextServer.AUTOWRAP_OFF
+	# Linha de objetivos removida: o painel mostra só o nome do lugar.
+	hud_goal.hide()
 	# Painéis ficam translúcidos quando o jogador passa por baixo deles.
 	var fade := preload("res://scripts/ui/hud_overlap_fade.gd").new()
 	fade.name = "HudOverlapFade"

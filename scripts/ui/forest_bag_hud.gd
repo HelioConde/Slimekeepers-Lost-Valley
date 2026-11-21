@@ -13,8 +13,8 @@ func _ready() -> void:
 	# 742 px atravessando o topo da tela).
 	offset_left = 18
 	offset_right = 18
-	offset_top = 72
-	offset_bottom = 72
+	offset_top = 52
+	offset_bottom = 52
 	var skin := StyleBoxFlat.new()
 	skin.bg_color = Color("#f6e8c2")
 	skin.border_color = Color("#694657")

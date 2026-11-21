@@ -99,7 +99,8 @@ func _run() -> void:
 	await _key(KEY_E)
 	_check(int(world.get("friends_count")) == expected_population, "Repeated interaction does not duplicate a friendship")
 	var goal: Label = world.get("hud_goal")
-	_check(goal.text.contains("%d/%d"%[expected_population,expected_population]), "HUD reports all genuine friendships")
+	# Sem missões no HUD: a amizade é registrada, mas não aparece como objetivo.
+	_check(not goal.visible, "HUD shows no mission/objective line")
 	var return_button := world.get_node("HUD/Interface/ReturnToMenu") as Button
 	return_button.grab_focus()
 	await _key(KEY_ENTER)
