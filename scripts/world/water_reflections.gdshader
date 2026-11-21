@@ -44,7 +44,7 @@ float column(vec2 p, vec2 a, float half_width, float up, float down, float speed
 	float thin = step(mod(p.y, 4.0), 1.0);
 	float rs = (0.15 + hash(vec2(row, 7.0)) * 0.2) * speed_scale;
 	float sway = floor(sin(elapsed * rs + row * 1.7) * 2.0);
-	float taper = 1.0 - smoothstep(0.0, 1.0, dy > 0.0 ? dy / down : -dy / up);
+	float taper = 1.0 - smoothstep(0.3, 1.0, dy > 0.0 ? dy / down : -dy / up);  // cheia até 30%, depois afina
 	float w = half_width * (0.35 + 0.65 * abs(sin(row * 0.9 + elapsed * rs))) * taper;
 	float inside = step(abs(p.x - a.x - sway), w);
 	float dash = step(0.42, hash(vec2(floor((p.x + elapsed * rs * 6.0) / 6.0), row)));
@@ -57,7 +57,7 @@ void fragment() {
 	// ---- Lua ----
 	if (moon_strength > 0.003) {
 		vec2 a = floor(nearest(p, true) / 2.0) * 2.0;
-		float c = column(p, a, 50.0, 24.0, 260.0, 1.0);  // coluna larga e longa (ref. da ponte)
+		float c = column(p, a, 65.0, 24.0, 280.0, 1.0);  // coluna larga e longa (ref. da ponte)
 		// Disco estilizado e discreto, com a fase (lado iluminado pela fase).
 		vec2 q = (p - a) / vec2(13.0, 9.0);
 		float disk = 0.0;
