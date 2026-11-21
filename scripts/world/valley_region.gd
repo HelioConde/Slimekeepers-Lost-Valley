@@ -197,6 +197,8 @@ func _setup_living_valley() -> void:
 		if node is CanvasItem and node.material is ShaderMaterial:
 			node.material.set_shader_parameter("night_value", VALLEY_NIGHT_GROUND)
 			node.material.set_shader_parameter("night_tint", VALLEY_NIGHT_TINT)
+	if $Ground.material is ShaderMaterial:
+		$Ground.material.set_shader_parameter("night_forest_lift", 1.0)  # mata sob as árvores sem bloco preto
 	_lanterns = preload("res://scripts/world/lantern_flowers.gd").new()
 	var bridge_rects: Array[Rect2] = []
 	for bridge in $Bridges.get_children():

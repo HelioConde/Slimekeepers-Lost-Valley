@@ -14,6 +14,7 @@ uniform vec3 night_tint = vec3(0.72, 0.9, 1.25);  // brilho do chão à noite (V
 // Sol e sombra no chão aberto: a copa da mata sombreia a grama vizinha (fria),
 // com manchas de luz recortadas na faixa de transição; longe dela, sol quente.
 uniform float canopy_shade = 0.0;
+uniform float night_forest_lift = 0.0;  // noite: chão de mata menos preto (Vale, ref. V11)
 // Sombra longa da mata no sol baixo (AmbientLights): vetor do sol em px por px de
 // altura e força. Faixas: troncos projetam listras longas sobre a grama aberta.
 uniform vec2 sun_vector = vec2(0.0);
@@ -115,6 +116,12 @@ void fragment() {
 			float along = dot(world_pixel, dir);
 			beam *= step(0.3, fract(sin(beam_lane * 3.7) * 999.1 + along / 520.0));  // feixes que começam e acabam
 			g = mix(g, g * vec3(1.3, 1.2, 0.85) + vec3(0.04, 0.03, 0.0), beam * (1.0 - s) * (1.0 - here_forest) * long_shadow * golden * (1.0 - night_dim));
+		}
+		if (night_forest_lift > 0.0) {
+			vec2 msz = vec2(textureSize(corner_mask_soft, 0));
+			float under = 1.0 - texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / msz).r;
+			under = floor(under * 4.0 + hash(floor(world_pixel / 2.0)) * 0.99) / 4.0;  // degraus com pontilhado de 2 px
+			g = mix(g, g * 1.9, under * night_forest_lift * night_dim);
 		}
 		g = mix(g, mix(vec3(luma), g, 0.6) * night_tint * night_value, night_dim);
 		COLOR.rgb = g;
