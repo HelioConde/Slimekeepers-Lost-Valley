@@ -51,9 +51,9 @@ func setup(waters: Array, bridges: Array, decorations: Node2D, water_layer: Node
 				for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
 					if _in_water(at + dir * SHORE * 2.0, waters): shore = true
 				var rr := _rand(key, 6)
-				if shore and rr < 0.3:
+				if shore and rr < 0.45:
 					_add(decorations, FLOWERS, at, Vector2(0, -16), "bank_flower", key)
-				elif shore and rr < 0.42:
+				elif shore and rr < 0.55:
 					_add(decorations, GLOW_SHROOM, at, Vector2(0, -12), "bank_shroom", key)
 				continue
 			var land := 0
