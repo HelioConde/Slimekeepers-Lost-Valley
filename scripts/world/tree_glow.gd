@@ -5,6 +5,9 @@ extends Node
 
 const RATIO := 5
 const WARM := Color(1.0, 0.65, 0.3)
+## Carvalho grande (PixelLab, 128×128) para as árvores junto às pontes (ref. V11).
+const GRAND_OAK := preload("res://assets/world/forest/oak_grand.png")
+const GRAND_OFFSET := Vector2(-128, -220)  # base do tronco (coluna 64, linha 110) na origem, escala 2
 
 var glows: Array[Sprite2D] = []
 var flies: Array[CPUParticles2D] = []
@@ -28,6 +31,10 @@ func setup(tree_groups: Array, landmarks: Array = []) -> void:
 			for r: Rect2 in landmarks:
 				if r.grow(260.0).has_point(at): near_landmark = true  # árvores junto às pontes
 			if not (near_landmark or chosen(at)): continue
+			if near_landmark:
+				var sprite := tree.get_node("Sprite") as Sprite2D
+				sprite.texture = GRAND_OAK
+				sprite.position = GRAND_OFFSET
 			var glow := Sprite2D.new()
 			glow.texture = tex
 			glow.material = additive

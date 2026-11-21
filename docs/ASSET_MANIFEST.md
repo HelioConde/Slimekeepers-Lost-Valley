@@ -199,3 +199,11 @@ PixelLab (`create_map_object`, 3 gerações): vitória-régia com flor luminosa 
 ## Margens do rio V11 — 2026-11-21
 
 `assets/world/valley/water_banks_v11.png`: tileset Wang pro do PixelLab (barranco baixo de terra escura com pedrinhas e linha de espuma; 15 gerações), encadeado na grama V8 e remapeado por cantos no layout de `water_banks.png`. A água do próprio tile ficou transparente para mostrar a água animada. SHA-256 `3C8657918DA418E799AEC239225E9AEC1424BF61B52F842A1BE84A9D15E5EF9A`.
+
+### Carvalho grande das pontes (V11)
+
+| Arquivo | Tamanho | SHA-256 |
+|---|---|---|
+| `assets/world/forest/oak_grand.png` | 128×128 | `070672afb8f7f6c68de940659603e9a7a9feb052c12e50be70a772e41cbf8986` |
+
+Gerado no PixelLab (`create_map_object`, 128×128, high top-down, high detail, detailed shading, selective outline; 1 geração, aprovada). Pós-processo local: `tools/tone_lush_sprite.py --strip-ground 96 --soften 0.45`, remoção de pontinhos soltos (<6 px) abaixo da linha 90 e −20% de saturação nos verdes. Desenhado em escala 2; usado só nas árvores a até 260 px das pontes do Vale (`scripts/world/tree_glow.gd`), cuja colisão não muda.
