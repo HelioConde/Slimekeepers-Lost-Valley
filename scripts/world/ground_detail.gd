@@ -66,7 +66,7 @@ func build() -> void:
 			match zone_at(at, paths):
 				"open": _open(at, key)
 				"root": _root(at, key)
-				"trail_edge": if _rand(key, 3) < 0.2: _put("pebbles" if _rand(key, 4) < 0.35 else "grass_tuft_sunlit", at, key)
+				"trail_edge": if _rand(key, 3) < 0.2: _put("pebbles" if _rand(key, 4) < 0.15 else "grass_tuft_sunlit", at, key)
 
 
 func _open(at: Vector2, key: Vector2i) -> void:

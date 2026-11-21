@@ -120,3 +120,16 @@ Gerados no PixelLab (`create_map_object`, 32×32, high top-down; 6 gerações). 
 | `assets/world/ground/pebbles.png` | `034F43C2EB3C4F973987D138C20BC36603B30DBE215B726630E81F7F4BDE7887` |
 | `assets/world/ground/clover_sprig.png` | `C51EC1E1AD1EA235C1515E171D5CE4DD191DFCDCBFF17610EEF10D0245C221D1` |
 | `assets/world/ground/grass_tuft_sunlit.png` | `3B90736BB3AAED857342468CDAEABDA81ABBFE1EBF82071CAF3F15163F4139EF` |
+
+## Árvores V6 — expansão na Floresta V2 — 2026-11-21
+
+Novas variantes geradas no PixelLab (mesmos parâmetros das árvores do protótipo; 3 gerações, 2 aprovadas, arbusto rejeitado por parecer planta em vaso). Pós-processo reproduzível com `tools/tone_lush_sprite.py`. Os pinheiros passaram a usar `--tips 0.5` para suavizar as pontas lima.
+
+| Sprite antigo (Floresta V2) | Sprite novo | SHA-256 |
+|---|---|---|
+| `oak.png` | `assets/world/forest/oak_lush.png` | `86FF4CF4AA7AECE8E69739AB8D45F7FA036829B5CF4036771EF6E3AF82D17BC5` |
+| `oak_medium.png` | `assets/world/forest/oak_lush_open.png` | `27F54165D9AC3AFA11129176649C7C16DAC3245E9EFF16E8328EDB38D1F8FFD2` |
+| `oak_young.png` | `assets/world/forest/oak_lush_tall.png` | `159ABF7F8F46A3BFBC4CC340AEC695D0B8EEEDDA7510FD46F9451056A27DAC53` |
+| `pine_crisp.png` | `assets/world/forest/pine_lush.png` | `F1A45CF9A47E75DF134FCC5CFD547B3775640568BEAE859DEB40DE8E7F3389DA` |
+
+O `wildflower_yellow.png` teve as pétalas clareadas (+25% de valor) para ler como flor ao sol.

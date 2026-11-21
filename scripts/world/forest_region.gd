@@ -155,12 +155,9 @@ func _on_forest_slime(slime: Node2D) -> void:
 	slime.tree_exiting.connect(func(): slimes.erase(slime))
 	_update_hud()
 
-## Protótipo V6: detalhe de chão por terreno na borda oeste da Clareira (mesma área
-## das árvores novas). Expandir só depois da validação visual.
-const GROUND_DETAIL_AREA := Rect2(1230, 1280, 380, 640)
+## V6: detalhe de chão por terreno em toda a Clareira (área vazia = Clareira inteira).
 func _add_ground_detail() -> void:
 	var detail := preload("res://scripts/world/ground_detail.gd").new()
-	detail.area = GROUND_DETAIL_AREA
 	for tree in $VegetationHigh.get_children():
 		if tree is Node2D and tree.visible: detail.tree_feet.append((tree as Node2D).position)
 	detail.wind_material = ecosystem.get_wind_material("plant")
