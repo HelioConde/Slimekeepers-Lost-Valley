@@ -16,5 +16,5 @@ func test_four_per_bridge_and_glow_only_at_night() -> void:
 	lanterns.apply_time(0.0, 0.1)
 	for light in lanterns.lights: assert_float(light.energy).is_equal(0.0)
 	lanterns.apply_time(1.0, 0.1)
-	for light in lanterns.lights: assert_float(light.energy).is_greater(0.5)
+	for light in lanterns.lights: assert_float(light.energy).is_greater(0.3)
 	for halo in lanterns.halos: assert_bool(halo.has_meta("no_shadow")).is_true()

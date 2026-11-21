@@ -37,13 +37,14 @@ func setup(bridge_rects: Array[Rect2], parent_for_plants: Node2D) -> void:
 			halo.texture = halo_texture
 			halo.material = additive
 			halo.position = Vector2(0, -22)
+			halo.scale = Vector2(0.7, 0.7)  # brilho de planta, não de tocha (ref. V11 da ponte)
 			halo.modulate = Color(WARM, 0.0)
 			halo.set_meta("no_shadow", true)
 			holder.add_child(halo)
 			halos.append(halo)
 			var light := PointLight2D.new()
 			light.texture = light_texture
-			light.texture_scale = 1.1
+			light.texture_scale = 0.8
 			light.color = WARM
 			light.energy = 0.0
 			light.position = Vector2(0, -16)
@@ -55,5 +56,5 @@ func apply_time(night: float, delta: float) -> void:
 	_time += delta
 	for i in halos.size():
 		var flicker := 0.9 + 0.1 * sin(_time * (2.1 + i * 0.3)) * sin(_time * 5.3 + i)
-		halos[i].modulate.a = 0.85 * night * flicker
-		lights[i].energy = 0.9 * night * flicker
+		halos[i].modulate.a = 0.45 * night * flicker
+		lights[i].energy = 0.45 * night * flicker
