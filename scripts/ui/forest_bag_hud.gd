@@ -31,6 +31,8 @@ func _ready() -> void:
 	_counter.add_theme_font_size_override("font_size", 13)
 	_counter.add_theme_color_override("font_color", Color("#3e5c43"))
 	add_child(_counter)
+	# A barra rápida mostra os itens; o painel em texto segue atualizado, mas oculto.
+	visible = false
 	refresh()
 
 func refresh() -> void:

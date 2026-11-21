@@ -90,3 +90,10 @@ A nova direção de fazenda substituiu a composição de clareira durante a tare
 Os PNGs são peças individuais para composição em camadas; as molduras antigas rasuradas não fazem parte desse acervo. Os arquivos `.import` são metadados do Godot, não novas gerações. A nitidez, a transparência, a escala e a composição devem ser verificadas nas capturas de runtime da entrega; status de geração concluída, dimensões e hashes não equivalem a aprovação artística.
 
 Backups da base anteriores às mudanças encontram-se em `docs/backups/`, incluindo `world.gd.txt`, `player.gd.txt` e `project_before_menu.godot.txt`. A alteração de `player.gd` restringe-se à tipagem explícita de uma variável de nome de animação necessária para a compilação no Godot 4.7.2.
+
+## Ícones de itens (barra rápida) — 2026-11-21
+
+PixelLab `create_map_object`, 32×32, fundo transparente, 1 geração cada (7 no total):
+`assets/ui/items/` — `enxada`, `regador`, `semente_cenoura`, `semente_beterraba`,
+`semente_repolho`, `sementes_silvestres`, `moeda`. Colheitas usam o último estágio das
+culturas já exportadas (recortado em `item_catalog.gd`).

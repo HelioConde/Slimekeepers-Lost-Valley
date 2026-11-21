@@ -6,10 +6,11 @@ extends GdUnitTestSuite
 const Field := preload("res://scripts/world/farm_field.gd")
 const Farm := preload("res://scripts/systems/farm_state.gd")
 const Bag := preload("res://scripts/systems/forest_bag.gd")
+const Hotbar := preload("res://scripts/systems/hotbar_state.gd")
 
 
 func before_test() -> void:
-	for key in [Farm.KEY, Bag.INVENTORY_KEY, Farm.STARTER_KEY]:
+	for key in [Farm.KEY, Bag.INVENTORY_KEY, Farm.STARTER_KEY, Hotbar.SELECTED_KEY]:
 		if get_tree().has_meta(key): get_tree().remove_meta(key)
 
 
@@ -32,7 +33,12 @@ func _face(actor: Node2D) -> void:
 	actor.set_meta("facing", "south")
 
 
-func test_full_loop_through_interact() -> void:
+func _select(item: String) -> void:
+	var slots: Array = Hotbar.slots(get_tree())
+	Hotbar.select(get_tree(), slots.find(item))
+
+
+func test_full_loop_with_hotbar_items() -> void:
 	var parts := _rig()
 	var field: Node2D = parts[0]
 	var actor: Node2D = parts[1]
@@ -41,13 +47,19 @@ func test_full_loop_through_interact() -> void:
 	assert_int(Bag.count_item(get_tree(), "semente_cenoura")).is_greater(0)  # kit inicial
 	var cell: Vector2i = field.target_cell(actor)
 	assert_bool(field.contains(cell)).is_true()
+	_select("regador")
+	assert_str(field.hint(actor)).contains("enxada")  # grama: regador não faz nada
+	assert_str(field.interact(actor)).is_empty()
+	_select("enxada")
 	assert_str(field.hint(actor)).contains("Arar")
 	field.interact(actor)
 	assert_bool(Farm.is_tilled(get_tree(), cell)).is_true()
+	_select("semente_cenoura")
 	assert_str(field.hint(actor)).contains("Plantar")
 	field.interact(actor)
 	assert_str(Farm.crop(get_tree(), cell)).is_equal("cenoura")
 	assert_object(field.get_node_or_null("Crop_%d_%d/Sprite" % [cell.x, cell.y])).is_not_null()
+	_select("regador")
 	field.interact(actor)
 	assert_bool(Farm.is_watered(get_tree(), cell)).is_true()
 	assert_str(field.hint(actor)).contains("regada")
@@ -60,19 +72,6 @@ func test_target_outside_field_is_invalid() -> void:
 	actor.global_position = Vector2(0, 0)
 	await await_idle_frame()
 	assert_bool(field.has_target(actor)).is_false()
-
-
-func test_cycle_seed_skips_crops_without_seeds() -> void:
-	var parts := _rig()
-	var field: Node2D = parts[0]
-	await await_idle_frame()
-	assert_str(field.selected_crop).is_equal("cenoura")
-	field.cycle_seed()
-	assert_str(field.selected_crop).is_equal("beterraba")
-	field.cycle_seed()
-	assert_str(field.selected_crop).is_equal("repolho")
-	field.cycle_seed()  # sem sementes silvestres: volta para cenoura
-	assert_str(field.selected_crop).is_equal("cenoura")
 
 
 func test_soil_tile_is_pixel_art_with_open_edges() -> void:
