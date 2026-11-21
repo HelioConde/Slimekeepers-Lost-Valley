@@ -187,3 +187,7 @@ PixelLab (`create_map_object`, 3 gerações): vitória-régia com flor luminosa 
 | `assets/world/pond/lily_glow.png` | `186D8479C84BEA11941471429F9A028C3A4F3FAE9D937BA364BCC3F3779A50EE` |
 | `assets/world/pond/reeds_glow.png` | `D6458ADB606BCDDF2F9BAFEFD7A030123C1591C0FD455A8164A177101F5F3D49` |
 | `assets/world/pond/lily_pad.png` | `1B1D6D91E48C8DDB59C30F8516AAE212853B8D102D0964FF11C30441C783AA77` |
+
+## Margens do rio V9 — 2026-11-21
+
+`assets/world/valley/water_banks_v9.png`: tileset Wang pro do PixelLab (água ↔ grama com barranco baixo de pedra musgosa, 32 px, transition 0.25; 15 gerações), encadeado na grama do chão V8 e remapeado por cantos no layout de `water_banks.png` (mesmas células do mapa). Grama com valor ×0,8 e saturação ×0,9. O antigo (borda de terra marrom-escura) continua no repositório. SHA-256 `0A2DB4A42D922270A4907FB7E9104912F9E2256CF2F7B0398DF1F73496D14493`.

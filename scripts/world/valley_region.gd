@@ -302,6 +302,8 @@ func _process(delta: float) -> void:
 						break
 	var water_night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
 	_update_moon_reflection(water_night)
+	if has_node("WaterBankTiles"):
+		$WaterBankTiles.material.set_shader_parameter("night_dim", water_night)
 	for water in $Water.get_children():
 		if water is Polygon2D and water.material is ShaderMaterial:
 			water.material.set_shader_parameter("night", water_night)

@@ -87,14 +87,21 @@ void fragment() {
 			vec2 across = vec2(-dir.y, dir.x);
 			vec2 sz = vec2(textureSize(corner_mask_soft, 0));
 			// Mata "contra o sol": há árvores a 40–260 px na direção de onde vem a luz?
-			float caster = 0.0;
-			for (int k = 1; k <= 6; k++) {
-				vec2 back = world_pixel - dir * float(k) * 44.0;
-				caster = max(caster, 1.0 - texture(corner_mask_soft, (back / 32.0 + vec2(0.5)) / sz).r);
-			}
 			// Listras: troncos separados por frestas de luz (ruído ao longo de 'across').
 			float lane = floor(dot(world_pixel, across) / 14.0);
-			float stripe = step(0.42, fract(sin(lane * 12.9898) * 43758.5453));
+			float lane_rand = fract(sin(lane * 12.9898) * 43758.5453);
+			float stripe = step(0.42, lane_rand);
+			// Cada tronco tem um comprimento próprio (copas e alturas diferentes).
+			float reach = 90.0 + fract(lane_rand * 7.31) * 190.0;
+			// Ponta recortada em degraus de 2 px, sem aresta reta.
+			reach += (hash(floor(world_pixel / 6.0)) - 0.5) * 24.0;
+			float caster = 0.0;
+			for (int k = 1; k <= 6; k++) {
+				float dist = float(k) * 44.0;
+				if (dist > reach) break;
+				vec2 back = world_pixel - dir * dist;
+				caster = max(caster, 1.0 - texture(corner_mask_soft, (back / 32.0 + vec2(0.5)) / sz).r);
+			}
 			float here_forest = 1.0 - texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / sz).r;
 			float s = step(0.5, caster) * stripe * (1.0 - step(0.5, here_forest));
 			g = mix(g, g * vec3(0.5, 0.55, 0.68), s * long_shadow * (1.0 - night_dim));

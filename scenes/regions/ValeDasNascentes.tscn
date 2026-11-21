@@ -30,7 +30,7 @@
 [ext_resource type="TileSet" uid="uid://c6vfmc74viw81" path="res://assets/world/clearing_tileset.tres" id="28_dmb34"]
 [ext_resource type="Shader" uid="uid://m5vxoemkj84n" path="res://scripts/world/valley_bed.gdshader" id="29_of850"]
 [ext_resource type="Shader" uid="uid://s1mgmo0wc3ho" path="res://scripts/world/valley_banks.gdshader" id="30_vkn0f"]
-[ext_resource type="Texture2D" uid="uid://clonx83utoau6" path="res://assets/world/valley/water_banks.png" id="31_5ype2"]
+[ext_resource type="Texture2D" path="res://assets/world/valley/water_banks_v9.png" id="31_5ype2"]
 [ext_resource type="Script" uid="uid://b6qnfk6fe3r0g" path="res://scripts/world/water_life.gd" id="32_3m2ed"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="33_x4mm8"]
 

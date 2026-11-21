@@ -135,3 +135,9 @@ static func apply(region: Node2D, tree_groups: Array, open_test: Callable, min_t
 	ground.material = material
 	ground.add_to_group("v8_ground")
 	region.set_meta("ground_corner_mask", mask)
+	# Margens de água (Vale): a mesma grama pintada do chão.
+	var banks := region.get_node_or_null("WaterBankTiles") as TileMapLayer
+	if banks and banks.material is ShaderMaterial:
+		banks.material.set_shader_parameter("grass_atlas", WANG)
+		banks.material.set_shader_parameter("grass_origin", Vector2(96, 96))
+		banks.material.set_shader_parameter("grass_tile", 1.0)

@@ -890,8 +890,9 @@ func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> vo
 			var top: Vector2 = (gap.foot as Vector2) + Vector2(0, -float(gap.height) * 0.72) - sun.normalized() * 24.0
 			# O feixe segue da copa através da mancha e continua pelo chão aberto.
 			var home: Vector2 = dapple.get_meta("home")
-			var bottom := top + (home - top).normalized() * maxf(top.distance_to(home), SHAFT_LENGTH)
-			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm})
+			# Sol baixo: feixes mais longos e largos (referências V9 das 17h30/18h).
+			var bottom := top + (home - top).normalized() * maxf(top.distance_to(home), SHAFT_LENGTH * (1.0 + 0.6 * low_sun))
+			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm, "width": 1.0 + 0.8 * low_sun})
 	_shaft_age += get_process_delta_time()
 	if _shaft_age >= 0.1:
 		_shaft_age = 0.0
@@ -907,7 +908,8 @@ func _draw_shafts() -> void:
 		var a: float = shaft.alpha
 		# Seções ao longo do feixe: (posição, meia-largura, alfa no eixo). Bordas laterais
 		# sempre transparentes: gradiente suave, sem arestas duras.
-		var stations := [[0.0, 6.0, 0.0], [0.3, 14.0, 0.55], [0.6, 24.0, 1.0], [1.0, 40.0, 0.0]]
+		var w: float = shaft.get("width", 1.0)
+		var stations := [[0.0, 6.0 * w, 0.0], [0.3, 14.0 * w, 0.55], [0.6, 24.0 * w, 1.0], [1.0, 40.0 * w, 0.0]]
 		for k in stations.size() - 1:
 			var s0: Array = stations[k]
 			var s1: Array = stations[k + 1]
