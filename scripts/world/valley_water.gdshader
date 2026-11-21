@@ -33,14 +33,25 @@ void fragment() {
 	float f = flow_field(p, t);
 	// Profundidade em faixas (raso → turquesa; fundo → azul-marinho), com o campo
 	// de corrente tingindo manchas mais claras e mais escuras.
-	float band = floor(clamp(depth * 0.8 + (f - 0.5) * 0.35, 0.0, 0.999) * 5.0) / 4.0;
+	// Dither ordenado 2x2 (na grade de 2 px) suaviza a passagem entre faixas
+	// sem degradê liso: as bordas das manchas deixam de parecer blocos.
+	// Dither só na fronteira entre faixas (xadrez 2x2 numa estreita zona de
+	// transição): borda de manchas sem degrau duro e sem textura na água toda.
+	vec2 dc = mod(floor(p / 2.0), 2.0);
+	float dither = (dc.x * 2.0 + dc.y + 0.5) / 4.0 - 0.5;
+	float raw = clamp(depth * 0.8 + (f - 0.5) * 0.35, 0.0, 0.999) * 5.0;
+	float near_edge = 1.0 - step(0.08, abs(fract(raw) - 0.5) - 0.38);
+	float band = floor(clamp(raw + dither * 0.3 * near_edge, 0.0, 4.999)) / 4.0;
 	vec3 deep = mix(vec3(.04,.42,.42), vec3(.01,.15,.17), band);
 	// Faixas de luz (ref.): cristas curvas e diagonais que correm rio abaixo,
 	// estreitas (4–6 px) e suaves nas pontas — nada de blocos chapados.
 	vec2 sw = vec2(p.x * 0.8 + p.y * 0.5, p.y - t * 9.0);
 	float swell = sin(sw.y * 0.03 + f * 6.0 + sin(sw.x * 0.01 + t * 0.15) * 2.4);
-	float ridge = smoothstep(0.82, 0.97, swell) * smoothstep(0.25, 0.65, vnoise(p * 0.008 + t * 0.02));
-	deep = mix(deep, vec3(.16,.48,.72), floor(ridge * 3.0) / 3.0 * 0.6);
+	float ridge = smoothstep(0.78, 0.97, swell) * smoothstep(0.25, 0.65, vnoise(p * 0.008 + t * 0.02));
+	deep = mix(deep, vec3(.16,.48,.72), floor(ridge * 3.0) / 3.0 * 0.5);
+	// Segunda família de cristas, mais fina e em outro ângulo: ondas que se cruzam.
+	float swell2 = sin((p.y * 0.6 - p.x * 0.8) * 0.045 - t * 0.5 + f * 4.0);
+	deep = mix(deep, vec3(.30,.66,.90), step(0.97, swell2) * step(0.55, vnoise(p * 0.02 + 7.0)) * step(0.5, hash(floor(p / 8.0) + floor(t * 0.4))) * step(mod(p.y, 4.0), 1.0) * 0.45);
 	// Vegetação submersa no raso: tufos escuros-esverdeados sob a superfície.
 	// Plantas submersas: tufos de folhas verticais (2 px) em células de 40 px.
 	vec2 wc = floor(p / 40.0);
