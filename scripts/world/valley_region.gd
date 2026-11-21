@@ -301,14 +301,52 @@ func _process(delta: float) -> void:
 							_update_living_goal()
 						break
 	var water_night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
-	for water: Polygon2D in $Water.get_children():
-		if water.material is ShaderMaterial:
+	_update_moon_reflection(water_night)
+	for water in $Water.get_children():
+		if water is Polygon2D and water.material is ShaderMaterial:
 			water.material.set_shader_parameter("night", water_night)
+			water.material.set_shader_parameter("moon_world", _moon_world)
+			water.material.set_shader_parameter("moon_strength", _moon_strength)
 	if not reduce_motion:
-		for water: Polygon2D in $Water.get_children():
-			if water.material is ShaderMaterial:
+		for water in $Water.get_children():
+			if water is Polygon2D and water.material is ShaderMaterial:
 				water.material.set_shader_parameter("elapsed",floor(elapsed*8)/8)
 		if has_node("WaterBankTiles"):
 			$WaterBankTiles.material.set_shader_parameter("elapsed",floor(elapsed*8)/8)
 		for fall: Node2D in $Waterfalls.get_children():
 			fall.get_node("Cascade").material.set_shader_parameter("elapsed",floor(elapsed*8)/8)
+
+
+## Reflexo da lua: um ponto de água no terço de cima da vista, um pouco à direita
+## (o céu "fica" ali). Desliza suave quando a vista muda; some sem água à vista.
+var _moon_world := Vector2(-9999, -9999)
+var _moon_strength := 0.0
+var _moon_sprite: Sprite2D
+func _update_moon_reflection(night: float) -> void:
+	var view := player.global_position
+	var best := Vector2.INF
+	for i in 15:
+		var at := view + Vector2(-280 + i * 40, -110)
+		for water in $Water.get_children():
+			if water is Polygon2D and Geometry2D.is_point_in_polygon(water.to_local(at), water.polygon):
+				if best == Vector2.INF or absf(at.x - view.x - 160) < absf(best.x - view.x - 160): best = at
+				break
+	var target := smoothstep(0.4, 1.0, night) if best != Vector2.INF else 0.0
+	if best != Vector2.INF:
+		_moon_world = best if _moon_world.x < -9000 or _moon_strength < 0.05 else _moon_world.lerp(best, 0.05)
+	_moon_strength = move_toward(_moon_strength, target, 0.03)
+	# Disco aditivo por cima do núcleo do shader: o branco vence a noite.
+	if _moon_sprite == null:
+		_moon_sprite = Sprite2D.new()
+		_moon_sprite.name = "MoonReflection"
+		_moon_sprite.set_meta("no_shadow", true)
+		_moon_sprite.texture = preload("res://scripts/world/pond_magic.gd").moon_texture()
+		_moon_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_moon_sprite.scale = Vector2(1.2, 1.2)
+		var additive := CanvasItemMaterial.new()
+		additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		additive.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		_moon_sprite.material = additive
+		$Water.add_child(_moon_sprite)
+	_moon_sprite.position = _moon_world.round()
+	_moon_sprite.modulate.a = 0.55 * _moon_strength

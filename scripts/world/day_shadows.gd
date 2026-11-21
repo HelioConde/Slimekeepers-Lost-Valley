@@ -100,6 +100,7 @@ func _on_node_added(node: Node) -> void:
 
 func _register(sprite: Node2D) -> void:
 	if not is_instance_valid(sprite) or not _region.is_ancestor_of(sprite): return
+	if sprite.has_meta("no_shadow"): return  # reflexos e brilhos não projetam sombra
 	var kind := ""
 	var parent := sprite.get_parent()
 	if parent is CharacterBody2D:
@@ -336,7 +337,10 @@ func source_bottom(sprite: Node2D) -> float:
 	var rect := _rect_for(sprite,texture)
 	if sprite is Sprite2D and (sprite.region_enabled or sprite.hframes>1 or sprite.vframes>1): return rect.end.y
 	var key := texture.get_instance_id()
-	if not _used_rects.has(key): _used_rects[key] = texture.get_image().get_used_rect()
+	if not _used_rects.has(key):
+		# Textura gerada em código (ImageTexture) não tem imagem no renderizador headless.
+		var image := texture.get_image()
+		_used_rects[key] = image.get_used_rect() if image else Rect2i(Vector2i.ZERO, Vector2i(texture.get_size()))
 	var used: Rect2i = _used_rects[key]
 	return rect.position.y + (texture.get_height()-used.position.y if sprite.flip_v else used.end.y)
 

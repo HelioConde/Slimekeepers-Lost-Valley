@@ -66,3 +66,10 @@ func test_bank_ring_hidden_and_water_not_lit_by_pond_light() -> void:
 	assert_bool(pool.get_node("StoneBank").visible).is_false()
 	assert_int((rig[2] as Polygon2D).light_mask & rig[0].light.range_item_cull_mask).is_equal(0)
 	assert_int((rig[3] as Node2D).get_child_count()).is_equal(Magic.REED_SPOTS.size())
+
+
+func test_floating_and_glowing_parts_cast_no_shadow() -> void:
+	var magic: Node2D = _spring()[0]
+	assert_bool(magic.moon.has_meta("no_shadow")).is_true()
+	for item in magic.glows: assert_bool(item.has_meta("no_shadow")).is_true()
+	for mist in magic.mists: assert_bool(mist.has_meta("no_shadow")).is_true()

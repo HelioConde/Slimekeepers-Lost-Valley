@@ -191,9 +191,11 @@ func _process(delta: float) -> void:
 	if water_time != _last_water_time:
 		_last_water_time = water_time
 		$SouthernBrook/Water.material.set_shader_parameter("elapsed",water_time)
-		var pond := $NaturalSpring/Pool/Water.material as ShaderMaterial
-		pond.set_shader_parameter("elapsed", water_time)
-		pond.set_shader_parameter("night", preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute()))
+		var night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
+		for water_material: ShaderMaterial in [$NaturalSpring/Pool/Water.material, $SouthernBrook/Water.material]:
+			water_material.set_shader_parameter("elapsed", water_time)
+			water_material.set_shader_parameter("night", night)
+		($SouthernBrook/Water.material as ShaderMaterial).set_shader_parameter("moon_strength", smoothstep(0.4, 1.0, night))
 	var zone_name := Forest.zone(player.position)
 	if zone_name != _last_zone:
 		_last_zone = zone_name

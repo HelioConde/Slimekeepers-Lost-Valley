@@ -83,6 +83,7 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 	# branco-prateado vencer o escurecimento noturno. Linhas finas o cortam (ondas).
 	moon = Sprite2D.new()
 	moon.name = "MoonReflection"
+	moon.set_meta("no_shadow", true)
 	moon.texture = moon_texture()
 	moon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	moon.material = additive
@@ -108,6 +109,7 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 		mist.material = additive
 		mist.position = pool.position + Vector2(-50 + i * 50, 30 - i * 22)
 		mist.z_index = 1
+		mist.set_meta("no_shadow", true)
 		add_child(mist)
 		mists.append(mist)
 
@@ -132,6 +134,7 @@ func _sprite(parent: Node2D, texture: Texture2D, at: Vector2, flip: bool) -> Spr
 	sprite.position = at
 	sprite.flip_h = flip
 	sprite.scale = Vector2(0.75, 0.75) if parent == pool else Vector2.ONE  # vitórias-régias em escala do lago
+	sprite.set_meta("no_shadow", true)  # flutua: não projeta sombra no chão
 	parent.add_child(sprite)
 	return sprite
 
@@ -154,6 +157,7 @@ func _halo(parent: Node2D, at: Vector2, size: int, color: Color, material: Mater
 	halo.material = material
 	halo.modulate = Color(color.r, color.g, color.b, 0.0)
 	halo.set_meta("max_alpha", 0.45)
+	halo.set_meta("no_shadow", true)
 	parent.add_child(halo)
 	glows.append(halo)
 
