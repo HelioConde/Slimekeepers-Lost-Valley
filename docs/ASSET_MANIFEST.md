@@ -173,3 +173,7 @@ Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-do
 ## Touceira de flores V8 — 2026-11-21
 
 `assets/world/forest/wildflowers_cluster.png` (48×48): composição local de `wildflower_lilac` + `wildflower_yellow` com base alinhada à de `flowers.png`. Substitui `flowers.png` na Floresta V2 (sprites e tiles) e no Vale. Sem gerações novas. SHA-256 `80BEC0048DD400D4280F102E7CCE2E378917647F7671722F969C2EEC14386B03`.
+
+## Nenúfar com flor V9 — 2026-11-21
+
+`assets/world/valley/lily_pad_flower.png` (PixelLab, 32×32, 1 geração): nenúfares com flor rosa, no lugar de `lily_pad.png` no Vale (mesmo canvas e tamanho). SHA-256 `9A325FEF9C4543FD41E7507CDE9096BD5D37A85ECB7B6D418444BFCA4A4EFCC7`.

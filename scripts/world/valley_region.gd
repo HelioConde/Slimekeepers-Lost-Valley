@@ -300,6 +300,10 @@ func _process(delta: float) -> void:
 							found_zones[marker.name] = true
 							_update_living_goal()
 						break
+	var water_night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
+	for water: Polygon2D in $Water.get_children():
+		if water.material is ShaderMaterial:
+			water.material.set_shader_parameter("night", water_night)
 	if not reduce_motion:
 		for water: Polygon2D in $Water.get_children():
 			if water.material is ShaderMaterial:

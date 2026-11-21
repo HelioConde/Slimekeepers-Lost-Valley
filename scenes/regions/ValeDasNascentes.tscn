@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cpx836c4il4ya" path="res://assets/world/valley/cliffs_tall.png" id="5_ixrh8"]
 [ext_resource type="Texture2D" uid="uid://d3au48k4k113h" path="res://assets/world/valley/cliffs_low.png" id="6_31s1a"]
 [ext_resource type="Shader" uid="uid://blna76gjkuejx" path="res://scripts/world/valley_water.gdshader" id="7_u4p2k"]
-[ext_resource type="Texture2D" uid="uid://oalt2b0wdg7l" path="res://assets/world/valley/lily_pad.png" id="8_b74jk"]
+[ext_resource type="Texture2D" path="res://assets/world/valley/lily_pad_flower.png" id="8_b74jk"]
 [ext_resource type="Texture2D" uid="uid://cgm2m5582262r" path="res://assets/world/valley/stone_steps.png" id="9_8wij0"]
 [ext_resource type="Texture2D" uid="uid://bo7601tnsaw8v" path="res://assets/world/valley/grass_ramp_flat.png" id="10_8ngon"]
 [ext_resource type="Shader" uid="uid://dqty38jge2gxl" path="res://scripts/world/valley_cascade.gdshader" id="11_k8u8w"]

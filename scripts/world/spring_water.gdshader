@@ -43,9 +43,14 @@ void fragment() {
 	water = mix(water, vec3(1.0, 0.98, 0.86), glint * (1.0 - night) * (1.0 - far_bank));
 	// Noite: água azul luminosa (compensa parte do escurecimento global) com
 	// pontos ciano lentos no lugar dos brilhos de sol.
-	vec3 glow = mix(vec3(dot(water, vec3(0.3, 0.59, 0.11))), water, 0.75) * vec3(0.85, 1.15, 1.55) + vec3(0.02, 0.05, 0.09);
+	vec3 glow = mix(vec3(0.08, 0.25, 0.50), vec3(0.03, 0.10, 0.30), 1.0 - d) + vec3(0.0, 0.03, 0.06) * band;
 	float motes = step(0.994, hash(floor(p / 6.0) + vec2(0.0, floor(t * 0.7))));
 	glow = mix(glow, vec3(0.55, 0.95, 1.0), motes);
+	// Ondas claras e reflexo da lua (centro do lago, traços horizontais).
+	float stroke = step(0.95, sin(p.y * 0.2 + sin(p.x * 0.05 + t * 0.3) * 2.0 + t * 0.8)) * step(0.4, hash(floor(p / vec2(24.0, 4.0))));
+	glow = mix(glow, vec3(0.6, 0.85, 1.0), stroke * 0.5);
+	float moon = 1.0 - smoothstep(0.12, 0.24, length((p - vec2(pool_radius.x * 0.15, -pool_radius.y * 0.2)) / pool_radius));
+	glow = mix(glow, vec3(0.88, 0.96, 1.0), moon * step(0.4, hash(floor(p / vec2(8.0, 4.0)) + floor(t * 2.0))) * 0.9);
 	water = mix(water, glow, night);
 	COLOR = vec4(water, 1.0);
 }
