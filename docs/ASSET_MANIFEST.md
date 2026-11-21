@@ -195,3 +195,7 @@ PixelLab (`create_map_object`, 3 gerações): vitória-régia com flor luminosa 
 ## Plantas-lanterna V9 — 2026-11-21
 
 `assets/world/valley/lantern_flower.png` (PixelLab, 32×48, 1 geração): planta com frutos-lanterna dourados (tipo physalis). Fica nas cabeceiras das pontes do Vale e acende à noite (`scripts/world/lantern_flowers.gd`). Faz o papel das lanternas da referência do rio sem presença humana. SHA-256 `9AF19C67167A0A96A61EF84281FFCD87B5BE36F3C6F075D92526E476BFEBA441`.
+
+## Margens do rio V11 — 2026-11-21
+
+`assets/world/valley/water_banks_v11.png`: tileset Wang pro do PixelLab (barranco baixo de terra escura com pedrinhas e linha de espuma; 15 gerações), encadeado na grama V8 e remapeado por cantos no layout de `water_banks.png`. A água do próprio tile ficou transparente para mostrar a água animada. SHA-256 `3C8657918DA418E799AEC239225E9AEC1424BF61B52F842A1BE84A9D15E5EF9A`.
