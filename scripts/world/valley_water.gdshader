@@ -44,7 +44,7 @@ void fragment() {
 	float raw = clamp(depth * 0.45 + f * 0.35 + vnoise(p * 0.004) * 0.25, 0.0, 0.999) * 5.0;
 	float near_edge = 1.0 - step(0.08, abs(fract(raw) - 0.5) - 0.38);
 	float band = floor(clamp(raw + dither * 0.3 * near_edge, 0.0, 4.999)) / 4.0;
-	vec3 deep = mix(vec3(.035,.38,.38), vec3(.016,.19,.21), band);  // faixas 30% mais próximas da média: água mais uniforme (ref. V11)
+	vec3 deep = mix(vec3(.03,.34,.35), vec3(.02,.23,.25), band);  // faixas 30% mais próximas da média: água mais uniforme (ref. V11)
 	// Faixas de luz (ref.): cristas curvas e diagonais que correm rio abaixo,
 	// estreitas (4–6 px) e suaves nas pontas — nada de blocos chapados.
 	vec2 sw = vec2(p.x * 0.8 + p.y * 0.5, p.y - t * 9.0);
@@ -71,7 +71,7 @@ void fragment() {
 			tuft = max(tuft, step(abs(d.x - x), 1.0) * step(-h, d.y) * step(d.y, 0.0));
 		}
 	}
-	deep = mix(deep, vec3(.07,.34,.32), tuft * 0.7);
+	deep = mix(deep, vec3(.07,.34,.32), tuft * 0.45);
 	// Margem: ondinhas ciano descontínuas que vêm e vão contra a borda.
 	float thin = step(mod(p.y,4.0),1.0);
 	float edge = 1.0 - smoothstep(.08, .3, depth);
