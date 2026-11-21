@@ -1,7 +1,7 @@
 shader_type canvas_item;
 // Participate in CanvasModulate so terrain and water follow the global clock.
 uniform float elapsed=0.0;
-// Brilho refletido do horário (WaterReflections.profile_at): dourado de manhã,
+// Brilho refletido do céu (Astronomy, via waterfall_life): dourado de manhã,
 // âmbar no fim da tarde, azulado à noite.
 uniform vec4 glint_color : source_color = vec4(1.0,0.97,0.8,1.0);
 uniform float glint_strength = 0.5;

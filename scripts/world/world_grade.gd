@@ -44,6 +44,10 @@ func apply(minutes: float) -> void:
 	var profile := profile_at(minutes)
 	for key in profile:
 		material.set_shader_parameter(key, profile[key])
+	# Exposição noturna pelo luar (fontes mágicas não dependem disto: são aditivas).
+	var night: float = preload("res://scripts/world/ambient_lights.gd").night_factor(minutes)
+	var moonlight: float = preload("res://scripts/systems/astronomy.gd").now().moonlight
+	material.set_shader_parameter("exposure", lerpf(1.0, 0.82 + 0.24 * moonlight, night))
 	# Halo das luzes: só à noite (de dia nada passa do limiar colorido).
 	var m := fposmod(minutes, 1440.0)
 	material.set_shader_parameter("glow_strength", 1.6 * (1.0 - smoothstep(5.0 * 60.0, 6.5 * 60.0, m)) if m < 720.0 else 1.6 * smoothstep(18.5 * 60.0, 20.0 * 60.0, m))

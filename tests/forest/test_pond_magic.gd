@@ -33,21 +33,17 @@ func _spring() -> Array:
 	return [magic, pool, water, decorations]
 
 
-func test_magic_only_at_night_and_moon_follows_time() -> void:
+func test_magic_only_at_night() -> void:
 	var rig := _spring()
 	var magic: Node2D = rig[0]
-	var water: Polygon2D = rig[2]
 	magic.apply_time(12 * 60, 0.1)
 	assert_float(magic.light.energy).is_equal(0.0)
 	for item in magic.glows: assert_float(item.modulate.a).is_equal(0.0)
 	for p in magic.emitters: assert_bool(p.emitting).is_false()
-	assert_float(water.material.get_shader_parameter("moon_strength")).is_equal(0.0)
-	assert_float(magic.moon.modulate.a).is_equal(0.0)
 	magic.apply_time(23 * 60, 0.1)
 	assert_float(magic.light.energy).is_greater(0.0)
 	for p in magic.emitters: assert_bool(p.emitting).is_true()
-	assert_float(water.material.get_shader_parameter("moon_strength")).is_equal(1.0)
-	assert_float(magic.moon.modulate.a).is_greater(0.4)
+	# A Lua no lago agora vem só do WaterReflections (Astronomy), não do pond_magic.
 
 
 func test_few_particles_per_plant_with_varied_behaviour() -> void:
@@ -70,6 +66,5 @@ func test_bank_ring_hidden_and_water_not_lit_by_pond_light() -> void:
 
 func test_floating_and_glowing_parts_cast_no_shadow() -> void:
 	var magic: Node2D = _spring()[0]
-	assert_bool(magic.moon.has_meta("no_shadow")).is_true()
 	for item in magic.glows: assert_bool(item.has_meta("no_shadow")).is_true()
 	for mist in magic.mists: assert_bool(mist.has_meta("no_shadow")).is_true()

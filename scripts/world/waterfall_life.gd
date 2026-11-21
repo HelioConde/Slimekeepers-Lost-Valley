@@ -44,7 +44,12 @@ func set_reduced_motion(value:bool) -> void:
 
 ## Brilho do véu na cor refletida do horário; cintilação mágica só à noite.
 func apply_time(minutes: float) -> void:
-	var profile: Dictionary = REFLECTIONS.profile_at(minutes)
+	# Céu único (Astronomy): cor do Sol de dia, prata do luar à noite.
+	var clock_data: Dictionary = GameClock.get_save_data()
+	var sky: Dictionary = preload("res://scripts/systems/astronomy.gd").sky(int(clock_data.day), minutes)
+	var moon_color := Color(0.72, 0.85, 1.0)
+	var profile := {"color": (sky.sun_color as Color).lerp(moon_color, 1.0 - float(sky.daylight)),
+		"strength": maxf(float(sky.sun_reflection), float(sky.moon_reflection))}
 	_night = LIGHTS.night_factor(minutes)
 	var cascade := get_parent().get_node_or_null("Cascade") as CanvasItem if get_parent() else null
 	if cascade and cascade.material is ShaderMaterial:

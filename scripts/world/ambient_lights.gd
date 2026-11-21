@@ -70,6 +70,7 @@ var _shaft_layer: Node2D
 var _shaft_age := 1.0
 const MAX_SHAFTS := 6
 const WIND_SHADER := preload("res://scripts/world/forest_wind.gdshader")
+const ASTRONOMY := preload("res://scripts/systems/astronomy.gd")
 var _foliage_materials: Array[ShaderMaterial] = []
 var _foliage_rescan := 0.0
 const SHAFT_ALPHA := 0.42
@@ -865,6 +866,8 @@ func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
 			if material and material.shader == WIND_SHADER and material not in _foliage_materials:
 				_foliage_materials.append(material)
 	var profile := foliage_profile(minutes)
+	# Bordas das copas com luar: proporcionais ao luar real (fase × altura da Lua).
+	profile.light_strength = float(profile.light_strength) * lerpf(1.0, 0.35 + 0.65 * float(ASTRONOMY.now().moonlight), night)
 	for ground in get_tree().get_nodes_in_group("v8_ground"):
 		if is_instance_valid(_region) and _region.is_ancestor_of(ground):
 			((ground as CanvasItem).material as ShaderMaterial).set_shader_parameter("night_dim", night)
@@ -904,7 +907,10 @@ func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> vo
 	if night > 0.3 and is_instance_valid(_region):
 		var walker := _region.get_node_or_null("Player") as Node2D
 		if walker:
-			var moon_dir := Vector2(0.55, 1.0).normalized()
+			# Luar vem do lado em que a Lua está (Astronomy) e some com Lua nova/baixa.
+			var sky_now: Dictionary = ASTRONOMY.now()
+			var moon_dir := Vector2(-float(sky_now.moon_azimuth) * 0.6, 1.0).normalized()
+			var moonlight: float = sky_now.moonlight
 			var cell := (walker.global_position / MOON_SHAFT_CELL).floor()
 			for dy in range(-1, 2):
 				for dx in range(-2, 2):
@@ -913,7 +919,7 @@ func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> vo
 					if h > 0.38: continue  # só algumas células têm fresta de luar
 					var base := (Vector2(key) + Vector2(0.3 + h, 0.5)) * MOON_SHAFT_CELL
 					shafts.append({"top": base - moon_dir * 260.0, "bottom": base + moon_dir * 120.0,
-						"alpha": MOON_SHAFT_ALPHA * smoothstep(0.3, 0.9, night) * (0.8 + 0.2 * sin(_time * 0.3 + h * 9.0)),
+						"alpha": MOON_SHAFT_ALPHA * smoothstep(0.3, 0.9, night) * moonlight * (0.8 + 0.2 * sin(_time * 0.3 + h * 9.0)),
 						"color": Color(0.55, 0.8, 1.0), "width": 1.6})
 	_shaft_age += get_process_delta_time()
 	if _shaft_age >= 0.1:

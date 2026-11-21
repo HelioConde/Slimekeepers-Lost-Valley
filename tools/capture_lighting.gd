@@ -41,7 +41,10 @@ func run() -> void:
 	var camera := player.get_node_or_null("Camera2D") as Camera2D
 	for time_text in String(args.get("times", "9:00,12:00,18:30,22:00")).split(","):
 		var hm := time_text.split(":")
-		clock.set_time(int(hm[0]), int(hm[1]) if hm.size() > 1 else 0)
+		if args.has("day"):
+			clock.load_save_data({"version": 1, "day": int(args["day"]), "minutes": float(int(hm[0]) * 60 + (int(hm[1]) if hm.size() > 1 else 0))})
+		else:
+			clock.set_time(int(hm[0]), int(hm[1]) if hm.size() > 1 else 0)
 		if camera: camera.reset_smoothing()
 		# Partículas (chama, brasas, vagalumes) precisam de ~1,5 s para encher depois
 		# de ligadas; capturar antes disso mostra a fogueira "acabando de acender".

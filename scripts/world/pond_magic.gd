@@ -26,7 +26,6 @@ var glows: Array[CanvasItem] = []      # halos e reflexos luminosos (só à noit
 var emitters: Array[CPUParticles2D] = []
 var mists: Array[Sprite2D] = []
 var light: PointLight2D
-var moon: Sprite2D  # brilho do reflexo da lua (aditivo, não escurece com a noite)
 var _time := 0.0
 
 
@@ -95,17 +94,6 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 		holder.add_child(reeds)
 		_halo(holder, Vector2(0, -36), 28, GLOW_CYAN, additive)
 		_particles(holder, GLOW_CYAN, i + 3, Vector2(0, -36))
-	# Reflexo da lua: disco pixelado aditivo sobre o núcleo do shader, para o
-	# branco-prateado vencer o escurecimento noturno. Linhas finas o cortam (ondas).
-	moon = Sprite2D.new()
-	moon.name = "MoonReflection"
-	moon.set_meta("no_shadow", true)
-	moon.texture = moon_texture()
-	moon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	moon.material = additive
-	moon.position = Vector2(85.0 * 0.18, -48.0 * 0.28).round()
-	moon.modulate.a = 0.0
-	pool.add_child(moon)
 	# Luz fria do lago sobre pedras, arbustos e o personagem próximos.
 	light = PointLight2D.new()
 	light.name = "PondLight"
@@ -128,19 +116,6 @@ func setup(spring: Node2D, decorations: Node2D) -> void:
 		mist.set_meta("no_shadow", true)
 		add_child(mist)
 		mists.append(mist)
-
-
-static func moon_texture() -> ImageTexture:
-	var image := Image.create(28, 18, false, Image.FORMAT_RGBA8)
-	for y in 18:
-		for x in 28:
-			var q := Vector2((x - 13.5) / 13.0, (y - 8.5) / 8.0)
-			var r := q.length()
-			if r > 1.0: continue
-			var c := Color(0.95, 0.98, 1.0, 1.0) if r < 0.62 else Color(0.62, 0.78, 1.0, 0.75)
-			if y in [5, 12] and (x + y) % 5 != 0: c.a *= 0.25  # linhas de onda cortando o disco
-			image.set_pixel(x, y, c)
-	return ImageTexture.create_from_image(image)
 
 
 func _sprite(parent: Node2D, texture: Texture2D, at: Vector2, flip: bool) -> Sprite2D:
@@ -226,7 +201,6 @@ func apply_time(minutes: float, delta: float) -> void:
 	var night := LIGHTS.night_factor(minutes)
 	var material := water.material as ShaderMaterial
 	if material:
-		material.set_shader_parameter("moon_strength", smoothstep(0.4, 1.0, night))
 		material.set_shader_parameter("golden", float(LIGHTS.foliage_profile(minutes).get("golden", 0.0)))
 	for i in glows.size():
 		var item := glows[i]
@@ -235,9 +209,6 @@ func apply_time(minutes: float, delta: float) -> void:
 	for p in emitters:
 		p.emitting = night > 0.5
 	light.energy = 0.2 * night
-	var moon_strength := smoothstep(0.4, 1.0, night)
-	moon.modulate.a = 0.55 * moon_strength * (0.9 + 0.1 * sin(_time * 0.8))
-	moon.position.x = round(85.0 * 0.18 + sin(_time * 0.3))
 	for i in mists.size():
 		var mist := mists[i]
 		mist.modulate.a = 0.06 * night * (0.7 + 0.3 * sin(_time * 0.3 + i * 2.0))  # mínima: não borrar a água

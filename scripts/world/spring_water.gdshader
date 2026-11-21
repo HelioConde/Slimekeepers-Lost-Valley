@@ -8,7 +8,6 @@ shader_type canvas_item;
 uniform float elapsed = 0.0;
 uniform vec2 pool_radius = vec2(85.0, 48.0);
 uniform float night = 0.0;
-uniform float moon_strength = 1.0;
 uniform float golden = 0.0;  // fim de tarde: borda do lago dourada (ref. V9 das 18h)  // reflexo da lua (horário/céu); plantas brilham à parte
 varying vec2 pixel;
 
@@ -63,23 +62,6 @@ void fragment() {
 	float thin = step(mod(p.y, 4.0), 1.0);  // traços de 2 px de altura: linhas, não blocos
 	float ripple_on = step(0.985, ripple) * step(0.75, hash(vec2(floor(p.x / 24.0), row))) * thin;
 	glow = mix(glow, vec3(0.38, 0.6, 0.8), ripple_on * 0.4);
-	// Reflexo da lua: núcleo estilizado quebrado em faixas + caminho de brilhos.
-	vec2 m = vec2(pool_radius.x * 0.18, -pool_radius.y * 0.28);
-	float shift = floor(sin(t * (0.25 + hash(vec2(row, 11.0)) * 0.2) + row * 1.7) * 1.5);
-	vec2 q = (p + vec2(shift, 0.0) - m) / vec2(14.0, 9.0);
-	float core = length(q);
-	float gap = 1.0 - (1.0 - thin) * step(0.85, hash(vec2(row, floor(t * 0.4))));  // poucas linhas finas cortam o disco  // linhas que somem e voltam
-	float disk = (1.0 - step(1.0, core)) * gap;
-	vec3 silver = core < 0.6 ? vec3(0.96, 0.98, 1.0) : vec3(0.78, 0.88, 1.0);
-	glow = mix(glow, silver, disk * moon_strength);
-	// Caminho: traços que descem do núcleo até a margem próxima, de largura variável.
-	float below = step(m.y + 8.0, p.y);
-	float width = (3.0 + 4.0 * abs(sin(row * 0.8 + t * row_speed))) * (1.0 - smoothstep(0.8, 1.0, dn));
-	float path = step(abs(p.x + shift * 1.5 - m.x), width) * below * thin * step(0.35, hash(vec2(row, 21.0)));
-	float spark = step(0.45, hash(vec2(floor((p.x - m.x) / 6.0), row) + floor(t * 0.5 + row_phase)));
-	glow = mix(glow, vec3(0.86, 0.94, 1.0), path * spark * moon_strength * (1.0 - smoothstep(0.0, 34.0, p.y - m.y) * 0.5));
-	// Halo prateado em volta do núcleo, também quebrado pelas ondas.
-	glow = mix(glow, vec3(0.32, 0.5, 0.78), (1.0 - step(1.7, core)) * step(1.0, core) * 0.6 * moon_strength);
 	// Margem: reflexos ciano descontínuos que acompanham a borda + ondulações
 	// que nascem nela e andam para dentro.
 	float ang = atan(p.y / pool_radius.y, p.x / pool_radius.x);

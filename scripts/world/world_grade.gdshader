@@ -12,6 +12,7 @@ uniform float vignette = 0.16;
 // Brilho das luzes (refs. V9) em pixel art: só pixels muito claros espalham um
 // halo curto em degraus (amostras em anéis de 4 e 8 px, sem desfoque contínuo).
 uniform float glow_strength = 0.0;
+uniform float exposure = 1.0;  // noite: Lua cheia clareia, Lua nova escurece
 uniform float glow_threshold = 0.72;
 
 vec3 bright(vec2 uv) {
@@ -44,5 +45,5 @@ void fragment() {
 	// Vinheta leve: bordas da floresta mais fechadas, centro iluminado.
 	vec2 d = SCREEN_UV - 0.5;
 	c *= 1.0 - vignette * smoothstep(0.25, 0.75, dot(d, d) * 2.2);
-	COLOR = vec4(clamp(c, 0.0, 1.0), 1.0);
+	COLOR = vec4(clamp(c * exposure, 0.0, 1.0), 1.0);
 }

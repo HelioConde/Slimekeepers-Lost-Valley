@@ -195,7 +195,6 @@ func _process(delta: float) -> void:
 		for water_material: ShaderMaterial in [$NaturalSpring/Pool/Water.material, $SouthernBrook/Water.material]:
 			water_material.set_shader_parameter("elapsed", water_time)
 			water_material.set_shader_parameter("night", night)
-		($SouthernBrook/Water.material as ShaderMaterial).set_shader_parameter("moon_strength", smoothstep(0.4, 1.0, night))
 	var zone_name := Forest.zone(player.position)
 	if zone_name != _last_zone:
 		_last_zone = zone_name
