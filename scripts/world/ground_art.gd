@@ -141,3 +141,9 @@ static func apply(region: Node2D, tree_groups: Array, open_test: Callable, min_t
 		banks.material.set_shader_parameter("grass_atlas", WANG)
 		banks.material.set_shader_parameter("grass_origin", Vector2(96, 96))
 		banks.material.set_shader_parameter("grass_tile", 1.0)
+	var elevations := region.get_node_or_null("Elevations")
+	if elevations:
+		for level in elevations.get_children():
+			if level is CanvasItem and level.material is ShaderMaterial:
+				level.material.set_shader_parameter("grass_atlas", WANG)
+				level.material.set_shader_parameter("use_grass", 1.0)

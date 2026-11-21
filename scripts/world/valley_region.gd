@@ -304,6 +304,13 @@ func _process(delta: float) -> void:
 	_update_moon_reflection(water_night)
 	if has_node("WaterBankTiles"):
 		$WaterBankTiles.material.set_shader_parameter("night_dim", water_night)
+	for level in $Elevations.get_children():
+		if level is CanvasItem and level.material is ShaderMaterial:
+			level.material.set_shader_parameter("night_dim", water_night)
+	for fall in $Waterfalls.get_children():
+		var cascade := fall.get_node_or_null("Cascade") as CanvasItem
+		if cascade and cascade.material is ShaderMaterial:
+			cascade.material.set_shader_parameter("night", water_night)
 	for water in $Water.get_children():
 		if water is Polygon2D and water.material is ShaderMaterial:
 			water.material.set_shader_parameter("night", water_night)

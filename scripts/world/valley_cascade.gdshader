@@ -5,6 +5,8 @@ uniform float elapsed=0.0;
 // âmbar no fim da tarde, azulado à noite.
 uniform vec4 glint_color : source_color = vec4(1.0,0.97,0.8,1.0);
 uniform float glint_strength = 0.5;
+// Noite (valley_region): a queda vira um véu branco-azulado luminoso (referência V9).
+uniform float night = 0.0;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 void fragment(){
 	vec4 c=texture(TEXTURE,UV);
@@ -34,8 +36,13 @@ void fragment(){
 		// Crista no alto: a água vira a borda com um brilho que pisca de leve.
 		float lip=1.0-smoothstep(.0,.07,UV.y);
 		c.rgb=mix(c.rgb,glint_color.rgb,lip*glint_strength*(.35+.25*step(.5,hash(vec2(column,floor(elapsed*4.0))))));
+		// Noite: compensa o escurecimento global com azul-prateado claro, mantendo
+		// as faixas de fluxo (claras ainda mais claras).
+		float lum=dot(c.rgb,vec3(.3,.59,.11));
+		vec3 moonlit=mix(vec3(.30,.55,.85),vec3(.85,.95,1.0),smoothstep(.35,.75,lum));
+		c.rgb=mix(c.rgb,moonlit,night*.85);
 	}
-	if(c.r>.74 && c.g>.78 && c.b>.75){c.rgb=mix(c.rgb,vec3(.80,.91,.85),.72);}
+	if(c.r>.74 && c.g>.78 && c.b>.75){c.rgb=mix(c.rgb,mix(vec3(.80,.91,.85),vec3(.92,.97,1.0),night),.72);}
 	// Espuma da base: bolsões translúcidos que trocam de lugar (não repetem o mesmo contorno).
 	if(UV.y>.87 && c.a>.0){c.a*=.48+.35*step(.35,fract(pixel.x*.173+floor(pixel.y/2.0)*.237+floor(elapsed*3.0)*.311));}
 	COLOR=c;
