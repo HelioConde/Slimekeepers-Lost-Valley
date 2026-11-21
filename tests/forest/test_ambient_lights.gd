@@ -569,7 +569,7 @@ func test_common_trees_do_not_glow_at_night() -> void:
 
 func test_canopy_turns_golden_at_low_sun() -> void:
 	var noon: Dictionary = Lights.foliage_profile(12 * 60)
-	var dusk: Dictionary = Lights.foliage_profile(17 * 60 + 30)
+	var dusk: Dictionary = Lights.foliage_profile(18 * 60)  # pico do dourado (refs. V9 das 18h)
 	assert_float(dusk.light_strength).is_greater(noon.light_strength + 0.2)
 	assert_float((dusk.light_color as Vector3).z).is_less((Lights.foliage_profile(12 * 60).light_color as Vector3).z - 0.05)
 
