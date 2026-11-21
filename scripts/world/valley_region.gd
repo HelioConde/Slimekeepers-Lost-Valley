@@ -340,6 +340,10 @@ func _process(delta: float) -> void:
 		(group as CanvasItem).modulate = foliage_night
 	# Tábuas das pontes: madeira malva sob o luar (ref. V11), não cinza.
 	var bridge_night := Color(1, 1, 1).lerp(VALLEY_NIGHT_BRIDGE, water_night)
+	# Entardecer: a madeira laranja sob a luz do pôr do sol saturava em vermelho.
+	var clock_minutes := float(GameClock.get_hour() * 60 + GameClock.get_minute())
+	var dusk := maxf(clampf(water_night * (1.0 - water_night) * 4.0, 0.0, 1.0), clampf(1.0 - absf(clock_minutes - 1170.0) / 70.0, 0.0, 1.0))
+	bridge_night *= Color(1, 1, 1).lerp(VALLEY_DUSK_BRIDGE, dusk)
 	for bridge in $Bridges.get_children():
 		if bridge.name.begins_with("Bridge"): (bridge as CanvasItem).modulate = bridge_night
 	for fall in $Waterfalls.get_children():
@@ -365,6 +369,7 @@ const VALLEY_NIGHT_GROUND := 0.55
 const VALLEY_NIGHT_TINT := Vector3(0.5, 1.0, 1.35)  # azul-petróleo (ref. V11)
 const VALLEY_NIGHT_FOLIAGE := Color(0.66, 0.9, 0.98)
 const VALLEY_NIGHT_BRIDGE := Color(1.04, 0.86, 1.02)
+const VALLEY_DUSK_BRIDGE := Color(0.78, 1.1, 1.08)
 
 
 ## Pregos claros nas pontas de cada tábua das pontes (ref. V11): 2×2 px, a 3 px da ponta.
