@@ -114,7 +114,7 @@ void fragment() {
 			beam *= step(0.3, fract(sin(beam_lane * 3.7) * 999.1 + along / 520.0));  // feixes que começam e acabam
 			g = mix(g, g * vec3(1.5, 1.32, 0.72) + vec3(0.07, 0.055, 0.0), beam * (1.0 - s) * (1.0 - here_forest) * long_shadow * golden * (1.0 - night_dim));
 		}
-		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.82, 1.0) * 0.8, night_dim);
+		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.9, 1.25) * 0.9, night_dim);
 		COLOR.rgb = g;
 	}
 	vec2 p = floor(ground_pixel / 2.0) * 2.0;
