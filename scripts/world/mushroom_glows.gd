@@ -153,7 +153,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 		var lilac := kind == "lilac" or kind == "pink"
 		var color := LILAC if kind == "lilac" else (PINK if kind == "pink" else (WARM if warm else CYAN))
 		if kind == "reed": lilac = true  # mesma intensidade suave
-		pools[i].modulate = Color(color.r, color.g, color.b, (0.18 if lilac else (0.35 if warm else 0.7)) * on * pulse)
+		pools[i].modulate = Color(color.r, color.g, color.b, (0.3 if lilac else (0.35 if warm else 0.7)) * on * pulse)
 		# Flores (lilás/rosa/juncos): só um ponto de luz pequeno — a folha e a flor ficam legíveis.
-		caps[i].modulate = Color(color.r, color.g, color.b, (0.3 if lilac else (0.6 if warm else 0.75)) * on * pulse)
+		caps[i].modulate = Color(color.r, color.g, color.b, (0.5 if lilac else (0.6 if warm else 0.75)) * on * pulse)
 		caps[i].scale = Vector2(0.55, 0.55) if lilac else Vector2.ONE

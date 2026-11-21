@@ -8,6 +8,8 @@ extends Node2D
 const REEDS := preload("res://assets/world/pond/reeds_glow.png")
 const LILY := preload("res://assets/world/pond/lily_glow.png")
 const PAD := preload("res://assets/world/pond/lily_pad.png")
+const FLOWERS := preload("res://assets/world/forest/wildflowers_cluster.png")
+const GLOW_SHROOM := preload("res://assets/world/forest/mushroom_glow.png")
 const CELL := 72.0
 const SHORE := 30.0
 
@@ -42,7 +44,18 @@ func setup(waters: Array, bridges: Array, decorations: Node2D, water_layer: Node
 		for gx in range(int(bounds.position.x / CELL), int(bounds.end.x / CELL) + 1):
 			var key := Vector2i(gx, gy)
 			var at := (Vector2(key) + Vector2(_rand(key, 1), _rand(key, 2))) * CELL
-			if not _in_water(at, waters) or _on_bridge(at, bridges): continue
+			if _on_bridge(at, bridges): continue
+			if not _in_water(at, waters):
+				# Terra na beira da água (refs. V11): flores e cogumelos luminosos.
+				var shore := false
+				for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+					if _in_water(at + dir * SHORE * 2.0, waters): shore = true
+				var rr := _rand(key, 6)
+				if shore and rr < 0.3:
+					_add(decorations, FLOWERS, at, Vector2(0, -16), "bank_flower", key)
+				elif shore and rr < 0.42:
+					_add(decorations, GLOW_SHROOM, at, Vector2(0, -12), "bank_shroom", key)
+				continue
 			var land := 0
 			for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
 				if not _in_water(at + dir * SHORE, waters): land += 1
@@ -76,7 +89,8 @@ func _add(parent: Node2D, texture: Texture2D, at: Vector2, offset: Vector2, kind
 		holder.set_meta("light_color", Color(0.2, 0.35, 0.45))
 		holder.set_meta("light_radius", 10.0)
 		holder.set_meta("light_strength", 0.25)
-	if texture != PAD:
+	if texture == GLOW_SHROOM: pass  # MushroomGlows já reconhece o cogumelo pela textura
+	elif texture != PAD:
 		sprite.set_meta("magic_flower", true)
 		holder.add_to_group("water_light_sources")
 		holder.set_meta("light_color", Color(0.4, 0.85, 1.0) if kind == "reeds" else Color(0.75, 0.5, 1.0))
