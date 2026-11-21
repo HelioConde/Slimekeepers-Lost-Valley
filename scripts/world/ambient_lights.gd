@@ -19,6 +19,8 @@ const SHADOWS := preload("res://scripts/world/day_shadows.gd")
 const SLIME_GLOWS := {
 	"brasinha": [Color(1.0, 0.5, 0.2), 1.1, true],
 	"gelito": [Color(0.55, 0.82, 1.0), 0.9, false],
+	# Bolhinha (água): só um reflexo frio leve à noite, mais fraco que o Gelito.
+	"bolhinha": [Color(0.45, 0.78, 1.0), 0.5, false],
 }
 ## Mancha de sol: textura pequena em pixel art, 1 pixel = DAPPLE_PIXEL px do mundo.
 const DAPPLE_PIXEL := 2
@@ -82,6 +84,7 @@ var _dapple_material: CanvasItemMaterial
 var _player_dapple_light: PointLight2D
 var _dapple_anchor := Vector2.INF
 var _slime_lights: Array[PointLight2D] = []
+var _slime_halos: Array[Sprite2D] = []  # aura aditiva do próprio slime (a luz só clareia o chão)
 var _spots := {"water": [], "vegetation": [], "bloom": []}
 var _spots_dirty := true
 var _spot_anchor := Vector2.INF
@@ -235,6 +238,7 @@ func motes() -> CPUParticles2D: return _motes
 func dapples() -> Array[Sprite2D]: return _dapples
 func dapple_strength(index: int) -> float: return _dapple_strengths[index] if index < _dapple_strengths.size() else 0.0
 func slime_lights() -> Array[PointLight2D]: return _slime_lights
+func slime_halos() -> Array[Sprite2D]: return _slime_halos
 func firefly_swarms() -> Array[CPUParticles2D]: return _swarms
 func magic_glints() -> Array[CPUParticles2D]: return _glints
 func spots(kind: String) -> Array: return _spots.get(kind, [])
@@ -350,6 +354,11 @@ func apply_time(minutes: float, delta: float) -> void:
 		if is_instance_valid(light):
 			var pulse := 0.86 + 0.09 * sin(_time * (2.3 + i * 0.37)) + 0.05 * sin(_time * 5.9 + i)
 			light.energy = (0.25 + 0.45 * night) * pulse
+	for i in _slime_halos.size():
+		var aura := _slime_halos[i]
+		if is_instance_valid(aura):
+			var pulse := 0.85 + 0.15 * sin(_time * (1.7 + i * 0.29))
+			aura.modulate.a = night * minf(1.0, 0.9 * float(aura.get_meta("strength", 1.0)) + 0.3) * pulse
 	_update_dapples(minutes, night)
 	_update_spots(night)
 
@@ -446,6 +455,20 @@ func _consider(node: Node) -> void:
 				light.name = "SlimeGlow"
 				node.add_child(light)
 				_slime_lights.append(light)
+				var aura := Sprite2D.new()
+				aura.name = "SlimeAura"
+				aura.texture = preload("res://scripts/world/mushroom_glows.gd").radial(96, 56, PackedFloat32Array([0.0, 0.3, 0.55, 0.8]), PackedFloat32Array([0.7, 0.4, 0.18, 0.0]))
+				var additive := CanvasItemMaterial.new()
+				additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+				additive.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+				aura.material = additive
+				aura.show_behind_parent = true
+				aura.position = Vector2(0, 4)
+				aura.modulate = Color(spec[0], 0.0)
+				aura.set_meta("strength", float(spec[1]))
+				aura.set_meta("no_shadow", true)
+				node.add_child(aura)
+				_slime_halos.append(aura)
 				node.add_child(_make_sparks(spec[2]))
 				break
 	elif node is Sprite2D and _glows.size() < MAX_GLOW_LIGHTS:
@@ -841,6 +864,10 @@ func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
 	for ground in get_tree().get_nodes_in_group("v8_ground"):
 		if is_instance_valid(_region) and _region.is_ancestor_of(ground):
 			((ground as CanvasItem).material as ShaderMaterial).set_shader_parameter("night_dim", night)
+			var sun_now: Vector2 = SHADOWS.profile_at(minutes)["vector"]
+			var gm := (ground as CanvasItem).material as ShaderMaterial
+			gm.set_shader_parameter("sun_vector", sun_now)
+			gm.set_shader_parameter("long_shadow", smoothstep(0.85, 1.05, sun_now.length()))
 	for material in _foliage_materials:
 		for key in profile:
 			material.set_shader_parameter(key, profile[key])

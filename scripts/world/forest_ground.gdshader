@@ -12,6 +12,10 @@ uniform float night_dim = 0.0;
 // Sol e sombra no chão aberto: a copa da mata sombreia a grama vizinha (fria),
 // com manchas de luz recortadas na faixa de transição; longe dela, sol quente.
 uniform float canopy_shade = 0.0;
+// Sombra longa da mata no sol baixo (AmbientLights): vetor do sol em px por px de
+// altura e força. Faixas: troncos projetam listras longas sobre a grama aberta.
+uniform vec2 sun_vector = vec2(0.0);
+uniform float long_shadow = 0.0;
 
 uniform sampler2D corner_mask_soft : filter_linear, repeat_disable;  // a mesma máscara, filtrada
 
@@ -77,6 +81,23 @@ void fragment() {
 			vec3 sun = g * vec3(1.06, 1.04, 0.94);
 			vec3 cool = g * vec3(0.74, 0.82, 0.9);
 			g = mix(g, mix(sun, cool, shade), canopy_shade * (1.0 - night_dim));
+		}
+		if (long_shadow > 0.0 && length(sun_vector) > 0.5) {
+			vec2 dir = normalize(sun_vector);
+			vec2 across = vec2(-dir.y, dir.x);
+			vec2 sz = vec2(textureSize(corner_mask_soft, 0));
+			// Mata "contra o sol": há árvores a 40–260 px na direção de onde vem a luz?
+			float caster = 0.0;
+			for (int k = 1; k <= 6; k++) {
+				vec2 back = world_pixel - dir * float(k) * 44.0;
+				caster = max(caster, 1.0 - texture(corner_mask_soft, (back / 32.0 + vec2(0.5)) / sz).r);
+			}
+			// Listras: troncos separados por frestas de luz (ruído ao longo de 'across').
+			float lane = floor(dot(world_pixel, across) / 14.0);
+			float stripe = step(0.42, fract(sin(lane * 12.9898) * 43758.5453));
+			float here_forest = 1.0 - texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / sz).r;
+			float s = step(0.5, caster) * stripe * (1.0 - step(0.5, here_forest));
+			g = mix(g, g * vec3(0.5, 0.55, 0.68), s * long_shadow * (1.0 - night_dim));
 		}
 		g = mix(g, mix(vec3(luma), g, 0.6) * vec3(0.72, 0.82, 1.0) * 0.8, night_dim);
 		COLOR.rgb = g;

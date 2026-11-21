@@ -584,3 +584,22 @@ func test_magic_sparkles_float_in_the_air_day_and_night() -> void:
 	rig.apply_time(23 * 60, 0.1)
 	assert_float(field.color.b).is_greater_equal(field.color.r)  # branco-azulado à noite
 	assert_int(field.z_index).is_greater(20)
+
+
+func test_glowing_slimes_get_an_aura_only_at_night() -> void:
+	var region: Node2D = auto_free(Node2D.new())
+	add_child(region)
+	var slime := AnimatedSprite2D.new()
+	slime.sprite_frames = load("res://assets/slimes/living_v3/bolhinha/frames.tres")
+	region.add_child(slime)
+	var holder := Node2D.new()
+	region.add_child(holder)
+	var rig: Node2D = Lights.new()
+	holder.add_child(rig)
+	await await_idle_frame()
+	assert_int(rig.slime_halos().size()).is_equal(1)
+	rig.apply_time(12 * 60, 0.1)
+	assert_float(rig.slime_halos()[0].modulate.a).is_equal(0.0)
+	rig.apply_time(23 * 60, 0.1)
+	assert_float(rig.slime_halos()[0].modulate.a).is_greater(0.3)
+	assert_bool(rig.slime_halos()[0].show_behind_parent).is_true()
