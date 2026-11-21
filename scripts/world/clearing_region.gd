@@ -78,10 +78,19 @@ func _compact_hud() -> void:
 	fade.name = "HudOverlapFade"
 	fade.target = player
 	$HUD/Interface.add_child(fade)
-	# Barra rápida de itens (ferramentas, sementes, colheitas) acima da linha de dicas.
-	$HUD/Interface.add_child(preload("res://scripts/ui/hotbar_hud.gd").new())
+	# Barra rápida de itens embaixo, no lugar da linha de teclas; mostra a ação
+	# disponível ([E] ...) no título quando houver.
+	var hotbar := preload("res://scripts/ui/hotbar_hud.gd").new()
+	hotbar.hint_source = hud_hint
+	$HUD/Interface.add_child(hotbar)
+	# Nome do lugar só na chegada, depois some (menos poluição na tela).
+	var title_fade := create_tween()
+	title_fade.tween_interval(3.0)
+	title_fade.tween_property(panel, "modulate:a", 0.0, 0.8)
+	title_fade.tween_callback(panel.hide)
 	$HUD/Interface.add_child(preload("res://scripts/ui/energy_hud.gd").new())
 	var hint: PanelContainer = $HUD/Interface/InteractionHint
+	hint.hide()  # tutorial de teclas removido; ações aparecem na barra de itens
 	hint.anchor_left = 0.5
 	hint.anchor_right = 0.5
 	hint.offset_left = -292

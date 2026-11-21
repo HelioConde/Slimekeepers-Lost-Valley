@@ -13,6 +13,8 @@ var _icons: Array[TextureRect] = []
 var _counts: Array[Label] = []
 var _name_label: Label
 var _elapsed := 0.0
+## Label de dica da região: quando traz uma ação ("[E] ..."), aparece no título.
+var hint_source: Label
 
 
 func _ready() -> void:
@@ -26,8 +28,8 @@ func _ready() -> void:
 	anchor_bottom = 1.0
 	offset_left = -width * 0.5
 	offset_right = width * 0.5
-	offset_bottom = -50
-	offset_top = -50 - (SLOT + 22)
+	offset_bottom = -8
+	offset_top = -8 - (SLOT + 22)
 	var frame := StyleBoxFlat.new()
 	frame.bg_color = Color("#694657")
 	frame.set_corner_radius_all(4)
@@ -79,6 +81,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_update_title()
 	_elapsed += delta
 	if _elapsed >= REFRESH_SECONDS:
 		_elapsed = 0.0
@@ -116,5 +119,17 @@ func refresh() -> void:
 		_icons[index].texture = ITEMS.icon(item) if not item.is_empty() else null
 		var amount := HOTBAR.count(tree, item)
 		_counts[index].text = str(amount) if amount > 0 else ""
-	var current := items[selected]
+	_update_title()
+
+
+func _update_title() -> void:
+	if not is_inside_tree():
+		return
+	var hint := hint_source.text if is_instance_valid(hint_source) else ""
+	if hint.begins_with("["):
+		_name_label.text = hint
+		_name_label.add_theme_color_override("font_color", Color("#ffd98a"))
+		return
+	var current := HOTBAR.selected_item(get_tree())
 	_name_label.text = str(ITEMS.info(current).name) if not current.is_empty() else "Mão livre"
+	_name_label.add_theme_color_override("font_color", Color("#f6e8c2"))
