@@ -9,9 +9,29 @@ uniform vec3 highlight_tint = vec3(1.08, 1.02, 0.86);  // luz do sol nas partes 
 uniform vec3 shadow_tint = vec3(0.92, 0.98, 1.06);     // sombras frias/esverdeadas
 uniform float tint_strength = 0.6;
 uniform float vignette = 0.16;
+// Brilho das luzes (refs. V9) em pixel art: só pixels muito claros espalham um
+// halo curto em degraus (amostras em anéis de 4 e 8 px, sem desfoque contínuo).
+uniform float glow_strength = 0.0;
+uniform float glow_threshold = 0.72;
+
+vec3 bright(vec2 uv) {
+	vec3 c = texture(screen, uv).rgb;
+	float m = max(c.r, max(c.g, c.b));
+	return c * step(glow_threshold, m) * step(0.25, m - min(c.r, min(c.g, c.b)));  // só luz colorida, não papel/HUD branco
+}
 
 void fragment() {
 	vec3 c = texture(screen, SCREEN_UV).rgb;
+	if (glow_strength > 0.0) {
+		vec3 halo = vec3(0.0);
+		for (int i = 0; i < 8; i++) {
+			vec2 dir = vec2(cos(float(i) * 0.785), sin(float(i) * 0.785));
+			halo += bright(SCREEN_UV + dir * 4.0 * SCREEN_PIXEL_SIZE) * 0.6;
+			halo += bright(SCREEN_UV + dir * 9.0 * SCREEN_PIXEL_SIZE) * 0.3;
+		}
+		halo /= 8.0;
+		c += floor(halo * glow_strength * 8.0) / 8.0;  // degraus: halo em bandas, não gradiente liso
+	}
 	float luma = dot(c, vec3(0.299, 0.587, 0.114));
 	// Vibração: puxa a saturação proporcionalmente ao que falta (não estoura o que já é forte).
 	float sat = max(max(c.r, c.g), c.b) - min(min(c.r, c.g), c.b);

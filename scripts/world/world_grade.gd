@@ -44,6 +44,9 @@ func apply(minutes: float) -> void:
 	var profile := profile_at(minutes)
 	for key in profile:
 		material.set_shader_parameter(key, profile[key])
+	# Halo das luzes: só à noite (de dia nada passa do limiar colorido).
+	var m := fposmod(minutes, 1440.0)
+	material.set_shader_parameter("glow_strength", 1.6 * (1.0 - smoothstep(5.0 * 60.0, 6.5 * 60.0, m)) if m < 720.0 else 1.6 * smoothstep(18.5 * 60.0, 20.0 * 60.0, m))
 
 
 static func profile_at(minutes: float) -> Dictionary:
