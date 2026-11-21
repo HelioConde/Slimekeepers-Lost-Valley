@@ -80,3 +80,26 @@ func test_position_is_clamped_to_world_bounds() -> void:
 	player.global_position = Vector2(-500, 5000)
 	player._physics_process(1.0 / 60.0)
 	assert_vector(player.global_position).is_equal(Vector2(player.world_bounds.position.x, player.world_bounds.end.y))
+
+
+func test_tool_animations_exist_and_lock_movement() -> void:
+	var player = auto_free(load("res://scenes/player.tscn").instantiate())
+	add_child(player)
+	await await_idle_frame()
+	var frames: SpriteFrames = player.sprite.sprite_frames
+	for dir in player.DIRS:
+		for tool in ["hoe", "water"]:
+			var anim := "%s_%s" % [tool, dir]
+			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
+			assert_int(frames.get_frame_count(anim)).is_equal(9)
+			assert_bool(frames.get_animation_loop(anim)).is_false()
+	player.facing = "east"
+	var duration: float = player.play_tool("hoe")
+	assert_float(duration).is_greater(0.3)
+	assert_str(player.current_animation).is_equal("hoe_east")
+	assert_bool(player.is_using_tool()).is_true()
+	Input.action_press("move_right")
+	player._physics_process(0.016)
+	Input.action_release("move_right")
+	assert_vector(player.velocity).is_equal(Vector2.ZERO)
+	assert_str(player.current_animation).is_equal("hoe_east")

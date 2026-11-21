@@ -91,6 +91,8 @@ func _handle_farm_interaction() -> bool:
 	if not is_instance_valid(farm_field) or not farm_field.has_target(player):
 		return false
 	hud_hint.text = farm_field.hint(player)
+	if player.has_method("is_using_tool") and player.is_using_tool():
+		return true  # termina o golpe antes de aceitar outro [E]
 	if Input.is_action_just_pressed("interact"):
 		var message: String = farm_field.interact(player)
 		if not message.is_empty(): _notify(message)

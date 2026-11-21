@@ -123,8 +123,10 @@ func interact(actor: Node2D) -> String:
 			if FARM.harvest(tree, cell): message = "%s colhida e guardada na bolsa!" % harvested
 		"till":
 			if FARM.till(tree, cell): message = "Terra arada."
+			if actor.has_method("play_tool"): actor.play_tool("hoe")
 		"water":
 			if FARM.water(tree, cell): message = "Terra regada."
+			if actor.has_method("play_tool"): actor.play_tool("water")
 		"plant":
 			var crop_id := str(ITEMS.info(item).crop)
 			if FARM.plant(tree, cell, crop_id): message = "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
