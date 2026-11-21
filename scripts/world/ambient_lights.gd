@@ -59,6 +59,13 @@ var _glows: Array[PointLight2D] = []
 var _spores: Array[CPUParticles2D] = []
 var _halos: Array[Sprite2D] = []
 var _halo_texture: GradientTexture2D
+## Raios de sol: da copa (origem) até a mancha no chão. [{top, bottom, alpha, seed}]
+var shafts: Array = []
+var _shaft_layer: Node2D
+var _shaft_age := 1.0
+const MAX_SHAFTS := 6
+const SHAFT_ALPHA := 0.42
+const SHAFT_LENGTH := 300.0
 var _player_light: PointLight2D
 var _fireflies: CPUParticles2D
 var _motes: CPUParticles2D
@@ -369,6 +376,17 @@ func _scan() -> void:
 		player.add_child(_motes)
 		for i in MAX_DAPPLES:
 			add_child(_make_dapple(i))
+		_shaft_layer = Node2D.new()
+		_shaft_layer.name = "SunShafts"
+		_shaft_layer.top_level = true
+		_shaft_layer.z_as_relative = false
+		_shaft_layer.z_index = 25  # no ar, à frente das copas
+		var shaft_glow := CanvasItemMaterial.new()
+		shaft_glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		shaft_glow.light_mode = CanvasItemMaterial.LIGHT_MODE_UNSHADED
+		_shaft_layer.material = shaft_glow
+		_shaft_layer.draw.connect(_draw_shafts)
+		add_child(_shaft_layer)
 		# Luz fraca no jogador quando ele atravessa uma mancha de sol.
 		_player_dapple_light = _make_light(Color(1.0, 0.93, 0.75), 0.45)
 		_player_dapple_light.texture = _soft_texture
@@ -720,6 +738,56 @@ func _update_dapples(minutes: float, night: float) -> void:
 	if is_instance_valid(_player_dapple_light):
 		_player_dapple_light.color = warm
 		_player_dapple_light.energy = 0.9 * near_player
+	_update_shafts(sun, day, low_sun, warm)
+
+
+## Raios saem do alto da copa que abre a mancha e descem até ela; fortes com sol
+## baixo, fracos ao meio-dia, nenhum à noite.
+func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> void:
+	if not is_instance_valid(_shaft_layer):
+		return
+	shafts.clear()
+	var alpha := SHAFT_ALPHA * day * (0.25 + 0.75 * low_sun)
+	if alpha > 0.005:
+		for i in _dapples.size():
+			if shafts.size() >= MAX_SHAFTS: break
+			var dapple := _dapples[i]
+			var gap: Dictionary = dapple.get_meta("gap", {})
+			if not dapple.visible or not gap.has("foot") or i % 2 == 1:
+				continue
+			var top: Vector2 = (gap.foot as Vector2) + Vector2(0, -float(gap.height) * 0.72) - sun.normalized() * 24.0
+			# O feixe segue da copa através da mancha e continua pelo chão aberto.
+			var home: Vector2 = dapple.get_meta("home")
+			var bottom := top + (home - top).normalized() * maxf(top.distance_to(home), SHAFT_LENGTH)
+			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm})
+	_shaft_age += get_process_delta_time()
+	if _shaft_age >= 0.1:
+		_shaft_age = 0.0
+		_shaft_layer.queue_redraw()
+
+
+func _draw_shafts() -> void:
+	for shaft in shafts:
+		var top: Vector2 = shaft.top
+		var bottom: Vector2 = shaft.bottom
+		var across := (bottom - top).orthogonal().normalized()
+		var c: Color = shaft.color
+		var a: float = shaft.alpha
+		# Seções ao longo do feixe: (posição, meia-largura, alfa no eixo). Bordas laterais
+		# sempre transparentes: gradiente suave, sem arestas duras.
+		var stations := [[0.0, 6.0, 0.0], [0.3, 14.0, 0.55], [0.6, 24.0, 1.0], [1.0, 40.0, 0.0]]
+		for k in stations.size() - 1:
+			var s0: Array = stations[k]
+			var s1: Array = stations[k + 1]
+			var p0 := top.lerp(bottom, s0[0])
+			var p1 := top.lerp(bottom, s1[0])
+			var core0 := Color(c, a * float(s0[2]))
+			var core1 := Color(c, a * float(s1[2]))
+			var clear := Color(c, 0.0)
+			for side in [-1.0, 1.0]:
+				_shaft_layer.draw_polygon(
+					PackedVector2Array([p0, p0 + across * float(s0[1]) * side, p1 + across * float(s1[1]) * side, p1]),
+					PackedColorArray([core0, clear, clear, core1]))
 
 
 func _make_motes(amount: int) -> CPUParticles2D:

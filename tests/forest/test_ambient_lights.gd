@@ -494,3 +494,33 @@ func test_wind_reaches_neighbouring_dapples_with_a_delay() -> void:
 	var phase_near := -(near.x + near.y) * Lights.WIND_WAVELENGTH
 	var phase_far := -(far.x + far.y) * Lights.WIND_WAVELENGTH
 	assert_float(absf(phase_near - phase_far)).is_greater(1.0)
+
+
+func _shaft_alpha(rig: Node2D) -> float:
+	var total := 0.0
+	for shaft in rig.shafts:
+		total += float(shaft.alpha)
+	return total
+
+
+func test_sun_shafts_start_at_canopy_follow_low_sun_and_vanish_at_night() -> void:
+	var rig: Node2D = _rig_in_region(false, 0)[1]
+	await await_idle_frame()
+	rig.apply_time(9 * 60, 0.0)
+	# Cada mancha vem de uma copa: o raio sai do alto dela.
+	for i in rig.dapples().size():
+		rig.dapples()[i].set_meta("gap", {"foot": Vector2(120 * i, 300), "height": 160.0, "along": 0.5, "side": 0.0, "variant": 0})
+	rig.apply_time(7 * 60, 0.0)
+	assert_int(rig.shafts.size()).is_between(1, Lights.MAX_SHAFTS)
+	for shaft in rig.shafts:
+		assert_float((shaft.top as Vector2).y).is_less((shaft.bottom as Vector2).y)
+		assert_float((shaft.top as Vector2).distance_to(shaft.bottom)).is_greater_equal(Lights.SHAFT_LENGTH - 1.0)
+	var low_sun: float = _shaft_alpha(rig) / rig.shafts.size()
+	rig.apply_time(12 * 60, 0.0)
+	var noon: float = _shaft_alpha(rig) / maxi(1, rig.shafts.size())
+	assert_float(low_sun).is_greater(noon * 1.5)
+	rig.apply_time(23 * 60, 0.0)
+	assert_int(rig.shafts.size()).is_equal(0)
+	var layer: Node2D = rig.get_node("SunShafts")
+	assert_int((layer.material as CanvasItemMaterial).blend_mode).is_equal(CanvasItemMaterial.BLEND_MODE_ADD)
+	assert_int((layer.material as CanvasItemMaterial).light_mode).is_equal(CanvasItemMaterial.LIGHT_MODE_UNSHADED)
