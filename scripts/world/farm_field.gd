@@ -10,6 +10,7 @@ const CROPS := preload("res://scripts/systems/crop_catalog.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
+const ENERGY := preload("res://scripts/systems/energy_state.gd")
 const CELL := 32
 ## Alcance do [E]: célula à frente do jogador.
 const REACH := 22.0
@@ -117,7 +118,11 @@ func interact(actor: Node2D) -> String:
 	var tree := get_tree()
 	var item := HOTBAR.selected_item(tree)
 	var message := ""
-	match action_with(cell, item):
+	var action := action_with(cell, item)
+	if action in ENERGY.COSTS and not ENERGY.spend(tree, action):
+		last_action = "Cansada demais para isso. Durma para recuperar a energia."
+		return last_action
+	match action:
 		"harvest":
 			var harvested := str(CROPS.get_crop(FARM.crop(tree, cell)).name)
 			if FARM.harvest(tree, cell): message = "%s colhida e guardada na bolsa!" % harvested
@@ -137,6 +142,7 @@ func interact(actor: Node2D) -> String:
 
 func _on_day_changed(_day: int) -> void:
 	FARM.advance_day(get_tree())
+	ENERGY.restore(get_tree())
 	refresh()
 
 
