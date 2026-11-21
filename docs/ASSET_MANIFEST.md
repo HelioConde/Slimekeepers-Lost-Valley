@@ -133,3 +133,14 @@ Novas variantes geradas no PixelLab (mesmos parâmetros das árvores do protóti
 | `pine_crisp.png` | `assets/world/forest/pine_lush.png` | `F1A45CF9A47E75DF134FCC5CFD547B3775640568BEAE859DEB40DE8E7F3389DA` |
 
 O `wildflower_yellow.png` teve as pétalas clareadas (+25% de valor) para ler como flor ao sol.
+
+## Harmonização V8 — 2026-11-21
+
+Árvores V6 retonificadas com `tools/tone_lush_sprite.py` (`--soften 0.55`; pinheiro `--soften 0.5 --tips 0.7`) para tirar o amarelo-lima fluorescente. As versões V6 anteriores ficam no histórico (b230e32), e os sprites antigos (`oak.png`, `oak_medium.png`, `oak_young.png`, `pine_crisp.png`) continuam no repositório para comparação. Sem gerações novas.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/forest/oak_lush.png` | `D8AE4AFE0B710AAE592212E1943A9D47F4881B67E8D7E654243C878E4B2662CF` |
+| `assets/world/forest/oak_lush_open.png` | `6CED844989314B691C07404D67817DDFF40526119F85021B8C19874E6D760E54` |
+| `assets/world/forest/oak_lush_tall.png` | `7B9A7AF593A13CF5C8D04014F8667C0CE51904DA4D66C11717274BE7AC094A24` |
+| `assets/world/forest/pine_lush.png` | `9A6FBDB87C8536290A10A1328D725EA5A6D0239143C58A0401734CA9C2B46D2F` |

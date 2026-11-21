@@ -59,3 +59,30 @@ func test_sits_below_characters() -> void:
 	var detail := _build()
 	assert_int(detail.z_index).is_less(0)
 	assert_vector(detail.position).is_equal(Vector2(1600, 1600))
+
+
+func test_bushes_only_frame_the_clearing_and_avoid_props() -> void:
+	var holder: Node2D = auto_free(Node2D.new())
+	var rock := Node2D.new()
+	rock.position = Vector2(1600, 1290)  # pedra já existente perto da borda norte
+	holder.add_child(rock)
+	var detail: Node2D = auto_free(Detail.new())
+	detail.bush_parent = holder
+	detail.build()
+	var paths := Layout.trails()
+	var bushes: Array = detail.placed.filter(func(item): return item.kind == "bush")
+	assert_int(bushes.size()).is_greater(0)
+	for item in bushes:
+		var at: Vector2 = item.at
+		# Moldura: dentro da borda da clareira, fora do miolo aberto e longe de caminhos.
+		assert_bool(Layout.inside_clearing(at, 40.0)).is_true()
+		assert_bool(Layout.inside_clearing(at, 40.0 - Detail.RIM_DEPTH)).is_false()
+		assert_float(Layout.trail_distance(at, paths)).is_greater(80.0)
+		assert_float(at.distance_to(rock.position)).is_greater_equal(70.0)
+
+
+func test_open_clearing_stays_mostly_open() -> void:
+	var detail := _build()
+	var flowers: Array = detail.placed.filter(func(item): return str(item.kind).begins_with("wildflower"))
+	# Flores são destaque, não tapete: minoria do que foi posto.
+	assert_float(float(flowers.size()) / maxf(1.0, detail.placed.size())).is_less(0.5)

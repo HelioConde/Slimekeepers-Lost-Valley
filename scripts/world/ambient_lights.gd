@@ -47,7 +47,7 @@ const DAWN_START := 4.5 * 60.0
 const DAWN_END := 6.5 * 60.0
 const CAMPFIRE_COLOR := Color(1.0, 0.55, 0.25)
 ## Raio (px do mundo) da luz da fogueira: só o entorno, sem disco gigante no caminho.
-const CAMPFIRE_RADIUS := 112.0
+const CAMPFIRE_RADIUS := 160.0  # alcança vegetação e pedras do acampamento
 const GLOW_COLOR := Color(0.35, 0.82, 1.0)  # ciano-azulado da referência noturna
 const PLAYER_COLOR := Color(1.0, 0.96, 0.88)
 
@@ -309,7 +309,7 @@ func apply_time(minutes: float, delta: float) -> void:
 	var fire_glow := smoothstep(0.55, 1.0, night)
 	for light in _campfires:
 		if is_instance_valid(light):
-			light.energy = 1.6 * fire_glow * flicker
+			light.energy = 1.4 * fire_glow * flicker
 	for fire in _fires:
 		if is_instance_valid(fire):
 			fire.emitting = night > 0.15
@@ -762,8 +762,10 @@ static func foliage_profile(minutes: float) -> Dictionary:
 	return {
 		"light_dir": direction,
 		"light_color": Vector3(color.r, color.g, color.b),
-		"light_strength": day * (0.45 + 0.25 * low_sun) + night * 0.45,
-		"shade_strength": day * 0.45 + night * 0.35,
+		# À noite só um fio de luar nas bordas: copa comum não pode parecer luminosa.
+		"light_strength": day * (0.32 + 0.2 * low_sun) + night * 0.16,
+		"shade_strength": day * 0.45 + night * 0.4,
+		"glint_strength": day * 0.25,
 	}
 
 

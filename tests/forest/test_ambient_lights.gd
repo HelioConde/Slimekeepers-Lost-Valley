@@ -557,3 +557,10 @@ func test_foliage_light_reaches_shared_wind_materials() -> void:
 	rig.apply_time(23 * 60, 0.1)
 	var moon: Vector3 = material.get_shader_parameter("light_color")
 	assert_float(moon.z).is_greater(moon.x)
+
+
+func test_common_trees_do_not_glow_at_night() -> void:
+	var day: Dictionary = Lights.foliage_profile(10 * 60)
+	var night: Dictionary = Lights.foliage_profile(23 * 60)
+	assert_float(night.glint_strength).is_equal(0.0)
+	assert_float(night.light_strength).is_less(day.light_strength * 0.6)

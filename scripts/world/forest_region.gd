@@ -161,6 +161,7 @@ func _add_ground_detail() -> void:
 	for tree in $VegetationHigh.get_children():
 		if tree is Node2D and tree.visible: detail.tree_feet.append((tree as Node2D).position)
 	detail.wind_material = ecosystem.get_wind_material("plant")
+	detail.bush_parent = $Decorations
 	detail.build()
 	add_child(detail)
 
