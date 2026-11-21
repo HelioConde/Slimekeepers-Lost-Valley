@@ -4,6 +4,7 @@ const Forest = preload("res://scripts/world/forest_layout.gd")
 const Living = preload("res://scripts/world/living_region.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
+const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const SEED_PATCH := preload("res://scripts/world/forest_seed_patch.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const SEED_SITES := [
@@ -11,6 +12,9 @@ const SEED_SITES := [
 	{"id": "bosque_cogumelos", "at": Vector2(2100, 2860)},
 	{"id": "campo_brotos", "at": Vector2(3350, 4580)}
 ]
+const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
+const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 var found_places: Dictionary = {}
 var ecosystem: Node2D
 var habitat_manager: Node2D
@@ -179,7 +183,7 @@ func _process(delta: float) -> void:
 		if message_time <= 0: popup.text = ""
 	var closest := _closest_slime()
 	if closest != null:
-		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Oferecer porcao"
+		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
 		if Input.is_action_just_pressed("feed"):
 			_offer_prototype_food(closest)
 			return
@@ -222,6 +226,21 @@ func _process(delta: float) -> void:
 			return
 
 func _offer_prototype_food(slime: Node2D) -> void:
+	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).
+	var item: String = HOTBAR.selected_item(get_tree())
+	if FEEDING.is_food(item):
+		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number)
+		if item == COOKING.RECIPE_ID and fed == "fed":
+			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true)  # registro da primeira porção
+		match fed:
+			"fed":
+				slime.set("_happy_time", 2.4)
+				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
+				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
+			"needs_friendship": _notify("Primeiro conheça este slime usando E.")
+			"already_fed": _notify(slime.display_name() + " já comeu hoje.")
+			_: _notify("Você não tem " + str(ITEMS.info(item).name).to_lower() + ".")
+		return
 	var result: String = FOOD.offer(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")))
 	match result:
 		"offered":

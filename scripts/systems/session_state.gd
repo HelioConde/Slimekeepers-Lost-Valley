@@ -20,6 +20,8 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"hotbar_selected",
 	"player_energy",
 	"farm_last_day",
+	"slime_affinity",
+	"slime_fed_day",
 	"valley_cooking_ledger",
 	"slime_food_offers",
 	"session_progress_flags",

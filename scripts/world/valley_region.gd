@@ -12,6 +12,9 @@ const FARM_FIELD := preload("res://scripts/world/farm_field.gd")
 ## Placa do caminho para a fazenda, a leste da chegada da Floresta.
 const FARM_GATE := Vector2(1700, 230)
 const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
+const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
+const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 var ecosystem: Node2D
 var habitat_manager: Node2D
 var environmental_audio: Node2D
@@ -215,6 +218,21 @@ func _on_water_slime(slime: Node2D) -> void:
 	_update_living_goal()
 
 func _offer_prototype_food(slime: Node2D) -> void:
+	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).
+	var item: String = HOTBAR.selected_item(get_tree())
+	if FEEDING.is_food(item):
+		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number)
+		if item == COOKING.RECIPE_ID and fed == "fed":
+			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true)  # registro da primeira porção
+		match fed:
+			"fed":
+				slime.set("_happy_time", 2.4)
+				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
+				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
+			"needs_friendship": _notify("Primeiro conheça este slime usando E.")
+			"already_fed": _notify(slime.display_name() + " já comeu hoje.")
+			_: _notify("Você não tem " + str(ITEMS.info(item).name).to_lower() + ".")
+		return
 	var result: String = FOOD.offer(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")))
 	match result:
 		"offered":
@@ -265,7 +283,7 @@ func _process(delta: float) -> void:
 		if not _handle_farm_interaction() and not _handle_cooking_interaction() and not _handle_garden_interaction():
 			var closest := _closest_slime()
 			if closest != null:
-				hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Oferecer porcao"
+				hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
 				if Input.is_action_just_pressed("feed"):
 					_offer_prototype_food(closest)
 				elif Input.is_action_just_pressed("interact"):

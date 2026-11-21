@@ -17,10 +17,12 @@ const ITEMS := {
 	"beterraba": {"name": "Beterraba", "kind": "crop", "crop_art": "beterraba"},
 	"repolho": {"name": "Repolho", "kind": "crop", "crop_art": "repolho"},
 	"folhas_frescas": {"name": "Folhas frescas", "kind": "crop", "crop_art": "folhas_silvestres"},
+	# Porção cozida na estação do Vale (valley_cooking.RECIPE_ID): alimenta melhor os slimes.
+	"porcao_folhas_prototipo": {"name": "Porção de folhas", "kind": "food", "icon": "porcao_folhas"},
 }
 ## Ordem dos itens na barra depois das ferramentas.
 const ORDER := ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres",
-	"cenoura", "beterraba", "repolho", "folhas_frescas"]
+	"cenoura", "beterraba", "repolho", "folhas_frescas", "porcao_folhas_prototipo"]
 
 static var _icon_cache: Dictionary = {}
 
