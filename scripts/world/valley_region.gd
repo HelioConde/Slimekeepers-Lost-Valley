@@ -191,7 +191,17 @@ func _setup_living_valley() -> void:
 	ecosystem.configure(player,flowers,water)
 	var routes := Valley.routes()
 	ecosystem.open_area_test = func(at: Vector2) -> bool: return Valley.route_distance(at,routes)<90
-	preload("res://scripts/world/ground_art.gd").apply(self, [$TreesBack, $TreesFront], Callable(), 1)  # árvores esparsas: sombra de mata sob cada uma
+	preload("res://scripts/world/ground_art.gd").apply(self, [$TreesBack, $TreesFront], Callable(), 1)
+	_lanterns = preload("res://scripts/world/lantern_flowers.gd").new()
+	var bridge_rects: Array[Rect2] = []
+	for bridge in $Bridges.get_children():
+		var frame := bridge.get_node_or_null("Frame") as Polygon2D
+		if frame == null: continue
+		var box := Rect2(frame.polygon[0], Vector2.ZERO)
+		for point in frame.polygon: box = box.expand(point)
+		bridge_rects.append(Rect2(frame.global_transform * box.position, box.size))
+	_lanterns.setup(bridge_rects, $Decorations)
+	add_child(_lanterns)  # árvores esparsas: sombra de mata sob cada uma
 	environmental_audio = Living.connect_environment(self,ecosystem,[$TreesBack,$TreesFront],[$LowVegetation,$WaterDecorations],water,Rect2(32,32,3136,3136),func(_at: Vector2) -> String: return "Vale das Nascentes")
 	habitat_manager = preload("res://scripts/world/forest_habitats.gd").new()
 	habitat_manager.name = "AquaticHabitatManager"
@@ -302,6 +312,7 @@ func _process(delta: float) -> void:
 						break
 	var water_night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
 	_update_moon_reflection(water_night)
+	if is_instance_valid(_lanterns): _lanterns.apply_time(water_night, get_process_delta_time())
 	if has_node("WaterBankTiles"):
 		$WaterBankTiles.material.set_shader_parameter("night_dim", water_night)
 	for level in $Elevations.get_children():
@@ -331,6 +342,7 @@ func _process(delta: float) -> void:
 var _moon_world := Vector2(-9999, -9999)
 var _moon_strength := 0.0
 var _moon_sprite: Sprite2D
+var _lanterns: Node2D  # plantas-lanterna nas pontes
 func _update_moon_reflection(night: float) -> void:
 	var view := player.global_position
 	var best := Vector2.INF
