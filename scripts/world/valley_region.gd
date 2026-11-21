@@ -206,6 +206,9 @@ func _setup_living_valley() -> void:
 		for point in frame.polygon: box = box.expand(point)
 		bridge_rects.append(Rect2(frame.global_transform * box.position, box.size))
 	_lanterns.setup(bridge_rects, $Decorations)
+	_tree_glow = preload("res://scripts/world/tree_glow.gd").new()
+	_tree_glow.setup([$TreesBack, $TreesFront], preload("res://scripts/world/valley_layout.gd").BRIDGES)
+	add_child(_tree_glow)
 	var flora := preload("res://scripts/world/river_flora.gd").new()
 	var waters: Array = $Water.get_children().filter(func(n): return n is Polygon2D)
 	flora.setup(waters, preload("res://scripts/world/valley_layout.gd").BRIDGES, $Decorations, $WaterDecorations)
@@ -321,6 +324,7 @@ func _process(delta: float) -> void:
 						break
 	var water_night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
 	if is_instance_valid(_lanterns): _lanterns.apply_time(water_night, get_process_delta_time())
+	if is_instance_valid(_tree_glow): _tree_glow.apply_time(water_night, elapsed)
 	if has_node("WaterBankTiles"):
 		$WaterBankTiles.material.set_shader_parameter("night_dim", water_night)
 	for level in $Elevations.get_children():
@@ -349,6 +353,7 @@ func _process(delta: float) -> void:
 
 
 var _lanterns: Node2D  # plantas-lanterna nas pontes
+var _tree_glow: Node  # árvores encantadas (tronco quente e vagalumes)
 const VALLEY_NIGHT_GROUND := 0.4
 const VALLEY_NIGHT_TINT := Vector3(0.45, 0.9, 1.45)  # azul-petróleo (ref. V11)
 const VALLEY_NIGHT_FOLIAGE := Color(0.66, 0.9, 0.98)
