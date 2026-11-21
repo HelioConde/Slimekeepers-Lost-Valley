@@ -55,6 +55,8 @@ func setup(waters: Array, bridges: Array, decorations: Node2D, water_layer: Node
 					_add(decorations, FLOWERS, at, Vector2(0, -16), "bank_flower", key)
 				elif shore and rr < 0.55:
 					_add(decorations, GLOW_SHROOM, at, Vector2(0, -12), "bank_shroom", key)
+				elif shore and rr < 0.65:
+					_add(decorations, REEDS, at, Vector2(0, -21), "bank_reeds", key)  # tufo bioluminescente na terra (ref. V11)
 				continue
 			var land := 0
 			for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
@@ -93,7 +95,7 @@ func _add(parent: Node2D, texture: Texture2D, at: Vector2, offset: Vector2, kind
 	elif texture != PAD:
 		sprite.set_meta("magic_flower", true)
 		holder.add_to_group("water_light_sources")
-		holder.set_meta("light_color", Color(0.4, 0.85, 1.0) if kind == "reeds" else Color(0.75, 0.5, 1.0))
+		holder.set_meta("light_color", Color(0.4, 0.85, 1.0) if kind in ["reeds", "bank_reeds"] else Color(0.75, 0.5, 1.0))
 		holder.set_meta("light_radius", 12.0)
 	holder.add_child(sprite)
 	placed.append({"kind": kind, "at": at})
