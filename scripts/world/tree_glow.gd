@@ -11,6 +11,9 @@ const GRAND_OFFSET := Vector2(-128, -220)  # base do tronco (coluna 64, linha 11
 
 var glows: Array[Sprite2D] = []
 var flies: Array[CPUParticles2D] = []
+var grand: Array[Sprite2D] = []
+## À noite a copa grande fica mais clara, puxando ao ciano do luar (ref. V11).
+const GRAND_NIGHT := Color(1.3, 1.45, 1.5)
 
 
 static func chosen(at: Vector2) -> bool:
@@ -35,6 +38,7 @@ func setup(tree_groups: Array, landmarks: Array = []) -> void:
 				var sprite := tree.get_node("Sprite") as Sprite2D
 				sprite.texture = GRAND_OAK
 				sprite.position = GRAND_OFFSET
+				grand.append(sprite)
 			var glow := Sprite2D.new()
 			glow.texture = tex
 			glow.material = additive
@@ -75,5 +79,7 @@ func setup(tree_groups: Array, landmarks: Array = []) -> void:
 func apply_time(night: float, t: float) -> void:
 	for i in glows.size():
 		glows[i].modulate.a = 0.55 * night * (0.85 + 0.15 * sin(t * 1.3 + i))
+	for s in grand:
+		s.self_modulate = Color.WHITE.lerp(GRAND_NIGHT, night)
 	for p in flies:
 		p.emitting = night > 0.5
