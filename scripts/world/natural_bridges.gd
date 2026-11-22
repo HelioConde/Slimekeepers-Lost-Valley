@@ -44,7 +44,7 @@ static func apply(bridges: Node2D) -> Array[Sprite2D]:
 ## grama baixa, 32 px) cobre as laterais do tronco da ponta até a beira da água,
 ## em posições fixas por ponte (hash da posição, sem aleatório por sessão).
 const TUFTS := [preload("res://assets/world/ground/clover_sprig.png"), preload("res://assets/world/ground/clover_sprig.png"), preload("res://assets/world/ground/grass_tuft_sunlit.png")]  # mais trevo (rasteiro)
-const TUFT_STEP := 24.0
+const TUFT_STEP := 40.0  # lateral leve (24 ficou carregado)
 static func _blend_ends(bridges: Node2D, bridge: Sprite2D, index: int) -> void:
 	var waters: Array = []
 	var region := bridges.get_parent()
@@ -61,6 +61,10 @@ static func _blend_ends(bridges: Node2D, bridge: Sprite2D, index: int) -> void:
 				var at: Vector2 = center + Vector2(side * (22.0 + float(k % 2) * 8.0), along + (10.0 if side > 0 else 0.0))
 				if _in_water(at + Vector2(0, end * -6.0), waters): break  # chegou na beira
 				var h: int = posmod(hash(Vector3i(index, k, int(side * end))), 97)
+				if h % 3 == 0:  # falhas na fileira: não forma cerca
+					t += TUFT_STEP
+					k += 1
+					continue
 				var tuft := Sprite2D.new()
 				tuft.name = "BridgeTuft"
 				tuft.texture = TUFTS[h % TUFTS.size()]
@@ -72,6 +76,34 @@ static func _blend_ends(bridges: Node2D, bridge: Sprite2D, index: int) -> void:
 				bridges.add_child(tuft)
 				t += TUFT_STEP
 				k += 1
+
+
+	_scatter_around(bridges, center, half, index, waters)
+
+
+## Mato rasteiro solto no chão em volta das duas pontas (raio ~140 px), mais denso
+## perto da ponte e rareando para fora, para a lateral não ficar destacada.
+static func _scatter_around(bridges: Node2D, center: Vector2, half: float, index: int, waters: Array) -> void:
+	for end in [-1.0, 1.0]:
+		var anchor := center + Vector2(0, end * (half - 30.0))
+		for gy in range(-5, 6):
+			for gx in range(-6, 7):
+				var cell := Vector2(gx, gy) * 26.0
+				var h: int = posmod(hash(Vector3i(index * 31 + int(end), gx, gy)), 1000)
+				var at := anchor + cell + Vector2(h % 13 - 6, (h / 13) % 13 - 6)
+				var d := (at - anchor).length() / 140.0
+				if d > 1.0 or float(h % 100) / 100.0 > 0.35 * (1.0 - d): continue
+				if absf(at.x - center.x) < 22.0: continue  # não em cima da passarela
+				if _in_water(at, waters) or _in_water(at + Vector2(0, 8), waters): continue
+				var tuft := Sprite2D.new()
+				tuft.name = "BridgeTuft"
+				tuft.texture = TUFTS[h % TUFTS.size()]
+				tuft.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+				tuft.flip_h = h % 2 == 0
+				tuft.offset = Vector2(0, -6)
+				tuft.position = bridges.to_local(at).round()
+				tuft.set_meta("no_shadow", true)
+				bridges.add_child(tuft)
 
 
 static func _in_water(at: Vector2, waters: Array) -> bool:

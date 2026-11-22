@@ -340,8 +340,8 @@ func _process(delta: float) -> void:
 	for group in [$TreesBack, $TreesFront, $LowVegetation]:
 		(group as CanvasItem).modulate = foliage_night
 	# Pontes naturais (tronco, pedras, raízes, istmo): mesma noite fria da vegetação.
-	for natural in _natural_bridges:
-		if is_instance_valid(natural): natural.modulate = foliage_night
+	for natural in $Bridges.get_children():
+		if natural.name.begins_with("Natural") or natural.name.begins_with("BridgeTuft"): (natural as CanvasItem).modulate = foliage_night
 	for fall in $Waterfalls.get_children():
 		var cascade := fall.get_node_or_null("Cascade") as CanvasItem
 		if cascade and cascade.material is ShaderMaterial:
