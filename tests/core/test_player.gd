@@ -157,7 +157,7 @@ func test_side_swing_holds_high_and_on_impact() -> void:
 		add_child(player)
 		await await_idle_frame()
 		var frames: SpriteFrames = player.sprite.sprite_frames
-		for anim in ["axe_east", "axe_west", "hoe_east", "hoe_west"]:
+		for anim in ["axe_east", "axe_west", "hoe_east", "hoe_west", "axe_north", "hoe_north"]:
 			assert_int(frames.get_frame_count(anim)).override_failure_message(who + " " + anim).is_equal(8)
 			assert_float(frames.get_frame_duration(anim, 2)).is_greater(frames.get_frame_duration(anim, 3))
 			assert_float(frames.get_frame_duration(anim, 5)).is_greater(frames.get_frame_duration(anim, 4))

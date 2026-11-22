@@ -270,3 +270,18 @@ Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools
   - A Moni foi feita com `transfer_outfit`, usando um quadro dela como referência de roupa.
 - Tempo por quadro: `SWING_SIDE_TIMING` em `scripts/player.gd`.
 - Evidência: `docs/gameplay/ferramentas/golpes_no_jogo.png`.
+
+## Golpe de costas (norte) — machado e enxada — 2026-11-22
+
+- `assets/player{,_moni}/tools/{axe,hoe}/north/frame_000..007.png`: aprovados pelo usuário.
+- Aren:
+  - PixelLab v3 em duas etapas (erguer e golpe).
+  - O machadinho ficou com uma lâmina só, por inpaint.
+  - O impacto foi refeito: lâmina de fio, botas inteiras e poeira pequena só na lâmina.
+  - Os quadros 2 e 3 da enxada foram editados a partir da rotação dele.
+- Moni:
+  - Gerada a partir do próprio personagem: erguer com v3; a pose acima da cabeça e o impacto com `edit_image` da rotação dela.
+  - A descida usa o rastro aprovado.
+  - As mangas ficaram creme, como no sprite dela.
+  - A enxada foi feita a partir dos quadros dela.
+- Tempo por quadro: `SWING_SIDE_TIMING`, os mesmos 8 quadros do golpe de lado.
