@@ -1,10 +1,13 @@
 extends Node2D
-## Plantas-lanterna bioluminescentes nas cabeceiras das pontes do Vale (ref. V9 do
-## rio): o brilho quente das lanternas da referência, mas vindo da natureza — o
-## mundo não tem humanos para acender lanternas. Acendem ao anoitecer.
+## Plantas luminosas nas cabeceiras das pontes do Vale: juncos ciano e cogumelos
+## luminosos que já existem no mapa, com brilho frio, no lugar das plantas-lanterna
+## de bulbo laranja (pareciam lanternas; o mundo não tem humanos). Acendem à noite.
 
-const ART := preload("res://assets/world/valley/lantern_flower.png")
-const WARM := Color(1.0, 0.62, 0.3)
+## [arte, cor do brilho, deslocamento do sprite]
+const PLANTS := [
+	[preload("res://assets/world/pond/reeds_glow.png"), Color(0.4, 0.88, 1.0), Vector2(0, -21)],
+	[preload("res://assets/world/forest/mushroom_glow.png"), Color(0.45, 0.95, 0.9), Vector2(0, -12)],
+]
 
 var plants: Array[Sprite2D] = []
 var halos: Array[Sprite2D] = []
@@ -28,24 +31,26 @@ func setup(bridge_rects: Array[Rect2], parent_for_plants: Node2D) -> void:
 			parent_for_plants.add_child(holder)
 			var plant := Sprite2D.new()
 			plant.name = "Sprite"
-			plant.texture = ART
+			var kind: Array = PLANTS[(plants.size() + int(corner.x > rect.get_center().x)) % PLANTS.size()]
+			plant.texture = kind[0]
+			plant.flip_h = corner.x > rect.get_center().x
 			plant.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-			plant.offset = Vector2(0, -20)
+			plant.offset = kind[2]
 			holder.add_child(plant)
 			plants.append(plant)
 			var halo := Sprite2D.new()
 			halo.texture = halo_texture
 			halo.material = additive
-			halo.position = Vector2(0, -22)
+			halo.position = Vector2(0, -14)
 			halo.scale = Vector2(0.7, 0.7)  # brilho de planta, não de tocha (ref. V11 da ponte)
-			halo.modulate = Color(WARM, 0.0)
+			halo.modulate = Color(kind[1], 0.0)
 			halo.set_meta("no_shadow", true)
 			holder.add_child(halo)
 			halos.append(halo)
 			var light := PointLight2D.new()
 			light.texture = light_texture
 			light.texture_scale = 0.8
-			light.color = WARM
+			light.color = kind[1]
 			light.energy = 0.0
 			light.position = Vector2(0, -16)
 			holder.add_child(light)

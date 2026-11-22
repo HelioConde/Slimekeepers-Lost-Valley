@@ -1,6 +1,6 @@
 extends GdUnitTestSuite
 
-## Plantas-lanterna (V9): quatro por ponte, brilho quente só à noite.
+## Plantas luminosas nas pontes: quatro por ponte, brilho só à noite.
 
 const Lanterns := preload("res://scripts/world/lantern_flowers.gd")
 
