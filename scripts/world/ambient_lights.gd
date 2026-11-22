@@ -923,20 +923,20 @@ func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> vo
 	if not is_instance_valid(_shaft_layer):
 		return
 	shafts.clear()
-	var alpha := SHAFT_ALPHA * day * (0.25 + 0.75 * low_sun)
+	var alpha := SHAFT_ALPHA * day * (0.25 + 1.05 * low_sun)  # sol baixo: feixes fortes (ref. V9 17h30/18h)
 	if alpha > 0.005:
 		for i in _dapples.size():
 			if shafts.size() >= MAX_SHAFTS: break
 			var dapple := _dapples[i]
 			var gap: Dictionary = dapple.get_meta("gap", {})
-			if not dapple.visible or not gap.has("foot") or i % 2 == 1:
+			if not dapple.visible or not gap.has("foot") or (i % 2 == 1 and low_sun < 0.5):
 				continue
 			var top: Vector2 = (gap.foot as Vector2) + Vector2(0, -float(gap.height) * 0.72) - sun.normalized() * 24.0
 			# O feixe segue da copa através da mancha e continua pelo chão aberto.
 			var home: Vector2 = dapple.get_meta("home")
 			# Sol baixo: feixes mais longos e largos (referências V9 das 17h30/18h).
 			var bottom := top + (home - top).normalized() * maxf(top.distance_to(home), SHAFT_LENGTH * (1.0 + 0.6 * low_sun))
-			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm, "width": 1.0 + 0.8 * low_sun})
+			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm, "width": 1.0 + 1.7 * low_sun})
 	# Luar (referências V9 noturnas): poucos feixes largos e azulados, presos a
 	# células do mundo perto do jogador, descendo na diagonal das copas.
 	var night := 1.0 - day
