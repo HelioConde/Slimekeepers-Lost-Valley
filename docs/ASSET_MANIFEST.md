@@ -258,3 +258,15 @@ Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools
   - A sequência final usa só as poses em que o regador está de frente, para manter direção e tamanho iguais.
   - A Moni foi feita com `transfer_outfit`; a roupa foi corrigida usando um quadro dela como referência.
 - Tempo por quadro: `WATER_TIMING` em `scripts/player.gd`.
+
+## Golpe de lado (leste e oeste) — machado e enxada — 2026-11-22
+
+- `assets/player{,_moni}/tools/{axe,hoe}/{east,west}/frame_000..007.png`: aprovados pelo usuário. Oeste é o espelho do leste.
+- Como foi feito:
+  - Base: Aren com o machadinho, PixelLab v3 em duas etapas (erguer e golpe).
+  - `edit_animation` deixou o machadinho igual em todos os quadros e trocou a poeira.
+  - O rastro de luz foi aplicado com `edit_image` e encaixado na lâmina.
+  - A enxada foi feita com `edit_animation`; o cabo atrás das mãos foi removido e a luz reposicionada na cabeça da enxada.
+  - A Moni foi feita com `transfer_outfit`, usando um quadro dela como referência de roupa.
+- Tempo por quadro: `SWING_SIDE_TIMING` em `scripts/player.gd`.
+- Evidência: `docs/gameplay/ferramentas/golpes_no_jogo.png`.

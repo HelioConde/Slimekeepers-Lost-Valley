@@ -14,6 +14,8 @@ const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0}
 ## pausa no alto, descida rápida, pausa longa no impacto. Duração = valor / 10 s.
 const SWING_FPS := 10.0
 const SWING_TIMING := [1.5, 0.9, 0.8, 1.5, 0.6, 0.4, 0.4, 2.0, 1.4]
+## Golpe de lado aprovado (8 quadros: descanso, pega, alto, rastro x2, impacto x3).
+const SWING_SIDE_TIMING := [1.5, 1.2, 2.5, 0.6, 0.6, 2.0, 1.4, 1.4]
 ## Regar de frente aprovado (8 quadros): ergue, inclina, jato, poça; mais tempo no jato.
 const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
@@ -113,8 +115,12 @@ func _build_frames() -> SpriteFrames:
 			var textures: Array[Texture2D] = []
 			while ResourceLoader.exists(tool_path % textures.size()):
 				textures.append(load(tool_path % textures.size()) as Texture2D)
-			var timing: Array = WATER_TIMING if tool == "water" and direction == "south" else SWING_TIMING
-			var timed: bool = textures.size() == timing.size() and (tool != "water" or direction == "south")
+			var timing: Array = SWING_TIMING
+			if tool == "water":
+				timing = WATER_TIMING if direction == "south" else []
+			elif direction in ["east", "west"]:
+				timing = SWING_SIDE_TIMING
+			var timed: bool = not timing.is_empty() and textures.size() == timing.size()
 			if timed: frames.set_animation_speed(tool_anim, SWING_FPS)
 			for i in textures.size():
 				frames.add_frame(tool_anim, textures[i], float(timing[i]) if timed else 1.0)

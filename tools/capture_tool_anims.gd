@@ -38,17 +38,19 @@ func run() -> void:
 			for dir in player.DIRS:
 				check(player.sprite.sprite_frames.has_animation("%s_%s" % [tool, dir]), "%s %s_%s" % [who, tool, dir])
 			HOTBAR.select(self, HOTBAR.slots(self).find(item))
-			player.facing = "south"
-			player.play_tool(tool)
-			# Golpe (machado/enxada): quadro 7 = impacto; regador: meio da animação.
-			var target := 7 if tool != "water" else 4
-			for i in 240:
-				if player.sprite.frame >= target: break
-				await process_frame
-			check(HOTBAR.selected_item(self) == item, "%s: barra com %s" % [who, item])
-			if not out.is_empty():
-				await RenderingServer.frame_post_draw
-				root.get_texture().get_image().save_png("%s/%s_%s.png" % [out, who, tool])
-			while player.is_using_tool(): await process_frame
+			for facing in (["south", "east", "west"] if tool != "water" else ["south"]):
+				player.facing = facing
+				player.play_tool(tool)
+				# Impacto: sul = quadro 7, lado = quadro 5; regador: meio da animação.
+				var target := 4 if tool == "water" else (7 if facing == "south" else 5)
+				for i in 240:
+					if player.sprite.frame >= target: break
+					await process_frame
+				check(HOTBAR.selected_item(self) == item, "%s: barra com %s" % [who, item])
+				if not out.is_empty():
+					await RenderingServer.frame_post_draw
+					var suffix: String = "" if facing == "south" else "_" + facing
+					root.get_texture().get_image().save_png("%s/%s_%s%s.png" % [out, who, tool, suffix])
+				while player.is_using_tool(): await process_frame
 	print("TOOL_ANIMS: %d failures" % failures)
 	quit(1 if failures else 0)
