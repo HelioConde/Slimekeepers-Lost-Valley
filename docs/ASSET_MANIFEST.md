@@ -213,5 +213,6 @@ Gerado no PixelLab (`create_map_object`, 128×128, high top-down, high detail, d
 | Arquivo | Tamanho | SHA-256 |
 |---|---|---|
 | `assets/world/valley/natural_bridges/root_bridge.png` | 92×38 | `2244bdd95296cf760734ec51cfe1582c9abbd3365a2211ee6a9bff67ca627512` |
+| `assets/world/valley/natural_bridges/root_bridge_v.png` | 32×112 | `3b23a97aa4930a0776a858fb3aae785e58a4e0685516321b028cdfe073a0afa6` |
 
-Arco de raízes entrelaçadas gerado no PixelLab (`create_map_object`, 128×48, high top-down, high detail, detailed shading, selective outline), recortado à caixa visível. Único aprovado pelo usuário: troncos caídos, pedras, istmo e versões verticais de raízes foram rejeitados (13 gerações no total). Usado nas 5 travessias por `scripts/world/natural_bridges.gd` (escala 2; girado 90° nas verticais, espelhado em alternância).
+Arco de raízes entrelaçadas gerado no PixelLab (`create_map_object`, 128×48, high top-down, high detail, detailed shading, selective outline), recortado à caixa visível. Único aprovado pelo usuário: troncos caídos, pedras, istmo e versões verticais de raízes foram rejeitados (13 gerações no total). Versão vertical (48×144, 3 variações, 1 aprovada) nas travessias oeste e leste. Desenhados por `scripts/world/natural_bridges.gd` em escala 2, espelhados em alternância.

@@ -3,12 +3,12 @@ extends RefCounted
 ## viram passagens que a natureza formou. O usuário aprovou só o arco de raízes
 ## entrelaçadas (tronco caído, pedras e istmo foram rejeitados), então os 5 locais
 ## (BRIDGES) usam o mesmo arco: [arte, girar 90°, espelhar], espelhado em
-## alternância para não repetir igual; girado 90° exatos nas travessias verticais.
+## alternância para não repetir igual; verticais usam a versão vertical do arco.
 ## A travessia em si não muda: a colisão da água tem buracos nos retângulos de
 ## BRIDGES (region_surfaces/build_valley). Aqui só troca o visual.
 
 const ART := "res://assets/world/valley/natural_bridges/"
-const KINDS := [["root_bridge", false, false], ["root_bridge", false, true], ["root_bridge", true, false], ["root_bridge", true, true], ["root_bridge", false, false]]
+const KINDS := [["root_bridge", false, false], ["root_bridge", false, true], ["root_bridge_v", false, false], ["root_bridge_v", false, true], ["root_bridge", false, false]]
 const SCALE := 2.0  # mesma densidade de pixel das árvores e plantas
 
 
