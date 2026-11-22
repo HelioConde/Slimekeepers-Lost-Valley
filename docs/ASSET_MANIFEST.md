@@ -239,3 +239,11 @@ Como foram feitas:
 - `tools/pixellab/align_tools.py` faz o resto: canvas 192×192 com a rotação centrada (encaixe com diferença 0), sem o quadro inicial, e limpeza de rastros brancos no machado e na enxada.
 
 Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools/capture_tool_anims.gd`. As pastas antigas `assets/Create_a_Hoe_Equippe` e `assets/Create_a_Watering_Ca` não são mais usadas pelo jogador.
+
+## Golpe aprovado (sul) — machado e enxada — 2026-11-22
+
+- Modelo aprovado pelo usuário: picareta virada para o sul (estado PixelLab `Create_a_Pickaxe_Equ`), quadros 0 a 6. O impacto foi refeito com a picareta reta no chão, pés inteiros (inpaint) e a poeira original.
+- `assets/player/tools/{axe,hoe}/south/frame_000..008.png`: Aren. A ferramenta foi trocada com `edit_animation`, e a lâmina e o encaixe da enxada foram corrigidos com inpaint.
+- `assets/player_moni/tools/{axe,hoe}/south/...`: Moni, feita a partir dos quadros do Aren com `transfer_outfit`. Inpaint corrigiu o rastro, a cabeça e a mão.
+- Tempo por quadro em `scripts/player.gd` (`SWING_TIMING`): pausa no alto, descida rápida e pausa longa no impacto.
+- As outras direções e o regador ainda são as animações anteriores. Serão refeitos no mesmo padrão, com aprovação de cada um.

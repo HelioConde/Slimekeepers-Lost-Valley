@@ -91,7 +91,7 @@ func test_tool_animations_exist_and_lock_movement() -> void:
 		for tool in ["hoe", "water", "axe"]:
 			var anim := "%s_%s" % [tool, dir]
 			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
-			assert_int(frames.get_frame_count(anim)).is_equal(8)
+			assert_int(frames.get_frame_count(anim)).is_greater_equal(8)
 			assert_bool(frames.get_animation_loop(anim)).is_false()
 	player.facing = "east"
 	var duration: float = player.play_tool("hoe")
@@ -118,3 +118,19 @@ func test_moni_has_every_tool_animation() -> void:
 			var anim := "%s_%s" % [tool, dir]
 			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
 			assert_str(frames.get_frame_texture(anim, 0).resource_path).contains("player_moni/tools/")
+
+
+func test_south_swing_holds_high_and_on_impact() -> void:
+	# Golpe aprovado (sul): 9 quadros; pausa no alto (3) e no impacto (7) mais longas
+	# que a descida (5, 6). Vale para machado e enxada.
+	var player = auto_free(load("res://scenes/player.tscn").instantiate())
+	add_child(player)
+	await await_idle_frame()
+	var frames: SpriteFrames = player.sprite.sprite_frames
+	for tool in ["axe", "hoe"]:
+		var anim: String = tool + "_south"
+		assert_int(frames.get_frame_count(anim)).is_equal(9)
+		assert_float(frames.get_frame_duration(anim, 3)).is_greater(frames.get_frame_duration(anim, 5))
+		assert_float(frames.get_frame_duration(anim, 7)).is_greater(frames.get_frame_duration(anim, 6))
+	player.facing = "south"
+	assert_float(player.play_tool("axe")).is_equal_approx(9.5 / 10.0, 0.01)

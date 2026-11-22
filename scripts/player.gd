@@ -10,6 +10,10 @@ const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
 ## Ferramentas (<arte>/tools/<nome>/<dir>/, quadros contados no disco): velocidade.
 ## A ferramenta na mão é a mesma do ícone da barra (enxada, regador, machado).
 const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0}
+## Golpe aprovado (9 quadros: descanso, ergue, alto x3, rastro x2, impacto x2):
+## pausa no alto, descida rápida, pausa longa no impacto. Duração = valor / 10 s.
+const SWING_FPS := 10.0
+const SWING_TIMING := [1.5, 0.9, 0.8, 1.5, 0.6, 0.4, 0.4, 2.0, 1.4]
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
@@ -61,7 +65,10 @@ func play_tool(tool: String) -> float:
 		return 0.0
 	current_animation = name
 	sprite.play(name)
-	_tool_time = sprite.sprite_frames.get_frame_count(name) / sprite.sprite_frames.get_animation_speed(name)
+	var units := 0.0
+	for i in sprite.sprite_frames.get_frame_count(name):
+		units += sprite.sprite_frames.get_frame_duration(name, i)
+	_tool_time = units / sprite.sprite_frames.get_animation_speed(name)
 	return _tool_time
 
 func is_using_tool() -> bool:
@@ -101,10 +108,13 @@ func _build_frames() -> SpriteFrames:
 			frames.add_animation(tool_anim)
 			frames.set_animation_loop(tool_anim, false)
 			frames.set_animation_speed(tool_anim, float(TOOL_ANIMATIONS[tool]))
-			var frame_index := 0
-			while ResourceLoader.exists(tool_path % frame_index):
-				frames.add_frame(tool_anim, load(tool_path % frame_index) as Texture2D)
-				frame_index += 1
+			var textures: Array[Texture2D] = []
+			while ResourceLoader.exists(tool_path % textures.size()):
+				textures.append(load(tool_path % textures.size()) as Texture2D)
+			var swing: bool = tool != "water" and textures.size() == SWING_TIMING.size()
+			if swing: frames.set_animation_speed(tool_anim, SWING_FPS)
+			for i in textures.size():
+				frames.add_frame(tool_anim, textures[i], float(SWING_TIMING[i]) if swing else 1.0)
 	for wake in WAKE_ANIMATIONS:
 		var path_pattern: String = art + "/wake/" + wake + "/south/frame_%03d.png"
 		if not ResourceLoader.exists(path_pattern % 0): continue

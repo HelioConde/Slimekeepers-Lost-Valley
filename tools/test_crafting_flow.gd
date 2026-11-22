@@ -100,7 +100,7 @@ func run() -> void:
 	var wood_before := BAG.count_item(self, "madeira")
 	for i in 3:
 		await press("interact")
-		await create_timer(0.8).timeout  # termina o golpe (animação ~0,56 s)
+		await _swing_done()
 	check(chop.state(self).has(best_key), "árvore caiu após 3 golpes")
 	check(not (tree_node.get_node("Sprite") as CanvasItem).visible, "árvore some e fica o toco")
 	player.global_position = tree_node.global_position + chop.LOG_OFFSET + Vector2(0, 16)
@@ -109,7 +109,7 @@ func run() -> void:
 	if out != "": (await _shot()).save_png(out + "/tree_felled.png")
 	for i in 2:
 		await press("interact")
-		await create_timer(0.8).timeout
+		await _swing_done()
 	check(BAG.count_item(self, "madeira") == wood_before + chop.WOOD_PER_LOG, "tronco processado em %d madeiras" % chop.WOOD_PER_LOG)
 	chop.apply_day(1 + chop.REGROW_DAYS)
 	check((tree_node.get_node("Sprite") as CanvasItem).visible and not chop.state(self).has(best_key), "árvore volta a crescer após %d dias" % chop.REGROW_DAYS)
@@ -160,13 +160,23 @@ func _fell_and_process(region: Node, player: Node2D, chop: Node, k: String) -> v
 	await process_frame
 	for i in chop.HITS_TO_FELL:
 		await press("interact")
-		await create_timer(0.8).timeout
+		await _swing_done()
 	player.global_position = node.global_position + chop.LOG_OFFSET + Vector2(0, 16)
 	await physics_frame
 	await process_frame
 	for i in chop.HITS_TO_PROCESS:
 		await press("interact")
-		await create_timer(0.8).timeout
+		await _swing_done()
+
+
+## Espera o golpe terminar (duração vem da animação: o golpe aprovado tem pausas).
+func _swing_done() -> void:
+	var p: CharacterBody2D = root.find_child("Player", true, false)
+	await process_frame
+	for i in 600:
+		if not p.is_using_tool(): break
+		await process_frame
+	await create_timer(0.1).timeout
 
 
 func _shot() -> Image:

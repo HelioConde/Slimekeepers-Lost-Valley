@@ -38,9 +38,13 @@ func run() -> void:
 			for dir in player.DIRS:
 				check(player.sprite.sprite_frames.has_animation("%s_%s" % [tool, dir]), "%s %s_%s" % [who, tool, dir])
 			HOTBAR.select(self, HOTBAR.slots(self).find(item))
-			player.facing = "south-east"
+			player.facing = "south"
 			player.play_tool(tool)
-			for i in 22: await process_frame  # meio do golpe
+			# Golpe (machado/enxada): quadro 7 = impacto; regador: meio da animação.
+			var target := 7 if tool != "water" else 4
+			for i in 240:
+				if player.sprite.frame >= target: break
+				await process_frame
 			check(HOTBAR.selected_item(self) == item, "%s: barra com %s" % [who, item])
 			if not out.is_empty():
 				await RenderingServer.frame_post_draw
