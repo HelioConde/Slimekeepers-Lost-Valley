@@ -67,6 +67,7 @@ var _halo_texture: GradientTexture2D
 ## Raios de sol: da copa (origem) até a mancha no chão. [{top, bottom, alpha, seed}]
 var shafts: Array = []
 var _shaft_layer: Node2D
+var _pool_layer: Node2D  # foco de luz no chão onde cada feixe termina (ref. V9 17h30/18h)
 var _shaft_age := 1.0
 const MAX_SHAFTS := 6
 const WIND_SHADER := preload("res://scripts/world/forest_wind.gdshader")
@@ -434,6 +435,15 @@ func _scan() -> void:
 		_shaft_layer.material = shaft_glow
 		_shaft_layer.draw.connect(_draw_shafts)
 		add_child(_shaft_layer)
+		_pool_layer = Node2D.new()
+		_pool_layer.name = "SunPools"
+		_pool_layer.top_level = true
+		_pool_layer.z_as_relative = false
+		_pool_layer.z_index = -1  # no plano do chão, sob plantas e personagens
+		_pool_layer.material = shaft_glow
+		_pool_layer.set_meta("no_shadow", true)
+		_pool_layer.draw.connect(_draw_pools)
+		add_child(_pool_layer)
 		# Luz fraca no jogador quando ele atravessa uma mancha de sol.
 		_player_dapple_light = _make_light(Color(1.0, 0.93, 0.75), 0.45)
 		_player_dapple_light.texture = _soft_texture
@@ -858,7 +868,7 @@ func _update_dapples(minutes: float, night: float) -> void:
 	if is_instance_valid(_player_dapple_light):
 		_player_dapple_light.color = warm
 		_player_dapple_light.energy = 0.9 * near_player
-	_update_shafts(sun, day, low_sun, warm)
+	_update_shafts(sun, day, low_sun, warm, fposmod(minutes, 1440.0) > 720.0)
 
 
 ## Luz das copas: o lado das folhas voltado ao sol ganha realce (dourado de manhã e
@@ -919,24 +929,27 @@ func _apply_foliage_light(minutes: float, night: float, delta: float) -> void:
 
 ## Raios saem do alto da copa que abre a mancha e descem até ela; fortes com sol
 ## baixo, fracos ao meio-dia, nenhum à noite.
-func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> void:
+func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color, afternoon: bool = true) -> void:
 	if not is_instance_valid(_shaft_layer):
 		return
 	shafts.clear()
-	var alpha := SHAFT_ALPHA * day * (0.25 + 1.05 * low_sun)  # sol baixo: feixes fortes (ref. V9 17h30/18h)
+	# Fim de tarde: feixes fortes e largos (ref. V9 17h30/18h). Manhã: como antes,
+	# suaves (às 8h somavam ao foco de luz do início e ofuscavam o jogador).
+	var boost := low_sun if afternoon else 0.0
+	var alpha := SHAFT_ALPHA * day * (0.25 + 0.75 * low_sun + 0.3 * boost)
 	if alpha > 0.005:
 		for i in _dapples.size():
 			if shafts.size() >= MAX_SHAFTS: break
 			var dapple := _dapples[i]
 			var gap: Dictionary = dapple.get_meta("gap", {})
-			if not dapple.visible or not gap.has("foot") or (i % 2 == 1 and low_sun < 0.5):
+			if not dapple.visible or not gap.has("foot") or (i % 2 == 1 and boost < 0.5):
 				continue
 			var top: Vector2 = (gap.foot as Vector2) + Vector2(0, -float(gap.height) * 0.72) - sun.normalized() * 24.0
 			# O feixe segue da copa através da mancha e continua pelo chão aberto.
 			var home: Vector2 = dapple.get_meta("home")
 			# Sol baixo: feixes mais longos e largos (referências V9 das 17h30/18h).
 			var bottom := top + (home - top).normalized() * maxf(top.distance_to(home), SHAFT_LENGTH * (1.0 + 0.6 * low_sun))
-			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm, "width": 1.0 + 1.7 * low_sun})
+			shafts.append({"top": top, "bottom": bottom, "alpha": alpha * (0.75 + 0.25 * sin(_time * 0.45 + i * 1.3)), "color": warm, "width": 1.0 + 0.8 * low_sun + 0.9 * boost})
 	# Luar (referências V9 noturnas): poucos feixes largos e azulados, presos a
 	# células do mundo perto do jogador, descendo na diagonal das copas.
 	var night := 1.0 - day
@@ -961,6 +974,29 @@ func _update_shafts(sun: Vector2, day: float, low_sun: float, warm: Color) -> vo
 	if _shaft_age >= 0.1:
 		_shaft_age = 0.0
 		_shaft_layer.queue_redraw()
+		if is_instance_valid(_pool_layer): _pool_layer.queue_redraw()
+
+
+## Poça de luz achatada no pé de cada feixe de sol: 3 elipses em degraus (sem
+## degradê liso), presa ao fim do feixe no mundo. Só feixes de sol (quentes).
+func _draw_pools() -> void:
+	for shaft in shafts:
+		var c: Color = shaft.color
+		if c.b > c.r: continue  # luar: sem poça
+		var w: float = shaft.get("width", 1.0)
+		var at: Vector2 = (shaft.bottom as Vector2).lerp(shaft.top, 0.12).round()
+		var a: float = shaft.alpha
+		# Fina e alongada na direção do feixe (ref.: faixa estreita de luz no chão).
+		var axis: Vector2 = ((shaft.bottom as Vector2) - (shaft.top as Vector2)).normalized()
+		var side := axis.orthogonal()
+		for ring in [[1.0, 0.35], [0.66, 0.4], [0.36, 0.5]]:
+			var length: float = 24.0 * w * float(ring[0])
+			var thin: float = 6.0 * w * float(ring[0])
+			var points := PackedVector2Array()
+			for k in 20:
+				var ang := TAU * float(k) / 20.0
+				points.append((at + axis * cos(ang) * length + side * sin(ang) * thin).round())
+			_pool_layer.draw_colored_polygon(points, Color(c.r, c.g * 0.95, c.b * 0.7, a * float(ring[1])))
 
 
 func _draw_shafts() -> void:

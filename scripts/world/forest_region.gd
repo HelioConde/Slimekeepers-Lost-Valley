@@ -23,6 +23,7 @@ var _last_zone := ""
 var _last_water_time := -1.0
 var seed_patches: Array[Node2D] = []
 var bag_hud: Node
+var _spawn_light: Node2D
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -30,6 +31,10 @@ func _ready() -> void:
 	add_child(PauseOverlay.new())
 	player = $Player
 	player.position = $SpawnPoints/PlayerSpawn.global_position
+	# Foco de luz sobre o início da aventura (Clareira do Despertar), preso ao mundo.
+	_spawn_light = preload("res://scripts/world/spawn_light.gd").new()
+	add_child(_spawn_light)
+	_spawn_light.setup($SpawnPoints/PlayerSpawn.global_position)
 	player.world_bounds = Rect2(Vector2(24,44),Forest.WORLD_SIZE-Vector2(48,68))
 	var camera: Camera2D = player.get_node("Camera2D")
 	camera.limit_left = 0
@@ -188,6 +193,7 @@ func set_environment_conditions(period: String, rain: float=0.0, wind: float=1.0
 	Living.conditions(self,period,rain,wind,fog)
 
 func _process(delta: float) -> void:
+	if is_instance_valid(_spawn_light): _spawn_light.apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), delta)
 	# The base world manages interaction/friendship; skip legacy map exit coordinates.
 	var water_time: float = ecosystem.shared_wind_material.get_shader_parameter("wind_time")
 	if water_time != _last_water_time:
