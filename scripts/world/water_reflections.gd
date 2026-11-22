@@ -12,9 +12,12 @@ const WATER_SHADERS := ["spring_water.gdshader", "valley_water.gdshader"]
 const MAX_ANCHORS := 16
 ## Célula ~ do tamanho da vista: no máximo um reflexo da Lua por enquadramento.
 const MIN_CELL := 400.0
-const LATTICE := 1000.0
+const LATTICE := Vector2(1750.0, 1250.0)  # malha de candidatos, um pouco maior que a "caixa" abaixo
 ## ~ largura da vista (1200 px de mundo no zoom 0,8): reflexos nunca lado a lado.
-const MIN_SPACING := 900.0
+const MIN_SPACING := 1200.0  # distância mínima garantida entre âncoras (menor lado da caixa)
+## Dois reflexos não cabem na mesma tela: a vista do jogo é 1600×900 de mundo
+## (1280×720 / zoom 0,8) e a coluna da Lua ocupa ±65 px e 300 px para baixo.
+const VIEW_BOX := Vector2(1700.0, 1200.0)
 ## Distância máxima entre o ponto ideal e a água escolhida.
 const MAX_SNAP := 400.0
 const SAMPLE_STEP := 16.0
@@ -106,12 +109,18 @@ static func find_blockers(region: Node) -> Array:
 ## entre âncoras a menos de MIN_SPACING vence a de menor índice na malha — no máximo
 ## um reflexo do astro por vista. Depende só da água e do céu.
 static func pick_anchors(surface_cells: Array, offset: Vector2) -> PackedVector2Array:
+	return pick_all([surface_cells], offset)[0]
+
+
+## Candidatos de um corpo: [prioridade fixa, ponto]. Malha do mundo primeiro;
+## corpo pequeno sem candidato na malha vira um só, com prioridade depois da malha.
+static func _candidates(surface_cells: Array, offset: Vector2, body: int) -> Array:
 	var samples := PackedVector2Array()
 	var bounds := Rect2()
 	for cell in surface_cells:
 		samples.append_array(cell.samples)
 		bounds = cell.rect if bounds.size == Vector2.ZERO else bounds.merge(cell.rect)
-	if samples.is_empty(): return PackedVector2Array()
+	if samples.is_empty(): return []
 	var candidates: Array = []
 	var start := (bounds.position / LATTICE).floor()
 	var end := (bounds.end / LATTICE).ceil()
@@ -121,26 +130,41 @@ static func pick_anchors(surface_cells: Array, offset: Vector2) -> PackedVector2
 			var best := samples[0]
 			for point in samples:
 				if point.distance_squared_to(ideal) < best.distance_squared_to(ideal): best = point
-			var error := best.distance_to(ideal)
-			if error <= MAX_SNAP: candidates.append([gy * 10000 + gx, best])
+			if best.distance_to(ideal) <= MAX_SNAP: candidates.append([(gy + 1000) * 10000 + gx + 1000, best])
 	if candidates.is_empty():
 		# Corpo pequeno (lago): uma âncora, a água mais próxima do ideal no próprio corpo.
 		var ideal := bounds.get_center() + offset * bounds.size * 0.5
 		var best := samples[0]
 		for point in samples:
 			if point.distance_squared_to(ideal) < best.distance_squared_to(ideal): best = point
-		return PackedVector2Array([best])
-	# Prioridade fixa pela posição na malha (não muda com o tempo): sem saltos de
-	# uma âncora para outra enquanto o astro anda.
-	candidates.sort_custom(func(a, b): return a[0] < b[0])
-	var anchors := PackedVector2Array()
-	for candidate in candidates:
-		if anchors.size() >= MAX_ANCHORS: break
+		candidates.append([100000000 + body, best])
+	return candidates
+
+
+## Âncoras de todos os corpos juntos: entre candidatos a menos de MIN_SPACING
+## vence o de menor prioridade (fixa, da malha), mesmo em corpos diferentes —
+## rio e lago lado a lado não mostram duas luas na mesma tela.
+static func pick_all(cells_list: Array, offset: Vector2) -> Array:
+	var all: Array = []
+	for body in cells_list.size():
+		for candidate in _candidates(cells_list[body], offset, body):
+			all.append([candidate[0], body, candidate[1]])
+	all.sort_custom(func(a, b): return a[0] < b[0] or (a[0] == b[0] and a[1] < b[1]))
+	var chosen: Array = []
+	for body in cells_list.size(): chosen.append([])
+	var kept: Array[Vector2] = []
+	for candidate in all:
+		if kept.size() >= MAX_ANCHORS: break
 		var far := true
-		for kept in anchors:
-			if kept.distance_to(candidate[1]) < MIN_SPACING: far = false
-		if far: anchors.append(candidate[1])
-	return anchors
+		for point in kept:
+			var gap: Vector2 = (point - candidate[2]).abs()
+			if gap.x < VIEW_BOX.x and gap.y < VIEW_BOX.y: far = false
+		if not far: continue
+		kept.append(candidate[2])
+		(chosen[candidate[1]] as Array).append(candidate[2])  # PackedVector2Array é cópia: juntar em Array
+	var result: Array = []
+	for points in chosen: result.append(PackedVector2Array(points))
+	return result
 
 
 func add_surface(water: Polygon2D, blockers: Array = []) -> void:
@@ -207,12 +231,15 @@ func apply_sky(sky: Dictionary) -> void:
 	# Âncoras só são recalculadas quando o astro anda o bastante (barato e estável).
 	var moved := moon_offset.distance_to(_last_offsets[0]) > 0.01 or sun_offset.distance_to(_last_offsets[1]) > 0.01
 	if moved: _last_offsets = [moon_offset, sun_offset]
+	var moon_all: Array = pick_all(cells, moon_offset) if moved else []
+	var sun_all: Array = pick_all(cells, sun_offset) if moved else []
 	for i in materials.size():
 		var material := materials[i]
 		if moved:
-			var moon := pick_anchors(cells[i], moon_offset)
-			var sun := pick_anchors(cells[i], sun_offset)
+			var moon: PackedVector2Array = moon_all[i]
+			var sun: PackedVector2Array = sun_all[i]
 			material.set_shader_parameter("anchor_count", moon.size())
+			material.set_shader_parameter("sun_anchor_count", sun.size())
 			moon.resize(MAX_ANCHORS)
 			sun.resize(MAX_ANCHORS)
 			material.set_shader_parameter("moon_anchors", moon)
@@ -228,5 +255,5 @@ func apply_sky(sky: Dictionary) -> void:
 func moon_anchors() -> Array:
 	var result: Array = []
 	var offset: Vector2 = ASTRONOMY.reflection_offset(last_sky.moon_altitude, last_sky.moon_azimuth)
-	for surface_cells in cells: result.append(pick_anchors(surface_cells, offset))
+	result = pick_all(cells, offset)
 	return result

@@ -146,3 +146,23 @@ func test_never_two_reflections_of_the_same_body_in_one_view() -> void:
 	for i in anchors.size():
 		for j in range(i + 1, anchors.size()):
 			assert_float(anchors[i].distance_to(anchors[j])).is_greater_equal(Reflections.MIN_SPACING)
+
+
+## Rio e lago lado a lado (corpos diferentes): nunca duas luas na mesma tela.
+func test_never_two_reflections_across_bodies_in_one_view() -> void:
+	var left := Polygon2D.new()
+	left.polygon = PackedVector2Array([Vector2(0, 0), Vector2(700, 0), Vector2(700, 1400), Vector2(0, 1400)])
+	var right := Polygon2D.new()
+	right.polygon = PackedVector2Array([Vector2(1000, 0), Vector2(1700, 0), Vector2(1700, 1400), Vector2(1000, 1400)])
+	auto_free(left)
+	auto_free(right)
+	for minutes in [21 * 60, 23 * 60, 2 * 60 + 4, 4 * 60]:
+		var sky := Astro.sky(2, minutes)
+		var all := Reflections.pick_all([Reflections.sample_cells(left), Reflections.sample_cells(right)], Astro.reflection_offset(sky.moon_altitude, sky.moon_azimuth))
+		var points: Array[Vector2] = []
+		for body: PackedVector2Array in all: for p in body: points.append(p)
+		assert_int(points.size()).is_greater(0)
+		for i in points.size():
+			for j in range(i + 1, points.size()):
+				var gap := (points[i] - points[j]).abs()
+				assert_bool(gap.x >= Reflections.VIEW_BOX.x or gap.y >= Reflections.VIEW_BOX.y).is_true()

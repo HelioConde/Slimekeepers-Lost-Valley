@@ -10,7 +10,8 @@ uniform float elapsed = 0.0;
 const int MAX_ANCHORS = 16;
 uniform vec2 moon_anchors[16];
 uniform vec2 sun_anchors[16];
-uniform int anchor_count = 0;
+uniform int anchor_count = 0;      // Lua
+uniform int sun_anchor_count = 0;  // Sol (a escolha global pode dar contagens diferentes)
 // Céu (Astronomy.sky).
 uniform float moon_strength = 0.0;
 uniform float moon_phase = 0.5;
@@ -28,7 +29,7 @@ vec2 nearest(vec2 p, bool moon) {
 	vec2 best = vec2(1e9);
 	float best_d = 1e18;
 	for (int i = 0; i < MAX_ANCHORS; i++) {
-		if (i >= anchor_count) break;
+		if (i >= (moon ? anchor_count : sun_anchor_count)) break;
 		vec2 a = moon ? moon_anchors[i] : sun_anchors[i];
 		vec2 d = p - a;
 		float dd = dot(d, d);
