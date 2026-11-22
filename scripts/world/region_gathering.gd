@@ -1,0 +1,114 @@
+extends Node
+## Coleta e corte compartilhados pelas regiões (Floresta e Vale das Nascentes):
+## árvores cortáveis com o machado e pontos de coleta (mato com [E] segurado,
+## graveto/pedra com um toque). A região chama update(delta) no _process; devolve
+## true quando a interação tomou o HUD neste quadro.
+
+const BAG := preload("res://scripts/systems/forest_bag.gd")
+const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
+const ENERGY := preload("res://scripts/systems/energy_state.gd")
+
+var region: Node  # clearing_region: player, hud_hint, bag_hud, _notify()
+var choppable: Node
+var forage: Node2D
+var _pull_id := ""  # ponto sendo arrancado com [E] segurado
+var _pull_time := 0.0
+
+
+func _init() -> void:
+	name = "Gathering"
+
+
+## Cria o corte e a coleta da região (sem pontos ainda): árvores dos grupos dados
+## (prefixo separa o estado salvo de cada mapa) e um ForageSpots vazio em `parent`.
+func setup(owner_region: Node, tree_groups: Array, protected: Callable, prefix: String, parent: Node) -> void:
+	region = owner_region
+	choppable = preload("res://scripts/world/choppable_trees.gd").new()
+	owner_region.add_child(choppable)
+	choppable.setup(tree_groups, protected, prefix, prefix != "")
+	choppable.apply_day(GameClock.day_number)
+	GameClock.day_changed.connect(choppable.apply_day)
+	forage = preload("res://scripts/world/forage_spots.gd").new()
+	forage.name = "ForageSpots"
+	parent.add_child(forage)
+	GameClock.day_changed.connect(forage.refresh)
+
+
+## Usa corte e coleta já criados pela região (Floresta).
+func attach(owner_region: Node, chop: Node, spots: Node2D) -> void:
+	region = owner_region
+	choppable = chop
+	forage = spots
+
+
+func update(delta: float) -> bool:
+	var player: Node2D = region.player
+	# Machado na mão e árvore ao alcance: cortar vem antes de arrancar o mato em volta.
+	if is_instance_valid(choppable) and HOTBAR.selected_item(get_tree()) == "machado" and _axe_interaction():
+		_pull_id = ""
+		return true
+	if is_instance_valid(forage):
+		var spot: Dictionary = forage.nearest(player.global_position, GameClock.day_number)
+		if not spot.is_empty():
+			_forage_interaction(spot, delta)
+			return true
+	_pull_id = ""
+	return is_instance_valid(choppable) and _axe_interaction()
+
+
+func _forage_interaction(spot: Dictionary, delta: float) -> void:
+	var player: Node2D = region.player
+	var item_name := str(ITEMS.info(spot.item).name).to_lower()
+	var hold: float = forage.pull_seconds(spot.item)
+	if hold > 0.0:
+		# Mato: segurar [E] até arrancar; soltar ou sair de perto recomeça.
+		if Input.is_action_just_pressed("interact"):
+			_pull_id = spot.id
+			_pull_time = 0.0
+		elif Input.is_action_pressed("interact") and _pull_id == spot.id:
+			_pull_time += delta
+		else:
+			_pull_id = ""
+		if _pull_id != spot.id:
+			region.hud_hint.text = "[Segure E] Arrancar o mato (%d s)" % int(hold)
+			return
+		# Agacha com as duas mãos no mato e fica parado no quadro das mãos no chão.
+		player.facing = player._get_direction_name(spot.at - player.global_position)
+		player.hold_pose("pick_big", player.PICK_BIG_GROUND)
+		region.hud_hint.text = "Arrancando o mato... %d%%" % mini(99, int(_pull_time / hold * 100.0))
+		if _pull_time < hold: return
+		_pull_id = ""
+		player.release_pose()  # levanta com o mato na mão
+	else:
+		region.hud_hint.text = "[E] Pegar " + item_name
+		if not Input.is_action_just_pressed("interact") or player.is_using_tool(): return
+		# Item pequeno: ajoelha e pega com uma mão.
+		player.facing = player._get_direction_name(spot.at - player.global_position)
+		player.play_tool("pick_small")
+	var problem: String = forage.take(spot, GameClock.day_number)
+	region.bag_hud.call("refresh")
+	region._notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
+
+
+func _axe_interaction() -> bool:
+	var player: Node2D = region.player
+	var t: Dictionary = choppable.target(player.global_position)
+	if t.is_empty() or BAG.count_item(get_tree(), "machado") <= 0:
+		return false
+	if HOTBAR.selected_item(get_tree()) != "machado":
+		region.hud_hint.text = "Selecione o machado na barra para " + ("cortar a árvore" if t.kind == "tree" else "processar o tronco")
+		return true
+	var total: int = choppable.HITS_TO_FELL if t.kind == "tree" else choppable.HITS_TO_PROCESS
+	region.hud_hint.text = "[E] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
+	if Input.is_action_just_pressed("interact") and not player.is_using_tool():
+		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
+			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
+			return true
+		player.play_tool("axe")
+		match choppable.strike(t, GameClock.day_number):
+			"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
+			"processed":
+				region.bag_hud.call("refresh")
+				region._notify("Você conseguiu %d madeiras." % choppable.WOOD_PER_LOG)
+	return true

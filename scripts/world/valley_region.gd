@@ -24,6 +24,7 @@ var found_zones: Dictionary = {}
 var bag_hud: Node
 var garden_beds: Array[Node2D] = []
 var cooking_station: Node2D
+var gathering: Node  # region_gathering.gd: corte e coleta (como na Floresta)
 var farm_field: Node2D
 var recipe_panel: PanelContainer
 
@@ -237,6 +238,7 @@ func _setup_living_valley() -> void:
 	habitat_manager.configure(self,player,Valley.SPAWN,habitats,{"world_bounds":Rect2(32,32,3136,3136),"exclusion_radius":350.0,"max_population":8,"session_key":"valley_slime_friends","water_bodies":water_bodies,"water_outlines":water_outlines})
 	habitat_manager.set_environment_state(get_tree().get_meta("environment_conditions",{}))
 	_update_living_goal()
+	_setup_gathering()
 
 func _on_water_slime(slime: Node2D) -> void:
 	slimes.append(slime)
@@ -275,6 +277,44 @@ func _offer_prototype_food(slime: Node2D) -> void:
 		_:
 			_notify("Nao foi possivel oferecer a porcao; nenhum alimento foi gasto.")
 
+## Corte e coleta no Vale: árvores de TreesBack/TreesFront e o mato de
+## LowVegetation (ids e estado com prefixo "vale_"). Sem corte nos habitats de
+## slimes, pontos de interesse, chegada e estação de cozinha.
+func _setup_gathering() -> void:
+	var keep: Array[Vector2] = [Valley.SPAWN, Vector2(1600, 70), FARM_GATE]
+	if is_instance_valid(cooking_station): keep.append(cooking_station.global_position)
+	for marker in $PointsOfInterest.get_children(): keep.append((marker as Node2D).position)
+	gathering = preload("res://scripts/world/region_gathering.gd").new()
+	add_child(gathering)
+	gathering.setup(self, [$TreesBack, $TreesFront], func(at: Vector2) -> bool:
+		for h in Valley.HABITATS:
+			if at.distance_to(h) < 130.0 + 80.0: return true
+		for k in keep:
+			if at.distance_to(k) < 140.0: return true
+		return false, "vale_", self)
+	gathering.forage.add_mato_props($LowVegetation, "vale_")
+	_spawn_valley_forage.call_deferred()
+
+## Gravetos e pedras pequenas em volta da chegada do Vale (chão livre, longe da água).
+func _spawn_valley_forage() -> void:
+	await get_tree().physics_frame
+	var space := get_world_2d().direct_space_state
+	var probe := CircleShape2D.new()
+	probe.radius = 12
+	var pools: Array[Polygon2D] = []
+	for polygon in $Water.get_children():
+		if polygon is Polygon2D: pools.append(polygon)
+	gathering.forage.setup(Valley.SPAWN, 90.0, 700.0, {"graveto": 5, "pedra_pequena": 6}, func(at: Vector2) -> bool:
+		for pool in pools:  # nada dentro da água (nem a 20 px da margem)
+			for nudge in [Vector2.ZERO, Vector2(20, 0), Vector2(-20, 0), Vector2(0, 20), Vector2(0, -20)]:
+				if Geometry2D.is_point_in_polygon(pool.to_local(at + nudge), pool.polygon): return false
+		var query := PhysicsShapeQueryParameters2D.new()
+		query.shape = probe
+		query.transform = Transform2D(0, at)
+		query.collision_mask = 2
+		return space.intersect_shape(query, 1).is_empty(), "vale_")
+	gathering.forage.refresh(GameClock.day_number)
+
 func _update_living_goal() -> void:
 	friends_count = 0
 	for friend in get_tree().get_meta("valley_slime_friends",{}).values():
@@ -309,7 +349,9 @@ func _process(delta: float) -> void:
 	else:
 		if not _handle_farm_interaction() and not _handle_cooking_interaction() and not _handle_garden_interaction():
 			var closest := _closest_slime()
-			if closest != null:
+			if closest == null and is_instance_valid(gathering) and gathering.update(delta):
+				pass  # cortar árvore / arrancar mato
+			elif closest != null:
 				hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
 				if Input.is_action_just_pressed("feed"):
 					_offer_prototype_food(closest)

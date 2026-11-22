@@ -8,9 +8,11 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FORAGE_KEY := "forage_taken"
 const REACH := 36.0
 ## Todo mato do chão (GroundDetail) dá fibra; arrancar exige segurar [E] (pedido do
-## usuário, 2026-11-22: "não pode ser fácil pegar").
+## usuário, 2026-11-22: "não pode ser fácil pegar"; depois reduzido para 3 s).
 const MATO_KINDS := ["grass", "grass_tuft_sunlit"]
-const PULL_SECONDS := {"fibra": 4.0}
+const PULL_SECONDS := {"fibra": 3.0}
+## Texturas de tufo de mato colocadas como props nos mapas (Vale, Floresta).
+const MATO_TEXTURES := ["environment/grass.png", "ground/grass_tuft_sunlit.png"]
 ## item, quantidade por coleta, arte no chão, deslocamento do sprite
 const KINDS := {
 	"fibra": [1, preload("res://assets/world/ground/grass_tuft_sunlit.png"), Vector2(0, -10)],
@@ -22,8 +24,9 @@ var spots: Array[Dictionary] = []  # {id, item, at, sprite}
 
 
 ## center: miolo da Clareira; plan: {item: quantidade de pontos}; free: chão livre?
-func setup(center: Vector2, inner: float, outer: float, plan: Dictionary, free: Callable) -> void:
-	name = "ForageSpots"
+## prefix separa os ids salvos de cada mapa ("" = Floresta).
+func setup(center: Vector2, inner: float, outer: float, plan: Dictionary, free: Callable, prefix: String = "") -> void:
+	if name.is_empty(): name = "ForageSpots"
 	y_sort_enabled = true
 	var placed := 0
 	var candidates: Array = []
@@ -44,7 +47,7 @@ func setup(center: Vector2, inner: float, outer: float, plan: Dictionary, free: 
 		if placed >= candidates.size(): break
 		var c: Array = candidates[placed]
 		placed += 1
-		_add_spot("%s_%d_%d" % [item, c[2].x, c[2].y], item, c[1])
+		_add_spot("%s%s_%d_%d" % [prefix, item, c[2].x, c[2].y], item, c[1])
 
 
 func _add_spot(id: String, item: String, at: Vector2) -> void:
@@ -65,6 +68,19 @@ func add_mato(detail: Node2D) -> void:
 		if entry.kind not in MATO_KINDS: continue
 		var at: Vector2 = detail.to_global(entry.at)
 		spots.append({"id": "mato_%d_%d" % [roundi(at.x), roundi(at.y)], "item": "fibra", "at": at, "sprite": entry.sprite})
+
+
+## Props de mato num grupo do mapa (Sprite2D direto ou nó com filho "Sprite"): cada
+## um vira ponto de fibra e o nó inteiro (com a sombra) some quando colhido.
+## prefix separa os ids salvos de cada mapa.
+func add_mato_props(group: Node, prefix: String) -> void:
+	for node in group.get_children():
+		var sprite := node as Sprite2D if node is Sprite2D else node.get_node_or_null("Sprite") as Sprite2D
+		if sprite == null or sprite.texture == null: continue
+		var path := sprite.texture.resource_path
+		if not MATO_TEXTURES.any(func(t: String) -> bool: return path.ends_with(t)): continue
+		var at: Vector2 = (node as Node2D).global_position
+		spots.append({"id": "%smato_%d_%d" % [prefix, roundi(at.x), roundi(at.y)], "item": "fibra", "at": at, "sprite": node})
 
 
 ## Mato pintado em tiles (VegetationLow da floresta): cada célula com a textura de

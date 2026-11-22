@@ -40,9 +40,19 @@ func test_tired_player_cannot_till() -> void:
 	Bag.add_item(get_tree(), "enxada")  # fabricada na bancada (CRIACAO.md)
 	Hotbar.select(get_tree(), 0)  # enxada
 	get_tree().set_meta(Energy.KEY, 2)
-	assert_str(field.interact(actor)).contains("Cansada")
+	assert_str(field.interact(actor)).contains("Cansado")  # Aren (padrão); Moni: "Cansada"
 	assert_bool(Farm.is_tilled(get_tree(), field.target_cell(actor))).is_false()
 	Energy.restore(get_tree())
 	field.interact(actor)
 	assert_bool(Farm.is_tilled(get_tree(), field.target_cell(actor))).is_true()
 	assert_int(Energy.current(get_tree())).is_equal(Energy.MAX - Energy.COSTS.till)
+
+
+func test_tired_message_matches_protagonist() -> void:
+	# Aren é "Cansado", Moni é "Cansada" (aviso de energia esgotada).
+	var Who := preload("res://scripts/systems/protagonist.gd")
+	get_tree().set_meta(Who.KEY, "aren")
+	assert_str(Who.tired_message(get_tree())).starts_with("Cansado ")
+	get_tree().set_meta(Who.KEY, "moni")
+	assert_str(Who.tired_message(get_tree())).starts_with("Cansada ")
+	get_tree().remove_meta(Who.KEY)

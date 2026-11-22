@@ -124,7 +124,7 @@ func interact(actor: Node2D) -> String:
 	var message := ""
 	var action := action_with(cell, item)
 	if action in ENERGY.COSTS and not ENERGY.spend(tree, action):
-		last_action = "Cansada demais para isso. Durma para recuperar a energia."
+		last_action = preload("res://scripts/systems/protagonist.gd").tired_message(get_tree())
 		return last_action
 	match action:
 		"harvest":

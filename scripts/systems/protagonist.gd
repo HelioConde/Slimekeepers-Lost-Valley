@@ -17,12 +17,14 @@ const ALL := {
 		"blurb": "Curioso, determinado e com um grande coração.",
 		"art": "res://assets/player",
 		"walk_south_dir": "south-f96d7729",
+		"tired": "Cansado demais para isso. Durma para recuperar a energia.",
 	},
 	"moni": {
 		"name": "Moni",
 		"blurb": "Inventiva, corajosa e sempre pronta para explorar.",
 		"art": "res://assets/player_moni",
 		"walk_south_dir": "south",
+		"tired": "Cansada demais para isso. Durma para recuperar a energia.",
 	},
 }
 
@@ -50,3 +52,8 @@ static func intro_pending(tree: SceneTree) -> bool:
 
 static func finish_intro(tree: SceneTree) -> void:
 	tree.set_meta(INTRO_KEY, false)
+
+
+## Aviso de energia esgotada no gênero do protagonista (Aren, Moni).
+static func tired_message(tree: SceneTree) -> String:
+	return str(data(tree).tired)

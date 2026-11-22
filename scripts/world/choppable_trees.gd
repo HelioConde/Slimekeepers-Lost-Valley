@@ -24,14 +24,17 @@ var _hits: Dictionary = {}  # key -> golpes nesta árvore/tronco (não salvo)
 var _extras: Dictionary = {}  # key -> [stump, log]
 
 
-func setup(groups: Array, protected: Callable) -> void:
+## prefix separa o estado salvo de cada mapa ("" = Floresta, chaves antigas).
+## all_children: grupos só de árvores (Vale), sem a marca metadata/tree.
+func setup(groups: Array, protected: Callable, prefix: String = "", all_children: bool = false) -> void:
 	name = "ChoppableTrees"
 	for group: Node in groups:
 		for node in group.get_children():  # marca metadata/tree do próprio nó da árvore
-			if not (node is Node2D) or not node.get_meta("tree", false) or not node.has_node("Sprite"): continue
+			if not (node is Node2D) or not node.has_node("Sprite"): continue
+			if not all_children and not node.get_meta("tree", false): continue
 			var at: Vector2 = (node as Node2D).global_position
 			if protected.call(at): continue
-			var key := "%s/%s" % [group.name, node.name]
+			var key := "%s%s/%s" % [prefix, group.name, node.name]
 			trees[key] = node
 			var cell := Vector2i((at / CELL).floor())
 			if not _grid.has(cell): _grid[cell] = []
