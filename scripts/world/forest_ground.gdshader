@@ -20,6 +20,9 @@ uniform float night_forest_lift = 0.0;  // noite: chão de mata menos preto (Val
 uniform vec2 sun_vector = vec2(0.0);
 uniform float long_shadow = 0.0;
 uniform float golden = 0.0;  // sol baixo: grama ao sol puxa para o dourado
+// Grama menos repetitiva e mais leve (ref. V9 da Clareira): detalhe fino do tile
+// suavizado e variação de tom em manchas grandes, em degraus pontilhados.
+uniform float grass_soften = 0.0;
 
 uniform sampler2D corner_mask_soft : filter_linear, repeat_disable;  // a mesma máscara, filtrada
 
@@ -68,13 +71,36 @@ vec3 wang_ground(vec2 world) {
 		if (h > 0.5) { local.x = 31 - local.x; }
 		if (fract(h * 7.0) > 0.5) { local.y = 31 - local.y; }
 	}
-	ivec2 at = ivec2((index % 4) * 32, (index / 4) * 32) + local;
-	return dirt ? texelFetch(dirt_wang_atlas, at, 0).rgb : texelFetch(wang_atlas, at, 0).rgb;
+	ivec2 base = ivec2((index % 4) * 32, (index / 4) * 32);
+	ivec2 at = base + local;
+	if (dirt) return texelFetch(dirt_wang_atlas, at, 0).rgb;
+	vec3 g = texelFetch(wang_atlas, at, 0).rgb;
+	if (grass_soften > 0.0) {
+		// Média dos vizinhos a 3 px dentro do mesmo tile: tira o peso dos tufos.
+		vec3 avg = vec3(0.0);
+		for (int k = 0; k < 4; k++) {
+			ivec2 o = ivec2(k == 0 ? 3 : (k == 1 ? -3 : 0), k == 2 ? 3 : (k == 3 ? -3 : 0));
+			avg += texelFetch(wang_atlas, base + ivec2(mod(vec2(local + o), 32.0)), 0).rgb;
+		}
+		avg *= 0.25;
+		float grass = (m_nw.r + m_ne.r + m_sw.r + m_se.r) * 0.25;
+		g = mix(g, mix(avg, g, 0.45), grass * grass_soften);
+	}
+	return g;
 }
 
 void fragment() {
 	if (use_wang > 0.5) {
 		vec3 g = wang_ground(floor(world_pixel));
+		if (grass_soften > 0.0) {
+			// Manchas de tom grandes (~200 e ~70 px), em 5 degraus com pontilhado de 2 px.
+			vec2 q = floor(world_pixel / 2.0) * 2.0;
+			float tone = moss(q / 210.0) * 0.7 + moss(q / 70.0 + 13.0) * 0.3;
+			tone = floor(tone * 5.0 + (hash(q) - 0.5) * 0.6) / 4.0 - 0.5;
+			vec2 msz = vec2(textureSize(corner_mask_soft, 0));
+			float open = texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / msz).r;
+			g *= 1.0 + tone * vec3(0.32, 0.26, 0.14) * open * grass_soften;  // claro puxa ao amarelo, escuro ao verde
+		}
 		float luma = dot(g, vec3(0.299, 0.587, 0.114));
 		// Noite: menos saturação e valor, puxando para o azul do luar.
 		if (canopy_shade > 0.0) {
