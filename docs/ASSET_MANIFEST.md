@@ -216,3 +216,11 @@ Gerado no PixelLab (`create_map_object`, 128×128, high top-down, high detail, d
 | `assets/world/valley/natural_bridges/root_bridge_v.png` | 30×144 | `20630f44b573e4207b129968209ab5d63009900a9e5cc3a86b3b93dcb3b80f58` |
 
 Arco de raízes entrelaçadas gerado no PixelLab (`create_map_object`, 128×48, high top-down, high detail, detailed shading, selective outline), recortado à caixa visível. Único aprovado pelo usuário: troncos caídos, pedras, istmo e versões verticais de raízes foram rejeitados (13 gerações no total). Versão vertical (48×144) de raízes trançadas nas travessias oeste e leste: 9 tentativas; a escolhida segue o veio de madeira, o musgo discreto e as bordas escuras do arco aprovado (as outras tinham tábuas, degraus, topo de terra ou eram finas demais; o style matching com o fundo do mapa também falhou). Pontas apagadas em pontilhado Bayer 4×4 nas 18 fileiras finais, para mesclar com o chão. Desenhados por `scripts/world/natural_bridges.gd` em escala 2, espelhados em alternância.
+
+## Protagonistas Aren e Moni — 2026-11-22
+
+Origem: PixelLab, com crédito autorizado. Detalhes em `docs/gameplay/DESPERTAR.md`.
+
+- `assets/player/wake/`: poses do Aren olhando para o sul (sit_idle, sit_look_left, sit_look_right, sit_confused, stand_up). Foram geradas a partir do quadro final de "sentar" e alinhadas por `tools/pixellab/align_wake.py`.
+- `assets/player_moni/`: personagem nova, a Moni (cabelo solto, óculos de proteção, estilo do Aren, 128 px). Tem rotações, andar (48 quadros), correr (64), enxada e regador (72 cada) e o despertar.
+- `assets/menu/select/`: fundo da tela de seleção e poses sentadas de lado dos dois (neutra e olhando por cima do ombro).
