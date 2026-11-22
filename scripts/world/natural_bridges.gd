@@ -1,16 +1,14 @@
 extends RefCounted
 ## Pontes naturais do Vale: o mundo não tem humanos, então as travessias de tábuas
-## viram passagens que a natureza formou. A escolha segue cada local (BRIDGES):
-##  1 noroeste, riacho estreito entre gramados  -> tronco caído com musgo
-##  2 nordeste, riacho com pedras nas margens    -> pedras redondas de travessia
-##  3 oeste, faixa estreita entre dois lagos     -> istmo de terra e grama
-##  4 leste, entre lagos sob uma árvore grande   -> árvore gigante caída
-##  5 sul, riacho entre árvores grandes          -> ponte de raízes entrelaçadas
+## viram passagens que a natureza formou. O usuário aprovou só o arco de raízes
+## entrelaçadas (tronco caído, pedras e istmo foram rejeitados), então os 5 locais
+## (BRIDGES) usam o mesmo arco: [arte, girar 90°, espelhar], espelhado em
+## alternância para não repetir igual; girado 90° exatos nas travessias verticais.
 ## A travessia em si não muda: a colisão da água tem buracos nos retângulos de
 ## BRIDGES (region_surfaces/build_valley). Aqui só troca o visual.
 
 const ART := "res://assets/world/valley/natural_bridges/"
-const KINDS := ["fallen_log", "boulders", "land_bridge", "giant_log", "root_bridge"]
+const KINDS := [["root_bridge", false, false], ["root_bridge", false, true], ["root_bridge", true, false], ["root_bridge", true, true], ["root_bridge", false, false]]
 const SCALE := 2.0  # mesma densidade de pixel das árvores e plantas
 
 
@@ -25,8 +23,11 @@ static func apply(bridges: Node2D) -> Array[Sprite2D]:
 			if part is CanvasItem: (part as CanvasItem).visible = false
 		var rect: Rect2 = rects[i]
 		var sprite := Sprite2D.new()
-		sprite.name = "Natural_%s" % KINDS[i]
-		sprite.texture = load(ART + KINDS[i] + ".png")
+		var kind: Array = KINDS[i]
+		sprite.name = "Natural_%s_%d" % [kind[0], i + 1]
+		sprite.texture = load(ART + str(kind[0]) + ".png")
+		if kind[1]: sprite.rotation = PI / 2.0  # 90° exatos: pixels intactos
+		sprite.flip_h = kind[2]
 		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		sprite.scale = Vector2(SCALE, SCALE)
 		sprite.position = bridges.to_local(rect.get_center()).round()
