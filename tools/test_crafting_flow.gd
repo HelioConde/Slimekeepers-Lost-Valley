@@ -17,11 +17,19 @@ func _initialize() -> void:
 	call_deferred("run")
 
 
+## Evento de entrada real (mesmo caminho do teclado): vale para is_action_just_pressed
+## no _process da região, sem depender da ordem do await.
 func press(action: String) -> void:
-	Input.action_press(action)
+	var down := InputEventAction.new()
+	down.action = action
+	down.pressed = true
+	Input.parse_input_event(down)
 	await process_frame
 	await process_frame
-	Input.action_release(action)
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
 	await process_frame
 
 
@@ -71,6 +79,40 @@ func run() -> void:
 	var spot: Dictionary = forage.spots[0]
 	check(forage.nearest(spot.at, 1).is_empty(), "ponto coletado some no mesmo dia")
 	check(not forage.nearest(spot.at, 2).is_empty(), "ponto coletado volta no dia seguinte")
+	# Etapa 3: árvore comum -> toco + tronco -> madeira.
+	var chop: Node = region.get("choppable")
+	check(is_instance_valid(chop) and chop.trees.size() > 100, "árvores cortáveis registradas (%d)" % (chop.trees.size() if chop else 0))
+	var protected_ok := true
+	for key in chop.trees:
+		for h in preload("res://scripts/world/forest_layout.gd").habitats():
+			if (chop.trees[key] as Node2D).global_position.distance_to(h.center) < float(h.radius) + 80.0: protected_ok = false
+	check(protected_ok, "nenhuma árvore cortável dentro de habitat de slime")
+	var best_key := ""
+	var best_d := 1e9
+	for key in chop.trees:
+		var d := (chop.trees[key] as Node2D).global_position.distance_to(Vector2(3200, 3200))
+		if d < best_d: best_d = d; best_key = key
+	var tree_node: Node2D = chop.trees[best_key]
+	HOTBAR.select(self, HOTBAR.slots(self).find("machado"))
+	player.global_position = tree_node.global_position + Vector2(0, 20)
+	await physics_frame
+	await process_frame
+	var wood_before := BAG.count_item(self, "madeira")
+	for i in 3:
+		await press("interact")
+		await create_timer(0.8).timeout  # termina o golpe (animação ~0,56 s)
+	check(chop.state(self).has(best_key), "árvore caiu após 3 golpes")
+	check(not (tree_node.get_node("Sprite") as CanvasItem).visible, "árvore some e fica o toco")
+	player.global_position = tree_node.global_position + chop.LOG_OFFSET + Vector2(0, 16)
+	await physics_frame
+	await process_frame
+	if out != "": (await _shot()).save_png(out + "/tree_felled.png")
+	for i in 2:
+		await press("interact")
+		await create_timer(0.8).timeout
+	check(BAG.count_item(self, "madeira") == wood_before + chop.WOOD_PER_LOG, "tronco processado em %d madeiras" % chop.WOOD_PER_LOG)
+	chop.apply_day(1 + chop.REGROW_DAYS)
+	check((tree_node.get_node("Sprite") as CanvasItem).visible and not chop.state(self).has(best_key), "árvore volta a crescer após %d dias" % chop.REGROW_DAYS)
 	print("CRAFTING_FLOW: %d failures" % failures)
 	quit(1 if failures else 0)
 

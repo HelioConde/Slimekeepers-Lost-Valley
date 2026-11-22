@@ -15,6 +15,7 @@ const SEED_SITES := [
 const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
+const ENERGY := preload("res://scripts/systems/energy_state.gd")
 var found_places: Dictionary = {}
 var ecosystem: Node2D
 var habitat_manager: Node2D
@@ -25,6 +26,7 @@ var seed_patches: Array[Node2D] = []
 var bag_hud: Node
 var forage: Node2D
 var crafting_panel: Control
+var choppable: Node
 ## Pontos de coleta na Clareira (ajustável): o bastante para corda, machado e bancada.
 const FORAGE_PLAN := {"fibra": 12, "graveto": 6, "pedra_pequena": 8}
 var _spawn_light: Node2D
@@ -93,6 +95,17 @@ func _ready() -> void:
 	add_child(art)
 	_spawn_seed_patches()
 	_spawn_forage.call_deferred()
+	# Árvores cortáveis (CRIACAO.md): nunca em habitats de slimes nem pontos de interesse.
+	choppable = preload("res://scripts/world/choppable_trees.gd").new()
+	add_child(choppable)
+	choppable.setup([$VegetationHigh, $ExpandedForest], func(at: Vector2) -> bool:
+		for h in Forest.habitats():
+			if at.distance_to(h.center) < float(h.radius) + 80.0: return true
+		for p in Forest.points_of_interest():
+			if at.distance_to(p.at) < 160.0: return true
+		return false)
+	choppable.apply_day(GameClock.day_number)
+	GameClock.day_changed.connect(choppable.apply_day)
 
 ## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
 func _spawn_forage() -> void:
@@ -273,6 +286,8 @@ func _process(delta: float) -> void:
 				bag_hud.call("refresh")
 				_notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
 			return
+	if is_instance_valid(choppable) and _axe_interaction():
+		return
 	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir"
 	if player.position.distance_to(Forest.SOUTH_EXIT)<115:
 		hud_hint.text = "[E] Viajar para o Vale das Nascentes"
@@ -294,6 +309,28 @@ func _process(delta: float) -> void:
 				_notify(marker.get_meta("description"))
 				_update_hud()
 			return
+
+## Machado na mão perto de árvore comum ou tronco caído: golpe com [E].
+func _axe_interaction() -> bool:
+	var t: Dictionary = choppable.target(player.global_position)
+	if t.is_empty() or BAG.count_item(get_tree(), "machado") <= 0:
+		return false
+	if HOTBAR.selected_item(get_tree()) != "machado":
+		hud_hint.text = "Selecione o machado na barra para " + ("cortar a árvore" if t.kind == "tree" else "processar o tronco")
+		return true
+	var total: int = choppable.HITS_TO_FELL if t.kind == "tree" else choppable.HITS_TO_PROCESS
+	hud_hint.text = "[E] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
+	if Input.is_action_just_pressed("interact") and not player.is_using_tool():
+		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
+			_notify("Cansada demais para isso. Durma para recuperar a energia.")
+			return true
+		player.play_tool("hoe")  # golpe: animação de ferramenta existente (machado próprio: pendente)
+		match choppable.strike(t, GameClock.day_number):
+			"felled": _notify("A árvore caiu! Processe o tronco com o machado.")
+			"processed":
+				bag_hud.call("refresh")
+				_notify("Você conseguiu %d madeiras." % choppable.WOOD_PER_LOG)
+	return true
 
 func _offer_prototype_food(slime: Node2D) -> void:
 	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).

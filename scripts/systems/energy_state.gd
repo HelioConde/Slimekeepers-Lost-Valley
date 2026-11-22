@@ -4,7 +4,7 @@ extends RefCounted
 
 const KEY := "player_energy"
 const MAX := 100
-const COSTS := {"till": 4, "water": 2}
+const COSTS := {"till": 4, "water": 2, "chop": 3, "process": 2}  # machado: CRIACAO.md
 
 
 static func current(tree: SceneTree) -> int:
