@@ -84,7 +84,7 @@ vec3 wang_ground(vec2 world) {
 		}
 		avg *= 0.25;
 		float grass = (m_nw.r + m_ne.r + m_sw.r + m_se.r) * 0.25;
-		g = mix(g, mix(avg, g, 0.45), grass * grass_soften);
+		g = mix(g, mix(avg, g, 0.3), grass * grass_soften);  // fundo liso: o detalhe vem dos tufos desenhados
 	}
 	return g;
 }
@@ -100,6 +100,34 @@ void fragment() {
 			vec2 msz = vec2(textureSize(corner_mask_soft, 0));
 			float open = texture(corner_mask_soft, (world_pixel / 32.0 + vec2(0.5)) / msz).r;
 			g *= 1.0 + tone * vec3(0.32, 0.26, 0.14) * open * grass_soften;  // claro puxa ao amarelo, escuro ao verde
+			// Tufos desenhados (pixel art, grade de 2 px): 3–4 folhas com base escura e
+			// ponta clara, agrupados onde a grama é "alta" (manchas claras = mais tufos).
+			// Vento em coordenadas de mundo: rajadas atravessam o mapa e inclinam as pontas.
+			float tall = moss(q / 150.0 + 41.0);
+			vec2 cell = floor(q / 22.0);
+			vec2 base = cell * 22.0 + floor(vec2(hash(cell + 1.0), hash(cell + 2.0)) * 8.0) * 2.0 + vec2(6.0, 18.0);
+			float chance = mix(0.12, 0.7, smoothstep(0.3, 0.7, tall)) * open * grass_soften;
+			if (hash(cell + 3.0) < chance) {
+				float gust = moss(vec2(base.x * 0.004 - TIME * 0.35, base.y * 0.004));
+				float lean = floor(smoothstep(0.45, 0.8, gust) * 2.0) * 2.0;  // 0 ou 2 px nas pontas
+				vec2 d = q - base;
+				float blade = 0.0;
+				float tip = 0.0;
+				int count = 3 + int(hash(cell + 4.0) * 2.0);
+				for (int k = 0; k < 4; k++) {
+					if (k >= count) break;
+					float bx = (float(k) - 1.0) * 2.0 + floor(hash(cell + float(k) * 3.1) * 2.0) * 2.0;  // sempre par: grade de 2 px
+					float h = 6.0 + floor(hash(cell + float(k) * 5.7) * 3.0) * 2.0;  // 6–10 px
+					float up = -d.y;  // 0 na base
+					float sway = up >= h * 0.5 ? lean * (k % 2 == 0 ? 1.0 : 0.5) : 0.0;
+					float on = step(0.0, up) * step(up, h) * step(abs(d.x - bx - floor(sway / 2.0) * 2.0 - (k == 0 ? -floor(up / 4.0) * 2.0 : (k == count - 1 ? floor(up / 4.0) * 2.0 : 0.0))), 0.5);
+					blade = max(blade, on);
+					tip = max(tip, on * step(h - 2.0, up));
+				}
+				vec3 dark = g * vec3(0.72, 0.8, 0.7);
+				vec3 light = g * vec3(1.22, 1.18, 0.9) + vec3(0.03, 0.03, 0.0);
+				g = mix(g, mix(dark, light, tip), blade);
+			}
 		}
 		float luma = dot(g, vec3(0.299, 0.587, 0.114));
 		// Noite: menos saturação e valor, puxando para o azul do luar.
