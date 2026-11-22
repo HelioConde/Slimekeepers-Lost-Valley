@@ -26,6 +26,9 @@ func _rig() -> Array:
 	actor.set("facing", "south")
 	region.add_child(actor)
 	field.player = actor
+	# Ferramentas agora são fabricadas na bancada (CRIACAO.md): o teste as dá prontas.
+	Bag.add_item(get_tree(), "enxada")
+	Bag.add_item(get_tree(), "regador")
 	return [field, actor]
 
 

@@ -37,6 +37,7 @@ func test_tired_player_cannot_till() -> void:
 	region.add_child(actor)
 	actor.global_position = Vector2(11 * 32 + 16, 10 * 32 + 4)
 	await await_idle_frame()
+	Bag.add_item(get_tree(), "enxada")  # fabricada na bancada (CRIACAO.md)
 	Hotbar.select(get_tree(), 0)  # enxada
 	get_tree().set_meta(Energy.KEY, 2)
 	assert_str(field.interact(actor)).contains("Cansada")

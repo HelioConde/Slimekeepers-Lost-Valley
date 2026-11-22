@@ -3,6 +3,7 @@ extends RefCounted
 ## O adaptador valida transacoes usando collectible_inventory, sem duplicar saldos.
 const INVENTORY := preload("res://scripts/systems/collectible_inventory.gd")
 const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const ITEM_ID := "sementes_silvestres"
 const LEAVES_ID := "folhas_frescas"
 const INVENTORY_KEY := "forest_bag_items"
@@ -44,8 +45,11 @@ static func spend_item(tree: SceneTree, item_id: String, quantity: int = 1) -> b
 	tree.set_meta(INVENTORY_KEY, inventory.serialize())
 	return true
 
+## Respeita a capacidade por item (item_catalog.max_stack): cheio = false, nada muda.
 static func add_item(tree: SceneTree, item_id: String, quantity: int = 1) -> bool:
 	var inventory = _load_inventory(tree)
+	if inventory != null and inventory.count(item_id) + quantity > ITEMS.max_stack(item_id):
+		return false
 	if inventory == null or not inventory.add(item_id, quantity):
 		return false
 	tree.set_meta(INVENTORY_KEY, inventory.serialize())

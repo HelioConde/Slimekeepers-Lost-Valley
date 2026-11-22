@@ -1,6 +1,6 @@
 extends GdUnitTestSuite
 
-## Barra rápida: ferramentas fixas, itens da bolsa na ordem, seleção e ícones.
+## Barra rápida: ferramentas que o jogador tem, itens da bolsa na ordem, seleção e ícones.
 
 const Hotbar := preload("res://scripts/systems/hotbar_state.gd")
 const Items := preload("res://scripts/systems/item_catalog.gd")
@@ -13,8 +13,19 @@ func before_test() -> void:
 		if get_tree().has_meta(key): get_tree().remove_meta(key)
 
 
+func test_crafted_tools_only_appear_when_owned() -> void:
+	var slots: Array = Hotbar.slots(get_tree())
+	for tool in Items.TOOLS:
+		var free: bool = Items.FREE_STARTER_TOOLS and tool in Items.STARTER_TOOLS
+		assert_bool(slots.has(tool)).override_failure_message(tool).is_equal(free)
+	Bag.add_item(get_tree(), "machado")
+	assert_bool(Hotbar.slots(get_tree()).has("machado")).is_true()
+
+
 func test_tools_first_then_bag_items_in_order() -> void:
 	var tree := get_tree()
+	Bag.add_item(tree, "enxada")
+	Bag.add_item(tree, "regador")
 	Bag.add_item(tree, "cenoura", 3)
 	Bag.add_item(tree, "semente_repolho", 2)
 	var slots: Array = Hotbar.slots(tree)
@@ -25,7 +36,7 @@ func test_tools_first_then_bag_items_in_order() -> void:
 	assert_str(slots[3]).is_equal("cenoura")
 	assert_str(slots[4]).is_empty()
 	assert_int(Hotbar.count(tree, "cenoura")).is_equal(3)
-	assert_int(Hotbar.count(tree, "enxada")).is_equal(0)
+	assert_int(Hotbar.count(tree, "enxada")).is_equal(0)  # ferramenta: sem número na barra
 
 
 func test_selection_wraps_and_persists_in_session() -> void:
@@ -34,6 +45,8 @@ func test_selection_wraps_and_persists_in_session() -> void:
 	assert_int(Hotbar.selected_index(tree)).is_equal(2)
 	Hotbar.select(tree, -1)
 	assert_int(Hotbar.selected_index(tree)).is_equal(9)
+	Bag.add_item(tree, "enxada")
+	Bag.add_item(tree, "regador")
 	Hotbar.select(tree, 1)
 	assert_str(Hotbar.selected_item(tree)).is_equal("regador")
 
