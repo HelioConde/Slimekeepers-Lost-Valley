@@ -31,7 +31,7 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
 | Coleta manual no mundo | Feito: 26 pontos na Clareira (12 de fibra, 6 de graveto, 8 de pedra), [E] para pegar, voltam no dia seguinte (`scripts/world/forage_spots.gd`, estado salvo em `forage_taken`) |
 | Interface de fabricação (mãos e bancada) | Feito: [C] abre (`scripts/ui/crafting_panel.gd`), ↑↓ escolhem, E fabrica, jogador parado enquanto aberta. Modo bancada pronto, falta a bancada no mundo |
 | Árvores cortáveis, toco, regeneração, processar tronco | Feito (`scripts/world/choppable_trees.gd`): machado selecionado + [E]; 3 golpes derrubam (3 de energia cada), fica toco e tronco; 2 golpes no tronco dão 4 madeiras (2 de energia); volta a crescer em 3 dias; 3.778 árvores comuns, protegidas as de habitats de slimes (+80 px) e pontos de interesse (160 px, inclui a Árvore Centenária). Golpe usa a animação da enxada: **animação própria de machado pendente** |
-| Posicionar a bancada no mundo, persistir | Pendente |
+| Posicionar a bancada no mundo, persistir | Feito (`scripts/world/station_placer.gd`): bancada selecionada mostra prévia à frente (verde/vermelha); só em chão livre, fora do lago e longe de outra bancada; [E] coloca e gasta o item; salva por região em `placed_stations`; [E] perto dela abre a fabricação da bancada. Por enquanto só na Floresta |
 | Começar sem enxada/regador | **Transição:** `item_catalog.FREE_STARTER_TOOLS = true` mantém as duas de graça até a cadeia estar jogável, para a fazenda não travar (nem saves antigos). |
 
 ## Decisões
@@ -46,4 +46,5 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
 - `docs/gameplay/criacao/00_coleta_clareira.png`: pontos de coleta na Clareira.
 - `docs/gameplay/criacao/01_janela_fabricacao.png`: janela de fabricação.
 - O mesmo teste corta uma árvore comum (3 golpes), processa o tronco (+4 madeiras), confere que nenhuma árvore de habitat é cortável e que a árvore volta após 3 dias. `docs/gameplay/criacao/02_arvore_cortada.png`.
+- O teste segue até o fim: 4 árvores (16 madeiras), bancada fabricada, colocada e salva, [E] abre a bancada, enxada e regador fabricados. 21 verificações, 0 falhas. `docs/gameplay/criacao/03_bancada_colocada.png`, `04_janela_bancada.png`.
 - Floresta ao meio-dia na Clareira: 123 FPS (antes 117–121 nas mesmas capturas).

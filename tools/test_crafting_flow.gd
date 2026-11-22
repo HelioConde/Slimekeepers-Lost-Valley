@@ -113,8 +113,60 @@ func run() -> void:
 	check(BAG.count_item(self, "madeira") == wood_before + chop.WOOD_PER_LOG, "tronco processado em %d madeiras" % chop.WOOD_PER_LOG)
 	chop.apply_day(1 + chop.REGROW_DAYS)
 	check((tree_node.get_node("Sprite") as CanvasItem).visible and not chop.state(self).has(best_key), "árvore volta a crescer após %d dias" % chop.REGROW_DAYS)
+	# Etapa 4: mais 3 árvores (13 madeiras no total), bancada fabricada e colocada.
+	var keys: Array = chop.trees.keys()
+	keys.sort_custom(func(a, b): return (chop.trees[a] as Node2D).global_position.distance_to(Vector2(3200, 3200)) < (chop.trees[b] as Node2D).global_position.distance_to(Vector2(3200, 3200)))
+	var cut := 0
+	for k in keys:
+		if cut >= 3: break
+		if chop.state(self).has(k): continue
+		await _fell_and_process(region, player, chop, k)
+		cut += 1
+	set_meta("player_energy", 100)
+	check(BAG.count_item(self, "madeira") >= 13, "madeira suficiente após 4 árvores (%d)" % BAG.count_item(self, "madeira"))
+	for i in 6: panel.call("_craft", "corda")
+	panel.call("_craft", "bancada")
+	check(BAG.count_item(self, "bancada") == 1, "fabricou a bancada (madeira + corda + pedra)")
+	var placer: Node2D = region.get("placer")
+	HOTBAR.select(self, HOTBAR.slots(self).find("bancada"))
+	player.global_position = Vector2(3200, 3200)
+	player.set("facing", "south")
+	await physics_frame
+	await process_frame
+	check(placer.can_place(placer.spot_for(player)), "chão livre aceito para a bancada")
+	if out != "": (await _shot()).save_png(out + "/bench_preview.png")
+	await press("interact")
+	check(BAG.count_item(self, "bancada") == 0 and get_meta("placed_stations", []).size() == 1, "bancada colocada e salva")
+	check(not placer.can_place(placer.spot_for(player)), "não coloca outra em cima")
+	await press("interact")
+	check(panel.visible and panel.station == "bancada", "[E] na bancada abre a fabricação da bancada")
+	panel.call("_craft", "enxada")
+	panel.call("_craft", "regador")
+	check(BAG.count_item(self, "enxada") == 1 and BAG.count_item(self, "regador") == 1, "enxada e regador feitos na bancada")
+	if out != "": (await _shot()).save_png(out + "/bench_panel.png")
+	await key(KEY_ESCAPE)
+	player.global_position = Vector2(3200, 3150)
+	await physics_frame
+	if out != "": (await _shot()).save_png(out + "/bench_placed.png")
 	print("CRAFTING_FLOW: %d failures" % failures)
 	quit(1 if failures else 0)
+
+
+func _fell_and_process(region: Node, player: Node2D, chop: Node, k: String) -> void:
+	set_meta("player_energy", 100)
+	var node: Node2D = chop.trees[k]
+	player.global_position = node.global_position + Vector2(0, 20)
+	await physics_frame
+	await process_frame
+	for i in chop.HITS_TO_FELL:
+		await press("interact")
+		await create_timer(0.8).timeout
+	player.global_position = node.global_position + chop.LOG_OFFSET + Vector2(0, 16)
+	await physics_frame
+	await process_frame
+	for i in chop.HITS_TO_PROCESS:
+		await press("interact")
+		await create_timer(0.8).timeout
 
 
 func _shot() -> Image:

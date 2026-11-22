@@ -458,8 +458,10 @@ func _on_node_added(node: Node) -> void:
 		_consider.call_deferred(node)
 
 
-func _consider(node: Node) -> void:
-	if not is_instance_valid(node):
+## Sem tipo no parâmetro: chamado adiado, o nó pode ter sido liberado (ex.: linhas
+## da janela de fabricação recriadas) e a conversão para Node falharia antes da checagem.
+func _consider(node) -> void:
+	if not is_instance_valid(node) or not (node is Node):
 		return
 	_consider_spot(node)
 	if node.has_meta("ambient_light"):

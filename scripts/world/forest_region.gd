@@ -27,6 +27,7 @@ var bag_hud: Node
 var forage: Node2D
 var crafting_panel: Control
 var choppable: Node
+var placer: Node2D
 ## Pontos de coleta na Clareira (ajustável): o bastante para corda, machado e bancada.
 const FORAGE_PLAN := {"fibra": 12, "graveto": 6, "pedra_pequena": 8}
 var _spawn_light: Node2D
@@ -105,6 +106,12 @@ func _ready() -> void:
 			if at.distance_to(p.at) < 160.0: return true
 		return false)
 	choppable.apply_day(GameClock.day_number)
+	# Bancadas colocadas pelo jogador (CRIACAO.md, etapa 4).
+	placer = preload("res://scripts/world/station_placer.gd").new()
+	add_child(placer)
+	var pond: Vector2 = $NaturalSpring.global_position
+	placer.blocked = func(at: Vector2) -> bool: return at.distance_to(pond) < 150.0
+	placer.setup(scene_file_path)
 	GameClock.day_changed.connect(choppable.apply_day)
 
 ## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
@@ -254,6 +261,15 @@ func _process(delta: float) -> void:
 	if is_instance_valid(crafting_panel) and crafting_panel.visible:
 		hud_hint.text = ""
 		return
+	if is_instance_valid(placer):
+		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
+		if station_hint == "placed":
+			bag_hud.call("refresh")
+			_notify("Bancada de trabalho montada! Use [E] nela para fabricar ferramentas.")
+			return
+		if not station_hint.is_empty():
+			hud_hint.text = station_hint
+			return
 	var closest := _closest_slime()
 	if closest != null:
 		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
