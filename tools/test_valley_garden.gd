@@ -1,4 +1,5 @@
 extends SceneTree
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
 ## Validacao nativa: Brotinho -> sementes -> plantar -> crescer -> colher -> viajar -> reset.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const GARDEN := preload("res://scripts/systems/valley_starter_garden.gd")
@@ -257,6 +258,7 @@ func _run() -> void:
 		"Menu e acessivel apos o ciclo de cultivo")
 	if current_scene != null and current_scene.has_method("_start_game"):
 		current_scene._start_game()
+		await NEW_GAME.through_selection(self)
 		await _settle()
 		_check(current_scene.scene_file_path == FOREST, "Novo Jogo retorna a floresta")
 		_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "Novo Jogo limpa sementes e folhas")

@@ -1,0 +1,290 @@
+extends Control
+## Seleção de protagonista (Novo Jogo): Aren e Moni sentados de costas um para o
+## outro numa clareira encantada. Cursor em cima: realça, o outro esmaece e o
+## personagem olha por cima do ombro (uma vez por entrada). Clique fixa a escolha
+## e mostra Confirmar/Voltar. Teclado/controle: ←/→ escolhem, Enter confirma,
+## Esc volta. Simbólica (Bíblia): no mundo, quem foi escolhido desperta sozinho.
+
+const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
+const SessionState = preload("res://scripts/systems/session_state.gd")
+const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const ART := "res://assets/menu/select/"
+const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
+const MENU := "res://scenes/start_menu.tscn"
+const ORDER := ["aren", "moni"]
+const CARD_SCALE := 2.6
+const DIM := Color(0.62, 0.66, 0.78)
+const LIT := Color(1.12, 1.1, 1.02)
+
+var hovered := ""
+var selected := ""
+var figures := {}   # id -> TextureRect
+var panels := {}    # id -> PanelContainer
+var _textures := {} # id -> [neutral, look]
+var _shadows := {}  # id -> Polygon2D
+var _buttons: HBoxContainer
+var _confirm: Button
+var _breath := 0.0
+var _leaving := false
+var _fade: ColorRect
+var _loading := false
+var _loading_label: Label
+var _loading_started := 0.0
+
+
+func _ready() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var bg := TextureRect.new()
+	bg.texture = load(ART + "background.png")
+	bg.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	bg.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(bg)
+	add_child(_fireflies())
+	var title := _label("Escolha seu protagonista", 30)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	title.offset_top = 40
+	title.offset_left = -300
+	title.offset_right = 300
+	add_child(title)
+	for id in ORDER:
+		_textures[id] = [load(ART + id + "_sit.png"), load(ART + id + "_look.png")]
+		var shadow := Polygon2D.new()
+		shadow.color = Color(0.02, 0.05, 0.06, 0.45)
+		add_child(shadow)
+		_shadows[id] = shadow
+		figures[id] = _figure(id)
+		panels[id] = _panel(id)
+	_buttons = HBoxContainer.new()
+	_buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	_buttons.add_theme_constant_override("separation", 24)
+	_buttons.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	_buttons.offset_top = -100
+	_buttons.offset_bottom = -44
+	_buttons.offset_left = -260
+	_buttons.offset_right = 260
+	add_child(_buttons)
+	_confirm = _button("Confirmar", _on_confirm)
+	_confirm.disabled = true
+	_buttons.add_child(_confirm)
+	_buttons.add_child(_button("Voltar", _on_back))
+	_fade = ColorRect.new()
+	_fade.color = Color(0, 0, 0, 0)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(_fade)
+	resized.connect(_layout)
+	_layout()
+	_refresh()
+
+
+func _layout() -> void:
+	# De costas: as costas (borda de trás do desenho) se tocam no centro; pés no
+	# gramado da clareira, com sombra. A arte olha para a direita; Aren é espelhado.
+	var ground := size * Vector2(0.5, 0.8)
+	var w := 128.0 * CARD_SCALE
+	for id in ORDER:
+		var f: TextureRect = figures[id]
+		var used: Rect2 = (f.texture as Texture2D).get_image().get_used_rect()
+		f.size = Vector2(w, w)
+		f.pivot_offset = Vector2(w * 0.5, used.end.y * CARD_SCALE)
+		var back := used.position.x * CARD_SCALE  # costas da arte (lado esquerdo)
+		var x := ground.x - back if id == "moni" else ground.x - (w - back)
+		f.position = Vector2(x, ground.y - used.end.y * CARD_SCALE).round()
+		var shadow: Polygon2D = _shadows[id]
+		var feet_w := used.size.x * CARD_SCALE * 0.5
+		shadow.position = Vector2(ground.x + (feet_w * 0.9 if id == "moni" else -feet_w * 0.9), ground.y - 4)
+		shadow.polygon = PackedVector2Array([Vector2(-feet_w, 0), Vector2(-feet_w * 0.7, -10), Vector2(feet_w * 0.7, -10), Vector2(feet_w, 0), Vector2(feet_w * 0.7, 10), Vector2(-feet_w * 0.7, 10)])
+		var p: PanelContainer = panels[id]
+		p.size = Vector2(280, 0)
+		p.reset_size()
+		p.position = Vector2(size.x * 0.05 if id == "aren" else size.x * 0.95 - p.size.x, size.y * 0.34).round()
+
+
+func _process(delta: float) -> void:
+	# Respiração: leve subida e descida, cada um no seu ritmo.
+	_breath += delta
+	if _loading: _poll_loading()
+	for i in ORDER.size():
+		var f: TextureRect = figures[ORDER[i]]
+		f.scale = Vector2(1.0, 1.0 + 0.012 * sin(_breath * 1.6 + i * 1.3))
+
+
+func _figure(id: String) -> TextureRect:
+	var f := TextureRect.new()
+	f.name = id.capitalize()
+	f.texture = _textures[id][0]
+	f.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	f.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	f.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	f.flip_h = id == "aren"  # arte olha para a direita
+	f.mouse_filter = Control.MOUSE_FILTER_STOP
+	f.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	f.mouse_entered.connect(_on_hover.bind(id))
+	f.mouse_exited.connect(_on_unhover.bind(id))
+	f.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT: select(id))
+	add_child(f)
+	return f
+
+
+func _panel(id: String) -> PanelContainer:
+	var p := PanelContainer.new()
+	p.custom_minimum_size = Vector2(280, 0)
+	p.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#2a2230e6")
+	style.border_color = Color("#c9a56a")
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(6)
+	style.set_content_margin_all(12)
+	p.add_theme_stylebox_override("panel", style)
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var column := VBoxContainer.new()
+	p.add_child(column)
+	var data: Dictionary = PROTAGONIST.ALL[id]
+	var name_label := _label(str(data.name), 28)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	column.add_child(name_label)
+	var blurb := _label(str(data.blurb), 16)
+	blurb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	blurb.custom_minimum_size = Vector2(256, 0)  # largura fixa: sem ela o texto quebrado estica o painel
+	column.add_child(blurb)
+	add_child(p)
+	return p
+
+
+## Realce de quem está em foco (cursor ou seleção); o outro esmaece.
+func _refresh() -> void:
+	var focus := selected if hovered.is_empty() else hovered
+	for id in ORDER:
+		var target := Color.WHITE if focus.is_empty() else (LIT if id == focus else DIM)
+		var f: TextureRect = figures[id]
+		f.create_tween().tween_property(f, "modulate", target, 0.25)
+		var p: PanelContainer = panels[id]
+		p.create_tween().tween_property(p, "modulate:a", 1.0 if (focus.is_empty() or id == focus) else 0.45, 0.25)
+		# Olha por cima do ombro só enquanto está em foco (troca uma vez, sem repetir).
+		f.texture = _textures[id][1] if id == focus else _textures[id][0]
+	_confirm.disabled = selected.is_empty()
+
+
+func _on_hover(id: String) -> void:
+	if hovered == id: return
+	hovered = id
+	_refresh()
+
+
+func _on_unhover(id: String) -> void:
+	if hovered != id: return
+	hovered = ""
+	_refresh()
+
+
+func select(id: String) -> void:
+	if _leaving or not PROTAGONIST.ALL.has(id): return
+	selected = id
+	var f: TextureRect = figures[id]
+	var t := f.create_tween()  # pequena reação: pulinho
+	t.tween_property(f, "position:y", f.position.y - 10.0, 0.1)
+	t.tween_property(f, "position:y", f.position.y, 0.14)
+	_refresh()
+	_confirm.grab_focus()
+
+
+func _on_confirm() -> void:
+	if selected.is_empty() or _leaving: return
+	_leaving = true
+	GameClock.reset_new_game()
+	SessionState.clear_session(get_tree())
+	PROTAGONIST.choose(get_tree(), selected)
+	# Carrega o mapa em segundo plano atrás de uma tela de carregamento (nada de
+	# tela preta parada): escurece, mostra o nome e um pontinho pulsando.
+	ResourceLoader.load_threaded_request(FOREST)
+	_loading_label = _label(str(PROTAGONIST.ALL[selected].name) + " está despertando", 26)
+	_loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_loading_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	_loading_label.offset_left = -320
+	_loading_label.offset_right = 320
+	_loading_label.modulate.a = 0.0
+	add_child(_loading_label)
+	var t := create_tween().set_parallel()
+	t.tween_property(_fade, "color:a", 0.92, 0.7)
+	t.tween_property(_loading_label, "modulate:a", 1.0, 0.7)
+	_loading = true
+	_loading_started = _breath
+
+
+func _poll_loading() -> void:
+	_loading_label.text = str(PROTAGONIST.ALL[selected].name) + " está despertando" + ".".repeat(1 + int(_breath * 2.0) % 3)
+	if _breath - _loading_started < 1.2:
+		return  # tempo mínimo da transição, mesmo com o mapa já carregado
+	if ResourceLoader.load_threaded_get_status(FOREST) == ResourceLoader.THREAD_LOAD_LOADED:
+		_loading = false
+		get_window().content_scale_size = Vector2i(960, 540)
+		get_tree().change_scene_to_packed(ResourceLoader.load_threaded_get(FOREST))
+
+
+func _on_back() -> void:
+	if _leaving: return
+	get_tree().change_scene_to_file(MENU)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_left") or event.is_action_pressed("move_left"):
+		select("aren")
+	elif event.is_action_pressed("ui_right") or event.is_action_pressed("move_right"):
+		select("moni")
+	elif event.is_action_pressed("ui_cancel"):
+		_on_back()
+	else:
+		return
+	get_viewport().set_input_as_handled()
+
+
+func _fireflies() -> CPUParticles2D:
+	var p := CPUParticles2D.new()
+	p.amount = 40
+	p.lifetime = 6.0
+	p.preprocess = 4.0
+	p.position = Vector2(640, 360)
+	p.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	p.emission_rect_extents = Vector2(660, 360)
+	p.gravity = Vector2.ZERO
+	p.initial_velocity_min = 4.0
+	p.initial_velocity_max = 12.0
+	p.spread = 180.0
+	p.scale_amount_min = 2.0
+	p.scale_amount_max = 4.0
+	var ramp := Gradient.new()
+	ramp.offsets = PackedFloat32Array([0.0, 0.3, 0.7, 1.0])
+	ramp.colors = PackedColorArray([Color(0.7, 1, 0.9, 0), Color(0.75, 1, 0.9, 0.9), Color(0.6, 0.85, 1, 0.5), Color(0.6, 0.85, 1, 0)])
+	p.color_ramp = ramp
+	var additive := CanvasItemMaterial.new()
+	additive.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	p.material = additive
+	return p
+
+
+func _label(text: String, font_size: int) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_override("font", FONT)
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", Color("#f6e8c2"))
+	label.add_theme_color_override("font_outline_color", Color("#1a1420"))
+	label.add_theme_constant_override("outline_size", 6)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return label
+
+
+func _button(text: String, action: Callable) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.custom_minimum_size = Vector2(200, 52)
+	b.add_theme_font_override("font", FONT)
+	b.add_theme_font_size_override("font_size", 22)
+	b.pressed.connect(action)
+	return b

@@ -1,4 +1,5 @@
 extends SceneTree
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
 ## Clock contract and real scene lifecycle. No visual claims from headless checks.
 const ClockScript = preload("res://scripts/systems/game_clock.gd")
 const Travel = preload("res://scripts/world/region_travel.gd")
@@ -121,6 +122,7 @@ func run():
  await create_timer(.2,true).timeout
  check(not clock.is_running() and clock.get_save_data()==before,"Main menu consumes no game time")
  current_scene._start_game()
+ await NEW_GAME.through_selection(self)
  for i in 120:
   await process_frame
   if is_instance_valid(current_scene) and current_scene.scene_file_path==Travel.CLEARING:break

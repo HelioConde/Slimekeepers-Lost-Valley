@@ -16,6 +16,7 @@ const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const ENERGY := preload("res://scripts/systems/energy_state.gd")
+const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
 var found_places: Dictionary = {}
 var ecosystem: Node2D
 var habitat_manager: Node2D
@@ -28,6 +29,7 @@ var forage: Node2D
 var crafting_panel: Control
 var choppable: Node
 var placer: Node2D
+var intro: Node
 ## Pontos de coleta na Clareira (ajustável): o bastante para corda, machado e bancada.
 const FORAGE_PLAN := {"fibra": 12, "graveto": 6, "pedra_pequena": 8}
 var _spawn_light: Node2D
@@ -61,6 +63,14 @@ func _ready() -> void:
 	crafting_panel.player = player
 	$HUD/Interface.add_child(crafting_panel)
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
+	# Novo Jogo confirmado: o protagonista escolhido desperta sentado no início.
+	if PROTAGONIST.intro_pending(get_tree()):
+		player.position = $SpawnPoints/PlayerSpawn.global_position
+		intro = preload("res://scripts/world/intro_wake.gd").new()
+		add_child(intro)
+		crafting_panel.set_process_unhandled_input(false)
+		intro.finished.connect(func() -> void: crafting_panel.set_process_unhandled_input(true))
+		intro.start.call_deferred(player, [$HUD/Interface])
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
@@ -258,6 +268,9 @@ func _process(delta: float) -> void:
 	if message_time > 0:
 		message_time -= delta
 		if message_time <= 0: popup.text = ""
+	if is_instance_valid(intro):  # despertar em andamento: nada de interações
+		hud_hint.text = ""
+		return
 	if is_instance_valid(crafting_panel) and crafting_panel.visible:
 		hud_hint.text = ""
 		return

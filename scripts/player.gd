@@ -6,11 +6,12 @@ const RUN_SPEED: float = 220.0
 const WORLD_BOUNDS = Rect2(34.0, 70.0, 1212.0, 835.0)
 const DIRS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
 
-## Ferramentas: pasta das animações PixelLab (8 direções), quadros e velocidade.
-const TOOL_ANIMATIONS := {
-	"hoe": ["res://assets/Create_a_Hoe_Equippe/animations/The_adventurer_grips_the_tool_handle_firmly._Her_r", 9, 16.0],
-	"water": ["res://assets/Create_a_Watering_Ca/animations/The_character_lifts_the_watering_can_from_her_side", 9, 14.0],
-}
+const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
+## Ferramentas: chave da pasta em PROTAGONIST.ALL, quadros e velocidade.
+const TOOL_ANIMATIONS := {"hoe": ["hoe", 9, 16.0], "water": ["water", 9, 14.0]}
+## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
+const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
+	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
 
 @export var world_bounds: Rect2 = WORLD_BOUNDS
 var _tool_time := 0.0
@@ -71,6 +72,8 @@ func _play_animation(name: String) -> void:
 		sprite.play(name)
 
 func _build_frames() -> SpriteFrames:
+	var who: Dictionary = PROTAGONIST.data(get_tree()) if is_inside_tree() else PROTAGONIST.ALL[PROTAGONIST.DEFAULT]
+	var art: String = who.art
 	var frames := SpriteFrames.new()
 	if frames.has_animation("default"):
 		frames.remove_animation("default")
@@ -78,17 +81,17 @@ func _build_frames() -> SpriteFrames:
 		var idle: String = "idle_" + direction
 		frames.add_animation(idle)
 		frames.set_animation_speed(idle, 1.0)
-		var idle_path := "res://assets/player/rotations/%s.png" % direction
+		var idle_path := "%s/rotations/%s.png" % [art, direction]
 		frames.add_frame(idle, load(idle_path) as Texture2D)
 		for data in [["walk", "Walk", 6, 8.0], ["run", "Running", 8, 11.0]]:
 			var anim_name: String = str(data[0]) + "_" + direction
 			var directory: String = direction
 			if str(data[1]) == "Walk" and direction == "south":
-				directory = "south-f96d7729"
+				directory = str(who.walk_south_dir)
 			frames.add_animation(anim_name)
 			frames.set_animation_speed(anim_name, float(data[3]))
 			for frame_index in range(int(data[2])):
-				var file_path := "res://assets/player/animations/%s/%s/frame_%03d.png" % [data[1], directory, frame_index]
+				var file_path := "%s/animations/%s/%s/frame_%03d.png" % [art, data[1], directory, frame_index]
 				frames.add_frame(anim_name, load(file_path) as Texture2D)
 		for tool in TOOL_ANIMATIONS:
 			var data: Array = TOOL_ANIMATIONS[tool]
@@ -97,5 +100,29 @@ func _build_frames() -> SpriteFrames:
 			frames.set_animation_loop(tool_anim, false)
 			frames.set_animation_speed(tool_anim, float(data[2]))
 			for frame_index in int(data[1]):
-				frames.add_frame(tool_anim, load("%s/%s/frame_%03d.png" % [data[0], direction, frame_index]) as Texture2D)
+				frames.add_frame(tool_anim, load("%s/%s/frame_%03d.png" % [who[data[0]], direction, frame_index]) as Texture2D)
+	for wake in WAKE_ANIMATIONS:
+		var path_pattern: String = art + "/wake/" + wake + "/south/frame_%03d.png"
+		if not ResourceLoader.exists(path_pattern % 0): continue
+		frames.add_animation(wake)
+		frames.set_animation_speed(wake, float(WAKE_ANIMATIONS[wake][0]))
+		frames.set_animation_loop(wake, bool(WAKE_ANIMATIONS[wake][1]))
+		var loaded: Array[Texture2D] = []
+		while ResourceLoader.exists(path_pattern % loaded.size()):
+			loaded.append(load(path_pattern % loaded.size()) as Texture2D)
+		for texture in loaded: frames.add_frame(wake, texture)
+		if wake != "stand_up":
+			# Ida e volta: toda pose termina na posição sentada de base, onde a
+			# próxima começa (sem salto entre estados; o laço da respiração fecha).
+			frames.add_frame(wake, loaded[-1], 2.0)
+			for k in range(loaded.size() - 2, 0, -1): frames.add_frame(wake, loaded[k])
 	return frames
+
+
+## Toca uma animação do despertar; devolve a duração (s), 0 se não existir.
+func play_wake(name: String) -> float:
+	if not sprite.sprite_frames.has_animation(name):
+		return 0.0
+	current_animation = name
+	sprite.play(name)
+	return sprite.sprite_frames.get_frame_count(name) / sprite.sprite_frames.get_animation_speed(name)

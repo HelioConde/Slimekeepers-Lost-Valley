@@ -1,4 +1,5 @@
 extends SceneTree
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
 ## Headless integration checks of real navigation and the prototype's mission.
 ## Run: Godot --headless --path <project> --script res://tools/test_menu.gd
 ## Does not toggle preferences, write user:// files or create a fake save.
@@ -79,6 +80,7 @@ func _run() -> void:
 	_check(is_instance_valid(menu.get("options_layer")), "Mouse click opens Options")
 	await _key(KEY_ESCAPE)
 	await _mouse_click(new_game.get_global_rect().get_center())
+	await NEW_GAME.through_selection(self)
 	await _settle()
 	var world := current_scene
 	if not _check(world != null and world.scene_file_path == "res://scenes/regions/FlorestaDoDespertarV2.tscn", "New Game opens the expanded playable forest"):

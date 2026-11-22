@@ -208,11 +208,9 @@ func _continue_game() -> void:
 	get_window().content_scale_size = Vector2i(960,540)
 	get_tree().change_scene_to_file(region)
 
+## Novo Jogo abre a seleção de protagonista; ela reinicia a partida ao confirmar.
 func _start_game() -> void:
-	GameClock.reset_new_game()
-	SessionState.clear_session(get_tree())
-	get_window().content_scale_size = Vector2i(960,540)
-	get_tree().change_scene_to_file("res://scenes/regions/FlorestaDoDespertarV2.tscn")
+	get_tree().change_scene_to_file("res://scenes/protagonist_select.tscn")
 
 func _show_options() -> void:
 	if is_instance_valid(options_layer): return

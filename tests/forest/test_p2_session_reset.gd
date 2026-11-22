@@ -92,7 +92,8 @@ func test_reset_list_has_no_dead_entries() -> void:
 
 
 func test_start_menu_delegates_new_game_reset() -> void:
-	var source := FileAccess.get_file_as_string("res://scripts/menu/start_menu.gd")
+	# Novo Jogo passa pela seleção de protagonista, que reinicia a sessão ao confirmar.
+	var source := FileAccess.get_file_as_string("res://scripts/menu/protagonist_select.gd")
 	assert_str(source).contains("clear_session(get_tree())")
 
 

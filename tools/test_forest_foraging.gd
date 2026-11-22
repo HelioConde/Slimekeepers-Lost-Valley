@@ -1,4 +1,5 @@
 extends SceneTree
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
 ## End-to-end Godot 4.7.2 test: amizade -> coleta -> bolsa -> viagem -> Novo Jogo.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
@@ -132,6 +133,7 @@ func _run() -> void:
 	_check(menu != null and menu.scene_file_path == "res://scenes/start_menu.tscn",
 		"Returning to title opens the real menu")
 	menu._start_game()
+	await NEW_GAME.through_selection(self)
 	await _settle()
 	_check(current_scene != null and current_scene.scene_file_path == FOREST,
 		"New Game begins at the correct forest scene")

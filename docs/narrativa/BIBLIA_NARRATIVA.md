@@ -70,7 +70,9 @@ Seu passado e suas memórias pessoais são incompletos. As memórias perdidas in
 Seu primeiro objetivo não é derrotar um vilão ou salvar o mundo: é sobreviver e entender onde está.
 O jogo deve preservar a descoberta de seu deslocamento temporal para um momento avançado da história, sem explicá-la no prólogo.
 
-> **EM ABERTO:** nome, aparência, profissão, personalidade, relações específicas com a família, idade, lugar de origem e exatamente quais lembranças possui ao começar.
+> **Decisão do criador (2026-11-22):** o jogador escolhe entre dois protagonistas no Novo Jogo: **Aren** e **Moni**. A escolha é só de quem vive a história; no mundo jogável a pessoa escolhida desperta sozinha, e o enredo é o mesmo. Descrições da tela de seleção: Aren — curioso, determinado e com um grande coração; Moni — inventiva, corajosa e sempre pronta para explorar. A tela de seleção (os dois sentados de costas um para o outro) é simbólica, não um encontro dentro da história.
+
+> **EM ABERTO:** profissão, relações específicas com a família, idade, lugar de origem e exatamente quais lembranças cada um possui ao começar.
 
 Não estabelecer um gênero fixo para o protagonista apenas por formas gramaticais usadas nas conversas.
 
