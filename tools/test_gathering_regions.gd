@@ -68,22 +68,40 @@ func run() -> void:
 		var spawn: Vector2 = player.global_position
 		var chop: Node = gathering.choppable
 		check(chop.trees.size() > 10, "%s: árvores cortáveis (%d)" % [name, chop.trees.size()])
-		# Árvore mais longe do início.
-		var far_key := ""
-		for key: String in chop.trees:
-			if far_key == "" or (chop.trees[key] as Node2D).global_position.distance_to(spawn) > (chop.trees[far_key] as Node2D).global_position.distance_to(spawn):
-				far_key = key
 		BAG.add_item(self, "machado")
 		for i in 3: await process_frame
 		HOTBAR.select(self, HOTBAR.slots(self).find("machado"))
-		var tree: Node2D = chop.trees[far_key]
-		player.global_position = tree.global_position + Vector2(0, 14)
-		await physics_frame
-		for i in 3: await process_frame
-		for i in chop.HITS_TO_FELL:
+		# Machado rudimentar: árvore grande não cai (aviso de machado melhor).
+		var big_key := ""
+		var small_key := ""
+		for key: String in chop.trees:
+			var d: float = (chop.trees[key] as Node2D).global_position.distance_to(spawn)
+			if chop.is_small(key):
+				if small_key == "" or d > (chop.trees[small_key] as Node2D).global_position.distance_to(spawn): small_key = key
+			elif big_key == "":
+				big_key = key
+		if big_key != "":
+			var big: Node2D = chop.trees[big_key]
+			player.global_position = big.global_position + Vector2(0, 14)
+			await physics_frame
+			for i in 3: await process_frame
 			await press()
 			await create_timer(1.1).timeout
-		check(chop.state(self).has(far_key), "%s: árvore longe do início cai (%s, %d px)" % [name, far_key, int(tree.global_position.distance_to(spawn))])
+			check(not chop.state(self).has(big_key) and str(region.hud_hint.text).contains("machado melhor"), "%s: árvore grande pede machado melhor" % name)
+		# Árvore pequena mais longe do início cai (o Vale só tem árvores grandes).
+		if name == "vale":
+			check(small_key == "", "vale: só árvores grandes (machado rudimentar não corta)")
+		else:
+			var tree: Node2D = chop.trees[small_key]
+			player.global_position = tree.global_position + Vector2(0, 14)
+			await physics_frame
+			for i in 3: await process_frame
+			for i in chop.HITS_TO_FELL:
+				await press()
+				await create_timer(1.1).timeout
+			check(chop.state(self).has(small_key), "%s: árvore pequena longe do início cai (%s, %d px)" % [name, small_key, int(tree.global_position.distance_to(spawn))])
+			var stump: Sprite2D = tree.get_child(tree.get_child_count() - 2) as Sprite2D
+			check(stump != null and is_equal_approx(stump.scale.x, chop.STUMP_SCALE * chop.tree_scale(small_key)), "%s: toco proporcional à árvore" % name)
 		HOTBAR.select(self, -1)
 		if name == "vale":
 			var sticks: Array = gathering.forage.spots.filter(func(s: Dictionary) -> bool: return s.item in ["graveto", "pedra_pequena"])

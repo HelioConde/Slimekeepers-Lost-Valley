@@ -128,7 +128,11 @@ func run() -> void:
 	check(protected_ok, "nenhuma árvore cortável dentro de habitat de slime")
 	var best_key := ""
 	var best_d := 1e9
+	var big_key := ""
 	for key in chop.trees:
+		if not chop.is_small(key):  # machado rudimentar só derruba árvores pequenas
+			if big_key == "": big_key = key
+			continue
 		var d := (chop.trees[key] as Node2D).global_position.distance_to(Vector2(3200, 3200))
 		if d < best_d: best_d = d; best_key = key
 	var tree_node: Node2D = chop.trees[best_key]
@@ -153,7 +157,7 @@ func run() -> void:
 	chop.apply_day(1 + chop.REGROW_DAYS)
 	check((tree_node.get_node("Sprite") as CanvasItem).visible and not chop.state(self).has(best_key), "árvore volta a crescer após %d dias" % chop.REGROW_DAYS)
 	# Etapa 4: mais 3 árvores (13 madeiras no total), bancada fabricada e colocada.
-	var keys: Array = chop.trees.keys()
+	var keys: Array = chop.trees.keys().filter(func(k: String) -> bool: return chop.is_small(k))
 	keys.sort_custom(func(a, b): return (chop.trees[a] as Node2D).global_position.distance_to(Vector2(3200, 3200)) < (chop.trees[b] as Node2D).global_position.distance_to(Vector2(3200, 3200)))
 	var cut := 0
 	for k in keys:
@@ -200,7 +204,7 @@ func _fell_and_process(region: Node, player: Node2D, chop: Node, k: String) -> v
 	for i in chop.HITS_TO_FELL:
 		await press("interact")
 		await _swing_done()
-	player.global_position = node.global_position + chop.LOG_OFFSET + Vector2(0, 16)
+	player.global_position = chop.log_position(k) + Vector2(0, 16)
 	await physics_frame
 	await process_frame
 	for i in chop.HITS_TO_PROCESS:

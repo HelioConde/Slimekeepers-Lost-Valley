@@ -104,3 +104,88 @@ func _compact_hud() -> void:
 	popup.offset_top = 90
 	popup.offset_bottom = 138
 	popup.add_theme_font_size_override("font_size",18)
+
+
+## Casa construída pelo jogador nesta região (CASA.md): sem casa inicial; [B] abre o
+## modo construir em qualquer lugar livre do mapa (não sobre árvore, pedra ou água).
+func add_player_house(region_id: String) -> Node2D:
+	var builder: Node2D = preload("res://scripts/world/house_builder.gd").new()
+	builder.player = player
+	builder.region_id = region_id
+	var space := get_world_2d().direct_space_state
+	var box := RectangleShape2D.new()
+	box.size = Vector2(28, 28)
+	builder.blocked_world = func(cell: Vector2i) -> bool:
+		var query := PhysicsShapeQueryParameters2D.new()
+		query.shape = box
+		query.transform = Transform2D(0, Vector2(cell * 32) + Vector2(16, 16))
+		query.collision_mask = 2
+		query.exclude = [builder.get_node("HouseCollision").get_rid()]
+		return not space.intersect_shape(query, 1).is_empty()
+	builder.footprint_changed.connect(_clear_under_house)
+	add_child(builder)
+	return builder
+
+
+var _house_hidden: Array = []  # [CanvasItem] escondidos sob a casa
+var _house_tiles: Array = []  # [layer, cell, source, atlas, alternative] apagados
+
+
+## Sob a casa não ficam mato, flores, gravetos nem itens coletáveis (voltam ao
+## demolir). Árvores e pedras já impedem a construção (colisão).
+const HOUSE_DECOR_GROUPS := ["Decorations", "WoodlandDetails", "FlowerClusters", "GroundDetail", "LowVegetation"]
+var _house_area := Rect2(-1, -1, 0, 0)
+
+
+func _clear_under_house(area: Rect2) -> void:
+	var gathering_node: Node = get("gathering")
+	if is_instance_valid(gathering_node) and is_instance_valid(gathering_node.forage):
+		gathering_node.forage.excluded = area
+		gathering_node.forage.refresh(GameClock.day_number)  # coletáveis sob a casa somem
+	if area == _house_area: return  # mobília mudou; a área da casa não
+	_house_area = area
+	for item: CanvasItem in _house_hidden:
+		if is_instance_valid(item): item.visible = true
+	_house_hidden.clear()
+	for t in _house_tiles:
+		if is_instance_valid(t[0]): (t[0] as TileMapLayer).set_cell(t[1], t[2], t[3], t[4])
+	_house_tiles.clear()
+	if not area.has_area(): return
+	var grown := area.grow(-2)
+	for child in find_children("*", "", true, false):
+		if child is TileMapLayer and str(child.name) in ["VegetationLow", "GroundDetails"]:
+			var layer := child as TileMapLayer
+			for cell in layer.get_used_cells():
+				if grown.has_point(layer.to_global(layer.map_to_local(cell))):
+					_house_tiles.append([layer, cell, layer.get_cell_source_id(cell), layer.get_cell_atlas_coords(cell), layer.get_cell_alternative_tile(cell)])
+					layer.erase_cell(cell)
+		elif child is Node2D and child.visible and str(child.get_parent().name) in HOUSE_DECOR_GROUPS:
+			var node := child as Node2D  # decoração baixa (mato, flores, gravetos)
+			if (node is Sprite2D or node.has_node("Sprite")) and grown.has_point(node.global_position):
+				node.visible = false
+				_house_hidden.append(node)
+
+
+## Casa: modo construir ou dormir na cama. true quando tomou o HUD neste quadro.
+func handle_player_house(builder: Node2D) -> bool:
+	if not is_instance_valid(builder): return false
+	if not str(builder.message).is_empty():
+		_notify(builder.message)
+		builder.message = ""
+	if builder.building:
+		hud_hint.text = builder.build_hint()
+		return true
+	if builder.near_bed(player):
+		hud_hint.text = "[E] Dormir até amanhã   •   [B] Construir"
+		if Input.is_action_just_pressed("interact"): sleep_until_morning()
+		return true
+	return false
+
+
+## Dorme até 06:00 do dia seguinte: o dia vira, a energia volta cheia e o jogo salva.
+func sleep_until_morning() -> void:
+	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
+	GameClock.advance_minutes((1440.0 - minutes) + 360.0)
+	preload("res://scripts/systems/energy_state.gd").restore(get_tree())
+	var saved: bool = preload("res://scripts/systems/save_game.gd").save(get_tree(), GameClock, scene_file_path)
+	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  Jogo salvo." if saved else ""))

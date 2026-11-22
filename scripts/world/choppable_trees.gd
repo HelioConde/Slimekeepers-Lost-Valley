@@ -16,7 +16,13 @@ const REACH := 46.0
 const CELL := 128.0
 const STUMP := preload("res://assets/objects/tree_stump_small_cut_oak_stu/rotations/tree_stump_small_cut_oak_stu.png")
 const LOG := preload("res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png")
-const LOG_OFFSET := Vector2(54, 10)  # tronco cai ao lado do toco
+const LOG_OFFSET := Vector2(54, 10)  # tronco cai ao lado do toco (árvore escala 2)
+## Altura visível (px) até a qual a árvore é pequena: o machado de pedra só corta
+## estas (pedido do usuário, 2026-11-22); as grandes pedem machados futuros.
+const SMALL_TREE_MAX_HEIGHT := 120.0
+## Toco e tronco proporcionais à árvore: fração da escala do sprite da árvore.
+const STUMP_SCALE := 0.48
+const LOG_SCALE := 0.7
 
 var trees: Dictionary = {}  # key -> Node2D
 var _grid: Dictionary = {}  # Vector2i -> Array[key]
@@ -75,7 +81,7 @@ func target(at: Vector2) -> Dictionary:
 				var tree: Node2D = trees[key]
 				if chopped.has(key):
 					if bool(chopped[key].get("processed", false)): continue
-					var d_log := at.distance_to(tree.global_position + LOG_OFFSET)
+					var d_log := at.distance_to(log_position(key))
 					if d_log < best_d:
 						best = {"key": key, "kind": "log"}
 						best_d = d_log
@@ -85,6 +91,28 @@ func target(at: Vector2) -> Dictionary:
 						best = {"key": key, "kind": "tree"}
 						best_d = d
 	return best
+
+
+## Escala do desenho da árvore (1 = pequena, 2 = grande nos mapas atuais).
+func tree_scale(key: String) -> float:
+	var sprite := (trees[key] as Node2D).get_node("Sprite") as Node2D
+	return absf(sprite.global_scale.y) / absf((trees[key] as Node2D).global_scale.y)
+
+
+var _used_height := {}  # textura -> altura visível (get_image é caro)
+
+
+## Pequena = cortável com o machado de pedra.
+func is_small(key: String) -> bool:
+	var sprite := (trees[key] as Node2D).get_node("Sprite") as Sprite2D
+	if not _used_height.has(sprite.texture):
+		_used_height[sprite.texture] = sprite.texture.get_image().get_used_rect().size.y
+	return float(_used_height[sprite.texture]) * absf(sprite.global_scale.y) <= SMALL_TREE_MAX_HEIGHT
+
+
+## Onde o tronco cai (ao lado do toco, proporcional ao tamanho da árvore).
+func log_position(key: String) -> Vector2:
+	return (trees[key] as Node2D).global_position + LOG_OFFSET * (tree_scale(key) * 0.5)
 
 
 func hits(key: String) -> int:
@@ -122,8 +150,10 @@ func _fell_visual(key: String, processed: bool) -> void:
 	var body := tree.get_node_or_null("SolidBase")
 	if body is CollisionObject2D: (body as CollisionObject2D).collision_layer = 0
 	if not _extras.has(key):
-		var stump := _sprite(tree, STUMP, Vector2(0, -22))
-		var log := _sprite(tree, LOG, LOG_OFFSET + Vector2(0, -20))
+		var s := tree_scale(key)
+		var stump := _sprite(tree, STUMP, Vector2(0, -22), STUMP_SCALE * s)
+		var log := _sprite(tree, LOG, Vector2(0, -20), LOG_SCALE * s)
+		log.position = log_position(key) - tree.global_position
 		_extras[key] = [stump, log]
 	(_extras[key][1] as Sprite2D).visible = not processed
 
@@ -139,9 +169,10 @@ func _restore(key: String) -> void:
 		_extras.erase(key)
 
 
-func _sprite(parent: Node2D, texture: Texture2D, offset: Vector2) -> Sprite2D:
+func _sprite(parent: Node2D, texture: Texture2D, offset: Vector2, size: float = 1.0) -> Sprite2D:
 	var sprite := Sprite2D.new()
 	sprite.texture = texture
+	sprite.scale = Vector2.ONE * size
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.offset = offset
 	sprite.set_meta("no_shadow", true)

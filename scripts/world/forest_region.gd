@@ -35,6 +35,7 @@ var intro: Node
 const FORAGE_PLAN := {"graveto": 6, "pedra_pequena": 8}
 var ground_detail: Node2D
 var gathering: Node  # region_gathering.gd: corte e coleta (compartilhado com o Vale)
+var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
 var _spawn_light: Node2D
 
 func _ready() -> void:
@@ -125,6 +126,7 @@ func _ready() -> void:
 	var pond: Vector2 = $NaturalSpring.global_position
 	placer.blocked = func(at: Vector2) -> bool: return at.distance_to(pond) < 150.0
 	placer.setup(scene_file_path)
+	house = add_player_house("floresta")
 	GameClock.day_changed.connect(choppable.apply_day)
 
 ## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
@@ -150,6 +152,9 @@ func _spawn_forage() -> void:
 	gathering = preload("res://scripts/world/region_gathering.gd").new()
 	add_child(gathering)
 	gathering.attach(self, choppable, forage)
+	if is_instance_valid(house):  # casa já construída: tira coleta e mato de baixo dela
+		_house_area = Rect2(-1, -1, 0, 0)
+		house.rebuild()
 	GameClock.day_changed.connect(forage.refresh)
 
 func _spawn_seed_patches() -> void:
@@ -284,6 +289,8 @@ func _process(delta: float) -> void:
 	if is_instance_valid(crafting_panel) and crafting_panel.visible:
 		hud_hint.text = ""
 		return
+	if handle_player_house(house):
+		return
 	if is_instance_valid(placer):
 		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
 		if station_hint == "placed":
@@ -324,7 +331,7 @@ func _process(delta: float) -> void:
 		return
 	if is_instance_valid(gathering) and gathering.update(delta):
 		return
-	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir"
+	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir    B · construir casa"
 	if player.position.distance_to(Forest.SOUTH_EXIT)<115:
 		hud_hint.text = "[E] Viajar para o Vale das Nascentes"
 		if Input.is_action_just_pressed("interact"):

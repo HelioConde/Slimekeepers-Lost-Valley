@@ -1,23 +1,33 @@
 extends Node2D
-## Casa do jogador na fazenda: desenha piso, paredes (com face) e telhado a partir
+## Casa do jogador (em qualquer lugar do mapa; cada região guarda a sua): desenha piso, paredes (com face) e telhado a partir
 ## de house_state com os tilesets PixelLab (dual-grid: cada tile usa os 4 cantos
 ## das células vizinhas), coloca a mobília e a colisão, e oferece o modo construir.
 ##
-## Modo construir [B]: [Q] troca a camada (Piso, Parede, Mobília), roda do mouse
-## escolhe o móvel, clique esquerdo coloca, direito remove, [B]/[Esc] fecha.
+## Modo construir [B]: [Q] troca entre Casa e Mobília. Casa: arrastar com o botão
+## esquerdo marca o retângulo (tamanho livre, custa mais quanto maior; só UMA casa no
+## jogo); clique direito nela demole e devolve tudo. Mobília: roda escolhe o móvel,
+## esquerdo coloca, direito tira. [B]/[Esc] fecha.
 
 const HOUSE := preload("res://scripts/systems/house_state.gd")
+## A casa desta região mudou (construída/demolida): área em pixels, vazia se não há.
+signal footprint_changed(area: Rect2)
 const CELL := 32
-const LAYER_NAMES := {"floor": "Piso", "wall": "Parede", "furniture": "Mobília"}
-const MODES := ["floor", "wall", "furniture"]
+const LAYER_NAMES := {"house": "Casa", "furniture": "Mobília"}
+const MODES := ["house", "furniture"]
 const FURNITURE_ART := "res://assets/objects/furniture/%s.png"
 
 var player: Node2D
 var building := false
-var mode := "wall"
+var mode := "house"
 var furniture_choice := "cama"
 var cursor_cell := Vector2i.ZERO
 var message := ""
+var problem := ""  # o que falta para colocar a última peça
+## Região deste construtor: "floresta", "vale" ("fazenda" no mapa antigo).
+var region_id := "fazenda"
+var drag_start: Variant = null  # célula onde o arraste começou (modo Casa)
+## Célula ocupada pelo mapa (árvore, pedra, água)? Vazio = tudo livre.
+var blocked_world: Callable
 
 var _atlas := {}
 var _floor_layer: Node2D
@@ -67,8 +77,9 @@ func _layer(layer_name: String, z: int, painter: Callable) -> Node2D:
 	return node
 
 
+## A casa vista desta região (vazia se a casa do jogador estiver em outra).
 func house() -> Dictionary:
-	return HOUSE.data(get_tree())
+	return HOUSE.view(get_tree(), region_id)
 
 
 ## Recria paredes, mobília e colisão a partir do estado.
@@ -83,7 +94,9 @@ func rebuild() -> void:
 		child.queue_free()
 	_build_wall_rows()
 	_build_furniture()
-	for cell in HOUSE.solid_cells(get_tree()):
+	var rect: Rect2i = house().rect
+	footprint_changed.emit(Rect2(Vector2(rect.position * CELL), Vector2(rect.size * CELL)))
+	for cell in HOUSE.solid_cells_of(house()):
 		_add_box(Rect2(Vector2(cell * CELL), Vector2(CELL, CELL)))
 
 
@@ -223,7 +236,7 @@ func _build_furniture() -> void:
 func _process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
-	var inside := HOUSE.is_inside(get_tree(), Vector2i((player.global_position / CELL).floor()))
+	var inside := HOUSE.is_inside_of(house(), Vector2i((player.global_position / CELL).floor()))
 	var goal := 0.0 if inside or building else 1.0
 	var next := move_toward(_roof_alpha, goal, delta * 4.0)
 	if next != _roof_alpha:
@@ -238,7 +251,8 @@ func near_bed(actor: Node2D) -> bool:
 	var furniture: Dictionary = house().furniture
 	for origin in furniture:
 		if furniture[origin] == "cama":
-			var center := Vector2(HOUSE.footprint(origin, "cama").get_center() * CELL)
+			var bed := HOUSE.footprint(origin, "cama")  # Rect2i.get_center() arredonda: centro exato
+			var center := (Vector2(bed.position) + Vector2(bed.size) * 0.5) * CELL
 			if actor.global_position.distance_to(center) < 48:
 				return true
 	return false
@@ -266,21 +280,60 @@ func blocked_cells() -> Array:
 	return [Vector2i((player.global_position / CELL).floor())] if is_instance_valid(player) else []
 
 
+func player_cell() -> Variant:
+	return Vector2i((player.global_position / CELL).floor()) if is_instance_valid(player) else null
+
+
+## Retângulo do arraste atual (ou só a célula do cursor).
+func drag_area() -> Rect2i:
+	return HOUSE.drag_rect(drag_start if drag_start != null else cursor_cell, cursor_cell)
+
+
+## Constrói a casa no retângulo arrastado. "" = construiu.
+func build_rect(rect: Rect2i) -> String:
+	problem = HOUSE.build(get_tree(), region_id, rect, blocked_world, player_cell())
+	if problem.is_empty():
+		message = "Casa construída! Coloque a cama para poder dormir."
+		rebuild()
+	return problem
+
+
+func demolish() -> bool:
+	if HOUSE.region_of(get_tree()) != region_id or not HOUSE.demolish(get_tree()): return false
+	problem = ""
+	message = "Casa demolida; o material voltou para a bolsa."
+	rebuild()
+	return true
+
+
 func place_at(cell: Vector2i) -> bool:
-	var ok := HOUSE.place(get_tree(), mode, cell, furniture_choice, blocked_cells())
-	if ok: rebuild()
-	return ok
+	if mode != "furniture": return false
+	problem = "Construa a casa primeiro (Q: Casa)" if HOUSE.region_of(get_tree()) != region_id else 		HOUSE.place_furniture(get_tree(), cell, furniture_choice, blocked_cells())
+	if problem.is_empty(): rebuild()
+	return problem.is_empty()
 
 
 func erase_at(cell: Vector2i) -> bool:
-	var ok := HOUSE.erase(get_tree(), mode, cell)
-	if ok: rebuild()
+	if mode == "house":
+		return house().floor.has(cell) and demolish()
+	var ok := HOUSE.region_of(get_tree()) == region_id and HOUSE.remove_furniture(get_tree(), cell)  # devolve o material
+	if ok:
+		problem = ""
+		rebuild()
 	return ok
 
 
 func build_hint() -> String:
-	var choice := ("  •  " + str(HOUSE.FURNITURE[furniture_choice].name) + " (roda)") if mode == "furniture" else ""
-	return "[Construir] %s%s   •   [Q] camada   •   clique: colocar / direito: tirar   •   [B] sair" % [LAYER_NAMES[mode], choice]
+	var detail := ""
+	if mode == "house":
+		var rect := drag_area()
+		detail = ": arraste para marcar  %d×%d = %s" % [rect.size.x, rect.size.y, HOUSE.cost_text(HOUSE.rect_cost(rect))]
+		if HOUSE.exists(get_tree()): detail = ": " + HOUSE.build_problem(get_tree(), rect)
+	else:
+		var id: String = furniture_choice
+		detail = ": %s (roda) = %s" % [HOUSE.FURNITURE[id].name, HOUSE.cost_text(HOUSE.FURNITURE_COSTS.get(id, {}))]
+	var tail := ("   •   " + problem) if not problem.is_empty() else ""
+	return "[Construir] %s%s%s   •   [Q] Casa/Mobília   •   [B] sair" % [LAYER_NAMES[mode], detail, tail]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -297,6 +350,15 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not building:
 		return
 	var mouse := event as InputEventMouseButton
+	if mouse and mouse.button_index == MOUSE_BUTTON_LEFT and mode == "house":
+		# Arrastar: aperta numa ponta, solta na outra.
+		if mouse.pressed:
+			drag_start = cursor_cell
+		elif drag_start != null:
+			build_rect(drag_area())
+			drag_start = null
+		get_viewport().set_input_as_handled()
+		return
 	if mouse and mouse.pressed:
 		match mouse.button_index:
 			MOUSE_BUTTON_LEFT: place_at(cursor_cell)
@@ -310,6 +372,13 @@ func _draw_cursor() -> void:
 	if not building:
 		return
 	var rect := Rect2(Vector2(cursor_cell * CELL), Vector2(CELL, CELL))
+	if mode == "house":
+		var area := drag_area()
+		var ok := HOUSE.build_problem(get_tree(), area, blocked_world, player_cell()).is_empty()
+		var shown := Rect2(Vector2(area.position * CELL), Vector2(area.size * CELL))
+		_cursor.draw_rect(shown, Color(0.4, 1, 0.5, 0.18) if ok else Color(1, 0.35, 0.3, 0.18))
+		_cursor.draw_rect(shown, Color(0.5, 1, 0.6, 0.95) if ok else Color(1, 0.45, 0.4, 0.95), false, 2.0)
+		return
 	if mode == "furniture":
 		rect.size = Vector2(HOUSE.FURNITURE[furniture_choice].size * CELL)
 		var art: Texture2D = load(FURNITURE_ART % HOUSE.FURNITURE[furniture_choice].art)

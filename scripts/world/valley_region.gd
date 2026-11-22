@@ -25,6 +25,7 @@ var bag_hud: Node
 var garden_beds: Array[Node2D] = []
 var cooking_station: Node2D
 var gathering: Node  # region_gathering.gd: corte e coleta (como na Floresta)
+var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
 var farm_field: Node2D
 var recipe_panel: PanelContainer
 
@@ -239,6 +240,7 @@ func _setup_living_valley() -> void:
 	habitat_manager.set_environment_state(get_tree().get_meta("environment_conditions",{}))
 	_update_living_goal()
 	_setup_gathering()
+	house = add_player_house("vale")
 
 func _on_water_slime(slime: Node2D) -> void:
 	slimes.append(slime)
@@ -331,8 +333,10 @@ func _process(delta: float) -> void:
 		if message_time <= 0: popup.text = ""
 	if is_instance_valid(recipe_panel):
 		recipe_panel.hide()
-	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: observar"
-	if player.position.distance_to(Vector2(1600,70)) < 100:
+	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: observar   •   B: construir casa"
+	if handle_player_house(house):
+		pass  # casa: modo construir ou dormir na cama
+	elif player.position.distance_to(Vector2(1600,70)) < 100:
 		hud_hint.text = "[E] Voltar à Floresta do Despertar"
 		if Input.is_action_just_pressed("interact"):
 			Travel.travel(self,Travel.CLEARING,"clearing_south")

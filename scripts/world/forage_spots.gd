@@ -21,6 +21,8 @@ const KINDS := {
 }
 
 var spots: Array[Dictionary] = []  # {id, item, at, sprite}
+## Área coberta pela casa do jogador (em pixels): pontos ali não são oferecidos.
+var excluded := Rect2()
 
 
 ## center: miolo da Clareira; plan: {item: quantidade de pontos}; free: chão livre?
@@ -124,7 +126,7 @@ static func is_taken(tree: SceneTree, id: String, day: int) -> bool:
 func refresh(day: int) -> void:
 	var taken: Dictionary = get_tree().get_meta(FORAGE_KEY, {})
 	for spot in spots:
-		var shown := not (taken.has(spot.id) and int(taken[spot.id]) >= day)
+		var shown := not (taken.has(spot.id) and int(taken[spot.id]) >= day) and not excluded.has_point(spot.at)
 		if spot.has("layer") and shown == ((spot.layer as TileMapLayer).get_cell_source_id(spot.cell) != -1):
 			continue  # tile já no estado certo: milhares de células, não regravar
 		_show(spot, shown)
@@ -136,7 +138,7 @@ func nearest(at: Vector2, day: int) -> Dictionary:
 	var best_d := REACH
 	for spot in spots:
 		var d := (spot.at as Vector2).distance_to(at)
-		if d < best_d and not is_taken(get_tree(), spot.id, day):
+		if d < best_d and not excluded.has_point(spot.at) and not is_taken(get_tree(), spot.id, day):
 			best = spot
 			best_d = d
 	return best

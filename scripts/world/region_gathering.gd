@@ -99,6 +99,10 @@ func _axe_interaction() -> bool:
 	if HOTBAR.selected_item(get_tree()) != "machado":
 		region.hud_hint.text = "Selecione o machado na barra para " + ("cortar a árvore" if t.kind == "tree" else "processar o tronco")
 		return true
+	if t.kind == "tree" and not choppable.is_small(t.key):
+		# Machado de pedra só derruba árvores pequenas; as grandes esperam machados melhores.
+		region.hud_hint.text = "Árvore grande demais para o machado rudimentar · precisa de um machado melhor"
+		return true
 	var total: int = choppable.HITS_TO_FELL if t.kind == "tree" else choppable.HITS_TO_PROCESS
 	region.hud_hint.text = "[E] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
 	if Input.is_action_just_pressed("interact") and not player.is_using_tool():
