@@ -18,6 +18,14 @@ const SWING_TIMING := [1.5, 0.9, 0.8, 1.5, 0.6, 0.4, 0.4, 2.0, 1.4]
 const SWING_SIDE_TIMING := [1.5, 1.2, 2.5, 0.6, 0.6, 2.0, 1.4, 1.4]
 ## Regar aprovado (8 quadros; frente, lado e costas): ergue, inclina, jato, poça; mais tempo no jato.
 const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
+## Ações de pegar no chão (<arte>/actions/<nome>/<dir>/; sul, leste, oeste, norte):
+## pick_small = uma mão, ajoelhado (graveto, pedra); pick_big = duas mãos, agachado
+## (mato, plantação, itens grandes). Tempos por quadro (/ SWING_FPS); o maior é o
+## quadro com a mão no chão.
+const ACTION_TIMING := {"pick_small": [0.9, 1.1, 1.2, 2.4, 1.1, 0.9],
+	"pick_big": [1.2, 1.0, 1.0, 1.2, 2.6, 1.2, 1.0, 1.2]}
+## Quadro de pick_big com as mãos no chão: fica parado nele enquanto arranca o mato.
+const PICK_BIG_GROUND := 4
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
@@ -78,9 +86,29 @@ func play_tool(tool: String) -> float:
 	_tool_time = units / sprite.sprite_frames.get_animation_speed(name)
 	return _tool_time
 
-## Mantém o personagem parado por um instante (ex.: arrancando mato com [E]).
-func hold_still(seconds: float) -> void:
-	_tool_time = maxf(_tool_time, seconds)
+## Desce até o quadro `frame` da ação e fica parado nele (chamar a cada quadro
+## enquanto segura [E]; soltar volta ao normal quando o tempo acaba).
+func hold_pose(action: String, frame: int) -> void:
+	var name := "%s_%s" % [action, TOOL_FACING.get(facing, facing)]
+	_tool_time = maxf(_tool_time, 0.1)
+	if not sprite.sprite_frames.has_animation(name): return
+	if current_animation != name:
+		current_animation = name
+		sprite.play(name)
+	if sprite.frame >= frame:
+		sprite.pause()
+		sprite.frame = frame
+
+
+## Termina a ação a partir do quadro parado (levanta); devolve a duração (s).
+func release_pose() -> float:
+	if not sprite.sprite_frames.has_animation(current_animation): return 0.0
+	var units := 0.0
+	for i in range(sprite.frame + 1, sprite.sprite_frames.get_frame_count(current_animation)):
+		units += sprite.sprite_frames.get_frame_duration(current_animation, i)
+	sprite.play()
+	_tool_time = units / sprite.sprite_frames.get_animation_speed(current_animation)
+	return _tool_time
 
 
 func is_using_tool() -> bool:
@@ -132,6 +160,20 @@ func _build_frames() -> SpriteFrames:
 			if timed: frames.set_animation_speed(tool_anim, SWING_FPS)
 			for i in textures.size():
 				frames.add_frame(tool_anim, textures[i], float(timing[i]) if timed else 1.0)
+	for action in ACTION_TIMING:
+		for direction in ["south", "east", "west", "north"]:
+			var action_path: String = "%s/actions/%s/%s/frame_%%03d.png" % [art, action, direction]
+			if not ResourceLoader.exists(action_path % 0): continue
+			var action_anim := "%s_%s" % [action, direction]
+			frames.add_animation(action_anim)
+			frames.set_animation_loop(action_anim, false)
+			frames.set_animation_speed(action_anim, SWING_FPS)
+			var timing: Array = ACTION_TIMING[action]
+			var index := 0
+			while ResourceLoader.exists(action_path % index):
+				var units: float = float(timing[index]) if index < timing.size() else 1.0
+				frames.add_frame(action_anim, load(action_path % index) as Texture2D, units)
+				index += 1
 	for wake in WAKE_ANIMATIONS:
 		var path_pattern: String = art + "/wake/" + wake + "/south/frame_%03d.png"
 		if not ResourceLoader.exists(path_pattern % 0): continue

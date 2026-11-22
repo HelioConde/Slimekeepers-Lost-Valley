@@ -299,3 +299,17 @@ Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools
   - Bico e jato lateral apagados. A água foi desenhada caindo no chão à frente, por trás do corpo: gotas, jato entre as pernas, respingo para os lados e poça.
 - Tempo por quadro: `WATER_TIMING`, o mesmo do regar de frente.
 - Captura no jogo: `docs/gameplay/ferramentas/regar_no_jogo.png`.
+
+## Pegar no chão (uma mão e duas mãos) — Aren e Moni — 2026-11-22
+
+- `assets/player{,_moni}/actions/pick_small/{south,east,west,north}/frame_000..005.png`: pegar com uma mão, aprovado pelo usuário (itens pequenos: graveto, pedra).
+  - Ajoelha sobre um joelho, uma mão no chão e a outra no joelho.
+  - Quadros: em pé, meio agachado, ajoelhado, ajoelhado (pausa), meio agachado, em pé.
+  - As três poses vêm de `edit_image` da rotação de cada personagem. Não foi usada interpolação do v3: ela inventava braços levantados.
+  - Moni: roupa igual ao sprite (manga bufante, luvas longas, bolsa). A mão foi levada até o chão com outro `edit_image`.
+  - Tentativas reprovadas: modelo `picking-up` (cabeças duplicadas), curvar pela cintura (braço esticado demais) e agachamento aberto (pernas de sapo, mãos grandes).
+- `assets/player{,_moni}/actions/pick_big/{south,east,west,north}/frame_000..007.png`: pegar com duas mãos, agachado, aprovado para plantação e itens grandes; usado também para arrancar o mato.
+  - PixelLab v3 a partir de cada personagem. Usa só os quadros limpos 1–5 e volta pelos mesmos (sem objetos inventados).
+- Oeste é o espelho do leste. As diagonais usam o lado (`TOOL_FACING`).
+- Tempos por quadro: `ACTION_TIMING` em `scripts/player.gd`.
+- Captura no jogo: `docs/gameplay/ferramentas/pegar_no_jogo.png`.

@@ -193,3 +193,35 @@ func test_diagonals_use_side_tool_animation() -> void:
 		player._tool_time = 0.0
 		player.play_tool(pair[1].split("_")[0])
 		assert_str(player.current_animation).is_equal(pair[1])
+
+
+func test_pick_actions_for_both_and_hold_on_ground() -> void:
+	# Pegar no chão aprovado: uma mão (6 quadros) e duas mãos (8), 4 direções, Aren e
+	# Moni; a pausa com a mão no chão é a maior. Segurar para no quadro do chão e
+	# soltar levanta até o fim.
+	for who in ["aren", "moni"]:
+		get_tree().set_meta("protagonist", who)
+		var player = auto_free(load("res://scenes/player.tscn").instantiate())
+		add_child(player)
+		await await_idle_frame()
+		var frames: SpriteFrames = player.sprite.sprite_frames
+		for dir in ["south", "east", "west", "north"]:
+			for pair in [["pick_small", 6, 3], ["pick_big", 8, 4]]:
+				var anim: String = "%s_%s" % [pair[0], dir]
+				assert_int(frames.get_frame_count(anim)).override_failure_message(who + " " + anim).is_equal(pair[1])
+				assert_float(frames.get_frame_duration(anim, pair[2])).is_greater(frames.get_frame_duration(anim, 1))
+		player.facing = "north-west"
+		player._tool_time = 0.0
+		assert_float(player.play_tool("pick_small")).is_equal_approx(7.6 / 10.0, 0.01)
+		assert_str(player.current_animation).is_equal("pick_small_west")
+		player._tool_time = 0.0
+		player.facing = "south"
+		for i in 50:  # ~1 s de [E] segurado (a descida leva 0,44 s)
+			player.hold_pose("pick_big", player.PICK_BIG_GROUND)
+			await get_tree().create_timer(0.02).timeout
+		assert_str(player.current_animation).is_equal("pick_big_south")
+		assert_int(player.sprite.frame).is_equal(player.PICK_BIG_GROUND)
+		assert_bool(player.sprite.is_playing()).is_false()
+		assert_float(player.release_pose()).is_equal_approx(3.4 / 10.0, 0.01)
+		assert_bool(player.sprite.is_playing()).is_true()
+	get_tree().remove_meta("protagonist")

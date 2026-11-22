@@ -333,13 +333,19 @@ func _process(delta: float) -> void:
 				if _pull_id != spot.id:
 					hud_hint.text = "[Segure E] Arrancar o mato (%d s)" % int(hold)
 					return
-				player.hold_still(0.1)
+				# Agacha com as duas mãos no mato e fica parado no quadro das mãos no chão.
+				player.facing = player._get_direction_name(spot.at - player.global_position)
+				player.hold_pose("pick_big", player.PICK_BIG_GROUND)
 				hud_hint.text = "Arrancando o mato... %d%%" % mini(99, int(_pull_time / hold * 100.0))
 				if _pull_time < hold: return
 				_pull_id = ""
+				player.release_pose()  # levanta com o mato na mão
 			else:
 				hud_hint.text = "[E] Pegar " + item_name
-				if not Input.is_action_just_pressed("interact"): return
+				if not Input.is_action_just_pressed("interact") or player.is_using_tool(): return
+				# Item pequeno: ajoelha e pega com uma mão.
+				player.facing = player._get_direction_name(spot.at - player.global_position)
+				player.play_tool("pick_small")
 			var problem: String = forage.take(spot, GameClock.day_number)
 			bag_hud.call("refresh")
 			_notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
