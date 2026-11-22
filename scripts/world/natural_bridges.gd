@@ -34,4 +34,26 @@ static func apply(bridges: Node2D) -> Array[Sprite2D]:
 		sprite.set_meta("no_shadow", true)
 		bridges.add_child(sprite)
 		placed.append(sprite)
+		if str(kind[0]).ends_with("_v"):
+			_blend_ends(bridges, sprite, i)
 	return placed
+
+
+## Pontas da ponte vertical se misturam ao chão (pedido do usuário): o sprite já
+## some em pontilhado nas pontas; aqui tufos da própria vegetação do mapa cobrem a
+## emenda dos dois lados, em posições fixas por ponte (sem aleatório por sessão).
+const TUFTS := [preload("res://assets/world/forest/fern.png"), preload("res://assets/world/forest/plant_rosette.png")]
+static func _blend_ends(bridges: Node2D, bridge: Sprite2D, index: int) -> void:
+	var half := bridge.texture.get_height() * SCALE * 0.5
+	for end in [-1.0, 1.0]:
+		for side in [-1.0, 1.0]:
+			var tuft := Sprite2D.new()
+			tuft.name = "BridgeTuft"
+			tuft.texture = TUFTS[(index + int(end > 0) + int(side > 0)) % TUFTS.size()]
+			tuft.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			tuft.flip_h = side > 0
+			# Perto da ponta, encostado no lado do tronco; a de baixo um pouco mais baixa.
+			tuft.position = (bridge.position + Vector2(side * 22.0, end * (half - 26.0) + (10.0 if end > 0 else 0.0))).round()
+			tuft.offset = Vector2(0, -16)
+			tuft.set_meta("no_shadow", true)
+			bridges.add_child(tuft)
