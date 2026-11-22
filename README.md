@@ -6,6 +6,23 @@ O Mapa 01 ativo é `scenes/regions/FlorestaDoDespertarV2.tscn`: 200×200 tiles, 
 
 Relatório, capturas e limites conhecidos: [Floresta v2](docs/world/forest_v2/RELATORIO_FINAL.md).
 
+## Galeria visual do protótipo
+
+Capturas de desenvolvimento **já disponíveis no repositório**, organizadas para mostrar os ambientes e as diferentes iluminações do jogo. São imagens do projeto em evolução, não material de um lançamento final.
+
+[![Floresta do Despertar durante o dia](docs/world/day_night/FlorestaDoDespertarV2_dia.png)](docs/world/day_night/FlorestaDoDespertarV2_dia.png)
+
+| Exploração na floresta | Floresta à noite |
+| --- | --- |
+| [![Vista geral da Floresta do Despertar](docs/world/forest_v2/after_overview.png)](docs/world/forest_v2/after_overview.png) | [![Floresta do Despertar à noite](docs/world/day_night/FlorestaDoDespertarV2_noite.png)](docs/world/day_night/FlorestaDoDespertarV2_noite.png) |
+
+| Vale das Nascentes | Vale durante a noite |
+| --- | --- |
+| [![Vista geral do Vale das Nascentes](docs/world/vale/vale_overview.png)](docs/world/vale/vale_overview.png) | [![Vale das Nascentes à noite](docs/world/day_night/ValeDasNascentes_noite.png)](docs/world/day_night/ValeDasNascentes_noite.png) |
+
+As capturas desta galeria vêm dos arquivos versionados em `docs/world/`. Recursos visuais e interfaces ainda estão em desenvolvimento.
+
+
 Primeira coleta jogável: faça amizade com um Brotinho e use **E** junto às pequenas plantas dos caminhos para guardar sementes na **Bolsa**. O inventário da sessão acompanha a viagem ao Vale e é reiniciado em **Novo Jogo**. Detalhes e limitações: [Primeira coleta](docs/gameplay/PRIMEIRA_COLETA.md).
 
 Primeiro cultivo jogável: no **Vale das Nascentes**, use **E** em um dos dois canteiros próximos ao caminho de entrada. Uma semente é consumida; após **120 minutos do tempo do jogo**, volte e colha **folhas frescas**, que aparecem na mesma bolsa. O progresso acompanha a viagem entre regiões e é reiniciado em **Novo Jogo**. [Guia do primeiro canteiro](docs/gameplay/PRIMEIRO_CANTEIRO.md).
