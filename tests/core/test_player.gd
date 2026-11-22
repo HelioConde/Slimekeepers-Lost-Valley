@@ -134,3 +134,15 @@ func test_south_swing_holds_high_and_on_impact() -> void:
 		assert_float(frames.get_frame_duration(anim, 7)).is_greater(frames.get_frame_duration(anim, 6))
 	player.facing = "south"
 	assert_float(player.play_tool("axe")).is_equal_approx(9.5 / 10.0, 0.01)
+
+
+func test_south_watering_is_frontal_and_timed() -> void:
+	# Regar aprovado (sul): 8 quadros, jato (quadro 5) mais longo que a inclinação.
+	var player = auto_free(load("res://scenes/player.tscn").instantiate())
+	add_child(player)
+	await await_idle_frame()
+	var frames: SpriteFrames = player.sprite.sprite_frames
+	assert_int(frames.get_frame_count("water_south")).is_equal(8)
+	assert_float(frames.get_frame_duration("water_south", 4)).is_greater(frames.get_frame_duration("water_south", 2))
+	player.facing = "south"
+	assert_float(player.play_tool("water")).is_equal_approx(11.3 / 10.0, 0.01)

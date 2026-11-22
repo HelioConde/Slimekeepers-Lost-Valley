@@ -247,3 +247,14 @@ Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools
 - `assets/player_moni/tools/{axe,hoe}/south/...`: Moni, feita a partir dos quadros do Aren com `transfer_outfit`. Inpaint corrigiu o rastro, a cabeça e a mão.
 - Tempo por quadro em `scripts/player.gd` (`SWING_TIMING`): pausa no alto, descida rápida e pausa longa no impacto.
 - As outras direções e o regador ainda são as animações anteriores. Serão refeitos no mesmo padrão, com aprovação de cada um.
+
+## Regar de frente (sul) — Aren e Moni — 2026-11-22
+
+- `assets/player/tools/water/south/frame_000..007.png` e `assets/player_moni/tools/water/south/...`: regar de frente, aprovado pelo usuário.
+- Como foi feito:
+  - Base: PixelLab v3 a partir da rotação com o regador da barra na frente do corpo.
+  - Inpaint corrigiu o regador de lado e a água saindo por cima.
+  - `edit_animation` deixou o regador com o mesmo material.
+  - A sequência final usa só as poses em que o regador está de frente, para manter direção e tamanho iguais.
+  - A Moni foi feita com `transfer_outfit`; a roupa foi corrigida usando um quadro dela como referência.
+- Tempo por quadro: `WATER_TIMING` em `scripts/player.gd`.

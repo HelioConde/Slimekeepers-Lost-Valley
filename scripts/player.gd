@@ -14,6 +14,8 @@ const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0}
 ## pausa no alto, descida rápida, pausa longa no impacto. Duração = valor / 10 s.
 const SWING_FPS := 10.0
 const SWING_TIMING := [1.5, 0.9, 0.8, 1.5, 0.6, 0.4, 0.4, 2.0, 1.4]
+## Regar de frente aprovado (8 quadros): ergue, inclina, jato, poça; mais tempo no jato.
+const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
@@ -111,10 +113,11 @@ func _build_frames() -> SpriteFrames:
 			var textures: Array[Texture2D] = []
 			while ResourceLoader.exists(tool_path % textures.size()):
 				textures.append(load(tool_path % textures.size()) as Texture2D)
-			var swing: bool = tool != "water" and textures.size() == SWING_TIMING.size()
-			if swing: frames.set_animation_speed(tool_anim, SWING_FPS)
+			var timing: Array = WATER_TIMING if tool == "water" and direction == "south" else SWING_TIMING
+			var timed: bool = textures.size() == timing.size() and (tool != "water" or direction == "south")
+			if timed: frames.set_animation_speed(tool_anim, SWING_FPS)
 			for i in textures.size():
-				frames.add_frame(tool_anim, textures[i], float(SWING_TIMING[i]) if swing else 1.0)
+				frames.add_frame(tool_anim, textures[i], float(timing[i]) if timed else 1.0)
 	for wake in WAKE_ANIMATIONS:
 		var path_pattern: String = art + "/wake/" + wake + "/south/frame_%03d.png"
 		if not ResourceLoader.exists(path_pattern % 0): continue
