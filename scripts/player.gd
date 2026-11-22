@@ -7,8 +7,9 @@ const WORLD_BOUNDS = Rect2(34.0, 70.0, 1212.0, 835.0)
 const DIRS = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"]
 
 const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
-## Ferramentas: chave da pasta em PROTAGONIST.ALL, quadros e velocidade.
-const TOOL_ANIMATIONS := {"hoe": ["hoe", 9, 16.0], "water": ["water", 9, 14.0]}
+## Ferramentas (<arte>/tools/<nome>/<dir>/, quadros contados no disco): velocidade.
+## A ferramenta na mão é a mesma do ícone da barra (enxada, regador, machado).
+const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0}
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
@@ -94,13 +95,16 @@ func _build_frames() -> SpriteFrames:
 				var file_path := "%s/animations/%s/%s/frame_%03d.png" % [art, data[1], directory, frame_index]
 				frames.add_frame(anim_name, load(file_path) as Texture2D)
 		for tool in TOOL_ANIMATIONS:
-			var data: Array = TOOL_ANIMATIONS[tool]
+			var tool_path: String = "%s/tools/%s/%s/frame_%%03d.png" % [art, tool, direction]
+			if not ResourceLoader.exists(tool_path % 0): continue
 			var tool_anim := "%s_%s" % [tool, direction]
 			frames.add_animation(tool_anim)
 			frames.set_animation_loop(tool_anim, false)
-			frames.set_animation_speed(tool_anim, float(data[2]))
-			for frame_index in int(data[1]):
-				frames.add_frame(tool_anim, load("%s/%s/frame_%03d.png" % [who[data[0]], direction, frame_index]) as Texture2D)
+			frames.set_animation_speed(tool_anim, float(TOOL_ANIMATIONS[tool]))
+			var frame_index := 0
+			while ResourceLoader.exists(tool_path % frame_index):
+				frames.add_frame(tool_anim, load(tool_path % frame_index) as Texture2D)
+				frame_index += 1
 	for wake in WAKE_ANIMATIONS:
 		var path_pattern: String = art + "/wake/" + wake + "/south/frame_%03d.png"
 		if not ResourceLoader.exists(path_pattern % 0): continue

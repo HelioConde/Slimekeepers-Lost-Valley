@@ -353,7 +353,7 @@ func _axe_interaction() -> bool:
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			_notify("Cansada demais para isso. Durma para recuperar a energia.")
 			return true
-		player.play_tool("hoe")  # golpe: animação de ferramenta existente (machado próprio: pendente)
+		player.play_tool("axe")
 		match choppable.strike(t, GameClock.day_number):
 			"felled": _notify("A árvore caiu! Processe o tronco com o machado.")
 			"processed":

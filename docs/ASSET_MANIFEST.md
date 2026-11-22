@@ -224,3 +224,18 @@ Origem: PixelLab, com crédito autorizado. Detalhes em `docs/gameplay/DESPERTAR.
 - `assets/player/wake/`: poses do Aren olhando para o sul (sit_idle, sit_look_left, sit_look_right, sit_confused, stand_up). Foram geradas a partir do quadro final de "sentar" e alinhadas por `tools/pixellab/align_wake.py`.
 - `assets/player_moni/`: personagem nova, a Moni (cabelo solto, óculos de proteção, estilo do Aren, 128 px). Tem rotações, andar (48 quadros), correr (64), enxada e regador (72 cada) e o despertar.
 - `assets/menu/select/`: fundo da tela de seleção e poses sentadas de lado dos dois (neutra e olhando por cima do ombro).
+
+## Ferramentas na mão = ícones da barra — 2026-11-22
+
+Origem: PixelLab v3, com crédito autorizado.
+
+- `assets/player/tools/{axe,hoe,water}/<8 direções>/frame_000..007.png`: Aren.
+- `assets/player_moni/tools/{axe,hoe,water}/...`: Moni. Estas substituem as animações antigas de enxada e regador, que eram cinza.
+
+Como foram feitas:
+
+- O quadro inicial é a rotação 128 px com o ícone da barra (`assets/ui/items/{machado,enxada,regador}.png`) na mão. Assim o machadinho de cabo escuro, a enxada de cabo claro e o regador verde aparecem no golpe.
+- Sul, sudeste, leste, nordeste e norte foram geradas. Oeste, sudoeste e noroeste são espelhos.
+- `tools/pixellab/align_tools.py` faz o resto: canvas 192×192 com a rotação centrada (encaixe com diferença 0), sem o quadro inicial, e limpeza de rastros brancos no machado e na enxada.
+
+Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools/capture_tool_anims.gd`. As pastas antigas `assets/Create_a_Hoe_Equippe` e `assets/Create_a_Watering_Ca` não são mais usadas pelo jogador.

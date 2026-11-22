@@ -88,10 +88,10 @@ func test_tool_animations_exist_and_lock_movement() -> void:
 	await await_idle_frame()
 	var frames: SpriteFrames = player.sprite.sprite_frames
 	for dir in player.DIRS:
-		for tool in ["hoe", "water"]:
+		for tool in ["hoe", "water", "axe"]:
 			var anim := "%s_%s" % [tool, dir]
 			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
-			assert_int(frames.get_frame_count(anim)).is_equal(9)
+			assert_int(frames.get_frame_count(anim)).is_equal(8)
 			assert_bool(frames.get_animation_loop(anim)).is_false()
 	player.facing = "east"
 	var duration: float = player.play_tool("hoe")
@@ -103,3 +103,18 @@ func test_tool_animations_exist_and_lock_movement() -> void:
 	Input.action_release("move_right")
 	assert_vector(player.velocity).is_equal(Vector2.ZERO)
 	assert_str(player.current_animation).is_equal("hoe_east")
+
+
+func test_moni_has_every_tool_animation() -> void:
+	# A arte vem do protagonista escolhido; a Moni tem o mesmo conjunto do Aren.
+	get_tree().set_meta("protagonist", "moni")
+	var player = auto_free(load("res://scenes/player.tscn").instantiate())
+	add_child(player)
+	await await_idle_frame()
+	get_tree().remove_meta("protagonist")
+	var frames: SpriteFrames = player.sprite.sprite_frames
+	for dir in player.DIRS:
+		for tool in ["hoe", "water", "axe"]:
+			var anim := "%s_%s" % [tool, dir]
+			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
+			assert_str(frames.get_frame_texture(anim, 0).resource_path).contains("player_moni/tools/")

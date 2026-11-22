@@ -10,23 +10,19 @@ const INTRO_KEY := "intro_pending"
 const DEFAULT := "aren"
 
 ## art: pasta raiz dos sprites top-down (rotations/, animations/Walk|Running/<dir>/,
-## tools/hoe|water/<dir>/, wake/<anim>/south/). card_*: poses da tela de seleção.
+## tools/hoe|water|axe/<dir>/, wake/<anim>/south/). card_*: poses da tela de seleção.
 const ALL := {
 	"aren": {
 		"name": "Aren",
 		"blurb": "Curioso, determinado e com um grande coração.",
 		"art": "res://assets/player",
 		"walk_south_dir": "south-f96d7729",
-		"hoe": "res://assets/Create_a_Hoe_Equippe/animations/The_adventurer_grips_the_tool_handle_firmly._Her_r",
-		"water": "res://assets/Create_a_Watering_Ca/animations/The_character_lifts_the_watering_can_from_her_side",
 	},
 	"moni": {
 		"name": "Moni",
 		"blurb": "Inventiva, corajosa e sempre pronta para explorar.",
 		"art": "res://assets/player_moni",
 		"walk_south_dir": "south",
-		"hoe": "res://assets/player_moni/tools/hoe",
-		"water": "res://assets/player_moni/tools/water",
 	},
 }
 
