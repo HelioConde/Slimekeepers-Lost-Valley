@@ -162,3 +162,15 @@ func test_side_swing_holds_high_and_on_impact() -> void:
 			assert_float(frames.get_frame_duration(anim, 2)).is_greater(frames.get_frame_duration(anim, 3))
 			assert_float(frames.get_frame_duration(anim, 5)).is_greater(frames.get_frame_duration(anim, 4))
 	get_tree().remove_meta("protagonist")
+
+
+func test_diagonals_use_side_tool_animation() -> void:
+	# Sem diagonais próprias: sudeste/nordeste usam leste; sudoeste/noroeste, oeste.
+	var player = auto_free(load("res://scenes/player.tscn").instantiate())
+	add_child(player)
+	await await_idle_frame()
+	for pair in [["south-east", "axe_east"], ["north-east", "hoe_east"], ["south-west", "axe_west"], ["north-west", "hoe_west"]]:
+		player.facing = pair[0]
+		player._tool_time = 0.0
+		player.play_tool(pair[1].split("_")[0])
+		assert_str(player.current_animation).is_equal(pair[1])

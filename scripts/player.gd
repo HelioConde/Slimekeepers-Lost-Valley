@@ -62,9 +62,12 @@ func _get_direction_name(direction: Vector2) -> String:
 	var names := ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"]
 	return names[sector]
 
+## Ferramentas não têm diagonais próprias (decisão do usuário): usam o lado aprovado.
+const TOOL_FACING := {"south-east": "east", "north-east": "east", "south-west": "west", "north-west": "west"}
+
 ## Toca a animação da ferramenta na direção atual; devolve a duração (s).
 func play_tool(tool: String) -> float:
-	var name := "%s_%s" % [tool, facing]
+	var name := "%s_%s" % [tool, TOOL_FACING.get(facing, facing)]
 	if not sprite.sprite_frames.has_animation(name):
 		return 0.0
 	current_animation = name
