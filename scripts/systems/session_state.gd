@@ -13,6 +13,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"valley_discoveries",
 	"forest_bag_items",
 	"forest_seed_patches_collected",
+	"forage_taken",
 	"valley_starter_garden",
 	"valley_starter_garden_harvests",
 	"farm_cells",

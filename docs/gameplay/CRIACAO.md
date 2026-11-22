@@ -28,8 +28,8 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
 |---|---|
 | Itens, ícones, receitas, fabricação, capacidade | Feito, `tests/forest/test_crafting.gd` |
 | Sprites da bancada (de frente) e do baú (de frente) | Feito |
-| Coleta manual no mundo | Pendente |
-| Interface de fabricação (mãos e bancada) | Pendente |
+| Coleta manual no mundo | Feito: 26 pontos na Clareira (12 de fibra, 6 de graveto, 8 de pedra), [E] para pegar, voltam no dia seguinte (`scripts/world/forage_spots.gd`, estado salvo em `forage_taken`) |
+| Interface de fabricação (mãos e bancada) | Feito: [C] abre (`scripts/ui/crafting_panel.gd`), ↑↓ escolhem, E fabrica, jogador parado enquanto aberta. Modo bancada pronto, falta a bancada no mundo |
 | Árvores cortáveis, toco, regeneração, processar tronco | Pendente |
 | Posicionar a bancada no mundo, persistir | Pendente |
 | Começar sem enxada/regador | **Transição:** `item_catalog.FREE_STARTER_TOOLS = true` mantém as duas de graça até a cadeia estar jogável, para a fazenda não travar (nem saves antigos). |
@@ -39,3 +39,9 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
 - O machado é exigido na bolsa para fabricar na bancada e não é gasto. Não há durabilidade por enquanto: não faz falta para o design atual.
 - A picareta fica para quando existir mineração; fabricar uma ferramenta sem uso seria simular algo que não existe.
 - Os slimes não recebem habilidades novas aqui: a Bíblia diz só que slimes conquistados ajudam nas tarefas, e as habilidades por espécie continuam EM ABERTO.
+
+## Evidências
+
+- `tools/test_crafting_flow.gd` (jogo real, controle de verdade): coleta nos 26 pontos, [C] abre a janela, corda e machado fabricados, machado na barra, ponto coletado volta no dia seguinte. Resultado: 0 falhas.
+- `docs/gameplay/criacao/00_coleta_clareira.png`: pontos de coleta na Clareira.
+- `docs/gameplay/criacao/01_janela_fabricacao.png`: janela de fabricação.

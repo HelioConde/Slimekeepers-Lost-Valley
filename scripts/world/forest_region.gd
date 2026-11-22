@@ -23,6 +23,10 @@ var _last_zone := ""
 var _last_water_time := -1.0
 var seed_patches: Array[Node2D] = []
 var bag_hud: Node
+var forage: Node2D
+var crafting_panel: Control
+## Pontos de coleta na Clareira (ajustável): o bastante para corda, machado e bancada.
+const FORAGE_PLAN := {"fibra": 12, "graveto": 6, "pedra_pequena": 8}
 var _spawn_light: Node2D
 
 func _ready() -> void:
@@ -50,6 +54,10 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
+	crafting_panel = preload("res://scripts/ui/crafting_panel.gd").new()
+	crafting_panel.player = player
+	$HUD/Interface.add_child(crafting_panel)
+	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
@@ -84,6 +92,26 @@ func _ready() -> void:
 	art.region_kind = "forest"
 	add_child(art)
 	_spawn_seed_patches()
+	_spawn_forage.call_deferred()
+
+## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
+func _spawn_forage() -> void:
+	await get_tree().physics_frame
+	forage = preload("res://scripts/world/forage_spots.gd").new()
+	$Decorations.add_child(forage)
+	var space := get_world_2d().direct_space_state
+	var probe := CircleShape2D.new()
+	probe.radius = 12
+	var pond: Vector2 = $NaturalSpring.global_position
+	forage.setup(Forest.SPAWN, 70.0, 430.0, FORAGE_PLAN, func(at: Vector2) -> bool:
+		if at.distance_to(pond) < 150.0: return false
+		var query := PhysicsShapeQueryParameters2D.new()
+		query.shape = probe
+		query.transform = Transform2D(0, at)
+		query.collision_mask = 2
+		return space.intersect_shape(query, 1).is_empty())
+	forage.refresh(GameClock.day_number)
+	GameClock.day_changed.connect(forage.refresh)
 
 func _spawn_seed_patches() -> void:
 	for site in SEED_SITES:
@@ -210,6 +238,9 @@ func _process(delta: float) -> void:
 	if message_time > 0:
 		message_time -= delta
 		if message_time <= 0: popup.text = ""
+	if is_instance_valid(crafting_panel) and crafting_panel.visible:
+		hud_hint.text = ""
+		return
 	var closest := _closest_slime()
 	if closest != null:
 		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
@@ -232,6 +263,16 @@ func _process(delta: float) -> void:
 			else:
 				_notify("Primeiro, faça amizade com um Brotinho da floresta.")
 		return
+	if is_instance_valid(forage):
+		var spot: Dictionary = forage.nearest(player.global_position, GameClock.day_number)
+		if not spot.is_empty():
+			var item_name := str(ITEMS.info(spot.item).name).to_lower()
+			hud_hint.text = "[E] Pegar " + item_name
+			if Input.is_action_just_pressed("interact"):
+				var problem: String = forage.take(spot, GameClock.day_number)
+				bag_hud.call("refresh")
+				_notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
+			return
 	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir"
 	if player.position.distance_to(Forest.SOUTH_EXIT)<115:
 		hud_hint.text = "[E] Viajar para o Vale das Nascentes"
