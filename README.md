@@ -6,6 +6,20 @@ O Mapa 01 ativo é `scenes/regions/FlorestaDoDespertarV2.tscn`: 200×200 tiles, 
 
 Relatório, capturas e limites conhecidos: [Floresta v2](docs/world/forest_v2/RELATORIO_FINAL.md).
 
+## Capturas atuais do jogo
+
+Capturas reais de desenvolvimento, registradas em **22 de novembro de 2026**. As imagens documentam o estado atual do protótipo e não substituem os assets jogáveis.
+
+[![Seleção dos protagonistas sob a lua na floresta encantada](docs/showcase/selecao-protagonista.webp)](docs/showcase/selecao-protagonista.webp)
+
+| Exploração durante o dia | Personagem na clareira |
+| --- | --- |
+| [![Clareira durante o dia](docs/showcase/clareira-dia.webp)](docs/showcase/clareira-dia.webp) | [![Personagem na clareira](docs/showcase/personagem-clareira.webp)](docs/showcase/personagem-clareira.webp) |
+
+| Floresta mágica à noite | Vale das Nascentes e cachoeira |
+| --- | --- |
+| [![Floresta noturna com portal luminoso](docs/showcase/floresta-noite.webp)](docs/showcase/floresta-noite.webp) | [![Cachoeira luminosa do Vale das Nascentes](docs/showcase/vale-cachoeira.webp)](docs/showcase/vale-cachoeira.webp) |
+
 ## Galeria visual do protótipo
 
 Capturas de desenvolvimento **já disponíveis no repositório**, organizadas para mostrar os ambientes e as diferentes iluminações do jogo. São imagens do projeto em evolução, não material de um lançamento final.
