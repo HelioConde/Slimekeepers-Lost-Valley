@@ -7,7 +7,7 @@ extends Node2D
 const LIGHTS := preload("res://scripts/world/ambient_lights.gd")
 const DAY := Color(1.0, 0.86, 0.5)
 const NIGHT := Color(0.55, 0.78, 1.0)
-const TOP_OFFSET := Vector2(-90.0, -300.0)  # o feixe vem do alto, à esquerda (copas)
+const TOP_OFFSET := Vector2(-130.0, -440.0)  # o feixe vem do alto, à esquerda (copas)
 
 var color := DAY
 var strength := 0.0
@@ -47,7 +47,7 @@ func setup(at: Vector2) -> void:
 	_dust.preprocess = 3.0
 	_dust.position = TOP_OFFSET * 0.45
 	_dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-	_dust.emission_rect_extents = Vector2(34, 110)
+	_dust.emission_rect_extents = Vector2(46, 170)
 	_dust.gravity = Vector2(0, 2)
 	_dust.initial_velocity_min = 1.0
 	_dust.initial_velocity_max = 4.0
@@ -85,14 +85,15 @@ func _draw_shaft() -> void:
 	var bottom := Vector2(0, -6)
 	var across := (bottom - top).orthogonal().normalized()
 	# Seções (posição, meia-largura, alfa no eixo); bordas laterais transparentes.
-	var stations := [[0.0, 14.0, 0.0], [0.25, 26.0, 0.6], [0.7, 38.0, 1.0], [1.0, 44.0, 0.7]]
+	# Maior e mais delicado: mais largo, alfa baixo, subida e descida suaves.
+	var stations := [[0.0, 20.0, 0.0], [0.2, 36.0, 0.45], [0.5, 50.0, 0.8], [0.8, 60.0, 1.0], [1.0, 66.0, 0.6]]
 	for k in stations.size() - 1:
 		var s0: Array = stations[k]
 		var s1: Array = stations[k + 1]
 		var p0 := top.lerp(bottom, s0[0])
 		var p1 := top.lerp(bottom, s1[0])
-		var c0 := Color(color, strength * 1.5 * float(s0[2]))  # feixe mais visível que a poça
-		var c1 := Color(color, strength * 1.5 * float(s1[2]))
+		var c0 := Color(color, strength * 0.9 * float(s0[2]))
+		var c1 := Color(color, strength * 0.9 * float(s1[2]))
 		var clear := Color(color, 0.0)
 		for side in [-1.0, 1.0]:
 			_shaft.draw_polygon(
@@ -101,15 +102,15 @@ func _draw_shaft() -> void:
 
 
 func _draw_pool() -> void:
-	# Poça em volta do jogador: 3 elipses achatadas em degraus, levemente alongadas
+	# Poça em volta do jogador: 5 elipses achatadas em degraus finos, levemente alongadas
 	# na direção do feixe.
 	var axis := (Vector2.ZERO - TOP_OFFSET).normalized()
 	var flat := Vector2(1.0, 0.42)
-	for ring in [[1.0, 0.45], [0.7, 0.5], [0.42, 0.6]]:
+	for ring in [[1.0, 0.16], [0.8, 0.2], [0.6, 0.24], [0.42, 0.28], [0.26, 0.3]]:
 		var points := PackedVector2Array()
-		for k in 24:
-			var ang := TAU * float(k) / 24.0
-			var v := Vector2(cos(ang) * 64.0, sin(ang) * 64.0) * float(ring[0]) * flat
+		for k in 32:
+			var ang := TAU * float(k) / 32.0
+			var v := Vector2(cos(ang) * 92.0, sin(ang) * 92.0) * float(ring[0]) * flat
 			v += axis * maxf(0.0, v.dot(axis)) * 0.25
 			points.append(v.round())
 		_pool.draw_colored_polygon(points, Color(color.r, color.g * 0.97, color.b * 0.8, strength * float(ring[1])))
