@@ -17,7 +17,9 @@ const PADS := [Vector2(-50, -12), Vector2(-28, 14), Vector2(36, 12), Vector2(58,
 const GLOWING_LILIES := [Vector2(-40, 0), Vector2(46, 0), Vector2(-8, 22)]
 const REED_SPOTS := [Vector2(-88, -6), Vector2(-70, -34), Vector2(84, 22), Vector2(-60, 40)]
 ## Moldura de flores na margem (refs. V9 do lago): todas mágicas (brilham à noite).
-const FLOWER_SPOTS := [Vector2(-104, 16), Vector2(-96, -30), Vector2(-40, -62), Vector2(30, -64), Vector2(100, -20), Vector2(104, 30), Vector2(40, 58), Vector2(-30, 60)]
+const FLOWER_SPOTS := [Vector2(-104, 16), Vector2(-96, -30), Vector2(-40, -62), Vector2(30, -64), Vector2(100, -20), Vector2(104, 30), Vector2(40, 58), Vector2(-30, 60),
+	# Coroa mais densa (ref. V9 do lago à noite): pontos entre os anteriores.
+	Vector2(-122, -6), Vector2(-72, -52), Vector2(-4, -72), Vector2(68, -50), Vector2(124, 6), Vector2(78, 50), Vector2(4, 68), Vector2(-74, 44)]
 const FLOWERS := preload("res://assets/world/forest/wildflowers_cluster.png")
 
 var water: Polygon2D

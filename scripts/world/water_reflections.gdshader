@@ -14,6 +14,8 @@ uniform int anchor_count = 0;
 // Céu (Astronomy.sky).
 uniform float moon_strength = 0.0;
 uniform float moon_phase = 0.5;
+// Lago pequeno (ref. V9 da Clareira): disco da lua maior e inteiro, coluna curta.
+uniform float small_body = 0.0;
 uniform float sun_strength = 0.0;
 uniform vec4 sun_color : source_color = vec4(1.0);
 varying vec2 world;
@@ -57,15 +59,21 @@ void fragment() {
 	// ---- Lua ----
 	if (moon_strength > 0.003) {
 		vec2 a = floor(nearest(p, true) / 2.0) * 2.0;
-		float c = column(p, a, 65.0, 24.0, 280.0, 1.0);  // coluna larga e longa (ref. da ponte)
+		float c = small_body > 0.5 ? column(p, a, 22.0, 10.0, 46.0, 1.0) : column(p, a, 65.0, 24.0, 280.0, 1.0);  // coluna larga e longa (ref. da ponte)
 		// Disco estilizado e discreto, com a fase (lado iluminado pela fase).
-		vec2 q = (p - a) / vec2(13.0, 9.0);
+		vec2 q = (p - a) / (small_body > 0.5 ? vec2(16.0, 12.0) : vec2(13.0, 9.0));
 		float disk = 0.0;
 		if (dot(q, q) <= 1.0) {
 			float term = cos(TAU * moon_phase) * sqrt(max(0.0, 1.0 - q.y * q.y));
 			float lit = moon_phase < 0.5 ? step(term, q.x) : step(q.x, -term);
 			float cut = 1.0 - step(mod(p.y, 6.0), 1.0) * step(0.6, hash(vec2(floor(p.y / 6.0), floor(elapsed * 0.4))));
-			disk = lit * cut;
+			disk = lit * (small_body > 0.5 ? 1.0 : cut);
+		}
+		// Lago pequeno: halo do disco em 2 degraus (sem degradê liso).
+		float ring = 0.0;
+		if (small_body > 0.5) {
+			float r = length((p - a) / vec2(16.0, 12.0));
+			ring = (step(r, 1.45) - step(r, 1.0)) * 0.45 + (step(r, 1.9) - step(r, 1.45)) * 0.2;
 		}
 		// Pontos prateados ao redor (ondulação fina).
 		float spark = step(0.993, hash(floor(p / 4.0) + vec2(floor(elapsed * 0.6), 3.0))) * (1.0 - smoothstep(10.0, 60.0, length(p - a)));
@@ -78,7 +86,8 @@ void fragment() {
 		float blink = step(0.55, fract(elapsed * (0.3 + hash(gc) * 0.5) + hash(gc + 9.0)));
 		float glitter = in_field * step(0.62 + abs(g.x) / spread * 0.3, hash(gc + 5.0)) * blink * step(mod(p.y, 4.0), 1.0)
 			* (1.0 - smoothstep(180.0, 320.0, g.y));
-		float lum = clamp(disk * 0.95 + c * 0.75 + spark * 0.8 + glitter * 0.85, 0.0, 1.0) * moon_strength;
+		glitter *= 1.0 - small_body;  // o campo largo não cabe num lago pequeno
+		float lum = clamp(disk * 0.95 + ring + c * 0.75 + spark * 0.8 + glitter * 0.85, 0.0, 1.0) * moon_strength;
 		vec3 col = mix(vec3(0.62, 0.8, 1.0), vec3(0.94, 0.97, 1.0), clamp(disk + spark + glitter, 0.0, 1.0));
 		outc = vec4(col, lum);
 	}

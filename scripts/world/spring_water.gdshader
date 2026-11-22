@@ -49,9 +49,9 @@ void fragment() {
 	// ---------------- Noite (refúgio iluminado pelo luar) ----------------
 	// Profundidade: raso perto da margem deixa ver o fundo; centro azul-marinho.
 	float dn = clamp(d, 0.0, 1.0);
-	vec3 n_deep = vec3(0.03, 0.10, 0.22);
-	vec3 n_mid = vec3(0.06, 0.19, 0.33);
-	vec3 n_shallow = vec3(0.12, 0.33, 0.41);
+	vec3 n_deep = vec3(0.05, 0.22, 0.33);  // azul luminoso (ref. V9 do lago à noite)
+	vec3 n_mid = vec3(0.09, 0.3, 0.44);
+	vec3 n_shallow = vec3(0.1, 0.5, 0.56);  // borda clara, ciano
 	vec3 glow = dn < 0.5 ? n_deep : (dn < 0.78 ? n_mid : n_shallow);
 	// Fundo entrevisto no raso: pedrinhas e musgo, pouco contraste.
 	// Ondas: cada linha de 4 px com fase e velocidade próprias (nada sincronizado).

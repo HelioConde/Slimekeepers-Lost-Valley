@@ -158,6 +158,7 @@ func add_surface(water: Polygon2D, blockers: Array = []) -> void:
 	materials.append(material)
 	# Rios grandes correm para baixo; lagos pequenos derivam de leve.
 	var big := maxf(world_bounds(water).size.x, world_bounds(water).size.y) > 600.0
+	material.set_shader_parameter("small_body", 0.0 if big else 1.0)
 	var valley := is_inside_tree() and get_parent() != null and get_parent().get_parent() != null and str(get_parent().get_parent().name).contains("Vale")
 	magic_overlays.append(MAGIC.make_overlay(water, Vector2(0.08, 1.0) if big else Vector2(1.0, 0.25), valley))
 	cells.append(sample_cells(water, blockers))
