@@ -208,7 +208,8 @@ func _setup_living_valley() -> void:
 		for point in frame.polygon: box = box.expand(point)
 		bridge_rects.append(Rect2(frame.global_transform * box.position, box.size))
 	_lanterns.setup(bridge_rects, $Decorations)
-	_add_bridge_nails()
+	# Mundo sem humanos: travessias naturais no lugar das pontes de tábuas.
+	_natural_bridges = preload("res://scripts/world/natural_bridges.gd").apply($Bridges)
 	_tree_glow = preload("res://scripts/world/tree_glow.gd").new()
 	_tree_glow.setup([$TreesBack, $TreesFront], preload("res://scripts/world/valley_layout.gd").BRIDGES)
 	add_child(_tree_glow)
@@ -338,14 +339,9 @@ func _process(delta: float) -> void:
 	var foliage_night := Color(1, 1, 1).lerp(VALLEY_NIGHT_FOLIAGE, water_night)
 	for group in [$TreesBack, $TreesFront, $LowVegetation]:
 		(group as CanvasItem).modulate = foliage_night
-	# Tábuas das pontes: madeira malva sob o luar (ref. V11), não cinza.
-	var bridge_night := Color(1, 1, 1).lerp(VALLEY_NIGHT_BRIDGE, water_night)
-	# Entardecer: a madeira laranja sob a luz do pôr do sol saturava em vermelho.
-	var clock_minutes := float(GameClock.get_hour() * 60 + GameClock.get_minute())
-	var dusk := maxf(clampf(water_night * (1.0 - water_night) * 4.0, 0.0, 1.0), clampf(1.0 - absf(clock_minutes - 1170.0) / 70.0, 0.0, 1.0))
-	bridge_night *= Color(1, 1, 1).lerp(VALLEY_DUSK_BRIDGE, dusk)
-	for bridge in $Bridges.get_children():
-		if bridge.name.begins_with("Bridge"): (bridge as CanvasItem).modulate = bridge_night
+	# Pontes naturais (tronco, pedras, raízes, istmo): mesma noite fria da vegetação.
+	for natural in _natural_bridges:
+		if is_instance_valid(natural): natural.modulate = foliage_night
 	for fall in $Waterfalls.get_children():
 		var cascade := fall.get_node_or_null("Cascade") as CanvasItem
 		if cascade and cascade.material is ShaderMaterial:
@@ -365,31 +361,7 @@ func _process(delta: float) -> void:
 
 var _lanterns: Node2D  # plantas-lanterna nas pontes
 var _tree_glow: Node  # árvores encantadas (tronco quente e vagalumes)
+var _natural_bridges: Array[Sprite2D] = []
 const VALLEY_NIGHT_GROUND := 0.55
 const VALLEY_NIGHT_TINT := Vector3(0.5, 1.0, 1.35)  # azul-petróleo (ref. V11)
 const VALLEY_NIGHT_FOLIAGE := Color(0.66, 0.9, 0.98)
-const VALLEY_NIGHT_BRIDGE := Color(1.04, 0.86, 1.02)
-const VALLEY_DUSK_BRIDGE := Color(0.78, 1.1, 1.08)
-
-
-## Pregos claros nas pontas de cada tábua das pontes (ref. V11): 2×2 px, a 3 px da ponta.
-func _add_bridge_nails() -> void:
-	for bridge in $Bridges.get_children():
-		if not bridge.name.begins_with("Bridge"): continue
-		for poly in bridge.get_children():
-			if not (poly is Polygon2D) or poly.polygon.size() != 4: continue
-			var box := Rect2(poly.polygon[0], Vector2.ZERO)
-			for point in poly.polygon: box = box.expand(point)
-			var short := minf(box.size.x, box.size.y)
-			var long := maxf(box.size.x, box.size.y)
-			if short < 10.0 or short > 14.0 or long < 40.0: continue  # só tábuas
-			var vertical := box.size.y > box.size.x
-			var mid := box.get_center()
-			for side in [-1.0, 1.0]:
-				var at := mid + (Vector2(0, side * (long / 2.0 - 4.0)) if vertical else Vector2(side * (long / 2.0 - 4.0), 0))
-				at = at.floor()
-				var nail := Polygon2D.new()
-				nail.name = "Nail"
-				nail.color = Color(0.86, 0.84, 0.8)
-				nail.polygon = PackedVector2Array([at, at + Vector2(2, 0), at + Vector2(2, 2), at + Vector2(0, 2)])
-				bridge.add_child(nail)

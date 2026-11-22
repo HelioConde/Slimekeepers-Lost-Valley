@@ -207,3 +207,15 @@ PixelLab (`create_map_object`, 3 gerações): vitória-régia com flor luminosa 
 | `assets/world/forest/oak_grand.png` | 128×128 | `070672afb8f7f6c68de940659603e9a7a9feb052c12e50be70a772e41cbf8986` |
 
 Gerado no PixelLab (`create_map_object`, 128×128, high top-down, high detail, detailed shading, selective outline; 1 geração, aprovada). Pós-processo local: `tools/tone_lush_sprite.py --strip-ground 96 --soften 0.45`, remoção de pontinhos soltos (<6 px) abaixo da linha 90 e −20% de saturação nos verdes. Desenhado em escala 2; usado só nas árvores a até 260 px das pontes do Vale (`scripts/world/tree_glow.gd`), cuja colisão não muda.
+
+### Pontes naturais do Vale (mundo sem humanos)
+
+| Arquivo | Tamanho | Local | SHA-256 |
+|---|---|---|---|
+| `assets/world/valley/natural_bridges/fallen_log.png` | 144×31 | Bridge1, noroeste | `a5dfecaea74161218e612b1888d5e45fd97481eda66fdb6169ef39fa29339cf9` |
+| `assets/world/valley/natural_bridges/boulders.png` | 144×27 | Bridge2, nordeste | `d4d5efaad3ed141add5c728a2e77c862427341957cb6632c62759668558bb865` |
+| `assets/world/valley/natural_bridges/land_bridge.png` | 32×112 | Bridge3, oeste | `124e78926ff25a99aea4e0de2e6a3c5eeba5447a89dce45ac1e9796f1503c90b` |
+| `assets/world/valley/natural_bridges/giant_log.png` | 33×145 | Bridge4, leste | `91b61af3d5b06efbaa382b32a3d1caf3d79419e1ff4ab33316d1c83877de76ac` |
+| `assets/world/valley/natural_bridges/root_bridge.png` | 114×30 | Bridge5, sul | `90cbdfa2ca5b18bbb49ec5e03553292b0504aa84fdfdca5a6f30223c3d7f3de3` |
+
+Gerados no PixelLab (`create_map_object`, high top-down, high detail, detailed shading, selective outline; 7 gerações, 5 aprovadas: o primeiro tronco saiu fino demais e as primeiras pedras pareciam lajes cortadas). Pós-processo: recorte à caixa visível. Desenhados em escala 2 por `scripts/world/natural_bridges.gd`, que esconde as tábuas antigas; a travessia continua pelos buracos de colisão de `BRIDGES`.
