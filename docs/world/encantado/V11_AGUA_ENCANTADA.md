@@ -33,3 +33,7 @@ Desvio-padrão do canal azul **só em pixels de água** (B > G + 25 e B > 45), p
 | 4 | 29,0 (média 105) | 30,2 (média 108) |
 
 A água do jogo fica dentro da faixa da referência (23,6–35,1). Medições anteriores de 32–43 usavam recortes que incluíam margem e terra. Ajustes que chegaram aqui: faixas de profundidade e tufos com menos contraste, raso menos transparente, cristas com 70% da amplitude, névoa 0,10 e fios 0,22 (commits eb58d6d, 63fce66, f8cdd5c, d6a59c3).
+
+## Encerramento (2026-11-21)
+
+O usuário deu a cena da ponte V11 por concluída. Mantidos de propósito: o reflexo da lua preso ao mundo e ao céu do jogo (requisito V10) e as plantas-lanterna nas cabeceiras das pontes (mundo sem humanos), com brilho suavizado. Estado final em `docs/world/encantado/79_travessia_ponte_noite.gif`.
