@@ -38,7 +38,7 @@ func run() -> void:
 			for dir in player.DIRS:
 				check(player.sprite.sprite_frames.has_animation("%s_%s" % [tool, dir]), "%s %s_%s" % [who, tool, dir])
 			HOTBAR.select(self, HOTBAR.slots(self).find(item))
-			for facing in (["south", "east", "west", "north"] if tool != "water" else ["south"]):
+			for facing in ["south", "east", "west", "north"]:
 				player.facing = facing
 				player.play_tool(tool)
 				# Impacto: sul = quadro 7, lado = quadro 5; regador: meio da animação.

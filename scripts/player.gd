@@ -16,7 +16,7 @@ const SWING_FPS := 10.0
 const SWING_TIMING := [1.5, 0.9, 0.8, 1.5, 0.6, 0.4, 0.4, 2.0, 1.4]
 ## Golpe de lado e de costas aprovado (8 quadros: descanso, pega, alto, rastro x2, impacto x3).
 const SWING_SIDE_TIMING := [1.5, 1.2, 2.5, 0.6, 0.6, 2.0, 1.4, 1.4]
-## Regar de frente aprovado (8 quadros): ergue, inclina, jato, poça; mais tempo no jato.
+## Regar aprovado (8 quadros; frente, lado e costas): ergue, inclina, jato, poça; mais tempo no jato.
 const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
@@ -120,7 +120,7 @@ func _build_frames() -> SpriteFrames:
 				textures.append(load(tool_path % textures.size()) as Texture2D)
 			var timing: Array = SWING_TIMING
 			if tool == "water":
-				timing = WATER_TIMING if direction == "south" else []
+				timing = WATER_TIMING if direction in ["south", "east", "west", "north"] else []
 			elif textures.size() == SWING_SIDE_TIMING.size():
 				timing = SWING_SIDE_TIMING  # lado e costas: 8 quadros
 			var timed: bool = not timing.is_empty() and textures.size() == timing.size()

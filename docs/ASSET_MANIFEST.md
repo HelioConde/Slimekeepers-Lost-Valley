@@ -285,3 +285,17 @@ Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools
   - As mangas ficaram creme, como no sprite dela.
   - A enxada foi feita a partir dos quadros dela.
 - Tempo por quadro: `SWING_SIDE_TIMING`, os mesmos 8 quadros do golpe de lado.
+
+## Regar de lado (leste e oeste) e de costas (norte) — Aren e Moni — 2026-11-22
+
+- `assets/player{,_moni}/tools/water/{east,west,north}/frame_000..007.png`: aprovados pelo usuário.
+- Oeste é o espelho do leste. As diagonais usam o lado (`TOOL_FACING`).
+- Lado:
+  - PixelLab v3 a partir do quadro inicial de cada personagem (rotação dela + regador verde da barra).
+  - Aren: os quadros 1 e 8 usam o regador do quadro 2 (bico para a frente); o 8 mantém os últimos respingos.
+  - Moni: gerada de novo para manter bolsa, cinto e alça. O quadro 8 é a pose do 1 com os respingos finais, e a água clara foi recolorida para o mesmo azul.
+- Costas:
+  - Regador escondido na frente do corpo, seguro com as duas mãos (`edit_image` da rotação + v3).
+  - Bico e jato lateral apagados. A água foi desenhada caindo no chão à frente, por trás do corpo: gotas, jato entre as pernas, respingo para os lados e poça.
+- Tempo por quadro: `WATER_TIMING`, o mesmo do regar de frente.
+- Captura no jogo: `docs/gameplay/ferramentas/regar_no_jogo.png`.

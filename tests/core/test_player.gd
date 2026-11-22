@@ -148,6 +148,25 @@ func test_south_watering_is_frontal_and_timed() -> void:
 	assert_float(player.play_tool("water")).is_equal_approx(11.3 / 10.0, 0.01)
 
 
+func test_watering_side_and_back_are_timed_for_both() -> void:
+	# Regar de lado (leste; oeste = espelho) e de costas aprovados: 8 quadros com o
+	# mesmo tempo do regar de frente. Aren e Moni.
+	for who in ["aren", "moni"]:
+		get_tree().set_meta("protagonist", who)
+		var player = auto_free(load("res://scenes/player.tscn").instantiate())
+		add_child(player)
+		await await_idle_frame()
+		var frames: SpriteFrames = player.sprite.sprite_frames
+		for dir in ["east", "west", "north"]:
+			var anim: String = "water_" + dir
+			assert_int(frames.get_frame_count(anim)).override_failure_message(who + " " + anim).is_equal(8)
+			assert_float(frames.get_frame_duration(anim, 4)).is_greater(frames.get_frame_duration(anim, 2))
+			player.facing = dir
+			player._tool_time = 0.0
+			assert_float(player.play_tool("water")).is_equal_approx(11.3 / 10.0, 0.01)
+	get_tree().remove_meta("protagonist")
+
+
 func test_side_swing_holds_high_and_on_impact() -> void:
 	# Golpe de lado aprovado (leste; oeste = espelho): 8 quadros, pausa no alto (2)
 	# e no impacto (5) maiores que o rastro (3, 4). Aren e Moni.
