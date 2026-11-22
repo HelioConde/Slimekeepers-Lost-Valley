@@ -32,7 +32,7 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
 | Interface de fabricação (mãos e bancada) | Feito: [C] abre (`scripts/ui/crafting_panel.gd`), ↑↓ escolhem, E fabrica, jogador parado enquanto aberta. Modo bancada pronto, falta a bancada no mundo |
 | Árvores cortáveis, toco, regeneração, processar tronco | Feito (`scripts/world/choppable_trees.gd`): machado selecionado + [E]; 3 golpes derrubam (3 de energia cada), fica toco e tronco; 2 golpes no tronco dão 4 madeiras (2 de energia); volta a crescer em 3 dias; 3.778 árvores comuns, protegidas as de habitats de slimes (+80 px) e pontos de interesse (160 px, inclui a Árvore Centenária). Golpe usa a animação da enxada: **animação própria de machado pendente** |
 | Posicionar a bancada no mundo, persistir | Feito (`scripts/world/station_placer.gd`): bancada selecionada mostra prévia à frente (verde/vermelha); só em chão livre, fora do lago e longe de outra bancada; [E] coloca e gasta o item; salva por região em `placed_stations`; [E] perto dela abre a fabricação da bancada. Por enquanto só na Floresta |
-| Começar sem enxada/regador | **Transição:** `item_catalog.FREE_STARTER_TOOLS = true` mantém as duas de graça até a cadeia estar jogável, para a fazenda não travar (nem saves antigos). |
+| Começar sem enxada/regador | Feito: o jogo começa sem ferramentas. Saves de antes da fabricação (sem a marca `crafting` no save) recebem enxada e regador ao carregar, para a fazenda não travar (`save_game.restore`, `tests/forest/test_save_game.gd`) |
 
 ## Decisões
 

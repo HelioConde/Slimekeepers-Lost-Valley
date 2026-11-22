@@ -110,9 +110,9 @@ func hint(actor: Node2D) -> String:
 		"till": return "[E] Arar com a enxada"
 		"water": return "[E] Regar" + (" " + crop_name if not crop_name.is_empty() else " a terra")
 		"plant": return "[E] Plantar " + str(ITEMS.info(item).name).to_lower()
-	if not FARM.is_tilled(tree, cell, field_id): return "Grama · selecione a enxada [1]"
+	if not FARM.is_tilled(tree, cell, field_id): return "Grama · selecione a enxada"
 	if not crop_name.is_empty():
-		return crop_name + (" regada hoje · cresce amanhã" if FARM.is_watered(tree, cell, field_id) else " com sede · selecione o regador [2]")
+		return crop_name + (" regada hoje · cresce amanhã" if FARM.is_watered(tree, cell, field_id) else " com sede · selecione o regador")
 	return "Terra arada · selecione uma semente" if not FARM.is_watered(tree, cell, field_id) else "Terra arada e regada · selecione uma semente"
 
 

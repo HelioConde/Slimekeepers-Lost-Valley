@@ -12,7 +12,7 @@ const SELECTED_KEY := "hotbar_selected"
 static func slots(tree: SceneTree) -> Array[String]:
 	var result: Array[String] = []
 	for tool in ITEMS.TOOLS:  # só as ferramentas que o jogador já fabricou
-		if BAG.count_item(tree, tool) > 0 or (ITEMS.FREE_STARTER_TOOLS and tool in ITEMS.STARTER_TOOLS):
+		if BAG.count_item(tree, tool) > 0:
 			result.append(tool)
 	for item in ITEMS.ORDER:
 		if result.size() >= SLOTS:

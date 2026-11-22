@@ -4,6 +4,8 @@ extends RefCounted
 ## Formato: texto do Godot (var_to_str) — aceita Vector2i nas chaves da fazenda.
 
 const SESSION := preload("res://scripts/systems/session_state.gd")
+const BAG := preload("res://scripts/systems/forest_bag.gd")
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const VERSION := 1
 const DEFAULT_PATH := "user://slimekeepers_save.txt"
 
@@ -20,7 +22,8 @@ static func snapshot(tree: SceneTree, clock: Node, region_path: String) -> Dicti
 	for key in SESSION.SESSION_META_KEYS:
 		if key != "region_arrival" and tree.has_meta(key):
 			metas[key] = tree.get_meta(key)
-	return {"version": VERSION, "region": region_path, "clock": clock.get_save_data(), "metas": metas}
+	# "crafting": save feito com a fabricação (CRIACAO.md); sem ela é save antigo.
+	return {"version": VERSION, "region": region_path, "clock": clock.get_save_data(), "metas": metas, "crafting": 1}
 
 
 static func save(tree: SceneTree, clock: Node, region_path: String) -> bool:
@@ -60,6 +63,9 @@ static func restore(tree: SceneTree, clock: Node) -> String:
 	for key in data.metas:
 		if key in SESSION.SESSION_META_KEYS:
 			tree.set_meta(key, data.metas[key])
+	if not data.has("crafting"):  # save antigo: enxada e regador eram de graça
+		for tool: String in ITEMS.LEGACY_TOOLS:
+			if BAG.count_item(tree, tool) == 0: BAG.add_item(tree, tool)
 	return str(data.region)
 
 

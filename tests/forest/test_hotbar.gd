@@ -15,9 +15,8 @@ func before_test() -> void:
 
 func test_crafted_tools_only_appear_when_owned() -> void:
 	var slots: Array = Hotbar.slots(get_tree())
-	for tool in Items.TOOLS:
-		var free: bool = Items.FREE_STARTER_TOOLS and tool in Items.STARTER_TOOLS
-		assert_bool(slots.has(tool)).override_failure_message(tool).is_equal(free)
+	for tool in Items.TOOLS:  # o jogo começa sem ferramentas
+		assert_bool(slots.has(tool)).override_failure_message(tool).is_false()
 	Bag.add_item(get_tree(), "machado")
 	assert_bool(Hotbar.slots(get_tree()).has("machado")).is_true()
 

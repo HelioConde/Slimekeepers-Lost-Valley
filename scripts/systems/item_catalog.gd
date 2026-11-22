@@ -6,13 +6,10 @@ const CROPS := preload("res://scripts/systems/crop_catalog.gd")
 const ICONS := "res://assets/ui/items/%s.png"
 
 ## Ferramentas na ordem da barra; só aparecem quando o jogador as tem na bolsa
-## (fabricadas: docs/gameplay/CRIACAO.md), salvo FREE_STARTER_TOOLS.
+## (fabricadas: docs/gameplay/CRIACAO.md). O jogo começa sem nenhuma.
 const TOOLS := ["machado", "enxada", "regador"]
-## Transição (CRIACAO.md): enquanto a coleta, as árvores e a bancada não estão no
-## mundo, enxada e regador continuam de graça para a fazenda não travar. Desligar
-## (false) quando a cadeia completa estiver jogável; aí o jogo começa sem ferramentas.
-const FREE_STARTER_TOOLS := true
-const STARTER_TOOLS := ["enxada", "regador"]
+## Saves de antes da fabricação recebem estas ferramentas ao carregar (save_game).
+const LEGACY_TOOLS := ["enxada", "regador"]
 ## Capacidade da bolsa por item; ferramentas e estações: 1.
 const MAX_STACK := 99
 const ITEMS := {

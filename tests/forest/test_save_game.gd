@@ -69,3 +69,28 @@ func test_menu_continue_restores_saved_farm() -> void:
 	menu.get_node("Actions").free()  # evita trocar de cena no teste
 	assert_str(Save.restore(tree, clock)).is_equal(FARM_SCENE)
 	assert_int(Bag.count_item(tree, "beterraba")).is_equal(3)
+
+
+## Saves de antes da fabricação (CRIACAO.md) tinham enxada e regador de graça:
+## ao carregar, ganham as duas para a fazenda não travar.
+func test_legacy_save_gets_starter_tools() -> void:
+	var tree := get_tree()
+	var clock: Node = auto_free(Clock.new())
+	var old := {"version": Save.VERSION, "region": FARM_SCENE, "clock": clock.get_save_data(), "metas": {}}
+	var file := FileAccess.open(Save.path, FileAccess.WRITE)
+	file.store_string(var_to_str(old))
+	file.close()
+	assert_str(Save.restore(tree, clock)).is_equal(FARM_SCENE)
+	assert_int(Bag.count_item(tree, "enxada")).is_equal(1)
+	assert_int(Bag.count_item(tree, "regador")).is_equal(1)
+
+
+func test_new_save_does_not_grant_tools() -> void:
+	var tree := get_tree()
+	var clock: Node = auto_free(Clock.new())
+	Bag.add_item(tree, "fibra", 3)
+	assert_bool(Save.save(tree, clock, FARM_SCENE)).is_true()
+	Session.clear_session(tree)
+	assert_str(Save.restore(tree, clock)).is_equal(FARM_SCENE)
+	assert_int(Bag.count_item(tree, "enxada")).is_equal(0)
+	assert_int(Bag.count_item(tree, "fibra")).is_equal(3)
