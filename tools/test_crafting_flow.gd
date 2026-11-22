@@ -33,6 +33,21 @@ func press(action: String) -> void:
 	await process_frame
 
 
+## Segura a ação por `seconds` (tempo real de jogo) e solta.
+func hold(action: String, seconds: float) -> void:
+	var down := InputEventAction.new()
+	down.action = action
+	down.pressed = true
+	Input.parse_input_event(down)
+	await create_timer(seconds).timeout
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	await process_frame
+	await process_frame
+
+
 func key(code: int) -> void:
 	var e := InputEventKey.new()
 	e.keycode = code
@@ -55,11 +70,35 @@ func run() -> void:
 	var forage: Node2D = region.get("forage")
 	check(is_instance_valid(forage) and forage.spots.size() >= 20, "pontos de coleta na Clareira (%d)" % (forage.spots.size() if forage else 0))
 	var player: Node2D = region.get_node("Player")
+	var mato: Array = forage.spots.filter(func(s: Dictionary) -> bool: return forage.pull_seconds(s.item) > 0.0)
+	check(mato.size() >= 20,"todo o mato da Clareira dá fibra (%d tufos)" % mato.size())
 	for spot: Dictionary in forage.spots:
+		if spot in mato: continue
 		player.global_position = spot.at + Vector2(0, 6)
 		await physics_frame
 		await process_frame
 		await press("interact")
+	# Mato: um toque rápido não arranca; segurar [E] 4 s arranca (6 tufos = 2 cordas).
+	player.global_position = mato[0].at + Vector2(0, 6)
+	await physics_frame
+	await process_frame
+	await press("interact")
+	check(BAG.count_item(self, "fibra") == 0, "toque rápido em [E] não arranca o mato")
+	# Slimes andando podem chegar perto e tomar a vez do [E]: tenta até 12 tufos.
+	for spot: Dictionary in mato.slice(0, 12):
+		if BAG.count_item(self, "fibra") >= 6: break
+		player.global_position = spot.at + Vector2(0, 6)
+		await physics_frame
+		await process_frame
+		await hold("interact", 2.0)
+		if spot == mato[0]: check(BAG.count_item(self, "fibra") == 0, "2 s segurando ainda não arranca")
+		await hold("interact", 4.3)
+	check(BAG.count_item(self, "fibra") == 6, "segurar [E] 4 s arranca o mato (%d fibras)" % BAG.count_item(self, "fibra"))
+	# O resto (mato e pontos onde um tufo mais perto tinha prioridade) vai direto,
+	# para a bancada adiante ter fibra e pedra suficientes sem esperar 4 s por tufo.
+	for spot: Dictionary in forage.spots:
+		if spot in mato and BAG.count_item(self, "fibra") >= 30: continue
+		if not forage.is_taken(self, spot.id, 1): forage.take(spot, 1)
 	var bag := BAG.inventory_snapshot(self)
 	check(int(bag.get("fibra", 0)) >= 6 and int(bag.get("graveto", 0)) >= 2 and int(bag.get("pedra_pequena", 0)) >= 2, "coleta com [E] encheu a bolsa %s" % str(bag))
 	check(not HOTBAR.slots(self).has("machado"), "sem machado antes de fabricar")
@@ -76,7 +115,7 @@ func run() -> void:
 	check(not panel.visible, "[C] fecha a janela")
 	check(HOTBAR.slots(self).has("machado"), "machado aparece na barra rápida")
 	# Coletado some até amanhã.
-	var spot: Dictionary = forage.spots[0]
+	var spot: Dictionary = mato[0]
 	check(forage.nearest(spot.at, 1).is_empty(), "ponto coletado some no mesmo dia")
 	check(not forage.nearest(spot.at, 2).is_empty(), "ponto coletado volta no dia seguinte")
 	# Etapa 3: árvore comum -> toco + tronco -> madeira.

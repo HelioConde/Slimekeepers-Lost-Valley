@@ -78,6 +78,11 @@ func play_tool(tool: String) -> float:
 	_tool_time = units / sprite.sprite_frames.get_animation_speed(name)
 	return _tool_time
 
+## Mantém o personagem parado por um instante (ex.: arrancando mato com [E]).
+func hold_still(seconds: float) -> void:
+	_tool_time = maxf(_tool_time, seconds)
+
+
 func is_using_tool() -> bool:
 	return _tool_time > 0.0
 

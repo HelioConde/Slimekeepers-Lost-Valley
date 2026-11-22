@@ -70,7 +70,10 @@ static func is_plant(path: String) -> bool:
 
 static func is_ground_cover(path: String) -> bool:
 	# Walkable surfaces belong below feet even when stored among decorative props.
-	return ("grass" in path and not "tall" in path) or "steps" in path or "ramp" in path or "bridge" in path
+	# O tufo de mato (environment/grass.png) é de pé: ordena por Y como samambaia,
+	# senão fica atrás do tronco quando está na frente dele.
+	var tuft := path.ends_with("environment/grass.png")
+	return ("grass" in path and not "tall" in path and not tuft) or "steps" in path or "ramp" in path or "bridge" in path
 
 func _sort_painted_plants(region: Node2D) -> void:
 	var layer := region.get_node_or_null("VegetationLow") as TileMapLayer

@@ -18,6 +18,8 @@ const TRAIL_FREE := 30.0  # leito do caminho
 const TRAIL_EDGE := 58.0
 const TREE_EDGE := 78.0
 const RIM_DEPTH := 60.0  # faixa junto à borda da clareira: arbustos e folhas
+## Tipos de pé (mato), ordenados por Y com a vegetação em vez de ficar no chão.
+const UPRIGHT := ["grass", "grass_tuft_sunlit"]
 ## Tipos fora de assets/world/ground.
 const PATHS := {
 	"grass": "res://assets/menu/environment/grass.png",
@@ -161,8 +163,13 @@ func _put(kind: String, at: Vector2, key: Vector2i, index: int = 0) -> void:
 	sprite.flip_h = _rand(key, 30 + index) < 0.5
 	if wind_material and kind in ["wildflower_yellow", "wildflower_lilac", "grass_tuft_sunlit", "clover_sprig", "grass"]:
 		sprite.material = wind_material
-	add_child(sprite)
-	placed.append({"kind": kind, "at": at})
+	if bush_parent and kind in UPRIGHT:
+		# Mato é de pé: ordenado por Y com árvores e arbustos (na frente do tronco
+		# quando está abaixo dele), não na camada fixa do chão.
+		bush_parent.add_child(sprite)
+	else:
+		add_child(sprite)
+	placed.append({"kind": kind, "at": at, "sprite": sprite})  # sprite: o mato vira ponto de coleta
 
 
 static func _rand(key: Vector2i, salt: int) -> float:

@@ -30,8 +30,12 @@ var crafting_panel: Control
 var choppable: Node
 var placer: Node2D
 var intro: Node
-## Pontos de coleta na Clareira (ajustável): o bastante para corda, machado e bancada.
-const FORAGE_PLAN := {"fibra": 12, "graveto": 6, "pedra_pequena": 8}
+## Pontos de coleta na Clareira (ajustável): o bastante para machado e bancada.
+## A fibra vem de todo o mato do chão (forage_spots.add_mato).
+const FORAGE_PLAN := {"graveto": 6, "pedra_pequena": 8}
+var ground_detail: Node2D
+var _pull_id := ""  # ponto sendo arrancado com [E] segurado
+var _pull_time := 0.0
 var _spawn_light: Node2D
 
 func _ready() -> void:
@@ -140,6 +144,8 @@ func _spawn_forage() -> void:
 		query.transform = Transform2D(0, at)
 		query.collision_mask = 2
 		return space.intersect_shape(query, 1).is_empty())
+	if is_instance_valid(ground_detail): forage.add_mato(ground_detail)
+	forage.add_mato_tiles($VegetationLow, preload("res://assets/menu/environment/grass.png"))
 	forage.refresh(GameClock.day_number)
 	GameClock.day_changed.connect(forage.refresh)
 
@@ -235,6 +241,7 @@ func _add_ground_detail() -> void:
 	detail.avoid.append({"center": pond.global_position - detail.position, "radius": Vector2(86, 46)})
 	detail.build()
 	add_child(detail)
+	ground_detail = detail
 
 func _setup_ecosystem() -> void:
 	var flowers: Array[Vector2] = []
@@ -305,16 +312,39 @@ func _process(delta: float) -> void:
 			else:
 				_notify("Primeiro, faça amizade com um Brotinho da floresta.")
 		return
+	# Machado na mão e árvore ao alcance: cortar vem antes de arrancar o mato em volta.
+	if is_instance_valid(choppable) and HOTBAR.selected_item(get_tree()) == "machado" and _axe_interaction():
+		_pull_id = ""
+		return
 	if is_instance_valid(forage):
 		var spot: Dictionary = forage.nearest(player.global_position, GameClock.day_number)
 		if not spot.is_empty():
 			var item_name := str(ITEMS.info(spot.item).name).to_lower()
-			hud_hint.text = "[E] Pegar " + item_name
-			if Input.is_action_just_pressed("interact"):
-				var problem: String = forage.take(spot, GameClock.day_number)
-				bag_hud.call("refresh")
-				_notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
+			var hold: float = forage.pull_seconds(spot.item)
+			if hold > 0.0:
+				# Mato: segurar [E] até arrancar; soltar ou sair de perto recomeça.
+				if Input.is_action_just_pressed("interact"):
+					_pull_id = spot.id
+					_pull_time = 0.0
+				elif Input.is_action_pressed("interact") and _pull_id == spot.id:
+					_pull_time += delta
+				else:
+					_pull_id = ""
+				if _pull_id != spot.id:
+					hud_hint.text = "[Segure E] Arrancar o mato (%d s)" % int(hold)
+					return
+				player.hold_still(0.1)
+				hud_hint.text = "Arrancando o mato... %d%%" % mini(99, int(_pull_time / hold * 100.0))
+				if _pull_time < hold: return
+				_pull_id = ""
+			else:
+				hud_hint.text = "[E] Pegar " + item_name
+				if not Input.is_action_just_pressed("interact"): return
+			var problem: String = forage.take(spot, GameClock.day_number)
+			bag_hud.call("refresh")
+			_notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
 			return
+		_pull_id = ""
 	if is_instance_valid(choppable) and _axe_interaction():
 		return
 	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir"
