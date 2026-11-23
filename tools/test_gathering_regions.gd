@@ -104,6 +104,33 @@ func run() -> void:
 			check(stump != null and is_equal_approx(stump.scale.x, chop.STUMP_SCALE * chop.tree_scale(small_key)), "%s: toco proporcional à árvore" % name)
 		HOTBAR.select(self, -1)
 		if name == "vale":
+			# Fabricação e bancada também no Vale.
+			var panel: Control = region.get("crafting_panel")
+			var c_key := InputEventKey.new()
+			c_key.keycode = KEY_C
+			c_key.physical_keycode = KEY_C
+			c_key.pressed = true
+			root.push_input(c_key)
+			for i in 3: await process_frame
+			check(is_instance_valid(panel) and panel.visible, "vale: [C] abre a fabricação")
+			root.push_input(c_key)
+			for i in 3: await process_frame
+			BAG.add_item(self, "bancada")
+			for i in 3: await process_frame
+			HOTBAR.select(self, HOTBAR.slots(self).find("bancada"))
+			var placer: Node2D = region.get("placer")
+			var spot_ok := false
+			for attempt in 12:
+				player.global_position = spawn + Vector2(48 * (attempt % 4) - 72, 64 + 40 * (attempt / 4))
+				player.facing = "south"
+				for i in 3: await physics_frame
+				if placer.can_place(placer.spot_for(player)):
+					spot_ok = true
+					break
+			if spot_ok:
+				await press()
+			check(spot_ok and BAG.count_item(self, "bancada") == 0, "vale: bancada colocada com [E]")
+			HOTBAR.select(self, -1)
 			var sticks: Array = gathering.forage.spots.filter(func(s: Dictionary) -> bool: return s.item in ["graveto", "pedra_pequena"])
 			check(sticks.size() >= 8 and sticks.all(func(s: Dictionary) -> bool: return str(s.id).begins_with("vale_")), "vale: gravetos e pedras com ids próprios (%d)" % sticks.size())
 		# Mato longe do início.

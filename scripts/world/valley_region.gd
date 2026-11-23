@@ -18,6 +18,8 @@ var elapsed := 0.0
 var reduce_motion := false
 var found_zones: Dictionary = {}
 var bag_hud: Node
+var crafting_panel: Control  # [C] fabricar (como na Floresta)
+var placer: Node2D  # bancadas colocadas pelo jogador (como na Floresta)
 var gathering: Node  # region_gathering.gd: corte e coleta (como na Floresta)
 var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
 var farm: Node2D  # plantio livre: arar com a enxada em qualquer chão livre
@@ -38,6 +40,10 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
+	crafting_panel = preload("res://scripts/ui/crafting_panel.gd").new()
+	crafting_panel.player = player
+	$HUD/Interface.add_child(crafting_panel)
+	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
 	recipe_panel = RECIPE_PANEL.new()
 	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
@@ -115,6 +121,10 @@ func _setup_living_valley() -> void:
 	habitat_manager.set_environment_state(get_tree().get_meta("environment_conditions",{}))
 	_update_living_goal()
 	_setup_gathering()
+	placer = preload("res://scripts/world/station_placer.gd").new()
+	add_child(placer)
+	placer.blocked = func(_at: Vector2) -> bool: return false  # colisão (água, árvores) já bloqueia
+	placer.setup(scene_file_path)
 	house = add_player_house("vale")
 	farm = add_free_farm("vale", house)
 	hide_forage_on_farm(farm, gathering.forage)
@@ -193,6 +203,19 @@ func _spawn_valley_forage() -> void:
 		return space.intersect_shape(query, 1).is_empty(), "vale_")
 	gathering.forage.refresh(GameClock.day_number)
 
+## Bancada no Vale (como na Floresta): prévia/colocar com ela na barra; [E] nela abre
+## a fabricação da bancada.
+func _handle_station() -> bool:
+	if not is_instance_valid(placer): return false
+	var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
+	if station_hint == "placed":
+		bag_hud.call("refresh")
+		_notify("Bancada de trabalho montada! Use [E] nela para fabricar ferramentas.")
+		return true
+	if station_hint.is_empty(): return false
+	hud_hint.text = station_hint
+	return true
+
 func _update_living_goal() -> void:
 	friends_count = 0
 	for friend in get_tree().get_meta("valley_slime_friends",{}).values():
@@ -212,7 +235,11 @@ func _process(delta: float) -> void:
 	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: observar   •   B: construir casa"
 	if Input.is_action_just_pressed("feed") and _closest_slime() == null:
 		eat_selected()  # [F] sem slime por perto: comer
-	if handle_player_house(house):
+	if is_instance_valid(crafting_panel) and crafting_panel.visible:
+		hud_hint.text = ""
+	elif _handle_station():
+		pass  # bancada: prévia/colocar ou [E] fabricar
+	elif handle_player_house(house):
 		pass  # casa: modo construir ou dormir na cama
 	elif player.position.distance_to(Vector2(1600,70)) < 100:
 		hud_hint.text = "[E] Voltar à Floresta do Despertar"
