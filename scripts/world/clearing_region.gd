@@ -390,11 +390,64 @@ func slime_food_hint(slime: Node2D) -> String:
 	return "[F] Dar %s a %s" % [str(items.info(item).name).to_lower(), slime.call("display_name")]
 
 
+## Machado/picareta na mão e árvore/pedra ao alcance: o golpe vem antes de usar a
+## bancada ou o baú ao lado (senão a bancada perto de uma árvore impede cortar).
+func tool_target_near() -> bool:
+	var g: Node = get("gathering")
+	if not is_instance_valid(g) or not is_instance_valid(player): return false
+	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
+	if item == "machado" and is_instance_valid(g.get("choppable")): return not (g.choppable.target(player.global_position) as Dictionary).is_empty()
+	if item == "picareta" and is_instance_valid(g.get("rocks")): return not (g.rocks.target(player.global_position) as Dictionary).is_empty()
+	return false
+
+
+## Disco de ações do slime (scripts/ui/slime_action_disc.gd).
+var slime_disc: Control
+func add_slime_disc() -> void:
+	slime_disc = preload("res://scripts/ui/slime_action_disc.gd").new()
+	slime_disc.set("region", self)
+	get_node("HUD/Interface").add_child(slime_disc)
+
+
+func open_slime_disc(slime: Node2D) -> void:
+	if is_instance_valid(slime_disc): slime_disc.call("open", slime)
+
+
+## Ação escolhida no disco. arg: comida escolhida ou baú do Carreguim ("" = mais perto).
+func slime_action(slime: Node2D, action: String, arg: String) -> void:
+	var tree := get_tree()
+	var species := str(slime.get("slime_type"))
+	match action:
+		"carinho":
+			greet_slime(slime)
+		"comida":
+			if arg.is_empty():
+				_notify("Você não tem comida. Colha ou cozinhe algo para oferecer.")
+				return
+			var bar := preload("res://scripts/systems/hotbar_state.gd")
+			bar.select(tree, bar.slots(tree).find(arg))
+			if has_method("_offer_prototype_food"): call("_offer_prototype_food", slime)
+		"trabalho":
+			if species == "carreguim":
+				tree.set_meta("carreguim_chest", arg)
+				_notify("%s vai levar as coisas para %s." % [slime.call("display_name"), "o baú mais perto" if arg.is_empty() else "o baú escolhido"])
+				return
+			var off: Dictionary = (tree.get_meta("slime_work_off", {}) as Dictionary).duplicate()
+			off[species] = not bool(off.get(species, false))
+			tree.set_meta("slime_work_off", off)
+			_notify("%s %s." % [slime.call("display_name"), "parou de trabalhar" if off[species] else "voltou a trabalhar"])
+		"seguir":
+			var farm_map: Dictionary = (tree.get_meta("slime_at_farm", {}) as Dictionary).duplicate()
+			farm_map[species] = not bool(farm_map.get(species, true))
+			tree.set_meta("slime_at_farm", farm_map)
+			_notify("%s %s." % [slime.call("display_name"), "foi para a fazenda" if farm_map[species] else "vai ficar em casa"])
+
+
 ## Slime por perto sem comida na mão: amigo aceita carinho; desconhecido desconfia
 ## e só vira amigo comendo (pedido do usuário). Devolve a dica do HUD.
 func slime_greet_hint(slime: Node2D) -> String:
-	if bool(slime.get("befriended")): return "[F] Fazer carinho em " + str(slime.call("display_name"))
-	return "%s está desconfiado · escolha uma comida na barra e ofereça com [F]" % slime.call("display_name")
+	if bool(slime.get("befriended")): return "[F] Ações com " + str(slime.call("display_name"))
+	return "%s está desconfiado · [F] oferecer comida" % slime.call("display_name")
 
 
 ## [F] sem comida: carinho no amigo; o desconhecido se afasta um pouco.

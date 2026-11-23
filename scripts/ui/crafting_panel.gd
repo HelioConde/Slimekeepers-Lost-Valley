@@ -1,10 +1,10 @@
 extends PanelContainer
 ## Janela de fabricação (CRIACAO.md), no estilo da bancada do Palworld (pedido do usuário,
-## 2026-11-23): abas por categoria em cima (Produção, Slimes, Armazenamento, Comida,
-## Infraestrutura, Construção), receitas em linhas por nível (1, 2...; o nível só organiza)
+## 2026-11-23): abas por categoria em cima (Ferramentas e Comida só na bancada/fogão;
+## Produção, Slimes, Armazenamento e Construção também no [B]), receitas em linhas por nível (1, 2...; o nível só organiza)
 ## e um painel à direita com nome, descrição, materiais (tem/precisa) e tempo de construção.
 ## [B] abre com as mãos; a bancada abre "bancada" (mãos + bancada) e o fogão "fogao".
-## A casa é um item de Infraestrutura (ícone de casa): escolher entra no modo construir.
+## A casa é um item de Construção (ícone de casa): escolher entra no modo construir.
 ## Teclado: setas/WASD escolhem, Q/R trocam de aba, F/Enter fabricam, B/Esc fecham, E mochila.
 
 signal crafted(recipe_id: String)
@@ -19,11 +19,16 @@ const PLACER := preload("res://scripts/world/station_placer.gd")
 const COLUMNS := 5
 const WINDOWS := INVENTORY.WINDOWS
 const TITLES := {"maos": "Fabricar com as mãos", "bancada": "Bancada de trabalho", "fogao": "Fogão"}
-const CATEGORIES := [["producao", "Produção"], ["slimes", "Slimes"], ["armazenamento", "Armazenamento"],
-	["comida", "Comida"], ["infraestrutura", "Infraestrutura"], ["construcao", "Construção"]]
+const CATEGORIES := [["ferramentas", "Ferramentas"], ["producao", "Produção"], ["slimes", "Slimes"],
+	["armazenamento", "Armazenamento"], ["construcao", "Construção"], ["comida", "Comida"]]
+## Abas de cada janela: [B] sem ferramentas nem comida; a bancada com ferramentas; o
+## fogão só comida (pedido do usuário, 2026-11-23).
+## Construção (casa, móveis) também só na bancada; no [B] só o básico: corda e a bancada.
+const TABS := {"maos": ["producao"],
+	"bancada": ["ferramentas", "producao", "slimes", "armazenamento", "construcao"], "fogao": ["comida"]}
 ## Entradas que não são receitas: abrem o modo construir da casa (house_builder.gd).
 const SPECIALS := [
-	{"id": "casa", "category": "infraestrutura", "tier": 1, "name": "Casa", "mode": "house",
+	{"id": "casa", "category": "construcao", "tier": 1, "name": "Casa", "mode": "house",
 		"text": "Paredes, piso e porta: arraste no chão para erguer a casa. A cama salva o jogo."},
 	{"id": "moveis", "category": "construcao", "tier": 1, "name": "Móveis da casa", "mode": "furniture",
 		"text": "Cama, baú, fogão, mesa e outros móveis dentro da casa."},
@@ -112,7 +117,7 @@ func _ready() -> void:
 func open(new_station: String = "maos") -> void:
 	station = new_station
 	selected = 0
-	category = "comida" if station == "fogao" else "producao"
+	category = str(TABS.get(station, TABS.maos)[0])
 	visible = true
 	_freeze(true)
 	refresh()
@@ -164,7 +169,10 @@ func why_not(r: Dictionary) -> String:
 
 func refresh() -> void:
 	_title.text = TITLES.get(station, "Fabricar")
+	var allowed: Array = TABS.get(station, TABS.maos)
+	if not allowed.has(category): category = str(allowed[0])
 	for tab: Button in _tabs.get_children():
+		tab.visible = allowed.has(str(tab.name).trim_prefix("Tab_"))
 		tab.button_pressed = tab.name == "Tab_" + category
 	for child in _tiers.get_children(): child.queue_free()
 	_rows.clear()
@@ -305,7 +313,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			open("maos")
 			get_viewport().set_input_as_handled()
 		return
-	var cats: Array = CATEGORIES.map(func(c: Array) -> String: return str(c[0]))
+	var cats: Array = TABS.get(station, TABS.maos)
 	match key:
 		KEY_B, KEY_ESCAPE:
 			close()

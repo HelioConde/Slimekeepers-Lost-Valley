@@ -39,6 +39,9 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"tutorial_step",
 	"player_health",
 	"placed_chest_items",
+	"slime_work_off",
+	"slime_at_farm",
+	"carreguim_chest",
 ]
 
 

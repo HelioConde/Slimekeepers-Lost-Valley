@@ -17,18 +17,17 @@ const TAB := Color("#5c2a35")
 ## [esq] = ícone do mouse com o botão esquerdo; [roda] = ícone da roda do mouse.
 const STEPS := [
 	["Vamos começar pelo básico!", "Use as teclas [W] [A] [S] [D] para andar. Segure [Shift] para correr.", "walk"],
-	["Coletando recursos", "Junte 2 gravetos e 2 pedrinhas: chegue perto e aperte [F] ou [esq] (andar cancela)", "pick"],
-	["Arrancando mato", "Aperte [F] perto de um tufo de mato e espere arrancar. Junte 3 fibras.", "fiber"],
+	["Coletando recursos", "Junte 8 gravetos e 6 pedrinhas: chegue perto e aperte [F] ou [esq] (andar cancela)", "pick"],
+	["Arrancando mato", "Aperte [F] perto de um tufo de mato e espere arrancar. Junte 9 fibras.", "fiber"],
 	["Sua mochila", "Aperte [E] para ver a mochila. [E] de novo fecha.", "bag"],
-	["Fabricando corda", "Aperte [B] e clique [esq] na corda: 3 fibras viram 1 corda.", "rope"],
-	["Seu primeiro machado", "No [B], clique [esq] no machado: corda, 2 gravetos e 2 pedrinhas.", "axe"],
-	["Cortando árvores", "Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]", "swing"],
-	["Juntando madeira", "Derrube árvores pequenas e corte o tronco caído até juntar 6 madeiras.", "wood"],
-	["A bancada de trabalho", "No [B], faça a bancada: 6 madeiras, 3 cordas e 4 pedrinhas. Mais mato dá mais corda.", "bench"],
+	["Fabricando corda", "Aperte [B] e clique [esq] na corda até ter 3 cordas (3 fibras cada).", "rope"],
+	["A bancada de trabalho", "No [B], faça a bancada com 6 gravetos, 4 pedrinhas e 2 cordas.", "bench"],
 	["Colocando a bancada", "Escolha a bancada na barra e clique [esq] no chão onde quer colocar.", "place"],
 	["Construindo a bancada", "Vá até a planta da bancada e aperte [F] ou [esq]. Leva 10 segundos (andar cancela).", "build"],
 	["Usando a bancada", "Chegue perto da bancada e aperte [F] ou [esq] para abrir", "use"],
-	["Pronto!", "Na bancada você fabrica todos os itens do jogo. Bom começo!", "read"],
+	["Seu primeiro machado", "Na bancada, aba Ferramentas: faça o machado (2 gravetos, 2 pedrinhas e 1 corda).", "axe"],
+	["Cortando árvores", "Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]", "swing"],
+	["Pronto!", "Na bancada você fabrica as ferramentas; no [B], construções. Bom começo!", "read"],
 ]
 const READ_SECONDS := 9.0
 const WIDTH := 330.0
@@ -269,18 +268,16 @@ func _done(kind: String, delta: float) -> bool:
 			if player is CharacterBody2D and (player as CharacterBody2D).velocity.length() > 10.0: _walked += delta
 			return _walked > 1.5
 		"pick":
-			return _has(tree, ["machado"]) or (BAG.count_item(tree, "graveto") >= 2 and BAG.count_item(tree, "pedra_pequena") >= 2)
+			return _placed() or _has(tree, ["bancada", "machado"]) or (BAG.count_item(tree, "graveto") >= 8 and BAG.count_item(tree, "pedra_pequena") >= 6)
 		"fiber":
-			return BAG.count_item(tree, "fibra") >= 3 or _has(tree, ["corda", "machado"])
+			return BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3 >= 9 or _placed() or _has(tree, ["bancada", "machado"])
 		"bag":
 			_bag_seen = _bag_seen or _open("inventory_panel")
 			return _bag_seen and not _open("inventory_panel")
 		"rope":
-			return _has(tree, ["corda", "machado"])
+			return BAG.count_item(tree, "corda") >= 3 or _placed() or _has(tree, ["bancada", "machado"])
 		"axe":
 			return _has(tree, ["machado"])
-		"wood":
-			return BAG.count_item(tree, "madeira") >= 6 or _has(tree, ["bancada"]) or _placed()
 		"bench":
 			return _has(tree, ["bancada"]) or _placed()
 		"place":
@@ -307,11 +304,13 @@ func _targets(kind: String) -> Array:
 	var from := player.global_position
 	var found: Array = []
 	var items := {"pick": ["graveto", "pedra_pequena"], "fiber": ["fibra"]}
-	if kind == "bench":  # bancada: destaca o que ainda falta (mato vira corda, pedrinhas)
+	if kind in ["bench", "axe"]:  # destaca o que ainda falta (mato vira corda, gravetos, pedrinhas)
+		var need := {"bench": [6, 4, 2], "axe": [2, 2, 1]}[kind] as Array
 		var want: Array = []
-		if BAG.count_item(get_tree(), "corda") + BAG.count_item(get_tree(), "fibra") / 3 < 3: want.append("fibra")
-		if BAG.count_item(get_tree(), "pedra_pequena") < 4: want.append("pedra_pequena")
-		items["bench"] = want
+		if BAG.count_item(get_tree(), "graveto") < int(need[0]): want.append("graveto")
+		if BAG.count_item(get_tree(), "pedra_pequena") < int(need[1]): want.append("pedra_pequena")
+		if BAG.count_item(get_tree(), "corda") + BAG.count_item(get_tree(), "fibra") / 3 < int(need[2]): want.append("fibra")
+		items[kind] = want
 	if items.has(kind):
 		var forage: Node = region.get("forage")
 		var day: int = get_tree().root.get_node("GameClock").day_number
@@ -319,7 +318,7 @@ func _targets(kind: String) -> Array:
 			for spot: Dictionary in forage.spots:
 				if str(spot.item) in items[kind] and spot.at.distance_to(from) < NEAR and not forage.is_taken(get_tree(), spot.id, day):
 					found.append([spot.at, 14.0 if kind == "pick" else 18.0])
-	elif kind in ["swing", "wood"]:
+	elif kind == "swing":
 		var chop: Node = region.get("choppable")
 		if is_instance_valid(chop):
 			var cut: Dictionary = chop.state(get_tree())
@@ -343,16 +342,16 @@ func _progress(kind: String) -> String:
 	var parts: PackedStringArray = []
 	match kind:
 		"pick":
-			parts.append("Gravetos %d/2" % mini(2, BAG.count_item(tree, "graveto")))
-			parts.append("Pedrinhas %d/2" % mini(2, BAG.count_item(tree, "pedra_pequena")))
+			parts.append("Gravetos %d/8" % mini(8, BAG.count_item(tree, "graveto")))
+			parts.append("Pedrinhas %d/6" % mini(6, BAG.count_item(tree, "pedra_pequena")))
 		"fiber":
-			parts.append("Fibras %d/3" % mini(3, BAG.count_item(tree, "fibra")))
-		"wood":
-			parts.append("Madeira %d/6" % mini(6, BAG.count_item(tree, "madeira")))
-		"bench":
-			parts.append("Madeira %d/6" % mini(6, BAG.count_item(tree, "madeira")))
+			parts.append("Fibras %d/9" % mini(9, BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3))
+		"rope":
 			parts.append("Cordas %d/3" % mini(3, BAG.count_item(tree, "corda")))
+		"bench":
+			parts.append("Gravetos %d/6" % mini(6, BAG.count_item(tree, "graveto")))
 			parts.append("Pedrinhas %d/4" % mini(4, BAG.count_item(tree, "pedra_pequena")))
+			parts.append("Cordas %d/2" % mini(2, BAG.count_item(tree, "corda")))
 	return "" if parts.is_empty() else " · ".join(parts) + "     "
 
 

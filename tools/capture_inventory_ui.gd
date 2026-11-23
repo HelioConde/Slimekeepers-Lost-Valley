@@ -64,15 +64,12 @@ func run() -> void:
 	BAG.add_item(self, "fibra", 10)
 	var craft: Control = region.get("crafting_panel")
 	await key(KEY_B)
-	check(craft.visible and craft.get("_tiers") is VBoxContainer and craft.get("_tabs").get_child_count() == 6, "[B] abre a fabricação com 6 abas")
+	check(craft.visible and craft.get("_tiers") is VBoxContainer and craft.get("_tabs").get_children().filter(func(t: Control) -> bool: return t.visible).size() == 1, "[B] abre a fabricação só com Produção")
 	# Painel da direita: materiais tem/precisa da receita escolhida (corda).
 	var mats := ""
 	for label in craft.get("_detail_mats").find_children("*", "Label", true, false): mats += (label as Label).text + " | "
 	check(mats.contains("Fibra vegetal") and mats.contains("/3"), "painel mostra materiais (%s)" % mats)
-	craft.call("show_category", "infraestrutura")
-	await process_frame
-	check(craft.call("entries").any(func(r: Dictionary) -> bool: return str(r.id) == "casa"), "Infraestrutura tem a Casa")
-	craft.call("show_category", "producao")
+	check(craft.call("entries", "construcao").any(func(r: Dictionary) -> bool: return str(r.id) == "casa"), "a Casa existe em Construção (na bancada)")
 	if out != "":
 		await process_frame
 		await shot(out + "/fabricacao.png")

@@ -227,7 +227,7 @@ func _spawn_valley_forage() -> void:
 ## Bancada no Vale (como na Floresta): prévia/colocar com ela na barra; [F] nela abre
 ## a fabricação da bancada.
 func _handle_station() -> bool:
-	if not is_instance_valid(placer): return false
+	if not is_instance_valid(placer) or tool_target_near(): return false
 	var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
 	if station_hint in ["built", "built_bau_campo"]:
 		_notify("Bancada pronta! Use [F] nela para fabricar." if station_hint == "built" else "Baú pronto! Use [F] para guardar; o Carreguim também traz coisas para cá.")

@@ -65,13 +65,13 @@ func test_stack_capacity() -> void:
 ## Do zero às ferramentas iniciais, só com o que a coleta e o tronco dão.
 func test_full_chain_from_nothing() -> void:
 	var tree := get_tree()
-	Bag.add_item(tree, "fibra", 3 * 9)  # 9 cordas: machado 1, bancada 3, enxada 1, regador 2
-	Bag.add_item(tree, "graveto", 2)
+	Bag.add_item(tree, "fibra", 3 * 6)  # 6 cordas: bancada 2, machado 1, enxada 1, regador 2
+	Bag.add_item(tree, "graveto", 8)
 	Bag.add_item(tree, "pedra_pequena", 8)
-	for i in 9: assert_bool(Crafting.craft(tree, "corda")).is_true()
-	assert_bool(Crafting.craft(tree, "machado")).is_true()
-	Bag.add_item(tree, "madeira", 13)  # vem das árvores cortadas com o machado
-	assert_bool(Crafting.craft(tree, "bancada")).is_true()
+	for i in 6: assert_bool(Crafting.craft(tree, "corda")).is_true()
+	assert_bool(Crafting.craft(tree, "bancada")).is_true()  # sem madeira (gravetos, pedras, corda)
+	assert_bool(Crafting.craft(tree, "machado")).is_true()  # feito na bancada
+	Bag.add_item(tree, "madeira", 7)  # vem das árvores cortadas com o machado
 	assert_bool(Crafting.craft(tree, "enxada")).is_true()
 	assert_bool(Crafting.craft(tree, "regador")).is_true()
 	for tool in ["machado", "enxada", "regador", "bancada"]:

@@ -105,25 +105,25 @@ func run() -> void:
 	await process_frame
 	check(step() == 1, "andar passa (%s)" % hud_text())
 	await snap("coletar")
-	# 2) Coletar graveto/pedra com um toque.
+	# 2) Coletar gravetos e pedrinhas com um toque.
 	await collect("graveto", 1)
 	for i in 3: await process_frame  # a dica confere a mochila no quadro seguinte
 	check(step() == 1, "1 graveto ainda não passa (%s)" % hud_text())
-	await collect("graveto", 2)
-	await collect("pedra_pequena", 2)
+	await collect("graveto", 8)
+	await collect("pedra_pequena", 6)
 	for i in 3: await process_frame
-	check(step() == 2, "2 gravetos e 2 pedrinhas passam (%s)" % hud_text())
+	check(step() == 2, "8 gravetos e 6 pedrinhas passam (%s)" % hud_text())
 	await snap("dica_3")
 	# 3+) Segue o que cada dica pede, na ordem em que aparecem.
 	var guard := 0
-	while TUT.active(self) and guard < 16:
+	while TUT.active(self) and guard < 18:
 		guard += 1
 		var title := hud_text()
 		var before := step()
 		print("DICA %d: %s" % [before, title])
 		match title:
 			"Arrancando mato":
-				await collect("fibra", 3)
+				await collect("fibra", 9)
 			"Sua mochila":
 				await key(KEY_E)
 				await snap("mochila")
@@ -135,19 +135,20 @@ func run() -> void:
 				var craft: Node = region.get("crafting_panel")
 				check(craft.visible and not region.get("inventory_panel").visible, "[B] com a mochila aberta troca para a fabricação")
 				await snap("fabricar")
-				craft.call("_craft", "corda")
+				for n in 3: craft.call("_craft", "corda")
 				await create_timer(0.3).timeout
 				await key(KEY_B)
 			"Seu primeiro machado":
-				await collect("graveto", 2)
-				await collect("pedra_pequena", 2)
-				await key(KEY_B)
+				var bench: Node2D = region.get("placer").get("_stations")[0]
+				await go_to(bench.global_position + Vector2(0, 20))
+				await key(KEY_F)
 				region.get("crafting_panel").call("_craft", "machado")
 				await create_timer(0.3).timeout
 				await key(KEY_B)
 			"Cortando árvores":
-				await key(KEY_1 + HOTBAR.slots(self).find("machado"))
-				check(HOTBAR.selected_item(self) == "machado", "tecla da barra escolhe o machado")
+				var slot: int = HOTBAR.slots(self).find("machado")
+				await key(KEY_0 if slot == 9 else KEY_1 + slot)
+				check(HOTBAR.selected_item(self) == "machado", "tecla da barra escolhe o machado (espaço %d)" % (slot + 1))
 				var chop: Node = region.get("choppable")
 				var best: Node2D
 				for k in chop.trees:
@@ -155,6 +156,7 @@ func run() -> void:
 						best = chop.trees[k]
 				if best: await go_to(best.global_position + Vector2(0, 26))
 				player.facing = "north"
+				for i in 3: await physics_frame
 				await key(KEY_F, 1.6)
 				await snap("golpe")
 			"Juntando madeira":
@@ -176,8 +178,6 @@ func run() -> void:
 					set_meta("player_energy", 100)  # o roteiro não para para dormir
 				for i in 3: await process_frame
 			"A bancada de trabalho":
-				BAG.add_item(self, "corda", 3)  # roteiro: as 3 cordas viriam de mais mato
-				BAG.add_item(self, "pedra_pequena", 4)
 				await key(KEY_B)
 				region.get("crafting_panel").call("_craft", "bancada")
 				await create_timer(0.3).timeout

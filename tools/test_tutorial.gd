@@ -48,51 +48,54 @@ func run() -> void:
 	Input.action_release("move_right")
 	await process_frame
 	check(int(get_meta(TUT.KEY)) == 1, "andar passa para pegar")
-	BAG.add_item(self, "graveto")
+	BAG.add_item(self, "graveto", 3)
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 1 and str(hud._footer.text).contains("Gravetos 1/2"), "1 graveto ainda não passa (%s)" % hud._footer.text)
-	BAG.add_item(self, "graveto")
-	BAG.add_item(self, "pedra_pequena", 2)
+	check(int(get_meta(TUT.KEY)) == 1 and str(hud._footer.text).contains("Gravetos 3/8"), "3 gravetos ainda não passam (%s)" % hud._footer.text)
+	BAG.add_item(self, "graveto", 5)
+	BAG.add_item(self, "pedra_pequena", 6)
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 2, "2 gravetos e 2 pedrinhas passam para arrancar mato")
-	BAG.add_item(self, "fibra", 3)
+	check(int(get_meta(TUT.KEY)) == 2, "8 gravetos e 6 pedrinhas passam para o mato")
+	BAG.add_item(self, "fibra", 9)
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 3, "3 fibras passam para a mochila")
+	check(int(get_meta(TUT.KEY)) == 3, "9 fibras passam para a mochila")
 	await key(KEY_E)
 	check(int(get_meta(TUT.KEY)) == 3, "mochila aberta: espera fechar")
-	await key(KEY_B)  # [B] com a mochila aberta troca para a fabricação
+	await key(KEY_B)
 	var craft: Control = region.get("crafting_panel")
 	check(craft.visible and not region.get("inventory_panel").visible, "[B] com a mochila aberta abre a fabricação")
 	check(int(get_meta(TUT.KEY)) == 4, "fechar a mochila passa para a corda")
-	check(craft.call("entries", "infraestrutura").any(func(r: Dictionary) -> bool: return str(r.id) == "casa"), "fabricação tem a Casa em Infraestrutura")
+	check(not craft.call("entries", "ferramentas").is_empty() and not (craft.get("_tabs").get_node("Tab_ferramentas") as Control).visible, "[B] não mostra a aba Ferramentas")
+	check(not (craft.get("_tabs").get_node("Tab_construcao") as Control).visible, "[B] não mostra Construção (só na bancada)")
 	check(hud.position.y < 60, "com janela aberta o balão sobe e não a cobre (%d)" % hud.position.y)
-	craft.call("_craft", "corda")
+	for n in 3: craft.call("_craft", "corda")
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 5, "fazer a corda passa para o machado")
+	check(int(get_meta(TUT.KEY)) == 5, "3 cordas passam para a bancada")
+	craft.call("_craft", "bancada")
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 6 and hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_esq")), "fazer a bancada (sem madeira) passa para colocar; ícone do clique")
 	await key(KEY_E)
 	check(not craft.visible and region.get("inventory_panel").visible, "[E] na fabricação troca para a mochila")
 	await key(KEY_E)
-	check(int(get_meta(TUT.KEY)) == 5 and hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_esq")), "dica do machado mostra o ícone do clique")
-	await key(KEY_TAB)
-	check(int(get_meta(TUT.KEY)) == 6, "[Tab] pula a dica")
+	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0, "built": false}])
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 7, "colocar passa para construir")
+	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0, "built": true}])
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 8, "construir passa para usar")
+	craft.call("open", "bancada")
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 9 and (craft.get("_tabs").get_node("Tab_ferramentas") as Control).visible, "abrir a bancada passa para o machado (aba Ferramentas)")
+	check((craft.get("_tabs").get_node("Tab_construcao") as Control).visible and craft.call("entries", "construcao").any(func(r: Dictionary) -> bool: return str(r.id) == "casa"), "bancada tem Construção com a Casa")
+	craft.call("_craft", "machado")
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 10, "fazer o machado passa para cortar")
+	craft.call("close")
 	check(hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_roda")), "dica da barra mostra o ícone da roda")
 	if out != "":
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("%s/tutorial_mouse.png" % out)
 	await key(KEY_TAB)
-	BAG.add_item(self, "madeira", 6)
-	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 8 and str(hud._footer.text).contains("Madeira 6/6"), "6 madeiras passam para a bancada (%s)" % hud._footer.text)
-	BAG.add_item(self, "bancada")
-	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 9, "fazer a bancada passa para colocar")
-	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0, "built": true}])
-	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 11, "colocar (já construída) passa construir e chega em usar")
-	craft.call("open", "bancada")
-	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 12, "abrir a bancada passa para o fim")
-	craft.call("close")
+	check(int(get_meta(TUT.KEY)) == 11, "[Tab] pula a dica")
 	await key(KEY_TAB)
 	for i in 3: await process_frame
 	check(not hud.visible and not TUT.active(self), "tutorial termina e some")
