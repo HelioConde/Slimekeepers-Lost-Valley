@@ -41,3 +41,15 @@ madeira, a fogueira de cozinhar e o portão da Fazenda foram removidos do Vale.
 | `tools/test_free_farm.gd` | Arar, plantar, regar, colher na Floresta e no Vale; árvore não é arável |
 | `tools/test_valley_garden.gd` | Ciclo completo Brotinho → sementes → arar no Vale → colher → cozinhar → alimentar → Novo Jogo |
 | `tools/capture_farm_field.gd` | Captura de um pedaço arado com terra seca, molhada e plantas |
+
+## Slimes ajudantes (2026-11-23)
+
+Slimes que já são amigos (Floresta ou Vale) ajudam na fazenda da Floresta, das 6h às 19h,
+com até 4 tarefas por espécie por dia (`scripts/world/farm_helpers.gd`):
+
+- **Brotinho** planta sementes da bolsa na terra arada vazia (animação `plantar`).
+- **Bolhinha** rega culturas com sede (animação `regar`).
+- **Musguinho** aduba: a cultura adubada e regada cresce 2 estágios na virada do dia
+  (`FARM.fertilize`; animação `adubar`, provisoriamente o "feliz").
+
+Teste: `tests/forest/test_farm_helpers.gd`; prova no jogo: `tools/capture_farm_helpers.gd`.

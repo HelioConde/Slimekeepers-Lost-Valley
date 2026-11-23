@@ -32,12 +32,11 @@ var drop: Callable
 
 ## center: miolo da Clareira; plan: {item: quantidade de pontos}; free: chão livre?
 ## prefix separa os ids salvos de cada mapa ("" = Floresta).
-func setup(center: Vector2, inner: float, outer: float, plan: Dictionary, free: Callable, prefix: String = "") -> void:
+func setup(center: Vector2, inner: float, outer: float, plan: Dictionary, free: Callable, prefix: String = "", cell: float = 44.0) -> void:
 	if name.is_empty(): name = "ForageSpots"
 	y_sort_enabled = true
 	var placed := 0
 	var candidates: Array = []
-	var cell := 44.0
 	for gy in range(int(-outer / cell), int(outer / cell) + 1):
 		for gx in range(int(-outer / cell), int(outer / cell) + 1):
 			var key := Vector2i(gx, gy)

@@ -103,6 +103,22 @@ static func water(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bo
 	return true
 
 
+## Adubo (Musguinho): a cultura plantada ainda não adubada recebe adubo para a próxima virada.
+static func fertilize(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	if crop(tree, cell, field).is_empty() or is_ready(tree, cell, field):
+		return false
+	var cells := _cells(tree, field)
+	if bool(cells[cell].get("fertilized", false)):
+		return false
+	cells[cell].fertilized = true
+	_save(tree, cells, field)
+	return true
+
+
+static func is_fertilized(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+	return bool(cell_data(tree, cell, field).get("fertilized", false))
+
+
 ## to_bag false: não põe na bolsa (o chamador solta o item no chão; item_drops).
 static func harvest(tree: SceneTree, cell: Vector2i, field: String = "vale", to_bag: bool = true) -> bool:
 	if not is_ready(tree, cell, field):
@@ -131,7 +147,10 @@ static func advance_day(tree: SceneTree) -> void:
 			var data: Dictionary = cells[cell]
 			var id := str(data.get("crop", ""))
 			if not id.is_empty() and bool(data.get("watered", false)):
-				data.stage = mini(int(data.stage) + 1, CROPS.last_stage(id))
+				# Adubada pelo Musguinho: cresce dois estágios de uma vez (gasta o adubo).
+				var growth := 2 if bool(data.get("fertilized", false)) else 1
+				data.erase("fertilized")
+				data.stage = mini(int(data.stage) + growth, CROPS.last_stage(id))
 			if id.is_empty() and not bool(data.get("watered", false)):
 				data["idle"] = int(data.get("idle", 0)) + 1
 			else:

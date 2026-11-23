@@ -9,6 +9,7 @@ const RECIPES := [
 	{"id": "corda", "station": "maos", "inputs": {"fibra": 3}, "output": {"corda": 1}},
 	{"id": "machado", "station": "maos", "inputs": {"graveto": 2, "pedra_pequena": 2, "corda": 1}, "output": {"machado": 1}},
 	{"id": "bancada", "station": "maos", "inputs": {"madeira": 6, "corda": 3, "pedra_pequena": 4}, "output": {"bancada": 1}},
+	{"id": "picareta", "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_pequena": 5, "corda": 2}, "output": {"picareta": 1}},
 	{"id": "enxada", "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_pequena": 2, "corda": 1}, "output": {"enxada": 1}},
 	{"id": "porcao_folhas_prototipo", "station": "fogao", "cooking": true, "inputs": {"folhas_frescas": 1}, "output": {"porcao_folhas_prototipo": 1}},
 	{"id": "cenoura_assada", "station": "fogao", "inputs": {"cenoura": 2}, "output": {"cenoura_assada": 1}},

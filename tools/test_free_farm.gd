@@ -97,7 +97,9 @@ func run() -> void:
 		check(FARM.is_ready(self, cell, farm.field_id), "%s: regada todo dia, fica pronta em %d dias" % [name, days])
 		check(FARM.can_water(self) == FARM.CAN_MAX - days, "%s: cada rega gasta 1 de água do regador (%d)" % [name, FARM.can_water(self)])
 		await press()
-		check(BAG.count_item(self, "folhas_frescas") >= 1, "%s: colhe folhas frescas" % name)
+		check(FARM.crop(self, cell, farm.field_id).is_empty(), "%s: colheu a cultura" % name)
+		region.get("item_drops").collect_all()  # a colheita cai no chão e quica antes do ímã
+		check(BAG.count_item(self, "folhas_frescas") >= 1, "%s: colhe folhas frescas %s" % [name, str(get_meta(BAG.INVENTORY_KEY, {}))])
 		# [F] sem slime por perto come a comida da barra e recupera energia.
 		if region.call("_closest_slime") == null:
 			set_meta("player_energy", 50)

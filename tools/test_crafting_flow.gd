@@ -73,7 +73,7 @@ func run() -> void:
 	var mato: Array = forage.spots.filter(func(s: Dictionary) -> bool: return s.item == "fibra")
 	check(mato.size() >= 20,"todo o mato da Clareira dá fibra (%d tufos)" % mato.size())
 	for spot: Dictionary in forage.spots:
-		if spot in mato: continue
+		if spot in mato or str(spot.id).begins_with("w_"): continue  # só a Clareira; o mapa todo estoura o tempo
 		player.global_position = spot.at + Vector2(0, 6)
 		await physics_frame
 		await process_frame
@@ -191,9 +191,10 @@ func run() -> void:
 	check(not placer.can_place(placer.spot_for(player)), "não coloca outra em cima")
 	await press("interact")
 	check(panel.visible and panel.station == "bancada", "[E] na bancada abre a fabricação da bancada")
+	BAG.spend_item(self, "semente_repolho", BAG.count_item(self, "semente_repolho"))  # bolsa de 10 espaços cheia
 	panel.call("_craft", "enxada")
 	panel.call("_craft", "regador")
-	check(BAG.count_item(self, "enxada") == 1 and BAG.count_item(self, "regador") == 1, "enxada e regador feitos na bancada")
+	check(BAG.count_item(self, "enxada") == 1 and BAG.count_item(self, "regador") == 1, "enxada e regador feitos na bancada %s" % str(get_meta(BAG.INVENTORY_KEY, {})))
 	if out != "": (await _shot()).save_png(out + "/bench_panel.png")
 	await key(KEY_ESCAPE)
 	player.global_position = Vector2(3200, 3150)

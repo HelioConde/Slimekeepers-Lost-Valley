@@ -33,6 +33,8 @@ var intro: Node
 ## Pontos de coleta na Clareira (ajustável): o bastante para machado e bancada.
 ## A fibra vem de todo o mato do chão (forage_spots.add_mato).
 const FORAGE_PLAN := {"graveto": 6, "pedra_pequena": 8}
+const WORLD_FORAGE := {"graveto": 60, "pedra_pequena": 60}
+const WORLD_ROCKS := {"medium": 40, "large": 14}
 var ground_detail: Node2D
 var gathering: Node  # region_gathering.gd: corte e coleta (compartilhado com o Vale)
 var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
@@ -131,6 +133,9 @@ func _ready() -> void:
 	placer.setup(scene_file_path)
 	house = add_player_house("floresta")
 	farm = add_free_farm("floresta", house)
+	var helpers: Node2D = preload("res://scripts/world/farm_helpers.gd").new()
+	helpers.farm = farm
+	add_child(helpers)
 	GameClock.day_changed.connect(choppable.apply_day)
 
 ## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
@@ -142,13 +147,16 @@ func _spawn_forage() -> void:
 	var probe := CircleShape2D.new()
 	probe.radius = 12
 	var pond: Vector2 = $NaturalSpring.global_position
-	forage.setup(Forest.SPAWN, 70.0, 430.0, FORAGE_PLAN, func(at: Vector2) -> bool:
+	var free_at := func(at: Vector2) -> bool:
 		if at.distance_to(pond) < 150.0: return false
 		var query := PhysicsShapeQueryParameters2D.new()
 		query.shape = probe
 		query.transform = Transform2D(0, at)
 		query.collision_mask = 2
-		return space.intersect_shape(query, 1).is_empty())
+		return space.intersect_shape(query, 1).is_empty()
+	forage.setup(Forest.SPAWN, 70.0, 430.0, FORAGE_PLAN, free_at)
+	# Recursos básicos pelo mapa todo (pedido do usuário: o início tinha poucas pedras).
+	forage.setup(Vector2(3200, 3200), 480.0, 3100.0, WORLD_FORAGE, free_at, "w_", 150.0)
 	if is_instance_valid(ground_detail): forage.add_mato(ground_detail)
 	forage.add_mato_tiles($VegetationLow, preload("res://assets/menu/environment/grass.png"))
 	forage.add_mato_props($WoodlandDetails, "")
@@ -156,6 +164,13 @@ func _spawn_forage() -> void:
 	gathering = preload("res://scripts/world/region_gathering.gd").new()
 	add_child(gathering)
 	gathering.attach(self, choppable, forage)
+	# Pedras médias (picareta) e grandes (picareta melhor), longe do início e dos habitats.
+	var habitats: Array = Forest.habitats()
+	gathering.add_rocks(self, Rect2(96, 96, 6208, 6208), WORLD_ROCKS, func(at: Vector2) -> bool:
+		if at.distance_to(Forest.SPAWN) < 260.0: return false
+		for h in habitats:
+			if at.distance_to(h.center) < float(h.radius) + 60.0: return false
+		return free_at.call(at))
 	hide_forage_on_farm(farm, forage)
 	add_item_drops(farm, gathering)
 	if is_instance_valid(house):  # casa já construída: tira coleta e mato de baixo dela

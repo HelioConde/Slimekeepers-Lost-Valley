@@ -195,7 +195,7 @@ func _spawn_valley_forage() -> void:
 	var pools: Array[Polygon2D] = []
 	for polygon in $Water.get_children():
 		if polygon is Polygon2D: pools.append(polygon)
-	gathering.forage.setup(Valley.SPAWN, 90.0, 700.0, {"graveto": 5, "pedra_pequena": 6}, func(at: Vector2) -> bool:
+	var free_at := func(at: Vector2) -> bool:
 		for pool in pools:  # nada dentro da água (nem a 20 px da margem)
 			for nudge in [Vector2.ZERO, Vector2(20, 0), Vector2(-20, 0), Vector2(0, 20), Vector2(0, -20)]:
 				if Geometry2D.is_point_in_polygon(pool.to_local(at + nudge), pool.polygon): return false
@@ -203,8 +203,17 @@ func _spawn_valley_forage() -> void:
 		query.shape = probe
 		query.transform = Transform2D(0, at)
 		query.collision_mask = 2
-		return space.intersect_shape(query, 1).is_empty(), "vale_")
+		return space.intersect_shape(query, 1).is_empty()
+	gathering.forage.setup(Valley.SPAWN, 90.0, 700.0, {"graveto": 5, "pedra_pequena": 6}, free_at, "vale_")
+	# Recursos básicos e pedras pelo Vale todo (pedido do usuário).
+	gathering.forage.setup(Valley.SIZE * 0.5, 300.0, 1550.0, {"graveto": 30, "pedra_pequena": 30}, free_at, "vale_w_", 140.0)
 	gathering.forage.refresh(GameClock.day_number)
+	var routes := Valley.routes()  # pedra não tranca caminho
+	gathering.add_rocks(self, Rect2(Vector2(80, 80), Valley.SIZE - Vector2(160, 160)), {"medium": 18, "large": 6}, func(at: Vector2) -> bool:
+		for center: Vector2 in Valley.HABITATS:  # margem dos slimes aquáticos fica livre
+			if at.distance_to(center) < 190.0: return false
+		return at.distance_to(Valley.SPAWN) > 240.0 and Valley.route_distance(at, routes) > 60.0 and free_at.call(at), "vale_")
+	if is_instance_valid(item_drops) and is_instance_valid(gathering.rocks): gathering.rocks.drop = Callable(item_drops, "spawn")
 
 ## Bancada no Vale (como na Floresta): prévia/colocar com ela na barra; [F] nela abre
 ## a fabricação da bancada.

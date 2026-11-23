@@ -402,6 +402,7 @@ func add_item_drops(farm: Node2D, gathering_node: Node) -> void:
 	if is_instance_valid(gathering_node):
 		if is_instance_valid(gathering_node.forage): gathering_node.forage.drop = spawn
 		if is_instance_valid(gathering_node.choppable): gathering_node.choppable.drop = spawn
+		if is_instance_valid(gathering_node.get("rocks")): gathering_node.rocks.drop = spawn
 
 
 ## Clique esquerdo = [F] no ponto clicado (pedido do usuário, como em jogos de
