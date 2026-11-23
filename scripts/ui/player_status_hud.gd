@@ -16,7 +16,11 @@ var _other: Dictionary = {}
 var _session: Node
 ## Último estado recebido do outro jogador: {"h": vida, "e": energia}.
 var other_stats: Dictionary = {}
-var force_other := false  ## testes e capturas: mostra o cartão sem conexão
+var force_other := false
+## Aviso de pouca energia (balance-check 2026-11-23): uma vez ao cair abaixo de LOW;
+## a barra pisca enquanto estiver baixa.
+const LOW := 25
+var _warned := false  ## testes e capturas: mostra o cartão sem conexão
 
 
 func _ready() -> void:
@@ -151,7 +155,16 @@ func _process(_delta: float) -> void:
 func refresh() -> void:
 	if not is_inside_tree(): return
 	_own.health.value = HEALTH.current(get_tree())
-	_own.energy.value = ENERGY.current(get_tree())
+	var energy := ENERGY.current(get_tree())
+	_own.energy.value = energy
+	_own.energy.modulate.a = (0.55 + 0.45 * absf(sin(Time.get_ticks_msec() / 250.0))) if energy < LOW else 1.0
+	if energy < LOW and not _warned:
+		_warned = true
+		var scene := get_tree().current_scene
+		if scene and scene.has_method("_notify"):
+			scene.call("_notify", "Pouca energia! Coma algo (comida na barra e [F]) ou durma na cama.")
+	elif energy >= LOW:
+		_warned = false
 	var connected: bool = _session != null and bool(_session.get("connected"))
 	if connected and _other.is_empty() and not str(_session.get("remote_protagonist")).is_empty():
 		show_other(str(_session.get("remote_protagonist")))
