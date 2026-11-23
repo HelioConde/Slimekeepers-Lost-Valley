@@ -42,6 +42,9 @@ func run() -> void:
 		var r := scene.find_child("RemotePlayer", true, false)
 		return r != null and (r as Node2D).visible, 30.0), "vê o Aren do anfitrião")
 	var remote: Node2D = scene.find_child("RemotePlayer", true, false)
+	if OS.has_environment("SK_MP_SHOTS"):  # prova visual: as duas janelas desenham o jogo
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png(OS.get_environment("SK_MP_SHOTS") + "/convidado_moni.png")
 	if remote != null:
 		check(str(remote.get("protagonist_override")) == "aren", "boneco do anfitrião usa a arte do Aren")
 	# Anda para o anfitrião ver.
