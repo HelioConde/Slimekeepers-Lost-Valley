@@ -180,7 +180,7 @@ var _house_tiles: Array = []  # [layer, cell, source, atlas, alternative] apagad
 
 ## Sob a casa não ficam mato, flores, gravetos nem itens coletáveis (voltam ao
 ## demolir). Árvores e pedras já impedem a construção (colisão).
-const HOUSE_DECOR_GROUPS := ["Decorations", "WoodlandDetails", "FlowerClusters", "GroundDetail", "LowVegetation"]
+const HOUSE_DECOR_GROUPS := ["Decorations", "WoodlandDetails", "FlowerClusters", "GroundDetail", "LowVegetation", "VegetationHigh"]
 var _house_area := Rect2(-1, -1, 0, 0)
 
 
@@ -192,7 +192,9 @@ func _clear_under_house(area: Rect2) -> void:
 	if area == _house_area: return  # mobília mudou; a área da casa não
 	_house_area = area
 	for item: CanvasItem in _house_hidden:
-		if is_instance_valid(item): item.visible = true
+		if is_instance_valid(item):
+			item.visible = true
+			item.process_mode = Node.PROCESS_MODE_INHERIT
 	_house_hidden.clear()
 	for t in _house_tiles:
 		if is_instance_valid(t[0]): (t[0] as TileMapLayer).set_cell(t[1], t[2], t[3], t[4])
@@ -207,9 +209,13 @@ func _clear_under_house(area: Rect2) -> void:
 					_house_tiles.append([layer, cell, layer.get_cell_source_id(cell), layer.get_cell_atlas_coords(cell), layer.get_cell_alternative_tile(cell)])
 					layer.erase_cell(cell)
 		elif child is Node2D and child.visible and str(child.get_parent().name) in HOUSE_DECOR_GROUPS:
-			var node := child as Node2D  # decoração baixa (mato, flores, gravetos)
-			if (node is Sprite2D or node.has_node("Sprite")) and grown.has_point(node.global_position):
+			var node := child as Node2D  # decoração (mato, flores, gravetos, moitas, árvores)
+			if not (node is Sprite2D or node.has_node("Sprite")): continue
+			var at := node.global_position
+			if node.has_node("Sprite"): at = (node.get_node("Sprite") as Node2D).global_position
+			if grown.has_point(node.global_position) or grown.has_point(at):
 				node.visible = false
+				node.process_mode = Node.PROCESS_MODE_DISABLED  # sem colisão sob a casa
 				_house_hidden.append(node)
 
 

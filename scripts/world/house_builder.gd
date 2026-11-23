@@ -96,8 +96,14 @@ func rebuild() -> void:
 	_build_furniture()
 	var rect: Rect2i = house().rect
 	footprint_changed.emit(Rect2(Vector2(rect.position * CELL), Vector2(rect.size * CELL)))
-	for cell in HOUSE.solid_cells_of(house()):
-		_add_box(Rect2(Vector2(cell * CELL), Vector2(CELL, CELL)))
+	# Colisão acompanha a parede fina: faixa externa + face (parede de cima inteira).
+	for cell: Vector2i in HOUSE.solid_cells_of(house()):
+		var o := Vector2(cell * CELL)
+		var thick := float(WALL_CAP + 4)
+		if _outside(cell + Vector2i(0, -1)): _add_box(Rect2(o, Vector2(CELL, CELL)))
+		if _outside(cell + Vector2i(0, 1)): _add_box(Rect2(o + Vector2(0, CELL - thick), Vector2(CELL, thick)))
+		if _outside(cell + Vector2i(-1, 0)): _add_box(Rect2(o, Vector2(thick, CELL)))
+		if _outside(cell + Vector2i(1, 0)): _add_box(Rect2(o + Vector2(CELL - thick, 0), Vector2(thick, CELL)))
 
 
 func _add_box(rect: Rect2) -> void:
@@ -114,10 +120,9 @@ func corner_state(sheet: String, cell: Vector2i) -> String:
 	var data := house()
 	match sheet:
 		"floor":
-			# Sem piso sob a parede de cima (aparecia uma faixa clara por fora); nas
-			# outras paredes o piso continua por baixo e não deixa vão de grama.
-			var top_wall: bool = data.wall.has(cell) and not data.floor.has(cell + Vector2i(0, -1))
-			return "m" if data.floor.has(cell) and not top_wall else "e"
+			# Parede fina (pedido do usuário, 2026-11-23): o piso vai até a borda da casa
+			# e a parede é só uma faixa por cima (ver _draw_thin_walls).
+			return "m" if data.floor.has(cell) or data.wall.has(cell) else "e"
 		"roof":
 			return "m" if data.floor.has(cell) else "e"
 		"wall":
@@ -194,22 +199,68 @@ func _draw_roof() -> void:
 	_draw_tiles(_roof_layer, "roof", _vertices("roof"), Color(1, 1, 1, _roof_alpha))
 
 
+## Espessura do topo da parede (px) e altura da face de tábuas (px).
+const WALL_CAP := 8
+const WALL_FACE := 24
+
+
 ## Paredes em fileiras ordenadas por Y: o jogador passa na frente/atrás corretamente.
 func _build_wall_rows() -> void:
 	var rows := {}
-	for vertex in _vertices("wall"):
-		if tile_rect("wall", vertex).size != Vector2.ZERO:
-			if not rows.has(vertex.y): rows[vertex.y] = []
-			rows[vertex.y].append(vertex)
+	for cell: Vector2i in house().wall.keys():
+		if not rows.has(cell.y): rows[cell.y] = []
+		rows[cell.y].append(cell)
 	for row_y in rows:
+		var cells: Array[Vector2i] = []
+		cells.assign(rows[row_y])
 		var row := Node2D.new()
 		row.name = "WallRow_%d" % row_y
-		# Base da fileira = fundo do tile; o jogador abaixo dela é desenhado na frente.
-		row.position = Vector2(0, row_y * CELL + CELL * 0.5)
-		var vertices: Array[Vector2i] = []
-		vertices.assign(rows[row_y])
-		row.draw.connect(func(): _draw_tiles(row, "wall", vertices))
+		# Base = pé da parede (fundo da face); o jogador abaixo dela fica na frente.
+		var foot := 0
+		for cell in cells:
+			if _outside(cell + Vector2i(0, 1)): foot = WALL_FACE
+		row.position = Vector2(0, (row_y + 1) * CELL + foot)
+		row.draw.connect(func(): _draw_thin_walls(row, cells))
 		_wall_rows.add_child(row)
+
+
+func _outside(cell: Vector2i) -> bool:
+	var data := house()
+	return not data.wall.has(cell) and not data.floor.has(cell)
+
+
+## Parede fina: faixa de topo (WALL_CAP) na borda externa de cada célula de parede e,
+## sob as faixas horizontais, a face de tábuas (WALL_FACE) virada para a câmera.
+func _draw_thin_walls(target: Node2D, cells: Array[Vector2i]) -> void:
+	var texture: Texture2D = _atlas.wall.texture
+	var tiles: Dictionary = _atlas.wall.tiles
+	var cap_at: Array = tiles.get("m,m,m,m", [0, 192])
+	var face_at: Array = tiles.get("f,f,e,e", tiles.get("m,m,f,f", [96, 0]))
+	var cap_src := Rect2(cap_at[0], cap_at[1], CELL, CELL)
+	var face_src := Rect2(face_at[0], face_at[1], CELL, WALL_FACE)
+	var edge := Color("#3b2414")
+	var light := Color("#b77a45")
+	for cell in cells:
+		var o := Vector2(cell * CELL) - target.position
+		var up := _outside(cell + Vector2i(0, -1))
+		var down := _outside(cell + Vector2i(0, 1))
+		var left := _outside(cell + Vector2i(-1, 0))
+		var right := _outside(cell + Vector2i(1, 0))
+		# Face de tábuas sob o topo: na parede de cima fica dentro da célula; na de
+		# baixo, logo abaixo da casa (do lado de fora).
+		if up:
+			target.draw_texture_rect_region(texture, Rect2(o + Vector2(0, WALL_CAP), Vector2(CELL, WALL_FACE)), face_src)
+		if down:
+			target.draw_texture_rect_region(texture, Rect2(o + Vector2(0, CELL), Vector2(CELL, WALL_FACE)), face_src)
+		var caps: Array[Rect2] = []
+		if up: caps.append(Rect2(o, Vector2(CELL, WALL_CAP)))
+		if down: caps.append(Rect2(o + Vector2(0, CELL - WALL_CAP), Vector2(CELL, WALL_CAP)))
+		if left: caps.append(Rect2(o, Vector2(WALL_CAP, CELL)))
+		if right: caps.append(Rect2(o + Vector2(CELL - WALL_CAP, 0), Vector2(WALL_CAP, CELL)))
+		for cap in caps:
+			target.draw_texture_rect_region(texture, cap, Rect2(cap_src.position, cap.size))
+			target.draw_rect(cap, edge, false, 1.0)
+			target.draw_line(cap.position + Vector2(1, 1), cap.position + Vector2(cap.size.x - 1, 1), light, 1.0)
 
 
 func _build_furniture() -> void:

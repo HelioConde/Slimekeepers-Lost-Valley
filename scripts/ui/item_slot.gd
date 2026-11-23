@@ -5,8 +5,7 @@ extends PanelContainer
 signal clicked
 
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
-const SLOT_ART := "res://assets/ui/hud/slot.png"
-const SIZE := Vector2(44, 44)
+const SIZE := Vector2(48, 48)  # igual à barra rápida
 
 var info_title := ""
 var info_body := ""
@@ -22,7 +21,7 @@ func _init() -> void:
 	_icon = TextureRect.new()
 	_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED  # 32 px nativo, sem borrar
 	_icon.custom_minimum_size = Vector2(32, 32)
 	_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_icon)
@@ -47,21 +46,11 @@ func _init() -> void:
 	add_child(_ring)
 
 
-## Moldura do espaço: arte do PixelLab (nine-slice) ou um quadro liso de reserva.
+## Moldura do espaço: igual à barra rápida (madeira escura, borda clara).
 static func slot_style() -> StyleBox:
-	if ResourceLoader.exists(SLOT_ART):
-		var box := StyleBoxTexture.new()
-		box.texture = load(SLOT_ART)
-		box.set_texture_margin_all(10)
-		box.set_content_margin_all(5)
-		return box
-	var flat := StyleBoxFlat.new()
-	flat.bg_color = Color("#4a3428")
-	flat.border_color = Color("#a57a52")
-	flat.set_border_width_all(2)
-	flat.set_corner_radius_all(3)
-	flat.set_content_margin_all(5)
-	return flat
+	var box := preload("res://scripts/ui/hud_skin.gd").slot(false)
+	box.set_content_margin_all(6)
+	return box
 
 
 func setup(icon: Texture2D, count: int, selected: bool, title: String, body: String, dim: bool = false) -> void:

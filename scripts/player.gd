@@ -30,8 +30,15 @@ const PICK_BIG_GROUND := 4
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
 
+## Idles alternadas (<arte>/animations/idle_a|idle_b/<dir>/): espera entre uma e outra (s).
+const IDLE_VARIANTS := ["idle_a", "idle_b"]
+const IDLE_WAIT := Vector2(4.0, 8.0)
+const IDLE_FPS := 6.0
+
 @export var world_bounds: Rect2 = WORLD_BOUNDS
 var _tool_time := 0.0
+var _idle_time := 0.0
+var _idle_wait := 3.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 var facing: String = "south"
@@ -57,11 +64,29 @@ func _physics_process(_delta: float) -> void:
 	velocity = input_dir * (RUN_SPEED if running else WALK_SPEED)
 	if input_dir.length_squared() > 0.01:
 		facing = _get_direction_name(input_dir)
+		_idle_time = 0.0
 		_play_animation(("run_" if running else "walk_") + facing)
 	else:
-		_play_animation("idle_" + facing)
+		_update_idle(_delta)
 	move_and_slide()
 	global_position = global_position.clamp(world_bounds.position, world_bounds.end)
+
+## Parado: pose fixa; de tempos em tempos uma das idles (A: respira e olha em volta,
+## B: pisca e ajeita a postura; aprovadas pelo usuário em 2026-11-23) toca uma vez.
+func _update_idle(delta: float) -> void:
+	_idle_time += delta
+	var variant := current_animation.begins_with("idle_a_") or current_animation.begins_with("idle_b_")
+	if variant and sprite.is_playing() and current_animation.ends_with("_" + facing):
+		return
+	var options: Array[String] = []
+	for v in IDLE_VARIANTS:
+		if sprite.sprite_frames.has_animation(v + "_" + facing): options.append(v)
+	if _idle_time >= _idle_wait and not options.is_empty():
+		_idle_time = 0.0
+		_idle_wait = randf_range(IDLE_WAIT.x, IDLE_WAIT.y)
+		_play_animation(options.pick_random() + "_" + facing)
+		return
+	_play_animation("idle_" + facing)
 
 func _get_direction_name(direction: Vector2) -> String:
 	var angle := wrapf(direction.angle() + PI / 2.0, 0.0, TAU)
@@ -131,6 +156,17 @@ func _build_frames() -> SpriteFrames:
 		frames.set_animation_speed(idle, 1.0)
 		var idle_path := "%s/rotations/%s.png" % [art, direction]
 		frames.add_frame(idle, load(idle_path) as Texture2D)
+		for variant in IDLE_VARIANTS:
+			var first := "%s/animations/%s/%s/frame_000.png" % [art, variant, direction]
+			if not ResourceLoader.exists(first): continue
+			var anim := "%s_%s" % [variant, direction]
+			frames.add_animation(anim)
+			frames.set_animation_speed(anim, IDLE_FPS)
+			frames.set_animation_loop(anim, false)
+			var k := 0
+			while ResourceLoader.exists("%s/animations/%s/%s/frame_%03d.png" % [art, variant, direction, k]):
+				frames.add_frame(anim, load("%s/animations/%s/%s/frame_%03d.png" % [art, variant, direction, k]) as Texture2D)
+				k += 1
 		for data in [["walk", "Walk", 6, 8.0], ["run", "Running", 8, 11.0]]:
 			var anim_name: String = str(data[0]) + "_" + direction
 			var directory: String = direction

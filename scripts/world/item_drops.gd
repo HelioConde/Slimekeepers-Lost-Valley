@@ -12,7 +12,9 @@ const MAGNET_RANGE := 72.0
 const PICKUP_RANGE := 10.0
 const FLY_SPEED := 260.0
 ## Alturas das 3 quicadas (px) e duração de cada uma (s).
-const BOUNCES := [[18.0, 0.22], [9.0, 0.16], [4.0, 0.11]]
+const BOUNCES := [[28.0, 0.34], [14.0, 0.24], [6.0, 0.16]]
+## Tempo parado no chão depois das quicadas, antes do ímã (s): dá para ver o item cair.
+const REST_ON_GROUND := 0.35
 
 signal picked(item: String, amount: int)
 
@@ -44,13 +46,16 @@ func spawn(item: String, amount: int, at: Vector2) -> void:
 	sprite.name = "Icon"
 	sprite.texture = ITEMS.icon(item)
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.scale = Vector2.ONE * 0.6
+	sprite.scale = Vector2.ONE * 0.8
 	sprite.offset = Vector2(0, -10)
 	holder.add_child(sprite)
 	var entry := {"item": item, "amount": amount, "node": holder, "ready": false, "speed": 0.0}
 	drops.append(entry)
 	# 3 quicadas: anda para um lado e sobe/desce cada vez menos.
-	var side := Vector2(randf_range(-1.0, 1.0), randf_range(0.2, 1.0)).normalized() * randf_range(10.0, 18.0)
+	var away := Vector2(randf_range(-1.0, 1.0), randf_range(0.2, 1.0))
+	if is_instance_valid(player) and player.global_position.distance_to(at) > 4.0:
+		away = (at - player.global_position).normalized() + away * 0.4  # salta para longe do jogador
+	var side := away.normalized() * randf_range(22.0, 32.0)
 	var tween := holder.create_tween()
 	var from := holder.position
 	var step := side / BOUNCES.size()
@@ -61,6 +66,7 @@ func spawn(item: String, amount: int, at: Vector2) -> void:
 		tween.parallel().tween_property(holder, "position", from + step, time).set_trans(Tween.TRANS_LINEAR)
 		tween.tween_property(sprite, "position:y", 0.0, time * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 		from += step
+	tween.tween_interval(REST_ON_GROUND)
 	tween.tween_callback(func() -> void: entry.ready = true)
 
 

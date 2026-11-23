@@ -67,23 +67,23 @@ func run() -> void:
 	Input.parse_input_event(up)
 	await process_frame
 	check(BAG.count_item(self, "graveto") == 0 and drops.pending() == 1, "Graveto caiu no chão (ainda não está na bolsa)")
-	await create_timer(1.4).timeout
+	await create_timer(2.2).timeout
 	check(BAG.count_item(self, "graveto") == 1 and drops.pending() == 0, "Depois das quicadas o ímã leva o graveto à bolsa")
 	# 2) Fora do alcance fica; perto, é puxado.
 	drops.spawn("pedra_pequena", 1, player.global_position + Vector2(200, 0))
-	await create_timer(1.2).timeout
+	await create_timer(1.8).timeout
 	check(drops.pending() == 1 and BAG.count_item(self, "pedra_pequena") == 0, "Item longe (200 px) fica no chão")
 	player.global_position += Vector2(160, 0)
 	for i in 3: await physics_frame
-	await create_timer(1.0).timeout
+	await create_timer(1.6).timeout
 	check(drops.pending() == 0 and BAG.count_item(self, "pedra_pequena") == 1, "Chegando perto, o ímã puxa o item")
 	# 3) Bolsa cheia: espera no chão.
 	BAG.add_item(self, "fibra", 99)
 	drops.spawn("fibra", 1, player.global_position + Vector2(16, 0))
-	await create_timer(1.2).timeout
+	await create_timer(1.8).timeout
 	check(drops.pending() == 1, "Bolsa cheia: o item espera no chão")
 	BAG.spend_item(self, "fibra", 10)
-	await create_timer(1.0).timeout
+	await create_timer(1.6).timeout
 	check(drops.pending() == 0 and BAG.count_item(self, "fibra") == 90, "Com espaço, o item entra na bolsa")
 	# 4) Clique esquerdo no graveto = [E].
 	var spot2: Dictionary = sticks[1]
@@ -93,7 +93,7 @@ func run() -> void:
 	for i in 3: await process_frame
 	await click(region, spot2.at, 0.1)
 	check(str(player.facing) == "east", "Clique vira o personagem para o ponto clicado (%s)" % player.facing)
-	await create_timer(1.4).timeout
+	await create_timer(2.2).timeout
 	check(BAG.count_item(self, "graveto") == 2, "Clique esquerdo pega o graveto como o [E]")
 	# Clique longe (fora do alcance) não faz nada.
 	var before := BAG.count_item(self, "graveto")

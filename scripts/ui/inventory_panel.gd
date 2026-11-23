@@ -37,22 +37,10 @@ func _ready() -> void:
 	column.add_child(_status)
 
 
-## Fundo das janelas: arte do PixelLab (nine-slice) ou um quadro liso de reserva.
+## Fundo das janelas: o mesmo painel de madeira com folhas do HUD (referência do
+## usuário, 2026-11-23), com mais margem para a grade.
 static func panel_style() -> StyleBox:
-	var art := "res://assets/ui/hud/panel.png"
-	if ResourceLoader.exists(art):
-		var box := StyleBoxTexture.new()
-		box.texture = load(art)
-		box.set_texture_margin_all(24)
-		box.set_content_margin_all(18)
-		return box
-	var flat := StyleBoxFlat.new()
-	flat.bg_color = Color("#e8d3a8")
-	flat.border_color = Color("#7a5236")
-	flat.set_border_width_all(3)
-	flat.set_corner_radius_all(4)
-	flat.set_content_margin_all(12)
-	return flat
+	return preload("res://scripts/ui/hud_skin.gd").panel(30, 22)
 
 
 func open() -> void:
