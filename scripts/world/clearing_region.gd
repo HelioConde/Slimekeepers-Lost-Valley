@@ -124,7 +124,50 @@ func add_player_house(region_id: String) -> Node2D:
 		return not space.intersect_shape(query, 1).is_empty()
 	builder.footprint_changed.connect(_clear_under_house)
 	add_child(builder)
+	_player_house = builder
+	if not GameClock.time_changed.is_connected(_on_time_for_faint):
+		GameClock.time_changed.connect(_on_time_for_faint)
 	return builder
+
+
+var _player_house: Node2D
+const FAINT_HOUR := 0  # meia-noite (BACKLOG P2)
+const FAINT_ENERGY := 50
+
+
+func _exit_tree() -> void:
+	if GameClock.time_changed.is_connected(_on_time_for_faint):
+		GameClock.time_changed.disconnect(_on_time_for_faint)
+
+
+## Acordado depois da meia-noite: desmaia e acorda às 06:00 ao lado da cama (se a
+## casa estiver nesta região), com metade da energia. Dormir na cama evita.
+func _on_time_for_faint(_day: int, hour: int, _minute: int) -> void:
+	if hour < FAINT_HOUR or hour >= 6 or not is_inside_tree(): return
+	faint()
+
+
+func faint() -> void:
+	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
+	GameClock.advance_minutes(360.0 - minutes)  # até 06:00 (já passou da meia-noite)
+	var energy := preload("res://scripts/systems/energy_state.gd")
+	get_tree().set_meta(energy.KEY, FAINT_ENERGY)
+	var bed := _bed_position()
+	if bed != Vector2.INF:
+		player.global_position = bed
+		_notify("Você desmaiou de cansaço e acordou em casa. Durma antes da meia-noite!")
+	else:
+		_notify("Você desmaiou de cansaço no meio do caminho... Construa uma casa com cama.")
+
+
+## Ao lado (embaixo) da cama da casa desta região, ou INF se não houver.
+func _bed_position() -> Vector2:
+	if not is_instance_valid(_player_house): return Vector2.INF
+	var furniture: Dictionary = _player_house.house().furniture
+	for origin in furniture:
+		if furniture[origin] == "cama":
+			return Vector2((origin + Vector2i(1, 1)) * 32) + Vector2(16, 16)
+	return Vector2.INF
 
 
 var _house_hidden: Array = []  # [CanvasItem] escondidos sob a casa

@@ -28,7 +28,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [x] Dormir para virar o dia (cama da casa construída)
 - [x] Energia do jogador (ações gastam; dormir recupera)
 - [x] Save/load em disco ao dormir + Continuar no menu
-- [ ] **P2** Desmaio à meia-noite / acordar em casa
+- [x] Desmaio à meia-noite: acorda às 06:00 ao lado da cama (se a casa estiver na região), com 50 de energia
 
 ## 3. Inventário e recursos
 - [x] Barra rápida de itens com ícones PixelLab

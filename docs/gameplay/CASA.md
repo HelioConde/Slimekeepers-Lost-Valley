@@ -16,6 +16,8 @@ usuário (2026-11-22).
 - **Mobília:** a roda do mouse escolhe o móvel, o clique esquerdo coloca (só dentro da casa) e o direito tira (devolve o material).
 - O **telhado** cobre a casa por fora e some quando o jogador entra (ou no modo construir).
 - **[E] perto da cama** dorme até 06:00 (energia cheia, dia seguinte, jogo salvo). Sem cama, não dá para dormir.
+- Acordado depois da **meia-noite**, o personagem desmaia: acorda às 06:00 com 50 de energia, ao lado da cama se a casa estiver na região atual (o jogo não é salvo).
+- **[E] perto do fogão** cozinha uma porção de folhas (precisa de folhas frescas).
 - Ao construir, mato, flores e itens coletáveis da área somem; voltam se a casa for demolida.
 
 ## Custos (`scripts/systems/house_state.gd`)

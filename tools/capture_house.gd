@@ -106,5 +106,13 @@ func run() -> void:
 	var day: int = clock.day_number
 	region.sleep_until_morning()
 	check(clock.day_number == day + 1 and clock.get_hour() == 6, "Dormir na cama leva ao dia seguinte 06:00")
+	# Acordado depois da meia-noite: desmaia e acorda às 06:00 ao lado da cama.
+	clock.set_time(23, 59)
+	player.global_position = Vector2(rect.position * 32) + Vector2(-64, -64)
+	var faint_day: int = clock.day_number
+	clock.advance_minutes(2.0)
+	check(clock.day_number == faint_day + 1 and clock.get_hour() == 6, "Meia-noite acordado: desmaia e acorda às 06:00")
+	check(int(get_meta("player_energy")) == region.FAINT_ENERGY, "Desmaio deixa metade da energia")
+	check(house.near_bed(player), "Acorda ao lado da cama da casa")
 	print("HOUSE: %d failures" % failures)
 	quit(1 if failures else 0)
