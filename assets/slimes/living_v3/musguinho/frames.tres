@@ -1,17 +1,29 @@
 [gd_resource type="SpriteFrames" format=3]
 
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_000.png" id="1_jxhf1"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_000.png" id="1_qic18"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_001.png" id="2_1uw0m"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_001.png" id="2_skd43"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_002.png" id="3_wawlc"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_002.png" id="3_xtles"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_003.png" id="4_1y1ii"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_003.png" id="4_3glut"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_004.png" id="5_7iu85"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_004.png" id="5_fro2n"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_005.png" id="6_6lrs7"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_005.png" id="6_wfne8"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_006.png" id="7_60rm2"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_006.png" id="7_im85f"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_007.png" id="8_3no6y"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_007.png" id="8_icbs5"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_008.png" id="9_5c0p3"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/happy/frame_008.png" id="9_w0nrr"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/blink/frame_000.png" id="10_giq28"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_009.png" id="10_sqfp5"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/blink/frame_001.png" id="11_qvn45"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_010.png" id="11_vp42k"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/blink/frame_002.png" id="12_2if13"]
+[ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/adubar/frame_011.png" id="12_3lg7y"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/blink/frame_003.png" id="13_qic18"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/blink/frame_004.png" id="14_1uw0m"]
 [ext_resource type="Texture2D" path="res://assets/slimes/living_v3/musguinho/v3/blink/frame_005.png" id="15_wawlc"]
@@ -68,31 +80,40 @@
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_jxhf1")
+"texture": ExtResource("1_qic18")
 }, {
 "duration": 1.0,
-"texture": ExtResource("2_skd43")
+"texture": ExtResource("2_1uw0m")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_xtles")
+"texture": ExtResource("3_wawlc")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_1y1ii")
+"texture": ExtResource("4_3glut")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_fro2n")
+"texture": ExtResource("5_7iu85")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_6lrs7")
+"texture": ExtResource("6_wfne8")
 }, {
 "duration": 1.0,
-"texture": ExtResource("7_60rm2")
+"texture": ExtResource("7_im85f")
 }, {
 "duration": 1.0,
-"texture": ExtResource("8_3no6y")
+"texture": ExtResource("8_icbs5")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_w0nrr")
+"texture": ExtResource("9_5c0p3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_sqfp5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_vp42k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_3lg7y")
 }],
 "loop": 0,
 "name": &"adubar",
@@ -324,31 +345,40 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_jxhf1")
+"texture": ExtResource("1_qic18")
 }, {
 "duration": 1.0,
-"texture": ExtResource("2_skd43")
+"texture": ExtResource("2_1uw0m")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_xtles")
+"texture": ExtResource("3_wawlc")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_1y1ii")
+"texture": ExtResource("4_3glut")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_fro2n")
+"texture": ExtResource("5_7iu85")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_6lrs7")
+"texture": ExtResource("6_wfne8")
 }, {
 "duration": 1.0,
-"texture": ExtResource("7_60rm2")
+"texture": ExtResource("7_im85f")
 }, {
 "duration": 1.0,
-"texture": ExtResource("8_3no6y")
+"texture": ExtResource("8_icbs5")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_w0nrr")
+"texture": ExtResource("9_5c0p3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_sqfp5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_vp42k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_3lg7y")
 }],
 "loop": 0,
 "name": &"plant",
