@@ -153,7 +153,14 @@ func join_enet(address: String, port: int = ENET_PORT) -> String:
 	return ""
 
 
-func _on_enet_peer_connected(_id: int) -> void:
+## Tempo limite do ENet maior que o padrão (~5 s sem resposta): carregar o mapa ou
+## avançar o relógio trava o jogo alguns segundos e a conexão caía (teste com dois jogos).
+const ENET_TIMEOUT_MS := [32, 20000, 60000]  # limite, mínimo, máximo
+
+
+func _on_enet_peer_connected(id: int) -> void:
+	var peer := _enet.get_peer(id) if is_instance_valid(_enet) else null
+	if peer: peer.set_timeout(ENET_TIMEOUT_MS[0], ENET_TIMEOUT_MS[1], ENET_TIMEOUT_MS[2])
 	if mode == "guest": send({"t": "hello"})
 
 
@@ -182,6 +189,7 @@ func send(data: Dictionary) -> void:
 func _receive(bytes: PackedByteArray) -> void:
 	var data: Variant = bytes_to_var(bytes)  # sem objetos: bytes_to_var não instancia nada
 	if typeof(data) != TYPE_DICTIONARY: return
+	if OS.has_environment("SK_NET_DEBUG") and str(data.get("t", "")) != "state": print("NETMSG ", mode, " ", data.get("t"), " ", str(data.get("key", "")))
 	match str(data.get("t", "")):
 		"hello":
 			if mode != "host": return
@@ -238,6 +246,7 @@ func open_pending_host(protagonist: String) -> String:
 
 
 func _on_peer_gone() -> void:
+	if OS.has_environment("SK_NET_DEBUG"): print("NETGONE ", mode, " t=", Time.get_ticks_msec())
 	if not connected and mode == "": return
 	connected = false
 	_set_status("O outro jogador saiu.")

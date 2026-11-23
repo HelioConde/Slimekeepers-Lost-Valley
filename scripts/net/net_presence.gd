@@ -46,6 +46,7 @@ func _process(delta: float) -> void:
 func _on_message(data: Dictionary) -> void:
 	if str(data.get("t", "")) != "state": return
 	var here: String = get_tree().current_scene.scene_file_path if get_tree().current_scene else ""
+	if OS.has_environment("SK_NET_DEBUG"): print("NETDBG ", _session.mode, " from=", data.get("scene"), " here=", here)
 	if str(data.get("scene", "")) != here:
 		if is_instance_valid(remote): remote.visible = false
 		return
