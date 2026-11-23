@@ -278,6 +278,7 @@ func _show_notice(heading: String, lines: Array) -> void:
 		text.text = str(line)
 		text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		text.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
 		stack.add_child(text)
 	var close := Button.new()
 	close.name = "Close"
@@ -319,11 +320,13 @@ func _show_multiplayer() -> void:
 	var info := Label.new()
 	info.text = "Quem hospeda escolhe Aren ou Moni; quem entra joga com o outro."
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stack.add_child(info)
 	var status := Label.new()
 	status.name = "Status"
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	status.text = str(net.status)
 	stack.add_child(status)
@@ -366,6 +369,7 @@ func _show_multiplayer() -> void:
 	var steam_hint := Label.new()
 	steam_hint.text = "Pela Steam: aceite o convite do amigo com esta janela aberta, ou digite o ID da sala acima e clique em Entrar."
 	steam_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	steam_hint.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
 	steam_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	steam_hint.add_theme_font_size_override("font_size",14)
 	stack.add_child(steam_hint)
