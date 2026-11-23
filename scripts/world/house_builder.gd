@@ -407,7 +407,8 @@ func build_hint() -> String:
 func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
 	if key and key.pressed and not key.echo:
-		if key.physical_keycode == KEY_B or (building and key.physical_keycode == KEY_ESCAPE):
+		# Entrar: botão "Construir casa" da fabricação ([B]); aqui só sai.
+		if building and key.physical_keycode in [KEY_B, KEY_ESCAPE]:
 			toggle_build()
 			get_viewport().set_input_as_handled()
 			return

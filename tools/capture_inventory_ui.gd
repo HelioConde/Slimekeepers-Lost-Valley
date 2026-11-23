@@ -63,8 +63,8 @@ func run() -> void:
 	BAG.spend_item(self, "folhas_frescas", 2)
 	BAG.add_item(self, "fibra", 10)
 	var craft: Control = region.get("crafting_panel")
-	await key(KEY_C)
-	check(craft.visible and craft.get("_list") is GridContainer, "[C] abre a fabricação em grade")
+	await key(KEY_B)
+	check(craft.visible and craft.get("_list") is GridContainer, "[B] abre a fabricação em grade")
 	# Dica do mouse: ingredientes tem/precisa.
 	var first: Control = craft.get("_list").get_child(0)
 	var tip: Control = first.call("_make_custom_tooltip", "")
@@ -79,6 +79,6 @@ func run() -> void:
 		tip.queue_free()
 	BAG.add_item(self, "folhas_frescas", 1)  # 10/10 de novo
 	check(CRAFTING.missing(self, "bancada").begins_with("Falta") or CRAFTING.missing(self, "corda").is_empty(), "corda com pilha existente não precisa de espaço")
-	await key(KEY_C)
+	await key(KEY_B)
 	print("INVENTORY_UI: %d failures" % failures)
 	quit(1 if failures else 0)

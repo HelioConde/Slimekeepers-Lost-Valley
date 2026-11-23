@@ -1,8 +1,9 @@
 extends PanelContainer
-## Janela de fabricação (CRIACAO.md). [C] abre as receitas "maos" em qualquer lugar;
+## Janela de fabricação (CRIACAO.md). [B] abre as receitas "maos" em qualquer lugar;
 ## a bancada abre "bancada" e o fogão "fogao". Receitas em grade (pedido do usuário,
 ## 2026-11-22): passar o mouse mostra ingredientes (tem/precisa) e o que falta;
-## clicar fabrica. Setas escolhem, F/Enter fabricam, C/E/Esc fecham.
+## clicar fabrica. Setas escolhem, F/Enter fabricam, B/E/Esc fecham. Com as mãos,
+## o botão "Construir casa" entra no modo construir da casa (house_builder.gd).
 
 signal crafted(recipe_id: String)
 
@@ -24,6 +25,8 @@ var _title: Label
 var _list: GridContainer
 var _status: Label
 var _rows: Array[Dictionary] = []
+var builder: Node2D  ## casa da região (clearing_region.add_player_house)
+var _build: Button
 
 
 func _ready() -> void:
@@ -46,8 +49,16 @@ func _ready() -> void:
 	_status.custom_minimum_size = Vector2(COLUMNS * 48, 0)
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(_status)
+	_build = Button.new()
+	_build.text = "Construir casa"
+	_build.tooltip_text = "Modo construir: paredes, chão, teto e móveis. [B] sai."
+	_build.add_theme_font_override("font", FONT)
+	_build.add_theme_font_size_override("font_size", 12)
+	_build.focus_mode = Control.FOCUS_NONE
+	_build.pressed.connect(start_building)
+	column.add_child(_build)
 	var help := _label(11, Color("#5a3f2c"))
-	help.text = "Clique ou F fabrica · C / Esc fecha"
+	help.text = "Clique ou F fabrica · B / Esc fecha"
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(help)
 
@@ -58,6 +69,13 @@ func open(new_station: String = "maos") -> void:
 	visible = true
 	_freeze(true)
 	refresh()
+
+
+## Fecha a janela e entra no modo construir da casa.
+func start_building() -> void:
+	if not is_instance_valid(builder): return
+	close()
+	if not builder.building: builder.toggle_build()
 
 
 func close() -> void:
@@ -73,6 +91,7 @@ func _freeze(on: bool) -> void:
 
 func refresh() -> void:
 	_title.text = TITLES.get(station, "Fabricar")
+	_build.visible = station == "maos" and is_instance_valid(builder)
 	for child in _list.get_children(): child.queue_free()
 	_rows.clear()
 	var recipes: Array = CRAFTING.recipes(station)
@@ -122,12 +141,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var key: int = event.keycode
 	if not visible:
-		if key == KEY_C and not _other_window_open():
+		if key == KEY_B and not _other_window_open() and not bool(get_tree().get_meta("build_mode", false)):
 			open("maos")
 			get_viewport().set_input_as_handled()
 		return
 	match key:
-		KEY_C, KEY_E, KEY_ESCAPE:
+		KEY_B, KEY_E, KEY_ESCAPE:
 			close()
 		KEY_LEFT, KEY_A:
 			selected = maxi(0, selected - 1)

@@ -117,8 +117,9 @@ func _compact_hud() -> void:
 	popup.add_theme_font_size_override("font_size",18)
 
 
-## Casa construída pelo jogador nesta região (CASA.md): sem casa inicial; [B] abre o
-## modo construir em qualquer lugar livre do mapa (não sobre árvore, pedra ou água).
+## Casa construída pelo jogador nesta região (CASA.md): sem casa inicial; [B] abre a
+## fabricação e o botão "Construir casa" entra no modo construir em qualquer lugar
+## livre do mapa (não sobre árvore, pedra ou água).
 func add_player_house(region_id: String) -> Node2D:
 	var builder: Node2D = preload("res://scripts/world/house_builder.gd").new()
 	builder.player = player
@@ -136,6 +137,8 @@ func add_player_house(region_id: String) -> Node2D:
 	builder.footprint_changed.connect(_clear_under_house)
 	add_child(builder)
 	_player_house = builder
+	var panel: Variant = get("crafting_panel")
+	if panel is Node and is_instance_valid(panel): panel.set("builder", builder)
 	if not GameClock.time_changed.is_connected(_on_time_for_faint):
 		GameClock.time_changed.connect(_on_time_for_faint)
 	return builder
@@ -241,6 +244,14 @@ func add_inventory_panel() -> Control:
 	return inventory_panel
 
 
+## Dicas do tutorial inicial (scripts/ui/tutorial_hud.gd); some quando termina.
+func add_tutorial() -> Control:
+	var tutorial: Control = preload("res://scripts/ui/tutorial_hud.gd").new()
+	tutorial.set("region", self)
+	get_node("HUD/Interface").add_child(tutorial)
+	return tutorial
+
+
 ## Alguma janela (mochila, fabricação, baú) aberta: o mundo não recebe [F] nem clique.
 func window_open() -> bool:
 	if not has_node("HUD/Interface"): return false
@@ -263,7 +274,7 @@ func handle_player_house(builder: Node2D) -> bool:
 		hud_hint.text = builder.build_hint()
 		return true
 	if builder.near_bed(player):
-		hud_hint.text = "[F] Dormir até amanhã   •   [B] Construir"
+		hud_hint.text = "[F] Dormir até amanhã   •   [B] Fabricar e construir"
 		if Input.is_action_just_pressed("interact"): sleep_until_morning()
 		return true
 	if builder.near_furniture(player, "bau"):

@@ -93,7 +93,7 @@ func run() -> void:
 	await click(region, spot2.at, 1.3)  # segurar o clique = segurar [F]
 	check(str(player.facing) == "east", "Clique vira o personagem para o ponto clicado (%s)" % player.facing)
 	await create_timer(2.2).timeout
-	check(BAG.count_item(self, "graveto") == 2, "Clique esquerdo (segurado) pega o graveto como o [F]")
+	check(BAG.count_item(self, "graveto") == 2, "Clique esquerdo (segurado) pega o graveto como o [F] (%d, pull=%s, drops=%d, taken=%s)" % [BAG.count_item(self, "graveto"), region.get("gathering").get("_pull_id") if region.get("gathering") else "?", drops.pending(), "-"])
 	# Clique longe (fora do alcance) não faz nada.
 	var before := BAG.count_item(self, "graveto")
 	await click(region, player.global_position + Vector2(300, 0), 0.1)

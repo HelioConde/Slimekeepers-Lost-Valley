@@ -1,6 +1,6 @@
 extends SceneTree
 ## Fluxo real da criação (CRIACAO.md) na Floresta: coleta com [E] nos pontos da
-## Clareira, [C] abre a janela, fabrica corda e machado, o machado vai para a barra.
+## Clareira, [B] abre a janela, fabrica corda e machado, o machado vai para a barra.
 ## Uso: godot --path . --rendering-driver opengl3 --script res://tools/test_crafting_flow.gd -- [OUT_DIR]
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -77,25 +77,31 @@ func run() -> void:
 		player.global_position = spot.at + Vector2(0, 6)
 		await physics_frame
 		await process_frame
-		await hold("interact", 2.3)  # graveto 1 s, pedra 2 s segurando [F]
-	# Mato: um toque rápido não arranca; segurar [F] 2 s arranca (6 tufos = 2 cordas).
+		await press("interact")  # graveto 1 s, pedra 2 s: um toque começa
+		await create_timer(2.4).timeout
+	# Mato: um toque em [F] começa e continua sozinho (3 s); andar cancela.
 	player.global_position = mato[0].at + Vector2(0, 6)
 	await physics_frame
 	await process_frame
 	await press("interact")
-	check(BAG.count_item(self, "fibra") == 0, "toque rápido em [E] não arranca o mato")
-	# Slimes andando podem chegar perto e tomar a vez do [E]: tenta até 12 tufos.
+	check(BAG.count_item(self, "fibra") == 0, "logo depois do toque ainda não arrancou")
+	Input.action_press("move_left")  # andar cancela
+	for i in 3: await physics_frame
+	Input.action_release("move_left")
+	await create_timer(3.4).timeout
+	region.item_drops.collect_all()
+	check(BAG.count_item(self, "fibra") == 0, "andar cancela o arrancar")
+	# Slimes andando podem chegar perto e tomar a vez do [F]: tenta até 12 tufos.
 	for spot: Dictionary in mato.slice(0, 12):
 		region.item_drops.collect_all()  # itens caem no chão (item_drops)
 		if BAG.count_item(self, "fibra") >= 6: break
 		player.global_position = spot.at + Vector2(0, 6)
 		await physics_frame
 		await process_frame
-		await hold("interact", 1.0)
-		if spot == mato[0]: check(BAG.count_item(self, "fibra") == 0, "1 s segurando ainda não arranca")
-		await hold("interact", 2.3)
+		await press("interact")  # um toque só
+		await create_timer(3.6).timeout
 	region.item_drops.collect_all()  # itens caem no chão (item_drops)
-	check(BAG.count_item(self, "fibra") == 6, "segurar [F] 2 s arranca o mato (%d fibras)" % BAG.count_item(self, "fibra"))
+	check(BAG.count_item(self, "fibra") == 6, "um toque em [F] arranca o mato em 3 s (%d fibras)" % BAG.count_item(self, "fibra"))
 	# O resto (mato e pontos onde um tufo mais perto tinha prioridade) vai direto,
 	# para a bancada adiante ter fibra e pedra suficientes sem esperar 4 s por tufo.
 	for spot: Dictionary in forage.spots:
@@ -107,16 +113,16 @@ func run() -> void:
 	check(int(bag.get("fibra", 0)) >= 6 and int(bag.get("graveto", 0)) >= 2 and int(bag.get("pedra_pequena", 0)) >= 2, "coleta com [E] encheu a bolsa %s" % str(bag))
 	check(not HOTBAR.slots(self).has("machado"), "sem machado antes de fabricar")
 	var panel: Control = region.get("crafting_panel")
-	await key(KEY_C)
-	check(panel.visible, "[C] abre a janela de fabricação")
+	await key(KEY_B)
+	check(panel.visible, "[B] abre a janela de fabricação")
 	if out != "": (await _shot()).save_png(out + "/crafting_panel.png")
 	panel.call("_craft", "corda")
 	panel.call("_craft", "corda")
 	check(BAG.count_item(self, "corda") >= 2, "fabricou corda com fibra")
 	panel.call("_craft", "machado")
 	check(BAG.count_item(self, "machado") == 1, "fabricou o machado sem bancada")
-	await key(KEY_C)
-	check(not panel.visible, "[C] fecha a janela")
+	await key(KEY_B)
+	check(not panel.visible, "[B] fecha a janela")
 	check(HOTBAR.slots(self).has("machado"), "machado aparece na barra rápida")
 	# Coletado some até amanhã.
 	var spot: Dictionary = mato[0]

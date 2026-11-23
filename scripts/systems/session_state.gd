@@ -36,6 +36,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"valley_cooking_ledger",
 	"slime_food_offers",
 	"session_progress_flags",
+	"tutorial_step",
 ]
 
 

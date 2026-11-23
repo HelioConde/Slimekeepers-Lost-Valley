@@ -71,6 +71,7 @@ func _ready() -> void:
 	$HUD/Interface.add_child(crafting_panel)
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
 	add_inventory_panel()
+	add_tutorial()
 	# Novo Jogo confirmado: o protagonista escolhido desperta sentado no início.
 	if PROTAGONIST.intro_pending(get_tree()):
 		player.position = $SpawnPoints/PlayerSpawn.global_position
@@ -79,6 +80,7 @@ func _ready() -> void:
 		for panel: Control in [crafting_panel, inventory_panel]:
 			panel.set_process_unhandled_input(false)
 			intro.finished.connect(func() -> void: panel.set_process_unhandled_input(true))
+		intro.finished.connect(func() -> void: get_tree().set_meta(preload("res://scripts/ui/tutorial_hud.gd").KEY, 0))  # tutorial inicial
 		intro.start.call_deferred(player, [$HUD/Interface])
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()

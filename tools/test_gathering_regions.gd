@@ -1,7 +1,7 @@
 extends SceneTree
 ## Regressão: cortar árvore e arrancar mato funcionam fora da Clareira — na Floresta
 ## longe do início e no Vale das Nascentes (o bug era só existir na Floresta).
-## Mato: 3 s segurando [E]; 2 s não arranca.
+## Mato: um toque começa e leva 3 s; 1 s depois ainda não arrancou.
 ## Uso: godot --path . --rendering-driver opengl3 --script res://tools/test_gathering_regions.gd
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -107,12 +107,12 @@ func run() -> void:
 			# Fabricação e bancada também no Vale.
 			var panel: Control = region.get("crafting_panel")
 			var c_key := InputEventKey.new()
-			c_key.keycode = KEY_C
-			c_key.physical_keycode = KEY_C
+			c_key.keycode = KEY_B
+			c_key.physical_keycode = KEY_B
 			c_key.pressed = true
 			root.push_input(c_key)
 			for i in 3: await process_frame
-			check(is_instance_valid(panel) and panel.visible, "vale: [C] abre a fabricação")
+			check(is_instance_valid(panel) and panel.visible, "vale: [B] abre a fabricação")
 			root.push_input(c_key)
 			for i in 3: await process_frame
 			BAG.add_item(self, "bancada")
@@ -145,12 +145,12 @@ func run() -> void:
 			for i in 3: await process_frame
 			if gathering.forage.nearest(player.global_position, root.get_node("GameClock").day_number).get("id", "") != spot.id: continue
 			await hold(1.0)
-			check(BAG.count_item(self, "fibra") == before, "%s: 1 s segurando não arranca" % name)
+			check(BAG.count_item(self, "fibra") == before, "%s: 1 s depois do toque ainda não arrancou" % name)
 			await hold(2.3)
 			region.get("item_drops").collect_all()  # a fibra cai no chão (item_drops)
 			got = BAG.count_item(self, "fibra") == before + 1
 			break
-		check(got, "%s: 3 s segurando arranca mato longe do início" % name)
+		check(got, "%s: um toque arranca mato longe do início em 3 s" % name)
 		region.queue_free()
 		await process_frame
 		await process_frame

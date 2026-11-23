@@ -18,7 +18,7 @@ var elapsed := 0.0
 var reduce_motion := false
 var found_zones: Dictionary = {}
 var bag_hud: Node
-var crafting_panel: Control  # [C] fabricar (como na Floresta)
+var crafting_panel: Control  # [B] fabricar (como na Floresta)
 var placer: Node2D  # bancadas colocadas pelo jogador (como na Floresta)
 var gathering: Node  # region_gathering.gd: corte e coleta (como na Floresta)
 var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
@@ -45,6 +45,7 @@ func _ready() -> void:
 	$HUD/Interface.add_child(crafting_panel)
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
 	add_inventory_panel()
+	add_tutorial()
 	recipe_panel = RECIPE_PANEL.new()
 	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
