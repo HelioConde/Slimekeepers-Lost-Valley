@@ -11,6 +11,7 @@ const FARM := preload("res://scripts/systems/farm_state.gd")
 const CROPS := preload("res://scripts/systems/crop_catalog.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const SPECIES := preload("res://scripts/world/slime_species.gd")
+const VARIANTS := preload("res://scripts/systems/slime_variants.gd")
 const KEY := "farm_helpers_done"
 const FRIEND_KEYS := ["forest_slime_friends", "valley_slime_friends"]
 const ROLES := {"brotinho": "plantar", "bolhinha": "regar", "musguinho": "adubar"}
@@ -115,13 +116,14 @@ func _process(delta: float) -> void:
 				_play(sprite, "idle")
 				continue
 		var goal := Vector2(h.cell * 32) + Vector2(16, 22)
+		var pace: float = VARIANTS.WORK_SPEED[VARIANTS.best_friend(tree, species, FRIEND_KEYS)]  # raro: 1,5x
 		if sprite.position.distance_to(goal) > 2.0:
-			sprite.position = sprite.position.move_toward(goal, SPEED * delta)
+			sprite.position = sprite.position.move_toward(goal, SPEED * pace * delta)
 			sprite.flip_h = goal.x < sprite.position.x
 			_play(sprite, "move")
 			continue
 		_play(sprite, ROLES[species])
-		h.timer += delta
+		h.timer += delta * pace
 		if h.timer < WORK_SECONDS: continue
 		if apply(tree, farm.field_id, species, h.cell, day): farm.refresh()
 		h.timer = 0.0

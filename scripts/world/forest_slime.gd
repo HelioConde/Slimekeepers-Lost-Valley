@@ -3,6 +3,7 @@ extends CharacterBody2D
 signal friendship_started(persistent_id: String)
 const FRAMES: SpriteFrames = preload("res://assets/slimes/bestiary/brotinho/brotinho_frames.tres")
 const SPECIES := preload("res://scripts/world/slime_species.gd")
+const VARIANTS := preload("res://scripts/systems/slime_variants.gd")
 static var HEART: Texture2D = preload("res://scripts/ui/hud_skin.gd").heart(true)
 static var NOTICE: Texture2D = _notice_icon()
 const WALK_SPEED := 30.0
@@ -11,6 +12,7 @@ const ACTIVE_DISTANCE := 1000.0
 var slime_type := "brotinho"
 var persistent_id := ""
 var befriended := false
+var variant := "comum"  ## slime_variants.gd: comum, raro, arco_iris (fixa por identidade)
 var habitat: Dictionary = {}
 var personality: Dictionary = {}
 var sprite: AnimatedSprite2D
@@ -41,6 +43,7 @@ func configure(habitat_manager: Node2D, observed_player: Node2D, habitat_data: D
 	habitat = habitat_data
 	persistent_id = instance_id
 	slime_type = instance_id.get_slice("/", 0)
+	variant = VARIANTS.of(instance_id)
 	personality = SPECIES.definition(slime_type)
 	_session_key = str(manager.session_key)
 	_rng.seed = hash(persistent_id)
@@ -76,6 +79,7 @@ func _ready() -> void:
 	var friends: Dictionary = get_tree().get_meta(_session_key, {})
 	befriended = bool(friends.get(persistent_id, false))
 	_play_animation("idle")
+	if variant != VARIANTS.COMMON: _add_variant_glow()
 
 func _draw() -> void:
 	if swimming:
@@ -89,6 +93,48 @@ func _draw() -> void:
 	draw_set_transform(Vector2(0, 1), 0.0, Vector2(1.0, 0.32))
 	draw_circle(Vector2.ZERO, 12.0 - lift * 0.5, Color(0.06, 0.11, 0.08, 0.18 - lift * 0.025))
 	draw_set_transform(Vector2.ZERO)
+
+## Raro: brilhos dourados; arco-íris: brilhos coloridos e o corpo trocando de tom bem de leve.
+func _add_variant_glow() -> void:
+	var sparks := CPUParticles2D.new()
+	sparks.name = "VariantSparkles"
+	sparks.amount = 6
+	sparks.lifetime = 1.4
+	sparks.position = Vector2(0, -18)
+	sparks.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	sparks.emission_sphere_radius = 14.0
+	sparks.gravity = Vector2(0, -10)
+	sparks.initial_velocity_min = 2.0
+	sparks.initial_velocity_max = 6.0
+	sparks.scale_amount_min = 1.0
+	sparks.scale_amount_max = 1.0
+	sparks.texture = _star_texture()
+	var ramp := Gradient.new()
+	if variant == VARIANTS.RARE:
+		ramp.colors = PackedColorArray([Color(1, 0.95, 0.6, 0), Color(1, 0.85, 0.3, 1), Color(1, 0.95, 0.6, 0)])
+	else:
+		ramp.colors = PackedColorArray([Color(1, 0.4, 0.5, 0), Color(0.5, 1, 0.6, 1), Color(0.5, 0.6, 1, 0)])
+	ramp.offsets = PackedFloat32Array([0.0, 0.5, 1.0])
+	sparks.color_ramp = ramp
+	sparks.z_index = 2
+	add_child(sparks)
+
+
+## Estrelinha de pixel 5x5 (cruz com centro claro) para os brilhos da variante.
+static func _star_texture() -> ImageTexture:
+	var image := Image.create(5, 5, false, Image.FORMAT_RGBA8)
+	for i in 5:
+		image.set_pixel(2, i, Color(1, 1, 1, 0.75))
+		image.set_pixel(i, 2, Color(1, 1, 1, 0.75))
+	image.set_pixel(2, 2, Color.WHITE)
+	return ImageTexture.create_from_image(image)
+
+
+func _process(_delta: float) -> void:
+	if variant == VARIANTS.RAINBOW and is_instance_valid(sprite):
+		var hue := fmod(Time.get_ticks_msec() / 4000.0, 1.0)
+		sprite.self_modulate = Color.WHITE.lerp(Color.from_hsv(hue, 0.7, 1.0), 0.35)
+
 
 ## Interação com o jogador: toca a reação (sprite novo do Brotinho tem "comer" e
 ## "receber_carinho"; quem não tem usa "happy").
@@ -149,7 +195,8 @@ func _float_heart(offset: Vector2, delay: float, icon: Texture2D = HEART) -> voi
 
 
 func display_name() -> String:
-	return str(personality.name)
+	var tag: String = VARIANTS.NAMES.get(variant, "")
+	return str(personality.name) + ("" if tag.is_empty() else " " + tag)
 
 func make_friend() -> bool:
 	if befriended:

@@ -10,6 +10,10 @@ const SHOWN_HEARTS := 5  # corações visíveis (de MAX_HEARTS); cada um = MAX/5
 var source: Callable
 var _portrait: TextureRect
 var _name: Label
+var _role: Label  ## função e comida favorita
+const ROLES := preload("res://scripts/world/farm_helpers.gd").ROLES
+const ROLE_NAMES := {"plantar": "Planta", "regar": "Rega", "adubar": "Aduba"}
+const FOOD_NAMES := {"vegetal": "vegetais", "fruta": "frutas", "marinha": "comida do mar"}
 var _hearts: HBoxContainer
 var _full: Texture2D
 var _empty: Texture2D
@@ -39,6 +43,8 @@ func _ready() -> void:
 	row.add_child(column)
 	_name = SKIN.label("", 14)
 	column.add_child(_name)
+	_role = SKIN.label("", 10)
+	column.add_child(_role)
 	_hearts = HBoxContainer.new()
 	_hearts.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hearts.add_theme_constant_override("separation", 2)
@@ -58,6 +64,12 @@ func _process(_delta: float) -> void:
 	visible = is_instance_valid(slime)
 	if not visible: return
 	_name.text = str(slime.call("display_name"))
+	var species := str(slime.get("slime_type"))
+	var parts: PackedStringArray = []
+	if ROLES.has(species): parts.append(ROLE_NAMES.get(ROLES[species], ""))
+	var liked: String = FEEDING.LIKES.get(species, "")
+	if not liked.is_empty(): parts.append("gosta de " + str(FOOD_NAMES.get(liked, liked)))
+	_role.text = " · ".join(parts)
 	var sprite := slime.get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
 	if sprite != null and sprite.sprite_frames != null:
 		_portrait.texture = sprite.sprite_frames.get_frame_texture(sprite.animation, 0)

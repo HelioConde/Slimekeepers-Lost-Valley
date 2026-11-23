@@ -17,4 +17,7 @@ Números iniciais escolhidos pelo usuário (a Bíblia deixava EM ABERTO; podem m
 - Boss não aparece no sorteio comum: são anomalias de energia mágica (Bíblia §5).
 - "Qualidade da colheita" pede um sistema de qualidade que ainda não existe.
 
-Estado: decidido, **não implementado**.
+Estado (2026-11-23): sorteio, brilho (raro dourado; arco-íris colorido e corpo mudando de
+tom), nome no painel e ajudante raro 1,5x **implementados** (`scripts/systems/slime_variants.gd`,
+teste `tools/test_slime_variants.gd`). Qualidade da colheita do arco-íris: falta o sistema
+de qualidade.
