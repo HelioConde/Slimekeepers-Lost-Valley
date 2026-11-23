@@ -3,7 +3,8 @@ extends RefCounted
 ## Cada slime come uma vez por dia; comida cozida vale mais que colheita crua.
 ## Preferência por habitat (pedido do usuário, 2026-11-22; docs/gameplay/COMIDA_DOS_SLIMES.md):
 ## comida do grupo que a espécie prefere dá o dobro de pontos.
-const LIKES := {"brotinho": "vegetal", "musguinho": "vegetal", "bolhinha": "marinha"}
+const LIKES := {"brotinho": "vegetal", "musguinho": "vegetal", "bolhinha": "marinha",
+	"colhita": "cozido", "carreguim": "cozido"}  # Colhita e Carreguim preferem pratos cozidos (2026-11-23)
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")

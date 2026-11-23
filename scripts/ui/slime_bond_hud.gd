@@ -12,8 +12,8 @@ var _portrait: TextureRect
 var _name: Label
 var _role: Label  ## função e comida favorita
 const ROLES := preload("res://scripts/world/farm_helpers.gd").ROLES
-const ROLE_NAMES := {"plantar": "Planta", "regar": "Rega", "adubar": "Aduba"}
-const FOOD_NAMES := {"vegetal": "vegetais", "fruta": "frutas", "marinha": "comida do mar"}
+const ROLE_NAMES := {"plantar": "Planta", "regar": "Rega", "adubar": "Aduba", "colher": "Colhe", "carregar": "Carrega ao baú"}
+const FOOD_NAMES := {"vegetal": "vegetais", "fruta": "frutas", "marinha": "comida do mar", "cozido": "pratos cozidos"}
 var _hearts: HBoxContainer
 var _full: Texture2D
 var _empty: Texture2D

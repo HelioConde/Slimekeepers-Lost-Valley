@@ -21,6 +21,8 @@ extends CanvasLayer
 ##   tutorial <n|fim>     pula o tutorial para a dica n (0..) ou termina
 ##   amigos               todos os slimes da região ficam amigos
 ##   ir floresta|vale     viaja para a região
+##   slimes               Colhita e Carreguim viram amigos e vão para a fazenda (o mundo
+##                        deles ainda não existe)
 ## =====================================================================================
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -78,7 +80,7 @@ func run(line: String) -> String:
 	var tree := get_tree()
 	match args[0]:
 		"ajuda":
-			return "kit · item <id> [qtd] · energia · vida · hora <h> · dia · tutorial <n|fim> · amigos · ir floresta|vale"
+			return "kit · item <id> [qtd] · energia · vida · hora <h> · dia · tutorial <n|fim> · amigos · slimes · ir floresta|vale"
 		"kit":
 			for id: String in KIT: BAG.add_item(tree, id, int(KIT[id]))
 			_refresh()
@@ -112,6 +114,12 @@ func run(line: String) -> String:
 			for slime in tree.get_nodes_in_group("living_slimes"):
 				if slime.has_method("make_friend") and slime.call("make_friend"): count += 1
 			return "%d slimes agora são amigos." % count
+		"slimes":
+			var friends: Dictionary = (tree.get_meta("forest_slime_friends", {}) as Dictionary).duplicate()
+			friends["colhita/admin/0"] = true
+			friends["carreguim/admin/0"] = true
+			tree.set_meta("forest_slime_friends", friends)
+			return "Colhita e Carreguim agora são amigos e vão para a fazenda."
 		"ir":
 			if args.size() < 2 or not REGIONS.has(args[1]): return "Uso: ir floresta|vale"
 			tree.call_deferred("change_scene_to_file", REGIONS[args[1]])

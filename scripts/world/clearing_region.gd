@@ -500,6 +500,7 @@ func add_item_drops(farm: Node2D, gathering_node: Node) -> void:
 		var items := preload("res://scripts/systems/item_catalog.gd")
 		_notify("+%d %s" % [amount, str(items.info(item).name).to_lower()]))
 	if is_instance_valid(farm): farm.drop = spawn
+	preload("res://scripts/world/farm_helpers.gd").drop = spawn  # Colhita deixa a colheita no chão
 	if is_instance_valid(gathering_node):
 		if is_instance_valid(gathering_node.forage): gathering_node.forage.drop = spawn
 		if is_instance_valid(gathering_node.choppable): gathering_node.choppable.drop = spawn

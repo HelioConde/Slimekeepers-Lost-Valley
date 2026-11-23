@@ -16,7 +16,11 @@ const SPECIES := preload("res://scripts/world/slime_species.gd")
 const VARIANTS := preload("res://scripts/systems/slime_variants.gd")
 const KEY := "farm_helpers_done"
 const FRIEND_KEYS := ["forest_slime_friends", "valley_slime_friends"]
-const ROLES := {"brotinho": "plantar", "bolhinha": "regar", "musguinho": "adubar"}
+const ROLES := {"brotinho": "plantar", "bolhinha": "regar", "musguinho": "adubar",
+	"colhita": "colher", "carreguim": "carregar"}
+const CHEST := preload("res://scripts/systems/chest_storage.gd")
+const PLACER := preload("res://scripts/world/station_placer.gd")
+const CARRY_RADIUS := 360.0  ## Carreguim junta o que está no chão até essa distância da fazenda
 const ENERGY_MAX := 100
 const TASK_COST := 15  ## ~6 tarefas por dia por espécie
 ## shortcut: energia por espécie ajudante (um ajudante por espécie hoje); passar a ser por
@@ -27,6 +31,8 @@ const DAY_HOURS := Vector2i(6, 19)
 const NONE := Vector2i(-99999, -99999)
 
 var farm: Node2D  ## farm_field.gd (field_id, refresh)
+## Solta a colheita da Colhita no chão (item_drops.spawn); vazio = direto na bolsa.
+static var drop: Callable
 var _helpers: Dictionary = {}  # species -> {sprite, cell, timer}
 var _scan := 0.0
 
@@ -88,6 +94,8 @@ static func job(tree: SceneTree, field: String, species: String, taken: Array = 
 				if planted and not FARM.is_ready(tree, cell, field) and not FARM.is_watered(tree, cell, field): return cell
 			"musguinho":
 				if planted and not FARM.is_ready(tree, cell, field) and not FARM.is_fertilized(tree, cell, field): return cell
+			"colhita":
+				if FARM.is_ready(tree, cell, field): return cell
 	return NONE
 
 
@@ -103,6 +111,11 @@ static func apply(tree: SceneTree, field: String, species: String, cell: Vector2
 			ok = FARM.water(tree, cell, field)
 		"musguinho":
 			ok = FARM.fertilize(tree, cell, field)
+		"colhita":  # colhe e deixa no chão (o Carreguim leva ao baú)
+			var crop := CROPS.get_crop(FARM.crop(tree, cell, field))
+			ok = FARM.harvest(tree, cell, field, false)
+			if ok and drop.is_valid(): drop.call(str(crop.harvest), 1, Vector2(cell * 32) + Vector2(16, 16))
+			elif ok: BAG.add_item(tree, str(crop.harvest), 1)
 	if ok: _spend(tree, species, day)
 	return ok
 
@@ -125,6 +138,9 @@ func _process(delta: float) -> void:
 	for species: String in _helpers:
 		var h: Dictionary = _helpers[species]
 		var sprite: AnimatedSprite2D = h.sprite
+		if species == "carreguim":
+			_carry_step(tree, h, day, daytime, delta)
+			continue
 		if h.cell == NONE:
 			var resting := bool((tree.get_meta("slime_work_off", {}) as Dictionary).get(species, false))  # "Parar de trabalhar"
 			if daytime and not resting and can_work(tree, species, day):
@@ -145,6 +161,78 @@ func _process(delta: float) -> void:
 		if apply(tree, farm.field_id, species, h.cell, day): farm.refresh()
 		h.timer = 0.0
 		h.cell = NONE
+
+
+## Carreguim: vai até o item no chão mais perto, leva dentro do corpo até o baú escolhido
+## (disco de ações) ou ao mais perto, e deposita. Cada viagem gasta energia.
+func _carry_step(tree: SceneTree, h: Dictionary, day: int, daytime: bool, delta: float) -> void:
+	var sprite: AnimatedSprite2D = h.sprite
+	var drops: Node = drop.get_object() if drop.is_valid() else null
+	var pace: float = VARIANTS.WORK_SPEED[VARIANTS.best_friend(tree, "carreguim", FRIEND_KEYS)]
+	var resting := bool((tree.get_meta("slime_work_off", {}) as Dictionary).get("carreguim", false))
+	if not h.has("cargo"): h.cargo = {}
+	var goal := Vector2.INF
+	if (h.cargo as Dictionary).is_empty():
+		if not daytime or resting or not can_work(tree, "carreguim", day) or not is_instance_valid(drops):
+			_play(sprite, "idle")
+			return
+		goal = drops.call("nearest_ready", sprite.global_position, CARRY_RADIUS)
+		if not goal.is_finite():
+			_play(sprite, "idle")
+			return
+		if sprite.global_position.distance_to(goal) <= 6.0:
+			h.cargo = drops.call("claim", sprite.global_position, 12.0)
+			_show_cargo(sprite, h.cargo)
+			return
+	else:
+		goal = chest_spot(tree, sprite.global_position)
+		if not goal.is_finite():
+			_play(sprite, "idle")  # sem baú: espera com a carga
+			return
+		if sprite.global_position.distance_to(goal) <= 10.0:
+			CHEST.deposit(tree, str(h.cargo.item), int(h.cargo.amount), str(_chest_id))
+			h.cargo = {}
+			_show_cargo(sprite, {})
+			_spend(tree, "carreguim", day)
+			_play(sprite, "carregar")
+			return
+	sprite.global_position = sprite.global_position.move_toward(goal, SPEED * pace * delta)
+	sprite.flip_h = goal.x < sprite.global_position.x
+	_play(sprite, "move")
+
+
+var _chest_id := ""
+## Baú de destino do Carreguim nesta região: o escolhido no disco ou o mais perto.
+func chest_spot(tree: SceneTree, from: Vector2) -> Vector2:
+	var chosen := str(tree.get_meta("carreguim_chest", ""))
+	var best := Vector2.INF
+	var region_id := str(farm.get("field_id")) if farm else ""
+	for chest: Dictionary in PLACER.chests(tree):
+		if str(chest.region) != region_id: continue
+		var at: Vector2 = chest.at + Vector2(0, 14)
+		if str(chest.id) == chosen:
+			_chest_id = str(chest.id)
+			return at
+		if not best.is_finite() or at.distance_to(from) < best.distance_to(from):
+			best = at
+			_chest_id = str(chest.id)
+	return best
+
+
+## O que o Carreguim leva aparece flutuando dentro do corpo (ícone pequeno).
+static func _show_cargo(sprite: AnimatedSprite2D, cargo: Dictionary) -> void:
+	var icon := sprite.get_node_or_null("Cargo") as Sprite2D
+	if cargo.is_empty():
+		if icon: icon.queue_free()
+		return
+	if icon == null:
+		icon = Sprite2D.new()
+		icon.name = "Cargo"
+		icon.position = Vector2(0, -4)
+		icon.scale = Vector2(0.45, 0.45)
+		icon.modulate = Color(1, 1, 1, 0.8)
+		sprite.add_child(icon)
+	icon.texture = preload("res://scripts/systems/item_catalog.gd").icon(str(cargo.item))
 
 
 func _taken() -> Array:

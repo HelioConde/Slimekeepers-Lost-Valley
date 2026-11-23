@@ -101,6 +101,35 @@ func _collect(entry: Dictionary) -> void:
 		entry.speed = 0.0
 
 
+## Carreguim (farm_helpers.gd): reserva o item pronto mais perto de `at` (até `radius`)
+## e o tira do chão sem pôr na bolsa. Devolve {item, amount, at} ou {}.
+func claim(at: Vector2, radius: float) -> Dictionary:
+	var best: Dictionary = {}
+	var best_d := radius
+	for entry in drops:
+		var node: Node2D = entry.node
+		if not is_instance_valid(node) or not entry.ready or float(entry.speed) > 0.0: continue
+		var d := node.global_position.distance_to(at)
+		if d < best_d:
+			best = entry
+			best_d = d
+	if best.is_empty(): return {}
+	var out := {"item": str(best.item), "amount": int(best.amount), "at": (best.node as Node2D).global_position}
+	(best.node as Node).queue_free()
+	drops.erase(best)
+	return out
+
+
+## Item pronto mais perto (sem tirar do chão), para o Carreguim andar até ele.
+func nearest_ready(at: Vector2, radius: float) -> Vector2:
+	var best := Vector2.INF
+	for entry in drops:
+		var node: Node2D = entry.node
+		if is_instance_valid(node) and entry.ready and float(entry.speed) <= 0.0 and node.global_position.distance_to(at) < minf(radius, best.distance_to(at) if best.is_finite() else radius):
+			best = node.global_position
+	return best
+
+
 ## Itens ainda no chão (para testes e para recolher ao sair).
 func pending() -> int:
 	var total := 0
