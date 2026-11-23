@@ -53,7 +53,8 @@ func _on_period_changed(_period: StringName) -> void:
 
 func _update_display() -> void:
 	clock_label.text = "Dia %02d  •  %s" % [GameClock.day_number, GameClock.get_time_text()]
-	period_label.text = GameClock.get_period_label()
+	# Estação do ano (seasons.gd) junto do período: "Manhã · Primavera".
+	period_label.text = "%s · %s" % [GameClock.get_period_label(), preload("res://scripts/systems/seasons.gd").display(GameClock.day_number)]
 	var hour: int = GameClock.get_hour()
 	var night := hour < 6 or hour >= 19
 	_icon.texture = load("res://assets/ui/hud/icon_%s.png" % ("moon" if night else "sun"))

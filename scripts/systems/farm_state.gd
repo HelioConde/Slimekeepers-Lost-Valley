@@ -139,14 +139,17 @@ static func harvest(tree: SceneTree, cell: Vector2i, field: String = "vale", to_
 const IDLE_DAYS_TO_GRASS := 3
 
 
-static func advance_day(tree: SceneTree) -> void:
+## day: o dia que está começando (estações: fora da estação a cultura não cresce);
+## -1 = sem estação (testes antigos).
+static func advance_day(tree: SceneTree, day: int = -1) -> void:
 	var fields := _fields(tree)
 	for field in fields:
 		var cells: Dictionary = fields[field]
 		for cell in cells.keys():
 			var data: Dictionary = cells[cell]
 			var id := str(data.get("crop", ""))
-			if not id.is_empty() and bool(data.get("watered", false)):
+			var in_season := day < 0 or preload("res://scripts/systems/seasons.gd").grows(CROPS.CROPS.get(id, {}), day)
+			if not id.is_empty() and bool(data.get("watered", false)) and in_season:
 				# Adubada pelo Musguinho: cresce dois estágios de uma vez (gasta o adubo).
 				var growth := 2 if bool(data.get("fertilized", false)) else 1
 				data.erase("fertilized")
@@ -169,7 +172,7 @@ static func catch_up(tree: SceneTree, current_day: int) -> int:
 	var last := int(tree.get_meta(LAST_DAY_KEY, current_day))
 	var days := maxi(0, current_day - last)
 	for i in days:
-		advance_day(tree)
+		advance_day(tree, last + i)  # o dia que terminou (estação em que foi regada)
 	tree.set_meta(LAST_DAY_KEY, current_day)
 	return days
 
