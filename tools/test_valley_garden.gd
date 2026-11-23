@@ -88,7 +88,9 @@ func _run() -> void:
 		return
 	forest.player.global_position = friend.global_position + Vector2(0, 24)
 	await _settle()
+	await _hold_food()
 	await _press_e()
+	HOTBAR.select(self, -1)
 	_check(BAG.has_brotinho_friend(self), "Amizade verdadeira libera habilidade de coleta")
 	for id in ["bosque_cogumelos", "jardim_folhas"]:
 		var patch: Node2D = null
@@ -234,3 +236,12 @@ func _change_to_menu() -> void:
 func _finish() -> void:
 	print("VALLEY_GARDEN: %d checks; %d failures" % [checks, failures.size()])
 	quit(1 if not failures.is_empty() else 0)
+
+
+## Amizade é pela comida (2026-11-23): segura uma folha fresca na barra antes do [F].
+func _hold_food() -> void:
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var bar := preload("res://scripts/systems/hotbar_state.gd")
+	bag.add_item(self, "folhas_frescas", 1)
+	bar.select(self, bar.slots(self).find("folhas_frescas"))
+	await process_frame

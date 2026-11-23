@@ -92,6 +92,13 @@ func _compact_hud() -> void:
 	title_fade.tween_interval(3.0)
 	title_fade.tween_property(panel, "modulate:a", 0.0, 0.8)
 	title_fade.tween_callback(panel.hide)
+	# ADMIN (remover): comandos de teste em [F1], só em build de depuração.
+	# Ver scripts/debug/admin_commands.gd para remover tudo antes de lançar.
+	if OS.is_debug_build():
+		var admin: Node = preload("res://scripts/debug/admin_commands.gd").new()
+		admin.set("region", self)
+		add_child(admin)
+	# /ADMIN (remover)
 	# Retrato, vida e energia no canto (e o outro jogador abaixo no multijogador).
 	$HUD/Interface.add_child(preload("res://scripts/ui/player_status_hud.gd").new())
 	# Slime por perto: retrato, nome e corações do laço (exemplo de HUD do usuário).
@@ -378,9 +385,28 @@ func open_chest() -> void:
 func slime_food_hint(slime: Node2D) -> String:
 	var feeding := preload("res://scripts/systems/slime_feeding.gd")
 	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
-	if not bool(slime.get("befriended")) or not feeding.is_food(item): return ""
+	if not feeding.is_food(item): return ""  # amigo ou não: comida conquista a amizade
 	var items := preload("res://scripts/systems/item_catalog.gd")
 	return "[F] Dar %s a %s" % [str(items.info(item).name).to_lower(), slime.call("display_name")]
+
+
+## Slime por perto sem comida na mão: amigo aceita carinho; desconhecido desconfia
+## e só vira amigo comendo (pedido do usuário). Devolve a dica do HUD.
+func slime_greet_hint(slime: Node2D) -> String:
+	if bool(slime.get("befriended")): return "[F] Fazer carinho em " + str(slime.call("display_name"))
+	return "%s está desconfiado · escolha uma comida na barra e ofereça com [F]" % slime.call("display_name")
+
+
+## [F] sem comida: carinho no amigo; o desconhecido se afasta um pouco.
+func greet_slime(slime: Node2D) -> void:
+	var feeding := preload("res://scripts/systems/slime_feeding.gd")
+	if not bool(slime.get("befriended")):
+		if slime.has_method("react"): slime.call("react", "blink")
+		_notify("%s ainda não confia em você. Faça comida e ofereça para ganhar a amizade." % slime.call("display_name"))
+		return
+	if slime.has_method("react"): slime.call("react", "receber_carinho")
+	var hearts := feeding.hearts(get_tree(), str(slime.get("persistent_id")))
+	_notify("%s adora o carinho. Laço: %d/%d corações." % [slime.call("display_name"), hearts, feeding.MAX_HEARTS])
 
 
 ## [F] sem slime por perto: come a comida selecionada na barra e recupera energia

@@ -34,7 +34,7 @@ func test_frames_include_idle_walk_and_run_for_every_direction() -> void:
 	var player := _spawn_player()
 	var frames: SpriteFrames = player.sprite.sprite_frames
 	for direction in player.DIRS:
-		for prefix_and_count in [["idle_", 1], ["walk_", 6], ["run_", 8]]:
+		for prefix_and_count in [["idle_", 4], ["walk_", 6], ["run_", 8]]:  # idle = respiração em laço (4 quadros)
 			var anim: String = prefix_and_count[0] + direction
 			assert_bool(frames.has_animation(anim)).override_failure_message(anim).is_true()
 			assert_int(frames.get_frame_count(anim)).override_failure_message(anim).is_equal(prefix_and_count[1])

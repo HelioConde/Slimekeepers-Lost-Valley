@@ -9,10 +9,13 @@ const DATA := preload("res://data/crafting/recipes.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 
 
+## A bancada mostra tudo o que se faz com as mãos e na bancada (pedido do usuário:
+## todos os itens do jogo na mesa de trabalho); o fogão só as receitas dele.
 static func recipes(station: String = "") -> Array:
 	if station.is_empty():
 		return DATA.RECIPES
-	return DATA.RECIPES.filter(func(r: Dictionary) -> bool: return str(r.station) == station)
+	var allowed := ["maos", "bancada"] if station == "bancada" else [station]
+	return DATA.RECIPES.filter(func(r: Dictionary) -> bool: return str(r.station) in allowed)
 
 
 static func recipe(recipe_id: String) -> Dictionary:

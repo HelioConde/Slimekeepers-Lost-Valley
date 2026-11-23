@@ -80,7 +80,7 @@ func _rock_interaction() -> bool:
 	if r.is_empty(): return false
 	var player: Node2D = region.player
 	if str(r.kind) == "large":
-		region.hud_hint.text = "Pedra grande · precisa de uma picareta melhor"
+		region.hud_hint.text = "Essa pedra é muito grande. Que tal uma menor?"
 		return true
 	if BAG.count_item(get_tree(), "picareta") <= 0:
 		region.hud_hint.text = "Pedra média · precisa de uma picareta (fabrique na bancada)"
@@ -161,7 +161,7 @@ func _axe_interaction() -> bool:
 		return true
 	if t.kind == "tree" and not choppable.is_small(t.key):
 		# Machado de pedra só derruba árvores pequenas; as grandes esperam machados melhores.
-		region.hud_hint.text = "Árvore grande demais para o machado rudimentar · precisa de um machado melhor"
+		region.hud_hint.text = "Essa árvore é muito grande. Que tal uma menor?"
 		return true
 	var total: int = choppable.HITS_TO_FELL if t.kind == "tree" else choppable.HITS_TO_PROCESS
 	region.hud_hint.text = "[F] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]

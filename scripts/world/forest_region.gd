@@ -329,17 +329,11 @@ func _process(delta: float) -> void:
 	if closest != null:
 		# [F] com comida na mão dá ao amigo; senão faz amizade / cumprimenta.
 		var food := slime_food_hint(closest)
-		hud_hint.text = food if not food.is_empty() else ("[F] Fazer amizade com " if not closest.befriended else "[F] Cumprimentar ") + closest.display_name()
+		hud_hint.text = food if not food.is_empty() else slime_greet_hint(closest)
 		if not food.is_empty() and Input.is_action_just_pressed("interact"):
 			_offer_prototype_food(closest)
 			return
-		if Input.is_action_just_pressed("interact"):
-			if not closest.befriended:
-				closest.make_friend()
-				_update_hud()
-			if closest.has_method("react"): closest.call("react", "receber_carinho")
-			var hearts := FEEDING.hearts(get_tree(), str(closest.get("persistent_id")))
-			_notify("%s parece feliz com sua visita. Laço: %d/%d corações." % [closest.display_name(), hearts, FEEDING.MAX_HEARTS])
+		if Input.is_action_just_pressed("interact"): greet_slime(closest)
 		return
 	var seeds := _nearest_seed_patch()
 	if seeds != null:
@@ -387,7 +381,14 @@ func _offer_prototype_food(slime: Node2D) -> void:
 	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).
 	var item: String = HOTBAR.selected_item(get_tree())
 	if FEEDING.is_food(item):
-		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number, str(slime.get("slime_type")))
+		var stranger := not bool(slime.get("befriended"))  # comida é o que conquista a amizade
+		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), true, item, GameClock.day_number, str(slime.get("slime_type")))
+		if fed == "fed" and stranger:
+			slime.call("make_friend")
+			_update_hud()  # conta o amigo novo
+			_notify("%s aceitou a comida e agora confia em você! Com [F] você pode fazer carinho." % slime.display_name())
+			bag_hud.call("refresh")
+			return
 		if item == COOKING.RECIPE_ID and fed == "fed":
 			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true, false)  # só registra a primeira porção
 		match fed:

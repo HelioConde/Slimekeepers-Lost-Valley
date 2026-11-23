@@ -87,7 +87,7 @@ func run() -> void:
 			for i in 3: await process_frame
 			await press()
 			await create_timer(1.1).timeout
-			check(not chop.state(self).has(big_key) and str(region.hud_hint.text).contains("machado melhor"), "%s: árvore grande pede machado melhor" % name)
+			check(not chop.state(self).has(big_key) and str(region.hud_hint.text).contains("muito grande"), "%s: árvore grande sugere uma menor" % name)
 		# Árvore pequena mais longe do início cai (o Vale só tem árvores grandes).
 		if name == "vale":
 			check(small_key == "", "vale: só árvores grandes (machado rudimentar não corta)")

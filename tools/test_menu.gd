@@ -121,6 +121,7 @@ func _run() -> void:
 		var slime := slimes[index] as Node2D
 		player.global_position = slime.global_position + Vector2(0, 24)
 		await _settle()
+		await _hold_food()
 		await _key(KEY_F)
 		_check(bool(slime.get("befriended")), "F befriends actual slime %d" % (index + 1))
 		_check(int(world.get("friends_count")) == index + 1, "Mission counter updates from gameplay (%d/%d)" % [index + 1,expected_population])
@@ -198,3 +199,12 @@ func _finish() -> void:
 		_check(FileAccess.get_file_as_bytes("user://presentation.cfg") == _prefs_before, "Saved presentation preferences remain byte-identical")
 	print("MENU_INTEGRATION: %d checks, %d failures" % [checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)
+
+
+## Amizade é pela comida (2026-11-23): segura uma folha fresca na barra antes do [F].
+func _hold_food() -> void:
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var bar := preload("res://scripts/systems/hotbar_state.gd")
+	bag.add_item(self, "folhas_frescas", 1)
+	bar.select(self, bar.slots(self).find("folhas_frescas"))
+	await process_frame

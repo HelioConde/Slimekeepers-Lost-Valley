@@ -116,7 +116,7 @@ func run() -> void:
 	await snap("dica_3")
 	# 3+) Segue o que cada dica pede, na ordem em que aparecem.
 	var guard := 0
-	while TUT.active(self) and guard < 14:
+	while TUT.active(self) and guard < 16:
 		guard += 1
 		var title := hud_text()
 		var before := step()
@@ -157,6 +157,45 @@ func run() -> void:
 				player.facing = "north"
 				await key(KEY_F, 1.6)
 				await snap("golpe")
+			"Juntando madeira":
+				var chop: Node = region.get("choppable")
+				var tries := 0
+				while BAG.count_item(self, "madeira") < 6 and tries < 30:
+					tries += 1
+					var t: Dictionary = chop.target(player.global_position)
+					if t.is_empty() or (t.kind == "tree" and not chop.is_small(t.key)):
+						var best: Node2D
+						for k in chop.trees:
+							if chop.is_small(k) and not chop.state(self).has(k) and (best == null or chop.trees[k].global_position.distance_to(player.global_position) < best.global_position.distance_to(player.global_position)):
+								best = chop.trees[k]
+						await go_to(best.global_position + Vector2(0, 26))
+						player.facing = "north"
+					await key(KEY_F, 1.6)
+					var wait := Time.get_ticks_msec()
+					while region.get("item_drops").pending() > 0 and Time.get_ticks_msec() - wait < 5000: await process_frame
+					set_meta("player_energy", 100)  # o roteiro não para para dormir
+				for i in 3: await process_frame
+			"A bancada de trabalho":
+				BAG.add_item(self, "corda", 3)  # roteiro: as 3 cordas viriam de mais mato
+				BAG.add_item(self, "pedra_pequena", 4)
+				await key(KEY_B)
+				region.get("crafting_panel").call("_craft", "bancada")
+				await create_timer(0.3).timeout
+				await key(KEY_B)
+			"Colocando a bancada":
+				await key(KEY_1 + HOTBAR.slots(self).find("bancada"))
+				await go_to(player.global_position + Vector2(0, 80))
+				player.facing = "south"
+				await snap("colocar")
+				await key(KEY_F)
+			"Usando a bancada":
+				await snap("usar")
+				var placer: Node = region.get("placer")
+				var bench: Node2D = placer.get("_stations")[0]
+				await go_to(bench.global_position + Vector2(0, 20))
+				await key(KEY_F)
+				await snap("bancada_aberta")
+				await key(KEY_B)
 			"Amigos slimes":
 				var slime: Node2D = get_nodes_in_group("living_slimes")[0]
 				await go_to(slime.global_position + Vector2(-30, 0))

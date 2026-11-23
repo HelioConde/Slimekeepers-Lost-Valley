@@ -70,6 +70,6 @@ func run() -> void:
 	player.global_position = big.at + Vector2(0, 40)
 	for i in 4: await physics_frame
 	for i in 3: await process_frame
-	check(str(region.hud_hint.text).contains("picareta melhor"), "pedra grande pede picareta melhor (%s)" % region.hud_hint.text)
+	check(str(region.hud_hint.text).contains("muito grande"), "pedra grande sugere uma menor (%s)" % region.hud_hint.text)
 	print("ROCKS: %d failures" % failures)
 	quit(1 if failures else 0)

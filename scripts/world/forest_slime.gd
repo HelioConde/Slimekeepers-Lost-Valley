@@ -102,8 +102,11 @@ func react(kind: String) -> void:
 		sprite.flip_h = player.global_position.x < global_position.x
 		if player.has_method("face"): player.face(global_position)  # os dois se olham
 	if sprite.sprite_frames.has_animation(kind): sprite.play(kind)
-	_squash()
-	_float_heart(Vector2.ZERO, 0.0)
+	if kind in ["receber_carinho", "comer"]:
+		_squash()
+		_float_heart(Vector2.ZERO, 0.0)
+	else:
+		_float_heart(Vector2.ZERO, 0.0, NOTICE)  # desconfiado: só olha, sem coração
 
 
 ## "!" de pixel no balão claro: o slime notou o jogador.

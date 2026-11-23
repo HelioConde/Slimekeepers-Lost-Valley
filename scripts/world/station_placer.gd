@@ -1,7 +1,7 @@
 extends Node2D
 ## Construção posicionável (CRIACAO.md, etapa 4): com a bancada selecionada na barra,
-## uma prévia aparece à frente do jogador (verde = pode, vermelha = não pode) e [F]
-## a coloca no mundo, gastando o item. Bancadas colocadas ficam salvas por região
+## uma prévia segue o mouse (dentro de PLACE_REACH; sem mouse perto, fica à frente do
+## jogador), verde = pode, vermelha = não pode; clique ou [F] a coloca, gastando o item. Bancadas colocadas ficam salvas por região
 ## (PLACED_KEY) e [F] perto de uma abre a janela de fabricação no modo bancada.
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -11,6 +11,8 @@ const ART := preload("res://assets/world/crafting/workbench.png")
 const FOOTPRINT := Vector2(44, 16)  # base sólida (pés da bancada)
 const AHEAD := 44.0
 const USE_REACH := 48.0
+const PLACE_REACH := 150.0
+var _click := false  # clique esquerdo neste quadro (coloca onde o mouse está)
 const DIRS := {"south": Vector2(0, 1), "north": Vector2(0, -1), "east": Vector2(1, 0), "west": Vector2(-1, 0),
 	"south-east": Vector2(1, 1), "south-west": Vector2(-1, 1), "north-east": Vector2(1, -1), "north-west": Vector2(-1, -1)}
 
@@ -51,8 +53,18 @@ func _saved() -> Array:
 
 
 func spot_for(player: Node2D) -> Vector2:
+	var mouse := get_global_mouse_position()
+	if mouse.distance_to(player.global_position) <= PLACE_REACH and get_viewport().get_visible_rect().has_point(get_viewport().get_mouse_position()):
+		return mouse.round()  # prévia segue o mouse
 	var dir: Vector2 = DIRS.get(str(player.get("facing")), Vector2(0, 1))
 	return (player.global_position + dir.normalized() * AHEAD).round()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	var mouse := event as InputEventMouseButton
+	if mouse and mouse.pressed and mouse.button_index == MOUSE_BUTTON_LEFT and is_instance_valid(_ghost) and _ghost.visible:
+		_click = true
+		get_viewport().set_input_as_handled()  # o clique é da construção, não do [F]
 
 
 func can_place(at: Vector2) -> bool:
@@ -78,7 +90,9 @@ func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
 		var ok := can_place(at)
 		_ghost.global_position = at
 		_ghost.modulate = Color(0.6, 1.0, 0.6, 0.7) if ok else Color(1.0, 0.45, 0.45, 0.7)
-		if interact and ok:
+		var place := interact or _click
+		_click = false
+		if place and ok:
 			BAG.spend_item(get_tree(), "bancada")
 			_spawn(at)
 			var saved := _saved().duplicate()
@@ -86,7 +100,7 @@ func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
 			get_tree().set_meta(PLACED_KEY, saved)
 			_ghost.visible = false
 			return "placed"
-		return "[F] Colocar a bancada aqui" if ok else "Aqui não dá para colocar a bancada"
+		return "Clique ou [F] para colocar a bancada" if ok else "Aqui não dá para colocar a bancada"
 	var near := nearest_station(player.global_position)
 	if near != null:
 		if interact: open_bench.call()

@@ -73,15 +73,31 @@ func run() -> void:
 	await key(KEY_E)
 	check(not craft.visible and region.get("inventory_panel").visible, "[E] na fabricação troca para a mochila")
 	await key(KEY_E)
+	check(int(get_meta(TUT.KEY)) == 5 and hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_esq")), "dica do machado mostra o ícone do clique")
 	await key(KEY_TAB)
 	check(int(get_meta(TUT.KEY)) == 6, "[Tab] pula a dica")
+	check(hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_roda")), "dica da barra mostra o ícone da roda")
+	if out != "":
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("%s/tutorial_mouse.png" % out)
 	await key(KEY_TAB)
-	set_meta("forest_slime_friends", {"brotinho/x/0": true})
+	BAG.add_item(self, "madeira", 6)
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 8, "amizade passa a dica")
+	check(int(get_meta(TUT.KEY)) == 8 and str(hud._footer.text).contains("Madeira 6/6"), "6 madeiras passam para a bancada (%s)" % hud._footer.text)
+	BAG.add_item(self, "bancada")
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 9, "fazer a bancada passa para colocar")
+	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0}])
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 10, "colocar passa para usar")
+	craft.call("open", "bancada")
+	for i in 3: await process_frame
+	check(int(get_meta(TUT.KEY)) == 11, "abrir a bancada passa para o fim")
+	craft.call("close")
 	await key(KEY_TAB)
 	for i in 3: await process_frame
 	check(not hud.visible and not TUT.active(self), "tutorial termina e some")
+	remove_meta("placed_stations")
 	# Construir casa pelo botão da fabricação; [B] sai do modo construir.
 	await key(KEY_B)
 	craft.call("start_building")

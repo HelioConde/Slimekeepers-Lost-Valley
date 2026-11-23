@@ -14,16 +14,20 @@ const PAPER := Color("#f6ead0")
 const EDGE := Color("#6b4a32")
 const TAB := Color("#5c2a35")
 ## [título, texto com [TECLA], condição para passar]. Condições em _done().
+## [esq] = ícone do mouse com o botão esquerdo; [roda] = ícone da roda do mouse.
 const STEPS := [
 	["Vamos começar pelo básico!", "Use as teclas [W] [A] [S] [D] para andar. Segure [Shift] para correr.", "walk"],
-	["Coletando recursos", "Junte 2 gravetos e 2 pedrinhas: chegue perto e aperte [F] (ou clique). Andar cancela.", "pick"],
-	["Arrancando mato", "Agora o mato: aperte [F] perto de um tufo e espere arrancar. Junte 3 fibras.", "fiber"],
+	["Coletando recursos", "Junte 2 gravetos e 2 pedrinhas: chegue perto e aperte [F] ou [esq] (andar cancela)", "pick"],
+	["Arrancando mato", "Aperte [F] perto de um tufo de mato e espere arrancar. Junte 3 fibras.", "fiber"],
 	["Sua mochila", "Aperte [E] para ver a mochila. [E] de novo fecha.", "bag"],
-	["Fabricando corda", "Aperte [B] e clique na corda: 3 fibras viram 1 corda.", "rope"],
-	["Seu primeiro machado", "No [B], clique no machado: corda, 2 gravetos e 2 pedrinhas.", "axe"],
-	["Cortando árvores", "Escolha o machado na barra (teclas [1] a [0] ou roda do mouse). Perto de uma árvore pequena, segure [F] ou o clique.", "swing"],
-	["Amigos slimes", "Chegue perto de um slime e aperte [F] para fazer amizade.", "friend"],
-	["Sua casa", "Em [B], \"Construir casa\" abre o modo construir. Dormir na cama salva o jogo.", "read"],
+	["Fabricando corda", "Aperte [B] e clique [esq] na corda: 3 fibras viram 1 corda.", "rope"],
+	["Seu primeiro machado", "No [B], clique [esq] no machado: corda, 2 gravetos e 2 pedrinhas.", "axe"],
+	["Cortando árvores", "Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]", "swing"],
+	["Juntando madeira", "Derrube árvores pequenas e corte o tronco caído até juntar 6 madeiras.", "wood"],
+	["A bancada de trabalho", "No [B], faça a bancada: 6 madeiras, 3 cordas e 4 pedrinhas. Mais mato dá mais corda.", "bench"],
+	["Colocando a bancada", "Escolha a bancada na barra e clique [esq] no chão onde quer colocar.", "place"],
+	["Usando a bancada", "Chegue perto da bancada e aperte [F] ou [esq] para abrir", "use"],
+	["Pronto!", "Na bancada você fabrica todos os itens do jogo. Bom começo!", "read"],
 ]
 const READ_SECONDS := 9.0
 const WIDTH := 330.0
@@ -38,7 +42,10 @@ var _footer: Label
 var _tab: PanelContainer
 var _tail: Control
 var _walked := 0.0
-var _bag_seen := false  ## mochila já abriu nesta dica (passa ao fechar)
+var _bag_seen := false
+var _highlight: Node2D  ## anel branco piscando nos alvos (tutorial_highlight.gd)
+var _scan := 0.0
+const NEAR := 460.0  ## só destaca alvos perto do jogador  ## mochila já abriu nesta dica (passa ao fechar)
 var _time := 0.0
 
 
@@ -90,6 +97,9 @@ func _ready() -> void:
 	_tab.add_theme_stylebox_override("panel", tab_style)
 	_tab.add_child(_text(str(who.get("name", "")), 13, PAPER))
 	add_child(_tab)
+	if region:
+		_highlight = preload("res://scripts/ui/tutorial_highlight.gd").new()
+		region.add_child.call_deferred(_highlight)
 	# Rabinho do balão apontando para a cabeça (desenhado: triângulo com borda).
 	_tail = Control.new()
 	_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -143,6 +153,38 @@ func _keycap(key: String) -> Control:
 	return cap
 
 
+## Mouse em pixel art (pedido do usuário: ícone no lugar de "mouse"/"roda do mouse"):
+## botão esquerdo ou roda em vermelho. X contorno, L/R botões, W roda, B corpo.
+const MOUSE_ROWS := [".XXXXXXXXX.", "XLLLXWXRRRX", "XLLLXWXRRRX", "XLLLXWXRRRX", "XLLLXXXRRRX", "XXXXXXXXXXX",
+	"XBBBBBBBBBX", "XBBBBBBBBBX", "XBBBBBBBBBX", "XBBBBBBBBBX", ".XBBBBBBBX.", "..XXXXXXX.."]
+
+
+static func mouse_texture(part: String) -> ImageTexture:
+	var image := Image.create(11, MOUSE_ROWS.size(), false, Image.FORMAT_RGBA8)
+	var hot := Color("#d8434a")
+	var shell := Color("#fffaf0")
+	for y in MOUSE_ROWS.size():
+		for x in 11:
+			match str(MOUSE_ROWS[y][x]):
+				"X": image.set_pixel(x, y, INK)
+				"L": image.set_pixel(x, y, hot if part == "esq" else shell)
+				"W": image.set_pixel(x, y, hot if part == "roda" else shell)
+				"R", "B": image.set_pixel(x, y, shell)
+	return ImageTexture.create_from_image(image)
+
+
+func _mouse_icon(part: String) -> Control:
+	var icon := TextureRect.new()
+	icon.name = "Mouse_" + part
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	icon.texture = mouse_texture(part)
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(14, 16)  # do tamanho da tecla desenhada
+	return icon
+
+
 static func active(tree: SceneTree) -> bool:
 	return tree.has_meta(KEY) and int(tree.get_meta(KEY)) < STEPS.size()
 
@@ -160,7 +202,8 @@ func _show() -> void:
 	for word in str(data[1]).split(" "):
 		var close := word.find("]")
 		if word.begins_with("[") and close > 0:
-			_body.add_child(_keycap(word.substr(1, close - 1)))
+			var token := word.substr(1, close - 1)
+			_body.add_child(_mouse_icon(token) if token in ["esq", "roda"] else _keycap(token), true)  # nome legível mesmo com os antigos saindo
 			if close + 1 < word.length(): _body.add_child(_text(word.substr(close + 1), 13, INK))
 		else:
 			_body.add_child(_text(word, 13, INK))
@@ -180,7 +223,12 @@ func advance() -> void:
 func _process(delta: float) -> void:
 	if not active(get_tree()):
 		visible = false
+		if is_instance_valid(_highlight): _highlight.targets = []
 		return
+	_scan -= delta
+	if _scan <= 0.0 and is_instance_valid(_highlight):
+		_scan = 0.4
+		_highlight.targets = _targets(str(STEPS[step()][2]))
 	if not visible: _show()  # começou agora (fim do despertar)
 	_follow()
 	_time += delta
@@ -230,6 +278,15 @@ func _done(kind: String, delta: float) -> bool:
 			return _has(tree, ["corda", "machado"])
 		"axe":
 			return _has(tree, ["machado"])
+		"wood":
+			return BAG.count_item(tree, "madeira") >= 6 or _has(tree, ["bancada"]) or _placed()
+		"bench":
+			return _has(tree, ["bancada"]) or _placed()
+		"place":
+			return _placed()
+		"use":
+			var craft: Variant = region.get("crafting_panel") if region else null
+			return _open("crafting_panel") and str((craft as Node).get("station")) == "bancada"
 		"swing":
 			var player: Node = region.get("player") if region else null
 			return is_instance_valid(player) and player.has_method("is_using_tool") and player.is_using_tool() and str(player.get("current_animation")).begins_with("axe")
@@ -238,6 +295,43 @@ func _done(kind: String, delta: float) -> bool:
 				if not (tree.get_meta(key, {}) as Dictionary).is_empty(): return true
 			return false
 	return _time > READ_SECONDS
+
+
+## Onde a dica manda ir: [pé no mundo, raio do anel], os mais perto do jogador.
+func _targets(kind: String) -> Array:
+	var player: Node2D = region.get("player") if region else null
+	if not is_instance_valid(player): return []
+	var from := player.global_position
+	var found: Array = []
+	var items := {"pick": ["graveto", "pedra_pequena"], "fiber": ["fibra"]}
+	if kind == "bench":  # bancada: destaca o que ainda falta (mato vira corda, pedrinhas)
+		var want: Array = []
+		if BAG.count_item(get_tree(), "corda") + BAG.count_item(get_tree(), "fibra") / 3 < 3: want.append("fibra")
+		if BAG.count_item(get_tree(), "pedra_pequena") < 4: want.append("pedra_pequena")
+		items["bench"] = want
+	if items.has(kind):
+		var forage: Node = region.get("forage")
+		var day: int = get_tree().root.get_node("GameClock").day_number
+		if is_instance_valid(forage):
+			for spot: Dictionary in forage.spots:
+				if str(spot.item) in items[kind] and spot.at.distance_to(from) < NEAR and not forage.is_taken(get_tree(), spot.id, day):
+					found.append([spot.at, 14.0 if kind == "pick" else 18.0])
+	elif kind in ["swing", "wood"]:
+		var chop: Node = region.get("choppable")
+		if is_instance_valid(chop):
+			var cut: Dictionary = chop.state(get_tree())
+			for key: String in chop.trees:
+				var tree: Node2D = chop.trees[key]
+				if tree.global_position.distance_to(from) > NEAR or not chop.is_small(key): continue
+				if cut.has(key):  # tronco caído ainda não processado também vale madeira
+					if not bool(cut[key].get("processed", false)): found.append([chop.log_position(key), 20.0])
+				else: found.append([tree.global_position, 24.0])
+	elif kind == "use":
+		var placer: Node = region.get("placer")
+		if is_instance_valid(placer):
+			for station: Node2D in placer.get("_stations"): found.append([station.global_position, 30.0])
+	found.sort_custom(func(a: Array, b: Array) -> bool: return (a[0] as Vector2).distance_to(from) < (b[0] as Vector2).distance_to(from))
+	return found.slice(0, 6)
 
 
 ## Contagem do que a dica pede (ex.: "Gravetos 1/2 · Pedrinhas 0/2   ").
@@ -250,7 +344,17 @@ func _progress(kind: String) -> String:
 			parts.append("Pedrinhas %d/2" % mini(2, BAG.count_item(tree, "pedra_pequena")))
 		"fiber":
 			parts.append("Fibras %d/3" % mini(3, BAG.count_item(tree, "fibra")))
+		"wood":
+			parts.append("Madeira %d/6" % mini(6, BAG.count_item(tree, "madeira")))
+		"bench":
+			parts.append("Madeira %d/6" % mini(6, BAG.count_item(tree, "madeira")))
+			parts.append("Cordas %d/3" % mini(3, BAG.count_item(tree, "corda")))
+			parts.append("Pedrinhas %d/4" % mini(4, BAG.count_item(tree, "pedra_pequena")))
 	return "" if parts.is_empty() else " · ".join(parts) + "     "
+
+
+func _placed() -> bool:
+	return not (get_tree().get_meta("placed_stations", []) as Array).is_empty()
 
 
 static func _has(tree: SceneTree, items: Array) -> bool:
