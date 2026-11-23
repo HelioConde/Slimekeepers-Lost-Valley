@@ -89,6 +89,10 @@ func _compact_hud() -> void:
 	title_fade.tween_property(panel, "modulate:a", 0.0, 0.8)
 	title_fade.tween_callback(panel.hide)
 	$HUD/Interface.add_child(preload("res://scripts/ui/energy_hud.gd").new())
+	# Slime por perto: retrato, nome e corações do laço (exemplo de HUD do usuário).
+	var bond := preload("res://scripts/ui/slime_bond_hud.gd").new()
+	bond.source = _closest_slime
+	$HUD/Interface.add_child(bond)
 	var hint: PanelContainer = $HUD/Interface/InteractionHint
 	hint.hide()  # tutorial de teclas removido; ações aparecem na barra de itens
 	hint.anchor_left = 0.5

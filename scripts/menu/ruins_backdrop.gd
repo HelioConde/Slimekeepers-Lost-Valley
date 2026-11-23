@@ -40,7 +40,7 @@ var _clouds: Array[Sprite2D] = []
 var _glows: Array[Sprite2D] = []
 var _particles: Array[CPUParticles2D] = []
 var _materials: Array[ShaderMaterial] = []
-var _look := Vector2.ZERO
+
 var shafts: Array = []  # [{top, bottom, alpha, color, width}] como em ambient_lights
 var _shaft_layer: Node2D
 var _pool_layer: Node2D
@@ -61,8 +61,8 @@ func _ready() -> void:
 		add_child(sprite)
 		_layers[spec[0]] = sprite
 	_add_clouds()
-	_layers.Ruins.material = _shader("water_flow", {"flow": Vector2(0, 1), "bands": 30.0})
-	_layers.Ground.material = _shader("water_flow", {"flow": Vector2(-0.4, 1), "bands": 18.0, "strength": 0.22})
+	_layers.Ruins.material = _shader("water_flow", {"flow": Vector2(0, 1), "bands": 30.0, "grass_sway": 1.0})
+	_layers.Ground.material = _shader("water_flow", {"flow": Vector2(-0.4, 1), "bands": 18.0, "strength": 0.22, "grass_sway": 1.0})
 	_layers.Tree.material = _shader("foliage_sway", {"rooted": 0.42, "amount_px": 1.0})
 	_add_sunlight()
 	_add_glow_props()
@@ -261,6 +261,20 @@ func _add_particles() -> void:
 		var at: Vector2 = CRYSTAL_SPOTS[i] if i < CRYSTAL_SPOTS.size() else Vector2(404, 226)
 		_particles.append(_emitter("Sparks%d" % i, at, Vector2(6, 4), 5, 2.4,
 			Color(0.6, 0.95, 1.0), 1.0, Vector2(0, -7), 3.0, true))
+	# Partículas de luz que surgem e somem no ar (pólen dourado nos raios de sol).
+	_particles.append(_emitter("LightMotes", Vector2(300, 140), Vector2(170, 90), 26, 4.0,
+		Color(1.0, 0.9, 0.6), 1.0, Vector2(2, -2), 3.0, true))
+	# Vento: traços finos e claros atravessando o vale da esquerda para a direita.
+	var wind := _emitter("Wind", Vector2(200, 150), Vector2(220, 90), 6, 2.6,
+		Color(1.0, 1.0, 1.0, 0.35), 1.0, Vector2.ZERO, 0.0, false)
+	var streak := Image.create(10, 1, false, Image.FORMAT_RGBA8)
+	for x in 10: streak.set_pixel(x, 0, Color(1, 1, 1, 0.2 + 0.08 * x))
+	wind.texture = ImageTexture.create_from_image(streak)
+	wind.direction = Vector2.RIGHT
+	wind.spread = 4.0
+	wind.initial_velocity_min = 70.0
+	wind.initial_velocity_max = 110.0
+	_particles.append(wind)
 
 
 func _emitter(node_name: String, at: Vector2, half: Vector2, amount: int, life: float,
@@ -318,12 +332,4 @@ func _process(delta: float) -> void:
 	for i in _dapples.size():
 		_dapples[i].modulate.a = LIGHTS.DAPPLE_STRENGTH * (0.7 + 0.3 * sin(age * 1.1 - _dapples[i].position.x * 0.05))
 	_update_shafts()
-	# Parallax suave pelo mouse + leve respiração do cenário (quase imperceptível).
-	var view := get_viewport().get_visible_rect().size
-	var mouse := get_viewport().get_mouse_position()
-	var target := ((mouse / view) - Vector2(0.5, 0.5)).clamp(Vector2(-0.5, -0.5), Vector2(0.5, 0.5))
-	target += Vector2(sin(age * 0.11), cos(age * 0.07)) * 0.12
-	_look = _look.lerp(target, minf(1.0, delta * 2.0))
-	for layer: Sprite2D in _layers.values():
-		var home: Vector2 = layer.get_meta("home")
-		layer.position = home - (_look * float(layer.get_meta("depth"))).round()
+	# Camadas paradas (o usuário achou estranho o parallax): só o vento anima a cena.

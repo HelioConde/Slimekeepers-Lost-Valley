@@ -161,7 +161,7 @@ func _build_buttons() -> void:
 					button.tooltip_text = "Durma na sua casa para salvar o jogo."
 					button.focus_mode = Control.FOCUS_NONE
 			"Multijogador (MP)": button.pressed.connect(_show_notice.bind("Multijogador",
-				["O modo multijogador ainda está em desenvolvimento.","Por enquanto, a jornada é para um jogador."]))
+				["O modo multijogador ainda está em desenvolvimento.","Ele será P2P pela Steam.","Por enquanto, a jornada é para um jogador."]))
 			"Configurações": button.pressed.connect(_show_options)
 			"Créditos": button.pressed.connect(_show_notice.bind("Créditos",
 				["Slimekeepers: Lost Valley","Criação e direção: Helio Conde","Motor: Godot Engine 4.7",

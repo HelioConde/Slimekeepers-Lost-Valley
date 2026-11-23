@@ -5,8 +5,8 @@ extends PanelContainer
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
-const ITEM_SLOT := preload("res://scripts/ui/item_slot.gd")
-const SLOT := 36
+const SKIN := preload("res://scripts/ui/hud_skin.gd")
+const SLOT := 48
 const REFRESH_SECONDS := 0.25
 
 var _slots: Array[PanelContainer] = []
@@ -23,7 +23,7 @@ func _ready() -> void:
 	name = "Hotbar"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# Centralizada, logo acima da linha de dicas (que ocupa os últimos 44 px).
-	var width := HOTBAR.SLOTS * SLOT + (HOTBAR.SLOTS - 1) * 2 + 6
+	var width := HOTBAR.SLOTS * SLOT + (HOTBAR.SLOTS - 1) * 3 + 44
 	anchor_left = 0.5
 	anchor_right = 0.5
 	anchor_top = 1.0
@@ -31,14 +31,9 @@ func _ready() -> void:
 	offset_left = -width * 0.5
 	offset_right = width * 0.5
 	offset_bottom = -8
-	offset_top = -8 - (SLOT + 22)
-	var frame := StyleBoxFlat.new()
-	frame.bg_color = Color("#3b2a20e6")
-	frame.border_color = Color("#7a5236")
-	frame.set_border_width_all(2)
-	frame.set_corner_radius_all(4)
-	frame.set_content_margin_all(3)
-	add_theme_stylebox_override("panel", frame)
+	offset_top = -8 - (SLOT + 44)
+	# Painel de madeira com folhas (exemplo do usuário, 2026-11-23).
+	add_theme_stylebox_override("panel", SKIN.panel(22, 9))
 	var column := VBoxContainer.new()
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	column.add_theme_constant_override("separation", 1)
@@ -46,42 +41,54 @@ func _ready() -> void:
 	_name_label = Label.new()
 	_name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_name_label.add_theme_font_override("font", FONT)
-	_name_label.add_theme_font_size_override("font_size", 12)
-	_name_label.add_theme_color_override("font_color", Color("#f6e8c2"))
+	_name_label.add_theme_font_size_override("font_size", 14)
+	_name_label.add_theme_color_override("font_color", SKIN.INK)
 	column.add_child(_name_label)
 	var row := HBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_theme_constant_override("separation", 2)
+	row.add_theme_constant_override("separation", 3)
 	column.add_child(row)
 	for index in HOTBAR.SLOTS:
 		var slot := PanelContainer.new()
 		slot.custom_minimum_size = Vector2(SLOT, SLOT)
 		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_theme_stylebox_override("panel", ITEM_SLOT.slot_style())
+		slot.add_theme_stylebox_override("panel", SKIN.slot(false))
 		row.add_child(slot)
 		var icon := TextureRect.new()
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		# Ícone no tamanho nativo (32 px), centrado: escala inteira, sem borrar.
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(icon)
 		var count := Label.new()
 		count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		count.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 		count.add_theme_font_override("font", FONT)
-		count.add_theme_font_size_override("font_size", 11)
+		count.add_theme_font_size_override("font_size", 14)
 		count.add_theme_color_override("font_color", Color("#fff6dc"))
 		count.add_theme_color_override("font_outline_color", Color("#2b1d16"))
 		count.add_theme_constant_override("outline_size", 3)
 		count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(count)
-		var key := Label.new()
-		key.text = str((index + 1) % 10)
-		key.add_theme_font_override("font", FONT)
-		key.add_theme_font_size_override("font_size", 9)
-		key.add_theme_color_override("font_color", Color("#e8d3a8"))
-		key.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.add_child(key)
+		# Número do espaço numa plaquinha clara no canto (como no exemplo).
+		var badge := Label.new()
+		badge.text = str(index + 1)
+		badge.add_theme_font_override("font", FONT)
+		badge.add_theme_font_size_override("font_size", 10)
+		badge.add_theme_color_override("font_color", SKIN.INK)
+		var badge_style := StyleBoxFlat.new()
+		badge_style.bg_color = SKIN.CREAM
+		badge_style.border_color = Color("#7a5236")
+		badge_style.set_border_width_all(1)
+		badge_style.set_corner_radius_all(2)
+		badge_style.content_margin_left = 2
+		badge_style.content_margin_right = 2
+		badge.add_theme_stylebox_override("normal", badge_style)
+		badge.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		badge.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		slot.add_child(badge)
 		var ring := Panel.new()
 		var ring_style := StyleBoxFlat.new()
 		ring_style.draw_center = false
@@ -131,6 +138,7 @@ func refresh() -> void:
 	for index in items.size():
 		var item := items[index]
 		_rings[index].visible = index == selected
+		_slots[index].add_theme_stylebox_override("panel", SKIN.slot(index == selected))
 		_icons[index].texture = ITEMS.icon(item) if not item.is_empty() else null
 		var amount := HOTBAR.count(tree, item)
 		_counts[index].text = str(amount) if amount > 0 else ""
@@ -143,8 +151,8 @@ func _update_title() -> void:
 	var hint := hint_source.text if is_instance_valid(hint_source) else ""
 	if hint.begins_with("["):
 		_name_label.text = hint
-		_name_label.add_theme_color_override("font_color", Color("#ffd98a"))
+		_name_label.add_theme_color_override("font_color", Color("#7a2e12"))
 		return
 	var current := HOTBAR.selected_item(get_tree())
 	_name_label.text = str(ITEMS.info(current).name) if not current.is_empty() else "Mão livre"
-	_name_label.add_theme_color_override("font_color", Color("#f6e8c2"))
+	_name_label.add_theme_color_override("font_color", SKIN.INK)

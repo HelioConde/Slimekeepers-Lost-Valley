@@ -93,11 +93,11 @@ func run():
   check(region.find_children("*","CanvasModulate",true,false).size()==1,"Exactly one ambient controller: "+path)
   var widget:Control=region.get_node("HUD/Interface/DayClock")
   check(widget.get_canvas()!=region.get_canvas(),"Clock uses independent HUD canvas")
-  check(widget.get_node("ClockText").get_theme_font("font").resource_path.ends_with("PixelifySans.ttf"),"HUD theme available")
+  check(widget.find_child("ClockText", true, false).get_theme_font("font").resource_path.ends_with("PixelifySans.ttf"),"HUD theme available")
   clock.set_time(22)
   await settle()
   check(distance(region.get_node("DayNightLighting").color,clock.get_lighting_color())<.001,"Region applies current time without entry flash")
-  check(widget.get_node("ClockText").text.contains("22:00") and widget.get_node("ClockText").text.contains("Noite"),"HUD updates from global clock")
+  check(widget.find_child("ClockText", true, false).text.contains("22:00") and widget.find_child("PeriodText", true, false).text.contains("Noite"),"HUD updates from global clock")
   for resolution in [Vector2i(960,540),Vector2i(1280,720),Vector2i(1920,1080)]:
    root.size=resolution
    root.content_scale_size=Vector2i(960,540)

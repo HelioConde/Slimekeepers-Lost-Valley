@@ -59,3 +59,4 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [ ] **P2** Remover/arquivar cena e ferramentas obsoletas (`world.tscn`, `test_clearing.gd`, `build_forest_v2.gd`) — pedir confirmação
 - [ ] **P2** Commitar a correção do servidor `godot-mcp` (porta ocupada) no repositório dele
 - [ ] **P3** Integrar `feat/visual-ambient-lights` na `main` (precisa de autorização)
+- [ ] **P3** Multijogador P2P pela Steam (decisão do usuário, 2026-11-23). Precisa de uma integração Steam (ex.: GodotSteam GDExtension): instalar só com revisão e aprovação; App ID e modo (cooperativo ou não) A DEFINIR
