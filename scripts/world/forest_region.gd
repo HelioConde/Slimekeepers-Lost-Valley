@@ -318,6 +318,7 @@ func _process(delta: float) -> void:
 			if not closest.befriended:
 				closest.make_friend()
 				_update_hud()
+			if closest.has_method("react"): closest.call("react", "receber_carinho")
 			var hearts := FEEDING.hearts(get_tree(), str(closest.get("persistent_id")))
 			_notify("%s parece feliz com sua visita. Laço: %d/%d corações." % [closest.display_name(), hearts, FEEDING.MAX_HEARTS])
 		return
@@ -372,7 +373,8 @@ func _offer_prototype_food(slime: Node2D) -> void:
 			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true, false)  # só registra a primeira porção
 		match fed:
 			"fed":
-				slime.set("_happy_time", 2.4)
+				if slime.has_method("react"): slime.call("react", "comer")
+				else: slime.set("_happy_time", 2.4)
 				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
 				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
 			"needs_friendship": _notify("Primeiro conheça este slime usando F.")

@@ -20,6 +20,8 @@ var _rng := RandomNumberGenerator.new()
 var _target := Vector2.ZERO
 var _decision_time := 1.0
 var _happy_time := 0.0
+## Reação ao jogador enquanto feliz: "comer" (alimentado) ou "receber_carinho" (cumprimentado).
+var reaction := ""
 var _hop_time := 0.0
 var _social_cooldown := 0.0
 var _curiosity_cooldown := 0.0
@@ -86,6 +88,14 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, 12.0 - lift * 0.5, Color(0.06, 0.11, 0.08, 0.18 - lift * 0.025))
 	draw_set_transform(Vector2.ZERO)
 
+## Interação com o jogador: toca a reação (sprite novo do Brotinho tem "comer" e
+## "receber_carinho"; quem não tem usa "happy").
+func react(kind: String) -> void:
+	reaction = kind
+	_happy_time = 2.4
+	if is_instance_valid(sprite) and sprite.sprite_frames.has_animation(kind): sprite.play(kind)
+
+
 func display_name() -> String:
 	return str(personality.name)
 
@@ -105,6 +115,7 @@ func make_friend() -> bool:
 func _physics_process(delta: float) -> void:
 	_update_swimming()
 	_happy_time = maxf(0.0, _happy_time - delta)
+	if _happy_time <= 0.0: reaction = ""
 	if not is_instance_valid(player) or not is_instance_valid(manager):
 		return
 	if global_position.distance_squared_to(player.global_position) > ACTIVE_DISTANCE * ACTIVE_DISTANCE:
@@ -293,7 +304,7 @@ func _idle_animation() -> void:
 		queue_redraw()
 	var animation := "idle"
 	if _happy_time > 0.0:
-		animation = "happy"
+		animation = reaction if not reaction.is_empty() and sprite.sprite_frames.has_animation(reaction) else "happy"
 	elif behavior == "sleep":
 		animation = "sleep"
 	elif behavior == "curious":
