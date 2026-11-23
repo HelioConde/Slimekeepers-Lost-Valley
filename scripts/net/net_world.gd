@@ -5,11 +5,15 @@ extends Node
 ## inteiro para o outro, que grava e redesenha a região.
 ## shortcut: última escrita vence por chave (dois jogadores mexendo na mesma chave no
 ## mesmo meio segundo perdem uma ação); trocar por diferenças por item se incomodar.
-## Itens soltos no chão ainda não sincronizam.
+## Itens soltos no chão não sincronizam de propósito: vão para quem coletou (evita
+## duplicar itens). Relógio: o anfitrião manda a hora a cada CLOCK_EVERY s.
 
 const KEYS := ["farm_cells", "forage_taken", "rocks_broken", "chopped_trees",
 	"placed_stations", "chest_items", "player_house"]
 const CHECK_EVERY := 0.5
+const CLOCK_EVERY := 5.0
+const CLOCK_SLACK := 2.0  ## minutos de jogo de diferença tolerados
+var _clock_time := 0.0
 
 var region: Node  ## região atual (farm, gathering, choppable)
 var _session: Node
@@ -28,6 +32,11 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if _session == null or not bool(_session.connected): return
+	_clock_time += delta
+	if _clock_time >= CLOCK_EVERY and str(_session.get("mode")) == "host":
+		_clock_time = 0.0
+		var clock: Node = get_node("/root/GameClock")
+		_session.send({"t": "clock", "day": clock.day_number, "minutes": clock.get_hour() * 60 + clock.get_minute()})
 	_time += delta
 	if _time < CHECK_EVERY: return
 	_time = 0.0
@@ -41,6 +50,9 @@ func _process(delta: float) -> void:
 
 
 func _on_message(data: Dictionary) -> void:
+	if str(data.get("t", "")) == "clock":
+		follow_clock(get_node("/root/GameClock"), int(data.get("day", 1)), float(data.get("minutes", 0)))
+		return
 	if str(data.get("t", "")) != "world": return
 	var key := str(data.get("key", ""))
 	var value: Variant = data.get("value")
@@ -48,6 +60,15 @@ func _on_message(data: Dictionary) -> void:
 	get_tree().set_meta(key, value)
 	_known[key] = hash(value)
 	apply(region, GameClock.day_number)
+
+
+## Convidado segue o relógio do anfitrião. Atrasado: avança (viradas de dia acontecem uma
+## vez, pelo caminho normal); adiantado no mesmo dia: só ajusta a hora (nunca volta o dia).
+static func follow_clock(clock: Node, day: int, minutes: float) -> void:
+	var mine: float = clock.day_number * 1440.0 + clock.get_hour() * 60.0 + clock.get_minute()
+	var diff: float = day * 1440.0 + minutes - mine
+	if diff > CLOCK_SLACK: clock.advance_minutes(diff)
+	elif diff < -CLOCK_SLACK and day == int(clock.day_number): clock.set_time(int(minutes) / 60, int(minutes) % 60)
 
 
 ## Redesenha o que a região mostra a partir da sessão.

@@ -38,8 +38,9 @@ quem entra joga com o outro.
 
 ## Ainda não sincronizado (próximas etapas)
 
-- Itens soltos no chão (o resto do mundo já sincroniza; ver abaixo).
-- Relógio: o convidado recebe o horário ao entrar; depois cada um avança sozinho.
+- Itens soltos no chão: de propósito, vão para quem coletou (evita duplicar).
+- Relógio: sincronizado (o anfitrião manda a hora a cada 5 s; o convidado só avança ou
+  acerta a hora no mesmo dia, nunca volta o dia).
 - Slimes e laços.
 - Steam de verdade: a sala é criada pela Steam (teste num PC só). Falta entrar com uma
   segunda conta Steam em outro computador.
