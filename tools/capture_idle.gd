@@ -42,5 +42,15 @@ func run() -> void:
 			k += 1
 	check(seen.has("idle_a_") or seen.has("idle_b_"), "parado, toca uma idle (%s)" % str(seen.keys()))
 	check(seen.has("idle_so"), "volta à pose parada")
+	# Muito tempo parado: senta e medita (Aren, de frente).
+	player.set("_still_time", 25.0)
+	await create_timer(2.5).timeout
+	check(str(player.current_animation).begins_with("meditate"), "parado 20 s, senta e medita (%s)" % player.current_animation)
+	if out != "":
+		await RenderingServer.frame_post_draw
+		var img := root.get_texture().get_image()
+		var vp := player.get_viewport()
+		var at: Vector2 = vp.get_canvas_transform() * player.global_position * (Vector2(img.get_size()) / vp.get_visible_rect().size)
+		img.get_region(Rect2i(Vector2i(at) - Vector2i(80, 170), Vector2i(160, 190))).save_png("%s/meditando.png" % out)
 	print("IDLE: %d failures" % failures)
 	quit(1 if failures else 0)

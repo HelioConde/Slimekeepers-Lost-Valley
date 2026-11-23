@@ -42,6 +42,9 @@ const IDLE_FPS := 6.0
 @export var world_bounds: Rect2 = WORLD_BOUNDS
 var _tool_time := 0.0
 var _idle_time := 0.0
+## Tempo parado desde o último passo (as idles não zeram); medita depois de MEDITATE_AFTER.
+var _still_time := 0.0
+const MEDITATE_AFTER := 20.0
 ## Multijogador: boneco do outro jogador usa a arte do protagonista dele.
 var protagonist_override := ""
 var _idle_wait := 3.0
@@ -63,6 +66,7 @@ func _physics_process(_delta: float) -> void:
 	if _tool_time > 0.0:
 		# Durante o golpe da ferramenta o personagem fica parado, virado para o alvo.
 		_tool_time -= _delta
+		_still_time = 0.0  # usando ferramenta/pegando: não está parado à toa
 		velocity = Vector2.ZERO
 		return
 	var input_dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
@@ -71,6 +75,7 @@ func _physics_process(_delta: float) -> void:
 	if input_dir.length_squared() > 0.01:
 		facing = _get_direction_name(input_dir)
 		_idle_time = 0.0
+		_still_time = 0.0
 		_play_animation(("run_" if running else "walk_") + facing)
 	else:
 		_update_idle(_delta)
@@ -81,6 +86,16 @@ func _physics_process(_delta: float) -> void:
 ## B: pisca e ajeita a postura; aprovadas pelo usuário em 2026-11-23) toca uma vez.
 func _update_idle(delta: float) -> void:
 	_idle_time += delta
+	_still_time += delta
+	# Muito tempo parado (pedido do usuário): senta de pernas cruzadas e medita.
+	if current_animation.begins_with("meditate"):
+		if current_animation == "meditate_south" and not sprite.is_playing():
+			_play_animation("meditate_loop_south")
+		return
+	if _still_time >= MEDITATE_AFTER and sprite.sprite_frames.has_animation("meditate_south"):
+		facing = "south"
+		_play_animation("meditate_south")
+		return
 	var variant := current_animation.begins_with("idle_a_") or current_animation.begins_with("idle_b_") or current_animation.begins_with("idle_c_")
 	if variant and sprite.is_playing() and current_animation.ends_with("_" + facing):
 		return
@@ -179,6 +194,15 @@ func _build_frames() -> SpriteFrames:
 		frames.set_animation_speed(idle, 1.0)
 		var idle_path := "%s/rotations/%s.png" % [art, direction]
 		frames.add_frame(idle, load(idle_path) as Texture2D)
+		if direction == "south" and ResourceLoader.exists("%s/animations/meditate/south/frame_000.png" % art):
+			# Meditar: senta (9 quadros) e respira devagar nos últimos.
+			frames.add_animation("meditate_south")
+			frames.set_animation_speed("meditate_south", 6.0)
+			frames.set_animation_loop("meditate_south", false)
+			for k in 9: frames.add_frame("meditate_south", load("%s/animations/meditate/south/frame_%03d.png" % [art, k]))
+			frames.add_animation("meditate_loop_south")
+			frames.set_animation_speed("meditate_loop_south", 1.5)
+			for k in [6, 7, 8, 7]: frames.add_frame("meditate_loop_south", load("%s/animations/meditate/south/frame_%03d.png" % [art, k]))
 		for variant in IDLE_VARIANTS:
 			var first := "%s/animations/%s/%s/frame_000.png" % [art, variant, direction]
 			if not ResourceLoader.exists(first): continue
