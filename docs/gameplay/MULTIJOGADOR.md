@@ -36,8 +36,8 @@ quem entra joga com o outro.
 
 ## Ainda não sincronizado (próximas etapas)
 
-- Mundo compartilhado: árvores cortadas, coleta, plantio, casa, baú e itens no chão.
-  Hoje cada jogo tem o seu.
+- Casa, baú, bancadas colocadas e itens no chão (árvores, coleta, pedras e plantio já
+  sincronizam; ver abaixo).
 - Relógio: o convidado recebe o horário ao entrar; depois cada um avança sozinho.
 - Slimes e laços.
 - Steam de verdade: o código usa a API real do GodotSteam (nomes conferidos no Godot 4.7).
