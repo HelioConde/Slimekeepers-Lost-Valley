@@ -85,9 +85,7 @@ func _rock_interaction() -> bool:
 	if BAG.count_item(get_tree(), "picareta") <= 0:
 		region.hud_hint.text = "Pedra média · precisa de uma picareta (fabrique na bancada)"
 		return true
-	if HOTBAR.selected_item(get_tree()) != "picareta":
-		region.hud_hint.text = "Selecione a picareta na barra para quebrar a pedra"
-		return true
+	if not _equip("picareta"): return true
 	region.hud_hint.text = "[F] Quebrar pedra (%d/%d)" % [rocks.hits(r.id), int(rocks.HITS[r.kind])]
 	if Input.is_action_pressed("interact") and not player.is_using_tool():  # segurar = golpes seguidos
 		if not ENERGY.spend(get_tree(), "chop"):
@@ -98,6 +96,20 @@ func _rock_interaction() -> bool:
 		if rocks.strike(r, GameClock.day_number) == "broken":
 			region._notify("A pedra quebrou!")
 	return true
+
+
+## Troca automática de ferramenta (elogiada no Fae Farm): com o alvo à frente e a
+## ferramenta na mochila, [F]/clique a escolhe na barra sozinho. Devolve true quando ela
+## já está na mão (o golpe segue no mesmo quadro).
+func _equip(tool: String) -> bool:
+	if HOTBAR.selected_item(get_tree()) == tool: return true
+	var slot: int = HOTBAR.slots(get_tree()).find(tool)
+	if slot < 0: return false
+	if Input.is_action_just_pressed("interact"):
+		HOTBAR.select(get_tree(), slot)
+		return true
+	region.hud_hint.text = "[F] Usar %s" % str(ITEMS.info(tool).name).to_lower()
+	return false
 
 
 ## Espalha pedras médias e grandes pela região (chamado pela região depois do setup).
@@ -156,9 +168,7 @@ func _axe_interaction() -> bool:
 	var t: Dictionary = choppable.target(_focus())
 	if t.is_empty() or BAG.count_item(get_tree(), "machado") <= 0:
 		return false
-	if HOTBAR.selected_item(get_tree()) != "machado":
-		region.hud_hint.text = "Selecione o machado na barra para " + ("cortar a árvore" if t.kind == "tree" else "processar o tronco")
-		return true
+	if not _equip("machado"): return true
 	if t.kind == "tree" and not choppable.is_small(t.key):
 		# Machado de pedra só derruba árvores pequenas; as grandes esperam machados melhores.
 		region.hud_hint.text = "Essa árvore é muito grande. Que tal uma menor?"

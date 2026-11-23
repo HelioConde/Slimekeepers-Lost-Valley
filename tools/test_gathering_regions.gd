@@ -94,11 +94,13 @@ func run() -> void:
 		else:
 			var tree: Node2D = chop.trees[small_key]
 			player.global_position = tree.global_position + Vector2(0, 14)
+			HOTBAR.select(self, -1)  # mão vazia: o [F] escolhe o machado sozinho
 			await physics_frame
 			for i in 3: await process_frame
 			for i in chop.HITS_TO_FELL:
 				await press()
 				await create_timer(1.1).timeout
+			check(HOTBAR.selected_item(self) == "machado", "%s: [F] na árvore escolhe o machado sozinho" % name)
 			check(chop.state(self).has(small_key), "%s: árvore pequena longe do início cai (%s, %d px)" % [name, small_key, int(tree.global_position.distance_to(spawn))])
 			var stump: Sprite2D = tree.get_child(tree.get_child_count() - 2) as Sprite2D
 			check(stump != null and is_equal_approx(stump.scale.x, chop.STUMP_SCALE * chop.tree_scale(small_key)), "%s: toco proporcional à árvore" % name)
