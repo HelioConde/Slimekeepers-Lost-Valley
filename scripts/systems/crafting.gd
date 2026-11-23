@@ -6,6 +6,7 @@ extends RefCounted
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const DATA := preload("res://data/crafting/recipes.gd")
+const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 
 
 static func recipes(station: String = "") -> Array:
@@ -49,6 +50,8 @@ static func craft(tree: SceneTree, recipe_id: String) -> bool:
 	if not can_craft(tree, recipe_id):
 		return false
 	var r := recipe(recipe_id)
+	if bool(r.get("cooking", false)):
+		return COOKING.prepare(tree) == "prepared"  # mantém o registro de porções e o progresso
 	var snapshot := BAG.inventory_snapshot(tree)
 	for item_id: String in r.inputs:
 		snapshot[item_id] = int(snapshot.get(item_id, 0)) - int(r.inputs[item_id])

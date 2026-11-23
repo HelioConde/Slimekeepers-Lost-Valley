@@ -45,7 +45,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [x] Coleta silvestre diária (mato, gravetos e pedras voltam no dia seguinte)
 
 ## 5. Culinária
-- [ ] **P2** Receitas com cenoura, beterraba e repolho na estação do Vale
+- [x] **P2** Receitas no fogão da casa: porção de folhas, cenoura assada (2 cenouras, +40) e sopa de legumes (cenoura + beterraba + repolho, +70)
 - [x] Comida recupera energia: [F] sem slime por perto come o item da barra (colheita +12, porção +30)
 
 ## 6. Visual e atmosfera (pendências das etapas de iluminação)

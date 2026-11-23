@@ -26,6 +26,9 @@ const ITEMS := {
 	"folhas_frescas": {"name": "Folhas frescas", "kind": "crop", "crop_art": "folhas_silvestres"},
 	# Porção cozida na estação do Vale (valley_cooking.RECIPE_ID): alimenta melhor os slimes.
 	"porcao_folhas_prototipo": {"name": "Porção de folhas", "kind": "food", "icon": "porcao_folhas"},
+	# Pratos do fogão da casa; "energy" substitui o padrão de comida (energy_state.FOOD_ENERGY).
+	"cenoura_assada": {"name": "Cenoura assada", "kind": "food", "icon": "cenoura_assada", "energy": 40},
+	"sopa_legumes": {"name": "Sopa de legumes", "kind": "food", "icon": "sopa_legumes", "energy": 70},
 	# Coleta manual e fabricação (CRIACAO.md).
 	"fibra": {"name": "Fibra vegetal", "kind": "material", "icon": "fibra"},
 	"graveto": {"name": "Graveto", "kind": "material", "icon": "graveto"},
@@ -37,6 +40,7 @@ const ITEMS := {
 ## Ordem dos itens na barra depois das ferramentas.
 const ORDER := ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres",
 	"cenoura", "beterraba", "repolho", "folhas_frescas", "porcao_folhas_prototipo",
+	"cenoura_assada", "sopa_legumes",
 	"bancada", "madeira", "corda", "fibra", "graveto", "pedra_pequena"]
 
 static var _icon_cache: Dictionary = {}

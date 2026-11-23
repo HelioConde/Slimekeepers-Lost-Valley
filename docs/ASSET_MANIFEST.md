@@ -95,7 +95,8 @@ Backups da base anteriores às mudanças encontram-se em `docs/backups/`, inclui
 
 PixelLab `create_map_object`, 32×32, fundo transparente, 1 geração cada (7 no total):
 `assets/ui/items/` — `enxada`, `regador`, `semente_cenoura`, `semente_beterraba`,
-`semente_repolho`, `sementes_silvestres`, `porcao_folhas`. Colheitas usam o último estágio das
+`semente_repolho`, `sementes_silvestres`, `porcao_folhas`; depois `sopa_legumes` e `cenoura_assada`
+(pratos do fogão, 1 geração cada). Colheitas usam o último estágio das
 culturas já exportadas (recortado em `item_catalog.gd`).
 
 

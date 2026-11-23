@@ -100,7 +100,19 @@ func run() -> void:
 	up.pressed = false
 	Input.parse_input_event(up)
 	await process_frame
+	var stove_panel: Control = region.get("crafting_panel")
+	check(stove_panel.visible and str(stove_panel.station) == "fogao", "[E] no fogão abre as receitas do fogão")
+	stove_panel.call("_craft", "porcao_folhas_prototipo")
 	check(Cooking.portions(self) == 1, "Cozinhou uma porção no fogão")
+	Bag.add_item(self, "cenoura", 3)
+	Bag.add_item(self, "beterraba", 1)
+	Bag.add_item(self, "repolho", 1)
+	stove_panel.call("_craft", "sopa_legumes")
+	stove_panel.call("_craft", "cenoura_assada")
+	check(Bag.count_item(self, "sopa_legumes") == 1 and Bag.count_item(self, "cenoura_assada") == 1 and Bag.count_item(self, "cenoura") == 0,
+		"Sopa (cenoura+beterraba+repolho) e cenoura assada (2 cenouras) no fogão")
+	stove_panel.call("close")
+	await process_frame
 	player.global_position = Vector2(rect.position * 32) + Vector2(2 * 32 + 16, 2 * 32 + 16)
 	var clock := root.get_node("GameClock")
 	var day: int = clock.day_number

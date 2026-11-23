@@ -230,17 +230,10 @@ func handle_player_house(builder: Node2D) -> bool:
 		if Input.is_action_just_pressed("interact"): open_chest()
 		return true
 	if builder.near_furniture(player, "fogao"):
-		# Cozinhar no fogão da casa (substitui a fogueira de teste do Vale).
-		var cooking := preload("res://scripts/systems/valley_cooking.gd")
-		var ready: bool = bool(cooking.availability(get_tree()).get("available", false))
-		hud_hint.text = "[E] Cozinhar porção de folhas" if ready else "Fogão: falta 1 folha fresca colhida"
-		if Input.is_action_just_pressed("interact"):
-			if cooking.prepare(get_tree()) == "prepared":
-				var bag_node: Node = get("bag_hud")
-				if is_instance_valid(bag_node): bag_node.call("refresh")
-				_notify("Porção pronta! Porções: %d" % cooking.portions(get_tree()))
-			else:
-				_notify("Colha folhas frescas antes de cozinhar.")
+		# Cozinhar no fogão da casa: janela de receitas (data/crafting/recipes.gd, "fogao").
+		hud_hint.text = "[E] Cozinhar"
+		var panel: Control = get("crafting_panel")
+		if Input.is_action_just_pressed("interact") and is_instance_valid(panel): panel.call("open", "fogao")
 		return true
 	return false
 
@@ -326,7 +319,7 @@ func eat_selected() -> bool:
 	var items := preload("res://scripts/systems/item_catalog.gd")
 	var bag := preload("res://scripts/systems/forest_bag.gd")
 	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
-	var gain := int(energy.FOOD_ENERGY.get(items.kind(item), 0))
+	var gain := int(items.info(item).get("energy", energy.FOOD_ENERGY.get(items.kind(item), 0)))
 	if gain <= 0: return false
 	if energy.current(get_tree()) >= energy.MAX:
 		_notify("Energia já está cheia.")

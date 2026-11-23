@@ -10,7 +10,7 @@ const CRAFTING := preload("res://scripts/systems/crafting.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
-const TITLES := {"maos": "Fabricar com as mãos", "bancada": "Bancada de trabalho"}
+const TITLES := {"maos": "Fabricar com as mãos", "bancada": "Bancada de trabalho", "fogao": "Fogão"}
 
 var station := "maos"
 ## Jogador congelado enquanto a janela está aberta (W/S/E navegam aqui).
