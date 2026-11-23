@@ -128,6 +128,7 @@ func _setup_living_valley() -> void:
 	house = add_player_house("vale")
 	farm = add_free_farm("vale", house)
 	hide_forage_on_farm(farm, gathering.forage)
+	add_item_drops(farm, gathering)
 
 func _on_water_slime(slime: Node2D) -> void:
 	slimes.append(slime)

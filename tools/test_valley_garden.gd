@@ -162,6 +162,7 @@ func _run() -> void:
 		current_scene.player.global_position = Vector2((cell + Vector2i(0, -1)) * 32) + Vector2(16, 16)
 		await _settle()
 		await _press_e()
+	current_scene.item_drops.collect_all()  # as folhas caem no chão (item_drops)
 	_check(BAG.leaves(self) == 2, "Duas colheitas de folhas frescas na bolsa")
 	_check(PROGRESS.is_marked(self, PROGRESS.GARDEN_HARVESTED) and PROGRESS.count(self) == 3,
 		"Colheita de folhas confirma o terceiro marco sem duplicar")

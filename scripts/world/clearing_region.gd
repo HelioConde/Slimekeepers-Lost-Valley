@@ -337,3 +337,53 @@ func eat_selected() -> bool:
 	if is_instance_valid(bag_node): bag_node.call("refresh")
 	_notify("Você comeu %s. Energia +%d (%d/%d)." % [str(items.info(item).name).to_lower(), gain, energy.current(get_tree()), energy.MAX])
 	return true
+
+
+var item_drops: Node2D
+
+
+## Itens caem no chão ao coletar, cortar e colher e o ímã leva à bolsa (item_drops).
+func add_item_drops(farm: Node2D, gathering_node: Node) -> void:
+	item_drops = preload("res://scripts/world/item_drops.gd").new()
+	item_drops.player = player
+	add_child(item_drops)
+	var spawn := Callable(item_drops, "spawn")
+	item_drops.picked.connect(func(item: String, amount: int) -> void:
+		var bag_node: Node = get("bag_hud")
+		if is_instance_valid(bag_node): bag_node.call("refresh")
+		var items := preload("res://scripts/systems/item_catalog.gd")
+		_notify("+%d %s" % [amount, str(items.info(item).name).to_lower()]))
+	if is_instance_valid(farm): farm.drop = spawn
+	if is_instance_valid(gathering_node):
+		if is_instance_valid(gathering_node.forage): gathering_node.forage.drop = spawn
+		if is_instance_valid(gathering_node.choppable): gathering_node.choppable.drop = spawn
+
+
+## Clique esquerdo = [E] no ponto clicado (pedido do usuário, como em jogos de
+## fazenda): dentro do alcance, o personagem vira para o clique e age; segurar o
+## botão = segurar [E] (arrancar mato). O modo construir e as janelas pegam o clique antes.
+const CLICK_REACH := 96.0
+var _click_holding := false
+## Ponto clicado enquanto o botão está apertado (coleta/corte miram nele); INF = sem clique.
+var click_point := Vector2.INF
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	var mouse := event as InputEventMouseButton
+	if mouse == null or mouse.button_index != MOUSE_BUTTON_LEFT: return
+	if not mouse.pressed:
+		if _click_holding:
+			_click_holding = false
+			click_point = Vector2.INF
+			Input.action_release("interact")
+		return
+	if bool(get_tree().get_meta("build_mode", false)) or not is_instance_valid(player): return
+	var at: Vector2 = get_viewport().get_canvas_transform().affine_inverse() * mouse.position  # ponto do mundo clicado
+	if player.global_position.distance_to(at) > CLICK_REACH: return
+	if player.has_method("is_using_tool") and player.is_using_tool(): return
+	if at.distance_to(player.global_position) > 4.0:
+		player.facing = player._get_direction_name(at - player.global_position)
+	_click_holding = true
+	click_point = at
+	Input.action_press("interact")
+	get_viewport().set_input_as_handled()

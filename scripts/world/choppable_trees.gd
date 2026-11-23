@@ -25,6 +25,8 @@ const STUMP_SCALE := 0.48
 const LOG_SCALE := 0.7
 
 var trees: Dictionary = {}  # key -> Node2D
+## Solta a madeira no chão (item, quantidade, ponto); vazio = direto na bolsa.
+var drop: Callable
 var _grid: Dictionary = {}  # Vector2i -> Array[key]
 var _hits: Dictionary = {}  # key -> golpes nesta árvore/tronco (não salvo)
 var _extras: Dictionary = {}  # key -> [stump, log]
@@ -138,7 +140,8 @@ func strike(t: Dictionary, day: int) -> String:
 	var chopped := state(get_tree()).duplicate(true)
 	chopped[key]["processed"] = true
 	get_tree().set_meta(CHOPPED_KEY, chopped)
-	BAG.add_item(get_tree(), "madeira", WOOD_PER_LOG)
+	if drop.is_valid(): drop.call("madeira", WOOD_PER_LOG, log_position(key))  # cai no chão
+	else: BAG.add_item(get_tree(), "madeira", WOOD_PER_LOG)
 	_fell_visual(key, true)
 	return "processed"
 

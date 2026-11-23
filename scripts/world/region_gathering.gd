@@ -42,6 +42,12 @@ func attach(owner_region: Node, chop: Node, spots: Node2D) -> void:
 	forage = spots
 
 
+## Onde procurar: o ponto clicado (mouse) ou os pés do jogador ([E]).
+func _focus() -> Vector2:
+	var clicked: Vector2 = region.get("click_point") if region.get("click_point") != null else Vector2.INF
+	return clicked if clicked.is_finite() else region.player.global_position
+
+
 func update(delta: float) -> bool:
 	var player: Node2D = region.player
 	# Machado na mão e árvore ao alcance: cortar vem antes de arrancar o mato em volta.
@@ -49,7 +55,7 @@ func update(delta: float) -> bool:
 		_pull_id = ""
 		return true
 	if is_instance_valid(forage):
-		var spot: Dictionary = forage.nearest(player.global_position, GameClock.day_number)
+		var spot: Dictionary = forage.nearest(_focus(), GameClock.day_number)
 		if not spot.is_empty():
 			_forage_interaction(spot, delta)
 			return true
@@ -88,12 +94,13 @@ func _forage_interaction(spot: Dictionary, delta: float) -> void:
 		player.play_tool("pick_small")
 	var problem: String = forage.take(spot, GameClock.day_number)
 	region.bag_hud.call("refresh")
-	region._notify(problem if not problem.is_empty() else "Você pegou %s." % item_name)
+	if not problem.is_empty(): region._notify(problem)
+	elif not forage.drop.is_valid(): region._notify("Você pegou %s." % item_name)  # com drop, avisa ao pegar
 
 
 func _axe_interaction() -> bool:
 	var player: Node2D = region.player
-	var t: Dictionary = choppable.target(player.global_position)
+	var t: Dictionary = choppable.target(_focus())
 	if t.is_empty() or BAG.count_item(get_tree(), "machado") <= 0:
 		return false
 	if HOTBAR.selected_item(get_tree()) != "machado":

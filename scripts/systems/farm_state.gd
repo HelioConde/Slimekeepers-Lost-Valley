@@ -103,11 +103,12 @@ static func water(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bo
 	return true
 
 
-static func harvest(tree: SceneTree, cell: Vector2i, field: String = "vale") -> bool:
+## to_bag false: não põe na bolsa (o chamador solta o item no chão; item_drops).
+static func harvest(tree: SceneTree, cell: Vector2i, field: String = "vale", to_bag: bool = true) -> bool:
 	if not is_ready(tree, cell, field):
 		return false
 	var info := CROPS.get_crop(crop(tree, cell, field))
-	if not BAG.add_item(tree, str(info.harvest), 1):
+	if to_bag and not BAG.add_item(tree, str(info.harvest), 1):
 		return false
 	var cells := _cells(tree, field)
 	cells[cell].crop = ""

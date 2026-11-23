@@ -34,6 +34,21 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
 | Posicionar a bancada no mundo, persistir | Feito (`scripts/world/station_placer.gd`): bancada selecionada mostra prévia à frente (verde/vermelha); só em chão livre, fora do lago e longe de outra bancada; [E] coloca e gasta o item; salva por região em `placed_stations`; [E] perto dela abre a fabricação da bancada. Floresta e Vale das Nascentes (a janela [C] também funciona nos dois) |
 | Começar sem enxada/regador | Feito: o jogo começa sem ferramentas. Saves de antes da fabricação (sem a marca `crafting` no save) recebem enxada e regador ao carregar, para a fazenda não travar (`save_game.restore`, `tests/forest/test_save_game.gd`) |
 
+## Itens no chão e clique do mouse (2026-11-22)
+
+- **Itens no chão** (`scripts/world/item_drops.gd`):
+  - O que se coleta (mato, graveto, pedra), a madeira do tronco e a colheita **caem no chão**.
+  - Dão 3 quicadas cada vez menores e ficam ali.
+  - Com o jogador a até **72 px** (ímã), o item voa até ele e entra na bolsa, com o aviso "+N item".
+  - Com a bolsa cheia, o item espera no chão.
+  - Ao sair da região, o que sobrou no chão vai para a bolsa, se couber.
+- **Clique esquerdo** = [E] no ponto clicado, dentro de 96 px:
+  - o personagem vira para o clique;
+  - coleta e corte miram o item ou a árvore clicada;
+  - segurar o botão = segurar [E] (arrancar mato).
+  - O modo construir e as janelas pegam o clique antes.
+- Teste: `tools/test_drops_and_click.gd`.
+
 ## Decisões
 
 - O machado é exigido na bolsa para fabricar na bancada e não é gasto. Não há durabilidade por enquanto: não faz falta para o design atual.

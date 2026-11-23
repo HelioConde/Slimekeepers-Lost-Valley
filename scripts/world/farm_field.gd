@@ -31,6 +31,8 @@ var free_area := false
 var farmable: Callable
 ## Ponto do mundo é água (lago, riacho)? Regador virado para ela enche.
 var water_at: Callable
+## Solta o produto colhido no chão (item, quantidade, ponto); vazio = direto na bolsa.
+var drop: Callable
 
 var last_action := ""
 var player: Node2D
@@ -166,8 +168,10 @@ func interact(actor: Node2D) -> String:
 		return last_action
 	match action:
 		"harvest":
-			var harvested := str(CROPS.get_crop(FARM.crop(tree, cell, field_id)).name)
-			if FARM.harvest(tree, cell, field_id):
+			var crop_info := CROPS.get_crop(FARM.crop(tree, cell, field_id))
+			var harvested := str(crop_info.name)
+			if FARM.harvest(tree, cell, field_id, not drop.is_valid()):
+				if drop.is_valid(): drop.call(str(crop_info.harvest), 1, Vector2(cell * CELL) + Vector2(CELL, CELL) * 0.5)
 				message = "%s colhida e guardada na bolsa!" % harvested
 				PROGRESS.mark_event(tree, PROGRESS.GARDEN_HARVESTED)  # marco da sessão (antes: canteiros)
 		"till":

@@ -155,6 +155,7 @@ func _spawn_forage() -> void:
 	add_child(gathering)
 	gathering.attach(self, choppable, forage)
 	hide_forage_on_farm(farm, forage)
+	add_item_drops(farm, gathering)
 	if is_instance_valid(house):  # casa já construída: tira coleta e mato de baixo dela
 		_house_area = Rect2(-1, -1, 0, 0)
 		house.rebuild()

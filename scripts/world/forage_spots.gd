@@ -25,6 +25,8 @@ var spots: Array[Dictionary] = []  # {id, item, at, sprite}
 var excluded := Rect2()
 ## Ponto escondido por outro sistema (ex.: terra arada por cima): at -> bool.
 var hidden_at: Callable
+## Solta o item coletado no chão (item, quantidade, ponto); vazio = direto na bolsa.
+var drop: Callable
 
 
 ## center: miolo da Clareira; plan: {item: quantidade de pontos}; free: chão livre?
@@ -149,7 +151,9 @@ func nearest(at: Vector2, day: int) -> Dictionary:
 ## Coleta: entra na bolsa e some até amanhã. "" se ok; senão o motivo.
 func take(spot: Dictionary, day: int) -> String:
 	var amount: int = KINDS[spot.item][0]
-	if not BAG.add_item(get_tree(), spot.item, amount):
+	if drop.is_valid():
+		drop.call(str(spot.item), amount, spot.at)  # cai no chão e o ímã leva à bolsa
+	elif not BAG.add_item(get_tree(), spot.item, amount):
 		return "A bolsa não tem espaço para mais."
 	var taken: Dictionary = get_tree().get_meta(FORAGE_KEY, {}).duplicate()
 	taken[spot.id] = day
