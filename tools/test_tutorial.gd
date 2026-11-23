@@ -64,8 +64,7 @@ func run() -> void:
 	var craft: Control = region.get("crafting_panel")
 	check(craft.visible and not region.get("inventory_panel").visible, "[B] com a mochila aberta abre a fabricação")
 	check(int(get_meta(TUT.KEY)) == 4, "fechar a mochila passa para a corda")
-	var build: Button = craft.get("_build")
-	check(is_instance_valid(build) and build.visible, "fabricação mostra 'Construir casa'")
+	check(craft.call("entries", "infraestrutura").any(func(r: Dictionary) -> bool: return str(r.id) == "casa"), "fabricação tem a Casa em Infraestrutura")
 	check(hud.position.y < 60, "com janela aberta o balão sobe e não a cobre (%d)" % hud.position.y)
 	craft.call("_craft", "corda")
 	for i in 3: await process_frame

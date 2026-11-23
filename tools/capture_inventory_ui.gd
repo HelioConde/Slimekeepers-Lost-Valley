@@ -64,19 +64,18 @@ func run() -> void:
 	BAG.add_item(self, "fibra", 10)
 	var craft: Control = region.get("crafting_panel")
 	await key(KEY_B)
-	check(craft.visible and craft.get("_list") is GridContainer, "[B] abre a fabricação em grade")
-	# Dica do mouse: ingredientes tem/precisa.
-	var first: Control = craft.get("_list").get_child(0)
-	var tip: Control = first.call("_make_custom_tooltip", "")
-	var text := ""
-	for label in tip.find_children("*", "Label", true, false): text += (label as Label).text + "\n"
-	check(text.contains("Fibra vegetal") and text.contains("/3"), "dica mostra ingredientes (%s)" % text.replace("\n", " | "))
+	check(craft.visible and craft.get("_tiers") is VBoxContainer and craft.get("_tabs").get_child_count() == 6, "[B] abre a fabricação com 6 abas")
+	# Painel da direita: materiais tem/precisa da receita escolhida (corda).
+	var mats := ""
+	for label in craft.get("_detail_mats").find_children("*", "Label", true, false): mats += (label as Label).text + " | "
+	check(mats.contains("Fibra vegetal") and mats.contains("/3"), "painel mostra materiais (%s)" % mats)
+	craft.call("show_category", "infraestrutura")
+	await process_frame
+	check(craft.call("entries").any(func(r: Dictionary) -> bool: return str(r.id) == "casa"), "Infraestrutura tem a Casa")
+	craft.call("show_category", "producao")
 	if out != "":
-		root.add_child(tip)
-		tip.position = first.global_position + Vector2(48, 0)
 		await process_frame
 		await shot(out + "/fabricacao.png")
-		tip.queue_free()
 	BAG.add_item(self, "folhas_frescas", 1)  # 10/10 de novo
 	check(CRAFTING.missing(self, "bancada").begins_with("Falta") or CRAFTING.missing(self, "corda").is_empty(), "corda com pilha existente não precisa de espaço")
 	await key(KEY_B)
