@@ -111,6 +111,14 @@ func _update_idle(delta: float) -> void:
 		return
 	_play_animation("idle_" + facing)
 
+## Vira para um ponto do mundo (ex.: o slime que recebe carinho), parado.
+func face(point: Vector2) -> void:
+	if is_using_tool() or point.distance_squared_to(global_position) < 1.0: return
+	facing = _get_direction_name(point - global_position)
+	_still_time = 0.0
+	_idle_time = 0.0
+	_play_animation("idle_" + facing)
+
 func _get_direction_name(direction: Vector2) -> String:
 	var angle := wrapf(direction.angle() + PI / 2.0, 0.0, TAU)
 	var sector := int(round(angle / (PI / 4.0))) % 8

@@ -97,7 +97,9 @@ func react(kind: String) -> void:
 	if not is_instance_valid(sprite): return
 	# Para, olha para quem interagiu, se espreme de alegria e solta um coração.
 	if behavior not in ["sleep", "flee"]: _rest(2.4)
-	if is_instance_valid(player): sprite.flip_h = player.global_position.x < global_position.x
+	if is_instance_valid(player):
+		sprite.flip_h = player.global_position.x < global_position.x
+		if player.has_method("face"): player.face(global_position)  # os dois se olham
 	if sprite.sprite_frames.has_animation(kind): sprite.play(kind)
 	_squash()
 	_float_heart(Vector2.ZERO, 0.0)

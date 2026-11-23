@@ -47,6 +47,7 @@ func run() -> void:
 	check(sprite.flip_h, "olha para o jogador (à esquerda)")
 	check(str(slime.get("behavior")) == "rest" and not bool(slime.get("_moving")), "para para receber carinho")
 	check(hearts(slime) == 1, "carinho solta 1 coração")
+	check(str(player.get("facing")).contains("east"), "protagonista vira para o slime (%s)" % player.get("facing"))
 	for f in 6:
 		await create_timer(0.2).timeout
 		if out != "":
