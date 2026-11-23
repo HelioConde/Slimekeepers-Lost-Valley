@@ -130,7 +130,58 @@ static func _star_texture() -> ImageTexture:
 	return ImageTexture.create_from_image(image)
 
 
-func _process(_delta: float) -> void:
+var _request_wait := 0.0
+## Pedido do dia (slime_requests.gd): balãozinho com a comida por cima, só para amigos e
+## com o jogador perto.
+func _update_request_bubble(delta: float) -> void:
+	_request_wait -= delta
+	if _request_wait > 0.0: return
+	_request_wait = 0.5
+	var want := ""
+	if befriended and is_instance_valid(player) and player.global_position.distance_to(global_position) < 240.0:
+		want = preload("res://scripts/systems/slime_requests.gd").wanted(get_tree(), persistent_id, slime_type, GameClock.day_number)
+	var bubble := get_node_or_null("RequestBubble") as Sprite2D
+	if want.is_empty():
+		if bubble: bubble.queue_free()
+		return
+	if bubble == null:
+		bubble = Sprite2D.new()
+		bubble.name = "RequestBubble"
+		bubble.texture = _bubble_texture()
+		bubble.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		bubble.position = Vector2(0, -50)
+		bubble.z_index = 5
+		var icon := Sprite2D.new()
+		icon.name = "Icon"
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		icon.scale = Vector2(0.5, 0.5)
+		icon.position = Vector2(0, -1)
+		bubble.add_child(icon)
+		add_child(bubble)
+	(bubble.get_node("Icon") as Sprite2D).texture = preload("res://scripts/systems/item_catalog.gd").icon(want)
+
+
+## Balão de fala branco 20x18 com rabinho (desenhado em pixel).
+static func _bubble_texture() -> ImageTexture:
+	var image := Image.create(20, 19, false, Image.FORMAT_RGBA8)
+	var ink := Color("#3d2a1e")
+	var paper := Color("#fffaf0")
+	for y in 16:
+		for x in 20:
+			var corner := (x < 2 or x > 17) and (y < 2 or y > 13)
+			if corner: continue
+			var edge := x == 0 or x == 19 or y == 0 or y == 15 or ((x == 1 or x == 18) and (y == 1 or y == 14))
+			image.set_pixel(x, y, ink if edge else paper)
+	for i in 3:  # rabinho
+		for x in range(9 - (2 - i), 11 + (2 - i) - 1):
+			image.set_pixel(x, 15 + i, paper if i < 2 else ink)
+		image.set_pixel(9 - (2 - i), 15 + i, ink)
+		image.set_pixel(10 + (2 - i), 15 + i, ink)
+	return ImageTexture.create_from_image(image)
+
+
+func _process(delta: float) -> void:
+	_update_request_bubble(delta)
 	if variant == VARIANTS.RAINBOW and is_instance_valid(sprite):
 		var hue := fmod(Time.get_ticks_msec() / 4000.0, 1.0)
 		sprite.self_modulate = Color.WHITE.lerp(Color.from_hsv(hue, 0.7, 1.0), 0.35)

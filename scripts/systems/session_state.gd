@@ -42,6 +42,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"slime_work_off",
 	"slime_at_farm",
 	"carreguim_chest",
+	"slime_requests_done",
 ]
 
 

@@ -158,6 +158,12 @@ func _offer_prototype_food(slime: Node2D) -> void:
 			"fed":
 				if slime.has_method("react"): slime.call("react", "comer")
 				else: slime.set("_happy_time", 2.4)
+				var gift := preload("res://scripts/systems/slime_requests.gd").fulfill(get_tree(), str(slime.get("persistent_id")), str(slime.get("slime_type")), GameClock.day_number, item)
+				if not gift.is_empty():  # era o pedido do dia (balãozinho)
+					var ITEMS_ := preload("res://scripts/systems/item_catalog.gd")
+					_notify("%s queria isso! Laço extra%s." % [slime.display_name(), "" if gift == "ok" else " e ganhou " + str(ITEMS_.info(gift).name).to_lower()])
+					bag_hud.call("refresh")
+					return
 				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
 				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
 			"needs_friendship": _notify("Primeiro conheça este slime usando F.")
