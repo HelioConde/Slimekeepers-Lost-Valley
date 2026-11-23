@@ -267,6 +267,7 @@ func add_tutorial() -> Control:
 ## Alguma janela (mochila, fabricação, baú) aberta: o mundo não recebe [F] nem clique.
 func window_open() -> bool:
 	if not has_node("HUD/Interface"): return false
+	if is_instance_valid(slime_disc) and slime_disc.visible: return true
 	for child in get_node("HUD/Interface").get_children():
 		if child is PanelContainer and child.visible and str(child.name) in INVENTORY_WINDOWS:
 			return true
@@ -410,7 +411,9 @@ func add_slime_disc() -> void:
 
 
 func open_slime_disc(slime: Node2D) -> void:
-	if is_instance_valid(slime_disc): slime_disc.call("open", slime)
+	if not is_instance_valid(slime_disc): return
+	if int(slime_disc.get("closed_frame")) >= Engine.get_process_frames() - 1: return  # o [F] que fechou
+	slime_disc.call("open", slime)
 
 
 ## Ação escolhida no disco. arg: comida escolhida ou baú do Carreguim ("" = mais perto).

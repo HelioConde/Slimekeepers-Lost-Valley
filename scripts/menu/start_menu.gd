@@ -445,6 +445,16 @@ func _show_options() -> void:
 		_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 	)
 	stack.add_child(mute)
+	# Disco de ações do slime: clique (padrão) ou segurar [F] e soltar (slime_action_disc.gd).
+	var disc_hold := CheckButton.new()
+	disc_hold.name = "SlimeDiscHold"
+	disc_hold.text = "Disco do slime: segurar F e soltar"
+	disc_hold.button_pressed = str(_prefs.get_value("controls", "slime_disc", "clique")) == "segurar"
+	disc_hold.toggled.connect(func(enabled: bool):
+		_prefs.set_value("controls", "slime_disc", "segurar" if enabled else "clique")
+		_prefs.save("user://presentation.cfg")
+	)
+	stack.add_child(disc_hold)
 	var close := Button.new()
 	close.name = "Close"
 	close.text = "Voltar"

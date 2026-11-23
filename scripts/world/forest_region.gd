@@ -72,6 +72,7 @@ func _ready() -> void:
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
 	add_inventory_panel()
 	add_tutorial()
+	add_slime_disc()
 	# Novo Jogo confirmado: o protagonista escolhido desperta sentado no início.
 	if PROTAGONIST.intro_pending(get_tree()):
 		player.position = $SpawnPoints/PlayerSpawn.global_position
@@ -342,7 +343,7 @@ func _process(delta: float) -> void:
 		if not food.is_empty() and Input.is_action_just_pressed("interact"):
 			_offer_prototype_food(closest)
 			return
-		if Input.is_action_just_pressed("interact"): greet_slime(closest)
+		if Input.is_action_just_pressed("interact"): open_slime_disc(closest)  # disco de ações
 		return
 	var seeds := _nearest_seed_patch()
 	if seeds != null:

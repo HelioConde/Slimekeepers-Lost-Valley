@@ -46,6 +46,7 @@ func _ready() -> void:
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
 	add_inventory_panel()
 	add_tutorial()
+	add_slime_disc()
 	recipe_panel = RECIPE_PANEL.new()
 	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
@@ -287,8 +288,7 @@ func _process(delta: float) -> void:
 				if not food.is_empty() and Input.is_action_just_pressed("interact"):
 					_offer_prototype_food(closest)
 				elif Input.is_action_just_pressed("interact"):
-					greet_slime(closest)
-					_update_living_goal()
+					open_slime_disc(closest)  # disco de ações
 			else:
 				for marker: Marker2D in $PointsOfInterest.get_children():
 					if player.position.distance_to(marker.position)<90:

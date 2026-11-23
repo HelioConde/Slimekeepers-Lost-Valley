@@ -44,7 +44,8 @@ static func helpers(tree: SceneTree) -> Array:
 		for identity in friends:
 			var species := str(identity).get_slice("/", 0)
 			if bool(friends[identity]) and ROLES.has(species) and not found.has(species):
-				found.append(species)
+				# Disco de ações: "Ficar em casa" tira o ajudante da fazenda.
+				if bool((tree.get_meta("slime_at_farm", {}) as Dictionary).get(species, true)): found.append(species)
 	return found
 
 
@@ -114,13 +115,19 @@ func _process(delta: float) -> void:
 	_scan -= delta
 	if _scan <= 0.0:
 		_scan = 1.0
-		for species: String in helpers(tree):
+		var wanted := helpers(tree)
+		for species: String in wanted:
 			if not _helpers.has(species): _spawn(species)
+		for species: String in _helpers.keys():
+			if not wanted.has(species):  # foi para casa
+				(_helpers[species].sprite as Node).queue_free()
+				_helpers.erase(species)
 	for species: String in _helpers:
 		var h: Dictionary = _helpers[species]
 		var sprite: AnimatedSprite2D = h.sprite
 		if h.cell == NONE:
-			if daytime and can_work(tree, species, day):
+			var resting := bool((tree.get_meta("slime_work_off", {}) as Dictionary).get(species, false))  # "Parar de trabalhar"
+			if daytime and not resting and can_work(tree, species, day):
 				h.cell = job(tree, farm.field_id, species, _taken())
 			if h.cell == NONE:
 				_play(sprite, "idle")
