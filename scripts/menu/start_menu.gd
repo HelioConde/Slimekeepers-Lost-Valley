@@ -3,14 +3,19 @@ extends Control
 const MenuTheme = preload("res://scripts/menu/menu_theme.gd")
 const BoardDetails = preload("res://scripts/menu/board_details.gd")
 const LogoPlaque = preload("res://scripts/menu/logo_plaque.gd")
-const ValleySky = preload("res://scripts/menu/valley_sky.gd")
-const Farm = preload("res://scripts/menu/farm_foreground.gd")
+const Ruins = preload("res://scripts/menu/ruins_backdrop.gd")
+## Ações do menu (rótulo, nome do nó, ícone em assets/menu/ruins/icons/).
+const ACTIONS := [["Novo Jogo","NovoJogo","novo_jogo"],["Continuar","Continuar","continuar"],
+	["Multijogador (MP)","Multijogador","multijogador"],["Configurações","Configuracoes","configuracoes"],
+	["Créditos","Creditos","creditos"],["Sair","Sair","sair"]]
 const SessionState = preload("res://scripts/systems/session_state.gd")
 const SaveGame = preload("res://scripts/systems/save_game.gd")
 var panorama: Node2D
 var logo: Panel
 var buttons: VBoxContainer
-var quote: PanelContainer
+var frame: PanelContainer
+var mascot: AnimatedSprite2D
+var _mascot_wait := 3.0
 var options_layer: Control
 var reduce_motion := false
 var _crest: AnimatedSprite2D
@@ -28,17 +33,13 @@ func _ready() -> void:
 	panorama.name = "Panorama"
 	panorama.z_index = -10
 	add_child(panorama)
-	var sky := ValleySky.new()
-	sky.name = "Valley"
-	sky.reduce_motion = reduce_motion
-	panorama.add_child(sky)
-	var farm := Farm.new()
-	farm.name = "Farm"
-	farm.reduce_motion = reduce_motion
-	panorama.add_child(farm)
+	var ruins := Ruins.new()
+	ruins.name = "Ruins"
+	panorama.add_child(ruins)
+	ruins.reduce_motion = reduce_motion
 	_build_logo()
 	_build_buttons()
-	_build_quote()
+	_build_mascot()
 	resized.connect(_layout)
 	_layout()
 	buttons.get_child(0).grab_focus()
@@ -100,16 +101,31 @@ func _build_logo() -> void:
 	_crest.speed_scale = 0 if reduce_motion else 1
 
 func _build_buttons() -> void:
+	frame = PanelContainer.new()
+	frame.name = "ActionsFrame"
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var stone := MenuTheme.panel(10)
+	stone.bg_color = Color(0.17,0.19,0.2,0.86)
+	stone.border_color = Color("#6f7d52")
+	stone.set_border_width_all(3)
+	stone.shadow_color = Color(0,0,0,0.35)
+	stone.shadow_size = 6
+	frame.add_theme_stylebox_override("panel",stone)
+	add_child(frame)
 	buttons = VBoxContainer.new()
 	buttons.name = "Actions"
-	buttons.add_theme_constant_override("separation",14)
+	buttons.add_theme_constant_override("separation",10)
 	add_child(buttons)
-	for caption in ["Novo Jogo","Continuar","Opções","Sair"]:
+	for action in ACTIONS:
+		var caption: String = action[0]
 		var button := Button.new()
-		button.name = caption.replace(" ","")
+		button.name = action[1]
 		button.text = caption
-		button.custom_minimum_size = Vector2(0,64)
-		button.add_theme_font_size_override("font_size",30)
+		button.icon = load("res://assets/menu/ruins/icons/%s.png" % action[2])
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_constant_override("h_separation",14)
+		button.custom_minimum_size = Vector2(0,52)
+		button.add_theme_font_size_override("font_size",24)
 		button.add_theme_font_override("font",MenuTheme.font(true))
 		if caption == "Novo Jogo":
 			var primary := MenuTheme.button(&"normal")
@@ -137,14 +153,19 @@ func _build_buttons() -> void:
 		match caption:
 			"Novo Jogo": button.pressed.connect(_start_game)
 			"Continuar":
-				# Ativo quando há save em disco (gravado ao dormir na fazenda).
+				# Ativo quando há save válido em disco (gravado ao dormir).
 				if SaveGame.has_save():
 					button.pressed.connect(_continue_game)
 				else:
 					button.disabled = true
-					button.tooltip_text = "Durma na sua fazenda para salvar o jogo."
+					button.tooltip_text = "Durma na sua casa para salvar o jogo."
 					button.focus_mode = Control.FOCUS_NONE
-			"Opções": button.pressed.connect(_show_options)
+			"Multijogador (MP)": button.pressed.connect(_show_notice.bind("Multijogador",
+				["O modo multijogador ainda está em desenvolvimento.","Por enquanto, a jornada é para um jogador."]))
+			"Configurações": button.pressed.connect(_show_options)
+			"Créditos": button.pressed.connect(_show_notice.bind("Créditos",
+				["Slimekeepers: Lost Valley","Criação e direção: Helio Conde","Motor: Godot Engine 4.7",
+				"Arte em pixel: PixelLab, com ajustes do projeto","Fonte: Pixelify Sans"]))
 			"Sair": button.pressed.connect(func(): get_tree().quit())
 	var active := buttons.get_children().filter(func(b): return not (b as Button).disabled)
 	for i in range(active.size()):
@@ -154,48 +175,62 @@ func _build_buttons() -> void:
 		button.focus_next = button.focus_neighbor_bottom
 		button.focus_previous = button.focus_neighbor_top
 
+## Slime azul ao lado do menu: respira, pisca e às vezes reage (frames da Bolhinha).
+func _build_mascot() -> void:
+	mascot = AnimatedSprite2D.new()
+	mascot.name = "Mascot"
+	mascot.sprite_frames = load("res://assets/slimes/living_v3/bolhinha/frames.tres")
+	mascot.play("idle")
+	mascot.animation_finished.connect(func(): mascot.play("idle"))
+	add_child(mascot)
+	mascot.speed_scale = 0 if reduce_motion else 1
+
+func _process(delta: float) -> void:
+	if reduce_motion or not is_instance_valid(mascot): return
+	var base: float = mascot.get_meta("base_scale", 1.0)
+	var breath := sin(Time.get_ticks_msec() / 1000.0 * 2.2)
+	mascot.scale = Vector2(base * (1.0 + breath * 0.025), base * (1.0 - breath * 0.025))
+	_mascot_wait -= delta
+	if _mascot_wait <= 0.0 and mascot.animation == &"idle":
+		_mascot_wait = randf_range(3.5, 7.0)
+		mascot.play([&"blink", &"blink", &"curious", &"happy"].pick_random())
+
 func _highlight(button: Button, focused: bool) -> void:
+	if focused and is_instance_valid(mascot) and not reduce_motion and randf() < 0.25:
+		mascot.play(&"happy")
 	var target := Color("#fff0c7") if focused else Color.WHITE
 	if reduce_motion:
 		button.modulate = target
 	else:
 		create_tween().tween_property(button,"modulate",target,0.12)
 
-func _build_quote() -> void:
-	quote = PanelContainer.new()
-	quote.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := MenuTheme.panel(10)
-	style.bg_color = Color("#533b49")
-	style.border_color = Color("#caa270")
-	style.set_border_width_all(2)
-	quote.add_theme_stylebox_override("panel",style)
-	add_child(quote)
-	var line := Label.new()
-	line.text = "Uma nova aventura está prestes a florescer..."
-	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	line.add_theme_font_size_override("font_size",22)
-	line.add_theme_color_override("font_color",MenuTheme.CREAM)
-	quote.add_child(line)
-
 func _layout() -> void:
 	if not is_instance_valid(logo): return
-	var scenery_scale := maxf(1.0,ceil(maxf(size.x/1600.0,size.y/800.0)*2.0)/2.0)
+	# Cenário 480×270 em escala inteira cobrindo a tela; o corte sobra à esquerda/topo
+	# para manter a cachoeira (direita) e o caminho (embaixo) à vista.
+	var scenery_scale := ceilf(maxf(size.x/Ruins.SIZE.x,size.y/Ruins.SIZE.y))
 	panorama.scale = Vector2.ONE * scenery_scale
-	panorama.position = Vector2(round((size.x-1280*scenery_scale)/2.0),round(size.y-720*scenery_scale))
+	panorama.position = Vector2(round((size.x-Ruins.SIZE.x*scenery_scale)*0.8),round(size.y-Ruins.SIZE.y*scenery_scale))
 	var ui_scale := maxf(1.0,floor(minf(size.x/1280.0,size.y/720.0)*2.0)/2.0)
-	for control in [logo,buttons,quote]:
-		control.scale = Vector2.ONE * ui_scale
-	logo.size = Vector2(600,140)
-	logo.position = Vector2(round(size.x * 0.5 - 300*ui_scale),(54 if size.y < 600 else 64)*ui_scale)
-	_crest.position = Vector2(300,-15)
 	var compact := size.y < 600
-	buttons.add_theme_constant_override("separation",8 if compact else 14)
+	for control in [logo,buttons,frame]:
+		control.scale = Vector2.ONE * ui_scale
+	var left := roundf(clampf(size.x*0.06,24,140))
+	logo.size = Vector2(600,140)
+	logo.position = Vector2(left-40*ui_scale,(30 if compact else 44)*ui_scale).round()
+	_crest.position = Vector2(300,-15)
+	buttons.add_theme_constant_override("separation",6 if compact else 10)
 	for button in buttons.get_children():
-		button.custom_minimum_size.y = 48 if compact else 64
-	buttons.size = Vector2(270 if size.x<1000 else 300,216 if compact else 298)
-	buttons.position = Vector2(size.x-(buttons.size.x+24)*ui_scale,224 if compact else clampf(size.y-406*ui_scale,236,360*ui_scale)).round()
-	quote.size = Vector2(minf(620,size.x-48),44)
-	quote.position = Vector2(round((size.x-quote.size.x*ui_scale)/2),size.y-50*ui_scale)
+		button.custom_minimum_size.y = 36 if compact else 52
+	buttons.size = Vector2(360,0)
+	buttons.reset_size()
+	buttons.position = Vector2(left+18*ui_scale,logo.position.y+(150 if compact else 176)*ui_scale).round()
+	frame.size = buttons.size + Vector2(36,36)
+	frame.position = buttons.position - Vector2(18,18)*ui_scale
+	var base := 2.0*ui_scale
+	mascot.set_meta("base_scale",base)
+	mascot.scale = Vector2.ONE*base
+	mascot.position = frame.position + Vector2(frame.size.x*ui_scale+20*ui_scale,frame.size.y*ui_scale-30*ui_scale)
 	if is_instance_valid(options_layer):
 		var panel := options_layer.get_node("Card") as PanelContainer
 		panel.scale = Vector2.ONE * ui_scale
@@ -212,8 +247,52 @@ func _continue_game() -> void:
 func _start_game() -> void:
 	get_tree().change_scene_to_file("res://scenes/protagonist_select.tscn")
 
+var _opener: Control
+
+## Janela simples (Multijogador em desenvolvimento, Créditos) no estilo das configurações.
+func _show_notice(heading: String, lines: Array) -> void:
+	if is_instance_valid(options_layer): return
+	_opener = get_viewport().gui_get_focus_owner()
+	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
+	options_layer = Control.new()
+	options_layer.name = "Notice"
+	add_child(options_layer)
+	options_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var shade := ColorRect.new()
+	shade.color = Color(0.08,0.09,0.13,0.72)
+	options_layer.add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.custom_minimum_size = Vector2(460,0)
+	options_layer.add_child(card)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation",14)
+	card.add_child(stack)
+	var title := Label.new()
+	title.text = heading
+	title.add_theme_font_size_override("font_size",34)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(title)
+	for line in lines:
+		var text := Label.new()
+		text.text = str(line)
+		text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		stack.add_child(text)
+	var close := Button.new()
+	close.name = "Close"
+	close.text = "Voltar"
+	close.custom_minimum_size.y = 54
+	close.pressed.connect(_close_options)
+	stack.add_child(close)
+	card.reset_size()
+	_layout()
+	close.grab_focus()
+
 func _show_options() -> void:
 	if is_instance_valid(options_layer): return
+	_opener = get_viewport().gui_get_focus_owner()
 	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
 	options_layer = Control.new()
 	options_layer.name = "Options"
@@ -231,7 +310,7 @@ func _show_options() -> void:
 	stack.add_theme_constant_override("separation",18)
 	card.add_child(stack)
 	var title := Label.new()
-	title.text = "Opções"
+	title.text = "Configurações"
 	title.add_theme_font_size_override("font_size",34)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stack.add_child(title)
@@ -295,20 +374,16 @@ func _set_reduced_motion(enabled: bool) -> void:
 
 func _apply_reduced_motion(enabled: bool) -> void:
 	reduce_motion = enabled
-	panorama.get_node("Farm").reduce_motion = enabled
-	var sky := panorama.get_node("Valley")
-	sky.reduce_motion = enabled
-	for child in sky.get_children():
-		if child is not Sprite2D:
-			child.reduce_motion = enabled
-			child.set_process(not enabled)
+	panorama.get_node("Ruins").reduce_motion = enabled
+	if is_instance_valid(mascot): mascot.speed_scale = 0 if enabled else 1
 	_crest.speed_scale = 0 if enabled else 1
 
 func _close_options() -> void:
 	options_layer.queue_free()
 	options_layer = null
-	for i in [0,2,3]: buttons.get_child(i).focus_mode = Control.FOCUS_ALL
-	buttons.get_child(2).grab_focus()
+	for button in buttons.get_children():
+		if not (button as Button).disabled: button.focus_mode = Control.FOCUS_ALL
+	if is_instance_valid(_opener): _opener.grab_focus()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and is_instance_valid(options_layer):

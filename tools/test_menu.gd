@@ -9,6 +9,11 @@ var checks: int = 0
 var _prefs_existed: bool = false
 var _prefs_before := PackedByteArray()
 
+func _texts(node: Node) -> String:
+	var text := ""
+	for label in node.find_children("*", "Label", true, false): text += (label as Label).text + "\n"
+	return text
+
 func _initialize() -> void:
 	call_deferred("_run")
 
@@ -24,38 +29,57 @@ func _run() -> void:
 	current_scene = menu
 	await _settle()
 	var actions := menu.get_node("Actions") as VBoxContainer
-	if not _check(actions.get_child_count() == 4, "Menu contains the four intended actions"):
+	if not _check(actions.get_child_count() == 6, "Menu contains the six intended actions"):
 		_finish()
 		return
 	var new_game := actions.get_child(0) as Button
 	var continue_button := actions.get_child(1) as Button
-	var options := actions.get_child(2) as Button
-	var exit_button := actions.get_child(3) as Button
-	_check(new_game.text == "Novo Jogo" and options.text == "Opções" and exit_button.text == "Sair", "Action labels preserve the actual destinations")
+	var multiplayer_button := actions.get_child(2) as Button
+	var options := actions.get_child(3) as Button
+	var credits := actions.get_child(4) as Button
+	var exit_button := actions.get_child(5) as Button
+	_check(new_game.text == "Novo Jogo" and multiplayer_button.text == "Multijogador (MP)" and options.text == "Configurações" and credits.text == "Créditos" and exit_button.text == "Sair", "Action labels preserve the actual destinations")
+	_check(new_game.icon != null and exit_button.icon != null, "Actions show their icons")
 	_check(continue_button.disabled and continue_button.focus_mode == Control.FOCUS_NONE, "Continue is disabled without a save system")
 	_check(root.gui_get_focus_owner() == new_game, "Initial focus is New Game")
 	var original_motion: bool = menu.reduce_motion
-	var water := menu.get_node("Panorama/Valley").get_child(1)
+	var ruins := menu.get_node("Panorama/Ruins")
+	_check(ruins.get_node("Sky") is Sprite2D and ruins.get_node("Ruins") is Sprite2D and ruins.get_node("Ground") is Sprite2D and ruins.get_node("Tree") is Sprite2D, "Scenery is built from independent layers")
+	_check(ruins.get_node("Fireflies") is CPUParticles2D and ruins.get_node("Mist") is CPUParticles2D, "Scenery has fireflies and waterfall mist")
+	_check(menu.get_node("Mascot") is AnimatedSprite2D, "Blue slime mascot sits beside the menu")
 	menu._apply_reduced_motion(true)
-	var stopped_age: float = water.age
+	var stopped_age: float = ruins.age
 	await create_timer(0.12).timeout
-	_check(is_equal_approx(water.age,stopped_age), "Reduced motion stops the new distant water layer")
+	_check(is_equal_approx(ruins.age,stopped_age), "Reduced motion stops the scenery animation")
 	menu._apply_reduced_motion(false)
 	await create_timer(0.12).timeout
-	_check(water.age > stopped_age, "Turning reduced motion off resumes distant water")
+	_check(ruins.age > stopped_age, "Turning reduced motion off resumes the scenery")
 	menu._apply_reduced_motion(original_motion)
 	await _key(KEY_DOWN)
-	_check(root.gui_get_focus_owner() == options, "Keyboard Down skips disabled Continue")
+	_check(root.gui_get_focus_owner() == multiplayer_button, "Keyboard Down skips disabled Continue")
 	await _key(KEY_DOWN)
-	_check(root.gui_get_focus_owner() == exit_button, "Keyboard Down reaches Exit")
-	await _key(KEY_DOWN)
-	_check(root.gui_get_focus_owner() == new_game, "Keyboard navigation wraps to New Game")
+	_check(root.gui_get_focus_owner() == options, "Keyboard Down reaches Settings")
+	await _key(KEY_UP)
+	await _key(KEY_UP)
+	_check(root.gui_get_focus_owner() == new_game, "Keyboard Up returns to New Game")
+	await _key(KEY_UP)
+	_check(root.gui_get_focus_owner() == exit_button, "Keyboard navigation wraps to Exit")
 	await _joy(JOY_BUTTON_DPAD_DOWN)
-	_check(root.gui_get_focus_owner() == options, "Simulated controller D-pad skips disabled Continue")
+	_check(root.gui_get_focus_owner() == new_game, "Simulated controller D-pad wraps to New Game")
 	await _joy(JOY_BUTTON_DPAD_DOWN)
-	_check(root.gui_get_focus_owner() == exit_button, "Simulated controller D-pad reaches Exit")
-	await _joy(JOY_BUTTON_DPAD_UP)
-	_check(root.gui_get_focus_owner() == options, "Simulated controller D-pad Up returns to Options")
+	_check(root.gui_get_focus_owner() == multiplayer_button, "Simulated controller D-pad skips disabled Continue")
+	# Multijogador: avisa que está em desenvolvimento (sem simular partida).
+	multiplayer_button.grab_focus()
+	await _key(KEY_ENTER)
+	var notice: Control = menu.get("options_layer")
+	_check(is_instance_valid(notice) and str(notice.name) == "Notice" and _texts(notice).contains("em desenvolvimento"), "Multiplayer explains it is still in development")
+	await _key(KEY_ESCAPE)
+	_check(not is_instance_valid(menu.get("options_layer")) and root.gui_get_focus_owner() == multiplayer_button, "Escape closes the notice and restores focus")
+	credits.grab_focus()
+	await _key(KEY_ENTER)
+	notice = menu.get("options_layer")
+	_check(is_instance_valid(notice) and _texts(notice).contains("Godot"), "Credits open")
+	await _key(KEY_ESCAPE)
 	# Explicit focus prevents a failed preceding navigation from activating Exit.
 	options.grab_focus()
 	await _key(KEY_ENTER)
