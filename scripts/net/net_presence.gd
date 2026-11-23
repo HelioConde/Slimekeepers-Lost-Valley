@@ -18,6 +18,11 @@ func _ready() -> void:
 	_session = get_node_or_null("/root/NetSession")
 	if _session == null: return
 	_session.message.connect(_on_message)
+	# Avisos da sala (ID da sala, quem entrou/saiu) aparecem no jogo.
+	var region := get_parent()
+	if region.has_method("_notify"):
+		_session.status_changed.connect(func(text: String) -> void: region.call("_notify", text))
+		if _session.is_active() and not str(_session.status).is_empty(): region.call_deferred("_notify", str(_session.status))
 	_session.peer_left.connect(func() -> void:
 		if is_instance_valid(remote): remote.visible = false)
 

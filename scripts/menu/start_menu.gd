@@ -358,11 +358,13 @@ func _show_multiplayer() -> void:
 	join_lan.name = "JoinLan"
 	join_lan.text = "Entrar"
 	join_lan.pressed.connect(func() -> void:
-		var problem: String = net.join_enet(address.text.strip_edges())
+		var target := address.text.strip_edges()
+		# Número grande = ID de sala da Steam; senão, IP da rede local.
+		var problem: String = net.join_steam(int(target)) if target.is_valid_int() and target.length() > 10 else net.join_enet(target)
 		if not problem.is_empty(): status.text = problem)
 	row.add_child(join_lan)
 	var steam_hint := Label.new()
-	steam_hint.text = "Pela Steam: aceite o convite do amigo na Steam com o jogo aberto."
+	steam_hint.text = "Pela Steam: aceite o convite do amigo com esta janela aberta, ou digite o ID da sala acima e clique em Entrar."
 	steam_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	steam_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	steam_hint.add_theme_font_size_override("font_size",14)

@@ -105,7 +105,7 @@ func _on_lobby_created(result: int, lobby: int) -> void:
 	lobby_id = lobby
 	_steam.call("setLobbyData", lobby, "game", "slimekeepers")
 	_steam.call("setLobbyData", lobby, "host_protagonist", local_protagonist)
-	_set_status("Sala criada. Convide um amigo pela Steam.")
+	_set_status("Sala criada (ID %d). Convide um amigo pela Steam ou passe o ID." % lobby)
 	invite_friends()
 
 
