@@ -40,7 +40,7 @@ func run() -> void:
 	check(slime.make_friend(), "faz amizade")
 	await process_frame
 	check(hearts(slime) == 3, "amizade nova solta 3 corações (%d)" % hearts(slime))
-	await create_timer(1.8).timeout
+	await create_timer(2.3).timeout  # último coração: 0,3 s de atraso + 1,52 s
 	check(hearts(slime) == 0, "corações somem (%d)" % hearts(slime))
 	slime.react("receber_carinho")
 	var sprite: AnimatedSprite2D = slime.get("sprite")
@@ -54,5 +54,20 @@ func run() -> void:
 			await RenderingServer.frame_post_draw
 			root.get_texture().get_image().save_png("%s/reaction_%02d.png" % [out, f])
 	check(is_equal_approx(sprite.scale.x, sprite.scale.y), "volta ao tamanho normal depois de se espremer")
+	# Curioso: nota o jogador perto e mostra "!".
+	var other: Node2D = slimes[1] if slimes.size() > 1 else slime
+	player.global_position = other.global_position + Vector2(60, 0)
+	other.set("_happy_time", 0.0)
+	other.set("_curiosity_cooldown", 0.0)
+	other.set("energy", 0.9)
+	other.set("_rng", RandomNumberGenerator.new())
+	other.call("_rest", 0.0)
+	other.call("_choose_behavior")
+	var notices := other.get_children().filter(func(c: Node) -> bool: return c.name.begins_with("ReactionNotice")).size()
+	check(str(other.get("behavior")) != "curious" or notices >= 1, "curioso mostra '!' (%s, %d)" % [other.get("behavior"), notices])
+	if out != "":
+		await create_timer(0.3).timeout
+		await RenderingServer.frame_post_draw
+		root.get_texture().get_image().save_png("%s/notice.png" % out)
 	print("SLIME_REACTION: %d failures" % failures)
 	quit(1 if failures else 0)

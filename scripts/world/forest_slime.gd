@@ -4,6 +4,7 @@ signal friendship_started(persistent_id: String)
 const FRAMES: SpriteFrames = preload("res://assets/slimes/bestiary/brotinho/brotinho_frames.tres")
 const SPECIES := preload("res://scripts/world/slime_species.gd")
 static var HEART: Texture2D = preload("res://scripts/ui/hud_skin.gd").heart(true)
+static var NOTICE: Texture2D = _notice_icon()
 const WALK_SPEED := 30.0
 const ACTIVE_DISTANCE := 1000.0
 
@@ -105,6 +106,18 @@ func react(kind: String) -> void:
 	_float_heart(Vector2.ZERO, 0.0)
 
 
+## "!" de pixel no balão claro: o slime notou o jogador.
+static func _notice_icon() -> ImageTexture:
+	var rows := [".OOOOO.", "OOOXOOO", "OOOXOOO", "OOOXOOO", "OOOOOOO", "OOOXOOO", ".OOOOO.", "..OO...", "..O...."]
+	var image := Image.create(7, rows.size(), false, Image.FORMAT_RGBA8)
+	for y in rows.size():
+		for x in 7:
+			var c: String = rows[y][x]
+			if c == "X": image.set_pixel(x, y, Color("#5c1a1f"))
+			elif c == "O": image.set_pixel(x, y, Color("#f3e2c8"))
+	return ImageTexture.create_from_image(image)
+
+
 func _squash() -> void:
 	var base := Vector2.ONE * float(personality.get("scale", 1.0))
 	var tween := create_tween()
@@ -114,10 +127,10 @@ func _squash() -> void:
 
 
 ## Coração de pixel (o mesmo do HUD do laço) que sobe e some sobre o slime.
-func _float_heart(offset: Vector2, delay: float) -> void:
+func _float_heart(offset: Vector2, delay: float, icon: Texture2D = HEART) -> void:
 	var heart := Sprite2D.new()
-	heart.name = "ReactionHeart"
-	heart.texture = HEART
+	heart.name = "ReactionHeart" if icon == HEART else "ReactionNotice"
+	heart.texture = icon
 	heart.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	heart.scale = Vector2(2, 2)
 	heart.z_index = 5
@@ -226,6 +239,8 @@ func _choose_behavior() -> void:
 		_decision_time = _rng.randf_range(2.0, 3.5)
 		_curiosity_cooldown = 9.0
 		sprite.flip_h = player.global_position.x < global_position.x
+		_squash()
+		_float_heart(Vector2.ZERO, 0.0, NOTICE)  # notou o jogador
 		return
 	if _social_cooldown <= 0.0 and _rng.randf() < float(personality.sociability) and try_social_interaction():
 		return
