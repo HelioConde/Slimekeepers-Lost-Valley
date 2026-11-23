@@ -56,7 +56,7 @@ func _on_message(data: Dictionary) -> void:
 	var anim := str(data.get("anim", ""))
 	if sprite.sprite_frames.has_animation(anim):
 		if sprite.animation != anim: sprite.play(anim)
-		if not anim.begins_with("walk") and not anim.begins_with("run") and not anim.begins_with("idle_a") and not anim.begins_with("idle_b") and not anim.begins_with("idle_c"):
+		if not anim.begins_with("walk") and not anim.begins_with("run") and not anim.begins_with("idle"):  # laços tocam sozinhos
 			sprite.frame = int(data.get("frame", 0))
 
 

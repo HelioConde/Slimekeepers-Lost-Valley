@@ -32,12 +32,16 @@ const PICK_SMALL_GROUND := 3
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
 
-## Idles alternadas (<arte>/animations/idle_a|idle_b/<dir>/): espera entre uma e outra (s).
-const IDLE_VARIANTS := ["idle_a", "idle_b", "idle_c"]
-## idle_c (rara): estica o dedo e uma borboleta pousa; sorteada 1 vez em 4 quando existe.
+## Parado (pedido do usuário, 2026-11-23): o padrão é respirar (animations/idle_breath/<dir>/,
+## laço sutil); depois de IDLE_WAIT s toca uma variante (<arte>/animations/<nome>/<dir>/).
+## idle_a/idle_b: olha em volta e ajeita a postura; idle_look: admira a paisagem;
+## idle_hair: arruma o cabelo; idle_bag: confere a mochila; idle_c (rara): borboleta pousa
+## no dedo. As que só existem de frente (sul) viram o personagem para a câmera.
+const IDLE_VARIANTS := ["idle_a", "idle_b", "idle_look", "idle_hair", "idle_bag", "idle_c"]
 const RARE_IDLE := "idle_c"
-const IDLE_WAIT := Vector2(4.0, 8.0)
+const IDLE_WAIT := Vector2(6.0, 12.0)
 const IDLE_FPS := 6.0
+const BREATH_FPS := 4.0
 
 @export var world_bounds: Rect2 = WORLD_BOUNDS
 var _tool_time := 0.0
@@ -96,17 +100,18 @@ func _update_idle(delta: float) -> void:
 		facing = "south"
 		_play_animation("meditate_south")
 		return
-	var variant := current_animation.begins_with("idle_a_") or current_animation.begins_with("idle_b_") or current_animation.begins_with("idle_c_")
+	var variant := IDLE_VARIANTS.any(func(v: String) -> bool: return current_animation.begins_with(v + "_"))
 	if variant and sprite.is_playing() and current_animation.ends_with("_" + facing):
 		return
 	var options: Array[String] = []
 	for v in IDLE_VARIANTS:
-		if sprite.sprite_frames.has_animation(v + "_" + facing): options.append(v)
+		if sprite.sprite_frames.has_animation(v + "_" + facing) or sprite.sprite_frames.has_animation(v + "_south"): options.append(v)
 	if _idle_time >= _idle_wait and not options.is_empty():
 		_idle_time = 0.0
 		_idle_wait = randf_range(IDLE_WAIT.x, IDLE_WAIT.y)
 		var common := options.filter(func(v: String) -> bool: return v != RARE_IDLE)
-		var pick: String = RARE_IDLE if options.has(RARE_IDLE) and (common.is_empty() or randf() < 0.25) else common.pick_random()
+		var pick: String = RARE_IDLE if options.has(RARE_IDLE) and (common.is_empty() or randf() < 0.2) else common.pick_random()
+		if not sprite.sprite_frames.has_animation(pick + "_" + facing): facing = "south"  # só de frente: vira para a câmera
 		_play_animation(pick + "_" + facing)
 		return
 	_play_animation("idle_" + facing)
@@ -200,8 +205,15 @@ func _build_frames() -> SpriteFrames:
 		var idle: String = "idle_" + direction
 		frames.add_animation(idle)
 		frames.set_animation_speed(idle, 1.0)
-		var idle_path := "%s/rotations/%s.png" % [art, direction]
-		frames.add_frame(idle, load(idle_path) as Texture2D)
+		var breath := "%s/animations/idle_breath/%s/frame_%%03d.png" % [art, direction]
+		if ResourceLoader.exists(breath % 0):
+			frames.set_animation_speed(idle, BREATH_FPS)  # respiração sutil em laço
+			var b := 0
+			while ResourceLoader.exists(breath % b):
+				frames.add_frame(idle, load(breath % b) as Texture2D)
+				b += 1
+		else:
+			frames.add_frame(idle, load("%s/rotations/%s.png" % [art, direction]) as Texture2D)
 		if direction == "south" and ResourceLoader.exists("%s/animations/meditate/south/frame_000.png" % art):
 			# Meditar: senta (9 quadros) e respira devagar nos últimos.
 			frames.add_animation("meditate_south")
