@@ -201,6 +201,9 @@ func run() -> void:
 	await press("interact")
 	await create_timer(4.0).timeout
 	check(not bool(plan.get_meta("built")) and float(plan.get_meta("progress")) > 2.0, "um toque em [F] começa a construir")
+	var fill: ShaderMaterial = (plan.get_node("Sprite") as Sprite2D).material
+	check(fill != null and float(fill.get_shader_parameter("progress")) > 0.2, "planta enche de amarelo conforme constrói")
+	if out != "": (await _shot()).save_png(out + "/bench_building.png")
 	await create_timer(7.0).timeout
 	check(bool(plan.get_meta("built")) and bool(get_meta("placed_stations")[0].built), "bancada pronta em 10 s e salva")
 	for i in 3: await process_frame

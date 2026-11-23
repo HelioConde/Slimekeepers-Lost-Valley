@@ -18,6 +18,7 @@ const KINDS := {
 ## [F] nela começa a construir (segue sozinho, andar cancela; o progresso fica salvo).
 ## Futuro: um slime que ajuda a construir.
 const BLUEPRINT := Color(0.55, 0.85, 1.0, 0.55)
+const FILL_SHADER := preload("res://scripts/world/blueprint_fill.gdshader")
 const MOVES := ["move_left", "move_right", "move_up", "move_down"]
 var _building: Node2D  ## planta sendo construída agora
 var _save_wait := 0.0
@@ -148,6 +149,8 @@ func _build_step(player: Node2D) -> String:
 	var info: Dictionary = KINDS.get(str(station.get_meta("kind")), KINDS.bancada)
 	var progress: float = float(station.get_meta("progress", 0.0)) + get_process_delta_time()
 	station.set_meta("progress", progress)
+	var sprite_fill := (station.get_node("Sprite") as Sprite2D).material as ShaderMaterial
+	if sprite_fill: sprite_fill.set_shader_parameter("progress", clampf(progress / float(info.build), 0.0, 1.0))
 	player.facing = player._get_direction_name(station.global_position - player.global_position)
 	if player.has_method("hold_pose"): player.hold_pose("pick_big", player.PICK_BIG_GROUND)
 	_save_wait -= get_process_delta_time()
@@ -176,7 +179,7 @@ func _store_progress(station: Node2D) -> void:
 
 ## Planta vira construção pronta: cor normal e passa a bloquear a passagem.
 func _finish(station: Node2D) -> void:
-	(station.get_node("Sprite") as Sprite2D).modulate = Color.WHITE
+	(station.get_node("Sprite") as Sprite2D).material = null  # pronta: arte normal
 	var body := station.get_node("Body") as StaticBody2D
 	body.collision_layer = 2
 
@@ -212,7 +215,11 @@ func _spawn(at: Vector2, kind: String = "bancada", built: bool = true, progress:
 	add_child(station)
 	var sprite := Sprite2D.new()
 	sprite.name = "Sprite"
-	if not built: sprite.modulate = BLUEPRINT  # planta: translúcida até construir
+	if not built:  # planta: azul translúcida; enche de amarelo ao construir
+		var fill := ShaderMaterial.new()
+		fill.shader = FILL_SHADER
+		fill.set_shader_parameter("progress", progress / float(info.build))
+		sprite.material = fill
 	var art: Texture2D = info.art
 	sprite.texture = art
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
