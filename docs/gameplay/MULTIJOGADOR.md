@@ -43,3 +43,14 @@ quem entra joga com o outro.
 - Steam de verdade: o código usa a API real do GodotSteam (nomes conferidos no Godot 4.7).
   Falta testar com duas contas Steam em dois computadores.
 - O modo (cooperativo ou outro) está A DEFINIR.
+
+## Mundo compartilhado (2026-11-23)
+
+`scripts/net/net_world.gd` sincroniza a fazenda (`farm_cells`), a coleta (`forage_taken`),
+as pedras quebradas (`rocks_broken`) e as árvores cortadas (`chopped_trees`). Cada lado
+confere essas chaves a cada 0,5 s e envia a chave inteira que mudou; quem recebe grava e
+redesenha a região. Quem entra na sala recebe o estado atual do anfitrião.
+
+Limites: a última escrita vence em cada chave; bancadas colocadas e baús ainda não
+sincronizam. Teste: `tools/test_multiplayer_lan.gd` (covas aradas nos dois sentidos).
+

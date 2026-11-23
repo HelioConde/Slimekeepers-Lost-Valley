@@ -53,6 +53,8 @@ func run() -> void:
 		var before := remote.global_position
 		check(await wait_until(func() -> bool: return remote.global_position.distance_to(before) > 60.0, 30.0),
 			"movimento da Moni chega ao anfitrião (%s -> %s)" % [before, remote.global_position])
+	# Mundo compartilhado: o anfitrião ara uma cova; o convidado ara outra (net_world.gd).
+	preload("res://scripts/systems/farm_state.gd").till(self, Vector2i(1, 1), "floresta")
 	# O anfitrião anda; o convidado confere e grava o resultado.
 	var player: Node2D = scene.get("player")
 	var start := Time.get_ticks_msec()
@@ -62,6 +64,7 @@ func run() -> void:
 		player.global_position += Vector2(4 if (step / 40) % 2 == 0 else -4, 0)  # vai e volta
 		await create_timer(0.03).timeout
 	check(FileAccess.file_exists(RESULT), "convidado terminou a verificação")
+	check(await wait_until(func() -> bool: return preload("res://scripts/systems/farm_state.gd").is_tilled(self, Vector2i(2, 1), "floresta"), 10.0), "cova arada pelo convidado aparece no anfitrião")
 	if FileAccess.file_exists(RESULT):
 		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(RESULT))
 		for line: String in data.get("checks", []): print("  convidado " + line)

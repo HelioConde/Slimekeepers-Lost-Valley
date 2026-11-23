@@ -94,6 +94,9 @@ func _compact_hud() -> void:
 	var presence := preload("res://scripts/net/net_presence.gd").new()
 	presence.player = player
 	add_child(presence)
+	var world_sync := preload("res://scripts/net/net_world.gd").new()  # fazenda, coleta, pedras e árvores
+	world_sync.region = self
+	add_child(world_sync)
 	var bond := preload("res://scripts/ui/slime_bond_hud.gd").new()
 	bond.source = _closest_slime
 	$HUD/Interface.add_child(bond)

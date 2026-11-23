@@ -53,6 +53,10 @@ func run() -> void:
 		var before := remote.global_position
 		check(await wait_until(func() -> bool: return remote.global_position.distance_to(before) > 30.0, 30.0),
 			"movimento do Aren chega ao convidado")
+	var FARM := preload("res://scripts/systems/farm_state.gd")
+	check(await wait_until(func() -> bool: return FARM.is_tilled(self, Vector2i(1, 1), "floresta"), 20.0), "cova arada pelo anfitrião aparece no convidado")
+	FARM.till(self, Vector2i(2, 1), "floresta")
+	for i in 90: await process_frame  # dá tempo de enviar (verificação a cada 0,5 s)
 	var file := FileAccess.open(RESULT, FileAccess.WRITE)
 	file.store_string(JSON.stringify({"failures": failures, "checks": checks}))
 	file.close()
