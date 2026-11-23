@@ -40,12 +40,15 @@ func test_plant_water_and_fertilize_grow_two_stages() -> void:
 	assert_bool(Farm.is_fertilized(tree, cell, F)).is_false()  # adubo gasto
 
 
-func test_daily_limit() -> void:
+func test_energy_limits_work_until_night() -> void:
 	var tree := get_tree()
-	for x in Helpers.DAILY + 1:
+	var tasks: int = Helpers.ENERGY_MAX / Helpers.TASK_COST
+	for x in tasks + 1:
 		Farm.till(tree, Vector2i(x, 0), F)
 	Bag.add_item(tree, "semente_cenoura", 10)
-	for x in Helpers.DAILY:
+	for x in tasks:
 		assert_bool(Helpers.apply(tree, F, "brotinho", Vector2i(x, 0), 7)).is_true()
-	assert_bool(Helpers.apply(tree, F, "brotinho", Vector2i(Helpers.DAILY, 0), 7)).is_false()
-	assert_bool(Helpers.apply(tree, F, "brotinho", Vector2i(Helpers.DAILY, 0), 8)).is_true()  # dia novo
+	assert_bool(Helpers.can_work(tree, "brotinho", 7)).is_false()  # sem energia
+	assert_bool(Helpers.apply(tree, F, "brotinho", Vector2i(tasks, 0), 7)).is_false()
+	assert_int(Helpers.energy(tree, "brotinho", 8)).is_equal(Helpers.ENERGY_MAX)  # dormiu: dia novo, cheia
+	assert_bool(Helpers.apply(tree, F, "brotinho", Vector2i(tasks, 0), 8)).is_true()

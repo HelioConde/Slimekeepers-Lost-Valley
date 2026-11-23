@@ -188,6 +188,7 @@ func run() -> void:
 	HOTBAR.select(self, HOTBAR.slots(self).find("bancada"))
 	player.global_position = Vector2(3200, 3200)
 	player.set("facing", "south")
+	Input.warp_mouse(Vector2.ZERO)  # mouse longe: a prévia fica à frente do jogador (teclado)
 	await physics_frame
 	await process_frame
 	check(placer.can_place(placer.spot_for(player)), "chão livre aceito para a bancada")

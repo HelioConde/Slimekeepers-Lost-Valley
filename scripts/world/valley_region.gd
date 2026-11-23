@@ -124,6 +124,7 @@ func _setup_living_valley() -> void:
 	_update_living_goal()
 	_setup_gathering()
 	placer = preload("res://scripts/world/station_placer.gd").new()
+	placer.open_chest = open_chest  # baús colocados no chão
 	add_child(placer)
 	placer.blocked = func(_at: Vector2) -> bool: return false  # colisão (água, árvores) já bloqueia
 	placer.setup(scene_file_path)
@@ -228,6 +229,10 @@ func _spawn_valley_forage() -> void:
 func _handle_station() -> bool:
 	if not is_instance_valid(placer): return false
 	var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
+	if station_hint == "placed_bau_campo":
+		bag_hud.call("refresh")
+		_notify("Baú colocado! Use [F] nele para guardar. O Carreguim também leva coisas para cá.")
+		return true
 	if station_hint == "placed":
 		bag_hud.call("refresh")
 		_notify("Bancada de trabalho montada! Use [F] nela para fabricar ferramentas.")

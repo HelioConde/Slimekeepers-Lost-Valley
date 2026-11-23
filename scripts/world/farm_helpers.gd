@@ -3,7 +3,9 @@ extends Node2D
 ## uma função com animação própria. Brotinho planta sementes da bolsa na terra arada
 ## vazia, Bolhinha rega culturas com sede e Musguinho aduba (cultura adubada e regada
 ## cresce dois estágios na virada). De dia, um ajudante por espécie amiga anda até a
-## cova, toca a animação da função e aplica o efeito; até DAILY tarefas por dia.
+## cova, toca a animação da função e aplica o efeito. Energia (como no Palworld,
+## decisão do usuário 2026-11-23): cada tarefa gasta TASK_COST; trabalham enquanto houver
+## energia e ela enche quando o dia vira (dormem à noite).
 ## shortcut: o ajudante é um sprite à parte, não o slime do habitat; trocar quando os
 ## slimes amigos puderem seguir o jogador até a fazenda.
 
@@ -15,7 +17,10 @@ const VARIANTS := preload("res://scripts/systems/slime_variants.gd")
 const KEY := "farm_helpers_done"
 const FRIEND_KEYS := ["forest_slime_friends", "valley_slime_friends"]
 const ROLES := {"brotinho": "plantar", "bolhinha": "regar", "musguinho": "adubar"}
-const DAILY := 4
+const ENERGY_MAX := 100
+const TASK_COST := 15  ## ~6 tarefas por dia por espécie
+## shortcut: energia por espécie ajudante (um ajudante por espécie hoje); passar a ser por
+## slime quando cada slime amigo trabalhar sozinho.
 const SPEED := 42.0
 const WORK_SECONDS := 1.6
 const DAY_HOURS := Vector2i(6, 19)
@@ -43,15 +48,20 @@ static func helpers(tree: SceneTree) -> Array:
 	return found
 
 
-static func done_today(tree: SceneTree, species: String, day: int) -> int:
+## Energia do ajudante da espécie hoje (dia novo = cheia).
+static func energy(tree: SceneTree, species: String, day: int) -> int:
 	var book: Dictionary = tree.get_meta(KEY, {})
 	var entry: Dictionary = book.get(species, {})
-	return int(entry.get("count", 0)) if int(entry.get("day", -1)) == day else 0
+	return int(entry.get("energy", ENERGY_MAX)) if int(entry.get("day", -1)) == day else ENERGY_MAX
 
 
-static func _count(tree: SceneTree, species: String, day: int) -> void:
+static func can_work(tree: SceneTree, species: String, day: int) -> bool:
+	return energy(tree, species, day) >= TASK_COST
+
+
+static func _spend(tree: SceneTree, species: String, day: int) -> void:
 	var book: Dictionary = tree.get_meta(KEY, {}).duplicate(true)
-	book[species] = {"day": day, "count": done_today(tree, species, day) + 1}
+	book[species] = {"day": day, "energy": energy(tree, species, day) - TASK_COST}
 	tree.set_meta(KEY, book)
 
 
@@ -82,7 +92,7 @@ static func job(tree: SceneTree, field: String, species: String, taken: Array = 
 
 ## Aplica a função da espécie na cova; devolve se algo mudou.
 static func apply(tree: SceneTree, field: String, species: String, cell: Vector2i, day: int) -> bool:
-	if done_today(tree, species, day) >= DAILY: return false
+	if not can_work(tree, species, day): return false  # cansado: espera a noite
 	var ok := false
 	match species:
 		"brotinho":
@@ -92,7 +102,7 @@ static func apply(tree: SceneTree, field: String, species: String, cell: Vector2
 			ok = FARM.water(tree, cell, field)
 		"musguinho":
 			ok = FARM.fertilize(tree, cell, field)
-	if ok: _count(tree, species, day)
+	if ok: _spend(tree, species, day)
 	return ok
 
 
@@ -110,7 +120,7 @@ func _process(delta: float) -> void:
 		var h: Dictionary = _helpers[species]
 		var sprite: AnimatedSprite2D = h.sprite
 		if h.cell == NONE:
-			if daytime and done_today(tree, species, day) < DAILY:
+			if daytime and can_work(tree, species, day):
 				h.cell = job(tree, farm.field_id, species, _taken())
 			if h.cell == NONE:
 				_play(sprite, "idle")

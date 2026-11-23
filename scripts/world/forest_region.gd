@@ -129,6 +129,7 @@ func _ready() -> void:
 	choppable.apply_day(GameClock.day_number)
 	# Bancadas colocadas pelo jogador (CRIACAO.md, etapa 4).
 	placer = preload("res://scripts/world/station_placer.gd").new()
+	placer.open_chest = open_chest  # baús colocados no chão
 	add_child(placer)
 	var pond: Vector2 = $NaturalSpring.global_position
 	placer.blocked = func(at: Vector2) -> bool: return at.distance_to(pond) < 150.0
@@ -318,6 +319,10 @@ func _process(delta: float) -> void:
 		return
 	if is_instance_valid(placer):
 		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
+		if station_hint == "placed_bau_campo":
+			bag_hud.call("refresh")
+			_notify("Baú colocado! Use [F] nele para guardar. O Carreguim também leva coisas para cá.")
+			return
 		if station_hint == "placed":
 			bag_hud.call("refresh")
 			_notify("Bancada de trabalho montada! Use [F] nela para fabricar ferramentas.")

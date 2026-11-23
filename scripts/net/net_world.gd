@@ -9,7 +9,7 @@ extends Node
 ## duplicar itens). Relógio: o anfitrião manda a hora a cada CLOCK_EVERY s.
 
 const KEYS := ["farm_cells", "forage_taken", "rocks_broken", "chopped_trees",
-	"placed_stations", "chest_items", "player_house"]
+	"placed_stations", "chest_items", "player_house", "placed_chest_items"]
 const CHECK_EVERY := 0.5
 const CLOCK_EVERY := 5.0
 const CLOCK_SLACK := 2.0  ## minutos de jogo de diferença tolerados

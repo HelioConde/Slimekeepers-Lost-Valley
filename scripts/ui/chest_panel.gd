@@ -62,7 +62,12 @@ func _ready() -> void:
 	column.add_child(help)
 
 
-func open() -> void:
+## "" = baú da casa; senão o id de um baú colocado no chão (station_placer).
+var chest_id := ""
+
+
+func open(id: String = "") -> void:
+	chest_id = id
 	side = 0
 	selected = 0
 	visible = true
@@ -83,7 +88,7 @@ func _freeze(on: bool) -> void:
 
 ## [item, quantidade] de cada lado, em ordem estável.
 func entries(which: int) -> Array:
-	var data: Dictionary = BAG.inventory_snapshot(get_tree()) if which == 0 else CHEST.items(get_tree())
+	var data: Dictionary = BAG.inventory_snapshot(get_tree()) if which == 0 else CHEST.items(get_tree(), chest_id)
 	var keys: Array = data.keys()
 	keys.sort()
 	var out: Array = []
@@ -113,7 +118,7 @@ func move_selected() -> int:
 	var list := entries(side)
 	if list.is_empty(): return 0
 	var item: String = list[clampi(selected, 0, list.size() - 1)][0]
-	var moved: int = CHEST.store(get_tree(), item) if side == 0 else CHEST.take(get_tree(), item)
+	var moved: int = CHEST.store(get_tree(), item, chest_id) if side == 0 else CHEST.take(get_tree(), item, chest_id)
 	_status.text = ("Guardou %d" if side == 0 else "Pegou %d") % moved + " " + str(ITEMS.info(item).get("name", item)).to_lower() + ("." if moved > 0 else " (bolsa cheia).")
 	refresh()
 	changed.emit()

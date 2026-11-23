@@ -37,12 +37,13 @@ const ITEMS := {
 	"corda": {"name": "Corda", "kind": "material", "icon": "corda"},
 	"madeira": {"name": "Madeira", "kind": "material", "icon": "madeira"},
 	"bancada": {"name": "Bancada de trabalho", "kind": "station", "icon": "bancada"},
+	"bau_campo": {"name": "Baú", "kind": "station", "icon": "bau_campo"},  # colocado no chão (Carreguim leva até ele)
 }
 ## Ordem dos itens na barra depois das ferramentas.
 const ORDER := ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres",
 	"cenoura", "beterraba", "repolho", "folhas_frescas", "porcao_folhas_prototipo",
 	"cenoura_assada", "sopa_legumes",
-	"bancada", "madeira", "corda", "fibra", "graveto", "pedra_pequena"]
+	"bancada", "bau_campo", "madeira", "corda", "fibra", "graveto", "pedra_pequena"]
 
 static var _icon_cache: Dictionary = {}
 

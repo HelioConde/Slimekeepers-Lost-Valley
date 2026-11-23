@@ -38,6 +38,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"session_progress_flags",
 	"tutorial_step",
 	"player_health",
+	"placed_chest_items",
 ]
 
 

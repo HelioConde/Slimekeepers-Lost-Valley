@@ -370,7 +370,7 @@ var _chest_panel: Control
 
 
 ## Janela do baú da casa (guarda itens sem o limite da bolsa).
-func open_chest() -> void:
+func open_chest(id: String = "") -> void:
 	if not is_instance_valid(_chest_panel):
 		_chest_panel = preload("res://scripts/ui/chest_panel.gd").new()
 		_chest_panel.player = player
@@ -378,7 +378,7 @@ func open_chest() -> void:
 		_chest_panel.changed.connect(func() -> void:
 			var bag_node: Node = get("bag_hud")
 			if is_instance_valid(bag_node): bag_node.call("refresh"))
-	_chest_panel.open()
+	_chest_panel.open(id)
 
 
 ## Dica de [F] perto de um slime amigo quando a barra tem comida ("" = sem comida).

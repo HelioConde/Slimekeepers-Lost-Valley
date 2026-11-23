@@ -51,7 +51,15 @@ func _ready() -> void:
 	for index in HOTBAR.SLOTS:
 		var slot := PanelContainer.new()
 		slot.custom_minimum_size = Vector2(SLOT, SLOT)
-		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		# Clique no espaço escolhe o item (além de 1–0 e da roda do mouse); o clique não vai
+		# para o mundo (não golpeia nem pega nada por baixo da barra).
+		slot.mouse_filter = Control.MOUSE_FILTER_STOP
+		slot.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		slot.gui_input.connect(func(event: InputEvent) -> void:
+			var click := event as InputEventMouseButton
+			if click and click.pressed and click.button_index == MOUSE_BUTTON_LEFT:
+				HOTBAR.select(get_tree(), index)
+				slot.accept_event())
 		slot.add_theme_stylebox_override("panel", SKIN.slot(false))
 		row.add_child(slot)
 		var icon := TextureRect.new()

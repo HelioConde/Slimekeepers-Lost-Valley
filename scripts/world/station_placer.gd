@@ -9,6 +9,13 @@ const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const PLACED_KEY := "placed_stations"
 const ART := preload("res://assets/world/crafting/workbench.png")
 const FOOTPRINT := Vector2(44, 16)  # base sólida (pés da bancada)
+## Construções que se colocam no chão: bancada e baú (2026-11-23; o Carreguim leva ao baú).
+const KINDS := {
+	"bancada": {"art": ART, "footprint": FOOTPRINT, "name": "a bancada"},
+	"bau_campo": {"art": preload("res://assets/objects/furniture/bau.png"), "footprint": Vector2(30, 12), "name": "o baú"},
+}
+## Abre o baú colocado (a região liga em open_chest(id)).
+var open_chest: Callable
 const AHEAD := 44.0
 const USE_REACH := 48.0
 const PLACE_REACH := 150.0
@@ -36,7 +43,7 @@ func setup(id: String) -> void:
 	add_child(_ghost)
 	for entry: Dictionary in _saved():
 		if str(entry.region) == region_id:
-			_spawn(Vector2(entry.x, entry.y))
+			_spawn(Vector2(entry.x, entry.y), str(entry.get("kind", "bancada")))
 
 
 ## Refaz as bancadas desta região a partir da sessão (multijogador: o outro colocou uma).
@@ -45,7 +52,7 @@ func reload() -> void:
 	_stations.clear()
 	for entry: Dictionary in _saved():
 		if str(entry.region) == region_id:
-			_spawn(Vector2(entry.x, entry.y))
+			_spawn(Vector2(entry.x, entry.y), str(entry.get("kind", "bancada")))
 
 
 func _saved() -> Array:
@@ -67,15 +74,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()  # o clique é da construção, não do [F]
 
 
-func can_place(at: Vector2) -> bool:
+func can_place(at: Vector2, kind: String = "bancada") -> bool:
 	if blocked.call(at): return false
 	for station in _stations:
 		if station.global_position.distance_to(at) < 56.0: return false
 	var shape := RectangleShape2D.new()
-	shape.size = FOOTPRINT + Vector2(6, 6)
+	shape.size = Vector2(KINDS.get(kind, KINDS.bancada).footprint) + Vector2(6, 6)
 	var query := PhysicsShapeQueryParameters2D.new()
 	query.shape = shape
-	query.transform = Transform2D(0, at + Vector2(0, -FOOTPRINT.y * 0.5))
+	query.transform = Transform2D(0, at + Vector2(0, -Vector2(KINDS.get(kind, KINDS.bancada).footprint).y * 0.5))
 	query.collision_mask = 2
 	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
 
@@ -83,29 +90,49 @@ func can_place(at: Vector2) -> bool:
 ## Chamado a cada quadro pela região. Devolve o texto de dica ("" = nada a dizer)
 ## e trata [F]: colocar a bancada ou abrir a bancada próxima.
 func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
-	var holding := HOTBAR.selected_item(get_tree()) == "bancada" and BAG.count_item(get_tree(), "bancada") > 0
+	var kind := HOTBAR.selected_item(get_tree())
+	var holding := KINDS.has(kind) and BAG.count_item(get_tree(), kind) > 0
 	_ghost.visible = holding
 	if holding:
+		_ghost.texture = KINDS[kind].art
+		_ghost.offset = Vector2(0, -_ghost.texture.get_height() * 0.5 + 4)
 		var at := spot_for(player)
-		var ok := can_place(at)
+		var ok := can_place(at, kind)
 		_ghost.global_position = at
 		_ghost.modulate = Color(0.6, 1.0, 0.6, 0.7) if ok else Color(1.0, 0.45, 0.45, 0.7)
 		var place := interact or _click
 		_click = false
 		if place and ok:
-			BAG.spend_item(get_tree(), "bancada")
-			_spawn(at)
+			BAG.spend_item(get_tree(), kind)
+			_spawn(at, kind)
 			var saved := _saved().duplicate()
-			saved.append({"region": region_id, "x": at.x, "y": at.y})
+			saved.append({"region": region_id, "x": at.x, "y": at.y, "kind": kind})
 			get_tree().set_meta(PLACED_KEY, saved)
 			_ghost.visible = false
-			return "placed"
-		return "Clique ou [F] para colocar a bancada" if ok else "Aqui não dá para colocar a bancada"
+			return "placed" if kind == "bancada" else "placed_" + kind
+		var what: String = KINDS[kind].name
+		return ("Clique ou [F] para colocar " + what) if ok else ("Aqui não dá para colocar " + what)
 	var near := nearest_station(player.global_position)
 	if near != null:
+		if str(near.get_meta("kind", "bancada")) == "bau_campo":
+			if interact and open_chest.is_valid(): open_chest.call(str(near.get_meta("chest_id")))
+			return "[F] Abrir o baú"
 		if interact: open_bench.call()
 		return "[F] Usar a bancada de trabalho"
 	return ""
+
+
+## Baús colocados (todas as regiões): [{id, region, at}] — o Carreguim escolhe entre eles.
+static func chests(tree: SceneTree) -> Array:
+	var out: Array = []
+	for entry: Dictionary in tree.get_meta(PLACED_KEY, []):
+		if str(entry.get("kind", "bancada")) == "bau_campo":
+			out.append({"id": chest_id(entry), "region": str(entry.region), "at": Vector2(entry.x, entry.y)})
+	return out
+
+
+static func chest_id(entry: Dictionary) -> String:
+	return "%s_%d_%d" % [entry.region, int(entry.x), int(entry.y)]
 
 
 func nearest_station(at: Vector2) -> Node2D:
@@ -114,23 +141,27 @@ func nearest_station(at: Vector2) -> Node2D:
 	return null
 
 
-func _spawn(at: Vector2) -> void:
+func _spawn(at: Vector2, kind: String = "bancada") -> void:
+	var info: Dictionary = KINDS.get(kind, KINDS.bancada)
 	var station := Node2D.new()
-	station.name = "Workbench"
+	station.name = "Workbench" if kind == "bancada" else "Chest"
 	station.global_position = at
+	station.set_meta("kind", kind)
+	station.set_meta("chest_id", chest_id({"region": region_id, "x": at.x, "y": at.y}))
 	add_child(station)
 	var sprite := Sprite2D.new()
-	sprite.texture = ART
+	var art: Texture2D = info.art
+	sprite.texture = art
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.offset = Vector2(0, -ART.get_height() * 0.5 + 4)
+	sprite.offset = Vector2(0, -art.get_height() * 0.5 + 4)
 	station.add_child(sprite)
 	var body := StaticBody2D.new()
 	body.collision_layer = 2
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
-	rect.size = FOOTPRINT
+	rect.size = info.footprint
 	shape.shape = rect
-	shape.position = Vector2(0, -FOOTPRINT.y * 0.5)
+	shape.position = Vector2(0, -Vector2(info.footprint).y * 0.5)
 	body.add_child(shape)
 	station.add_child(body)
 	_stations.append(station)
