@@ -1,8 +1,9 @@
 extends PanelContainer
 ## Tutorial inicial (pedido do usuário, 2026-11-23): depois do despertar do Novo Jogo,
-## um balão de diálogo do protagonista (aba com o nome, retrato, título e texto com
-## as teclas desenhadas) acima da barra rápida. Cada dica passa sozinha quando o
-## jogador faz o que ela pede; [Tab] pula. O passo fica na sessão (KEY) e vai no save.
+## um balão de fala sobre a cabeça do protagonista (aba com o nome, título e texto com
+## as teclas desenhadas, rabinho apontando para ele) que segue o personagem. Cada dica
+## passa sozinha quando o jogador faz o que ela pede; [Tab] pula. O passo fica na
+## sessão (KEY) e vai no save.
 
 const KEY := "tutorial_step"
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -23,13 +24,17 @@ const STEPS := [
 	["Sua casa", "Em [B], \"Construir casa\" abre o modo construir. Dormir na cama salva o jogo.", "read"],
 ]
 const READ_SECONDS := 9.0
-const WIDTH := 430.0
+const WIDTH := 330.0
+## Topo da cabeça em relação aos pés do jogador (sprite 128 px, escala 0,65 em y -34).
+const HEAD := Vector2(0, -60)
+const TAIL := 10.0
 
 var region: Node  ## clearing_region: player, inventory_panel, crafting_panel
 var _label: Label  ## título da dica
 var _body: HFlowContainer
 var _footer: Label
 var _tab: PanelContainer
+var _tail: Control
 var _walked := 0.0
 var _time := 0.0
 
@@ -49,27 +54,18 @@ func _ready() -> void:
 	paper.set_content_margin_all(8)
 	paper.content_margin_top = 12
 	add_theme_stylebox_override("panel", paper)
-	anchor_left = 0.5
-	anchor_right = 0.5
-	anchor_top = 1.0
-	anchor_bottom = 1.0
-	var row := HBoxContainer.new()
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_theme_constant_override("separation", 8)
-	add_child(row)
-	row.add_child(_portrait(str(who.get("art", "")), PROTAGONIST.current(get_tree())))
+	set_anchors_preset(Control.PRESET_TOP_LEFT)
 	var column := VBoxContainer.new()
 	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.add_theme_constant_override("separation", 4)
-	row.add_child(column)
+	column.add_theme_constant_override("separation", 3)
+	add_child(column)
 	_label = _text("", 15, INK)
 	_label.add_theme_constant_override("outline_size", 1)
 	_label.add_theme_color_override("font_outline_color", INK)  # negrito da referência
 	column.add_child(_label)
 	_body = HFlowContainer.new()
 	_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_body.custom_minimum_size = Vector2(WIDTH - 110.0, 0)
+	_body.custom_minimum_size = Vector2(WIDTH - 20.0, 0)
 	_body.add_theme_constant_override("h_separation", 4)
 	_body.add_theme_constant_override("v_separation", 3)
 	column.add_child(_body)
@@ -91,6 +87,15 @@ func _ready() -> void:
 	_tab.add_theme_stylebox_override("panel", tab_style)
 	_tab.add_child(_text(str(who.get("name", "")), 13, PAPER))
 	add_child(_tab)
+	# Rabinho do balão apontando para a cabeça (desenhado: triângulo com borda).
+	_tail = Control.new()
+	_tail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_tail.custom_minimum_size = Vector2(TAIL * 2, TAIL + 4)
+	_tail.draw.connect(func() -> void:
+		var w := TAIL
+		_tail.draw_colored_polygon(PackedVector2Array([Vector2(0, 0), Vector2(w * 2, 0), Vector2(w, TAIL + 3)]), EDGE)
+		_tail.draw_colored_polygon(PackedVector2Array([Vector2(3, 0), Vector2(w * 2 - 3, 0), Vector2(w, TAIL - 1)]), PAPER))
+	add_child(_tail)
 	_show()
 
 
@@ -98,30 +103,10 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN and is_instance_valid(_tab):
 		_tab.size = _tab.get_combined_minimum_size()
-		_tab.position = Vector2(84, -_tab.size.y + 4)
-
-
-func _portrait(art: String, who: String) -> Control:
-	var box := Control.new()
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.custom_minimum_size = Vector2(78, 78)
-	var face := TextureRect.new()
-	face.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	face.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	var card := "res://assets/menu/select/%s_look.png" % who
-	var path := card if ResourceLoader.exists(card) else "%s/rotations/south.png" % art
-	if ResourceLoader.exists(path):
-		var tex: Texture2D = load(path)
-		var used := tex.get_image().get_used_rect()
-		var atlas := AtlasTexture.new()  # cabeça e ombros
-		atlas.atlas = tex
-		atlas.region = Rect2(used.position.x + used.size.x / 2 - 30, used.position.y - 2, 60, 60)
-		face.texture = atlas
-	face.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	face.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	face.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	box.add_child(face)
-	return box
+		_tab.position = Vector2(12, -_tab.size.y + 4)
+	if what == NOTIFICATION_SORT_CHILDREN and is_instance_valid(_tail):
+		_tail.size = _tail.custom_minimum_size
+		_tail.position = Vector2(size.x * 0.5 - TAIL, size.y - 3)
 
 
 func _text(value: String, font_size: int, color: Color) -> Label:
@@ -179,11 +164,8 @@ func _show() -> void:
 	_footer.text = "[Tab] pular dica  ·  %d/%d" % [step() + 1, STEPS.size()]
 	_walked = 0.0
 	_time = 0.0
-	offset_left = -WIDTH * 0.5
-	offset_right = WIDTH * 0.5
-	offset_bottom = -96  # acima da barra rápida
-	offset_top = offset_bottom
-	grow_vertical = Control.GROW_DIRECTION_BEGIN
+	reset_size()
+	_follow()
 
 
 func advance() -> void:
@@ -196,8 +178,21 @@ func _process(delta: float) -> void:
 		visible = false
 		return
 	if not visible: _show()  # começou agora (fim do despertar)
+	_follow()
 	_time += delta
 	if _done(str(STEPS[step()][2]), delta): advance()
+
+
+## Fica sobre a cabeça do jogador, dentro da tela (pés -> tela pela câmera).
+func _follow() -> void:
+	var player: Node2D = region.get("player") if region else null
+	if not is_instance_valid(player) or not is_inside_tree(): return
+	var head: Vector2 = get_viewport().get_canvas_transform() * (player.global_position + HEAD)
+	var screen := get_viewport_rect().size
+	var at := head - Vector2(size.x * 0.5, size.y + TAIL + 2)
+	position = Vector2(clampf(at.x, 6, screen.x - size.x - 6), clampf(at.y, 24, screen.y - size.y - 6)).round()
+	if is_instance_valid(_tail):  # o rabinho continua apontando para a cabeça
+		_tail.position.x = clampf(head.x - position.x - TAIL, 10, size.x - TAIL * 2 - 10)
 
 
 func _unhandled_input(event: InputEvent) -> void:
