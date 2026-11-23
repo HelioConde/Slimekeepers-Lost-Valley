@@ -100,10 +100,10 @@ func hits(id: String) -> int:
 	return int(_hits.get(id, 0))
 
 
-## Um golpe de picareta. Devolve "hit" ou "broken".
-func strike(rock: Dictionary, day: int) -> String:
+## Um golpe de picareta (power: quantos golpes vale; pedra polida = 2). Devolve "hit" ou "broken".
+func strike(rock: Dictionary, day: int, power: int = 1) -> String:
 	var id: String = rock.id
-	_hits[id] = hits(id) + 1
+	_hits[id] = hits(id) + power
 	if hits(id) < int(HITS[rock.kind]): return "hit"
 	_hits.erase(id)
 	var broken: Dictionary = get_tree().get_meta(KEY, {}).duplicate()

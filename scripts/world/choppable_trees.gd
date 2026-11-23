@@ -121,14 +121,25 @@ func hits(key: String) -> int:
 	return int(_hits.get(key, 0))
 
 
-## Um golpe de machado. Devolve "hit", "felled" ou "processed".
-func strike(t: Dictionary, day: int) -> String:
+## Golpes para derrubar: a árvore grande (só machado de pedra polida) pede o dobro.
+func fell_hits(key: String) -> int:
+	return HITS_TO_FELL * (1 if is_small(key) else 2)
+
+
+## Madeira por tronco: a árvore grande rende o dobro.
+func wood(key: String) -> int:
+	return WOOD_PER_LOG * (1 if is_small(key) else 2)
+
+
+## Um golpe de machado (power: quantos golpes vale; pedra polida = 2).
+## Devolve "hit", "felled" ou "processed".
+func strike(t: Dictionary, day: int, power: int = 1) -> String:
 	var key: String = t.key
-	_hits[key] = hits(key) + 1
+	_hits[key] = hits(key) + power
 	var tree: Node2D = trees[key]
 	_shake(tree.get_node("Sprite") if t.kind == "tree" else _extras[key][1])
 	if t.kind == "tree":
-		if hits(key) < HITS_TO_FELL: return "hit"
+		if hits(key) < fell_hits(key): return "hit"
 		_hits.erase(key)
 		var chopped := state(get_tree()).duplicate(true)
 		chopped[key] = {"day": day, "processed": false}
@@ -140,8 +151,8 @@ func strike(t: Dictionary, day: int) -> String:
 	var chopped := state(get_tree()).duplicate(true)
 	chopped[key]["processed"] = true
 	get_tree().set_meta(CHOPPED_KEY, chopped)
-	if drop.is_valid(): drop.call("madeira", WOOD_PER_LOG, log_position(key))  # cai no chão
-	else: BAG.add_item(get_tree(), "madeira", WOOD_PER_LOG)
+	if drop.is_valid(): drop.call("madeira", wood(key), log_position(key))  # cai no chão
+	else: BAG.add_item(get_tree(), "madeira", wood(key))
 	_fell_visual(key, true)
 	return "processed"
 

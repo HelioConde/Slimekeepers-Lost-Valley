@@ -7,7 +7,12 @@ const ICONS := "res://assets/ui/items/%s.png"
 
 ## Ferramentas na ordem da barra; só aparecem quando o jogador as tem na bolsa
 ## (fabricadas: docs/gameplay/CRIACAO.md). O jogo começa sem nenhuma.
-const TOOLS := ["machado", "picareta", "foice", "enxada", "regador"]
+const TOOLS := ["machado", "machado_polido", "picareta", "picareta_polida", "foice", "enxada", "regador"]
+## Ferramentas de pedra polida (nível 2): cada golpe vale POWER golpes e derrubam a
+## árvore e a pedra grandes. Por família, a melhor primeiro.
+const AXES := ["machado_polido", "machado"]
+const PICKS := ["picareta_polida", "picareta"]
+const POWER := {"machado_polido": 2, "picareta_polida": 2}
 ## Saves de antes da fabricação recebem estas ferramentas ao carregar (save_game).
 const LEGACY_TOOLS := ["enxada", "regador"]
 ## Capacidade da bolsa por item; ferramentas e estações: 1.
@@ -15,6 +20,8 @@ const MAX_STACK := 99
 const ITEMS := {
 	"machado": {"name": "Machado rudimentar", "kind": "tool", "icon": "machado"},
 	"picareta": {"name": "Picareta rudimentar", "kind": "tool", "icon": "picareta"},
+	"machado_polido": {"name": "Machado de pedra polida", "kind": "tool", "icon": "machado_polido"},
+	"picareta_polida": {"name": "Picareta de pedra polida", "kind": "tool", "icon": "picareta_polida"},
 	"foice": {"name": "Foice rudimentar", "kind": "tool", "icon": "foice"},  # corta o mato; às vezes solta semente
 	"enxada": {"name": "Enxada", "kind": "tool", "icon": "enxada"},
 	"regador": {"name": "Regador", "kind": "tool", "icon": "regador"},
@@ -35,6 +42,7 @@ const ITEMS := {
 	"fibra": {"name": "Fibra vegetal", "kind": "material", "icon": "fibra"},
 	"graveto": {"name": "Graveto", "kind": "material", "icon": "graveto"},
 	"pedra_pequena": {"name": "Pedra pequena", "kind": "material", "icon": "pedra_pequena"},
+	"pedra_polida": {"name": "Pedra polida", "kind": "material", "icon": "pedra_polida"},
 	"corda": {"name": "Corda", "kind": "material", "icon": "corda"},
 	"madeira": {"name": "Madeira", "kind": "material", "icon": "madeira"},
 	"bancada": {"name": "Bancada de trabalho", "kind": "station", "icon": "bancada"},
@@ -44,7 +52,7 @@ const ITEMS := {
 const ORDER := ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres",
 	"cenoura", "beterraba", "repolho", "folhas_frescas", "porcao_folhas_prototipo",
 	"cenoura_assada", "sopa_legumes",
-	"bancada", "bau_campo", "madeira", "corda", "fibra", "graveto", "pedra_pequena"]
+	"bancada", "bau_campo", "madeira", "corda", "fibra", "graveto", "pedra_pequena", "pedra_polida"]
 
 static var _icon_cache: Dictionary = {}
 

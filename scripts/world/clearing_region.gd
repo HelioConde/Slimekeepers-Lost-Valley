@@ -393,12 +393,15 @@ func slime_food_hint(slime: Node2D) -> String:
 
 ## Machado/picareta na mão e árvore/pedra ao alcance: o golpe vem antes de usar a
 ## bancada ou o baú ao lado (senão a bancada perto de uma árvore impede cortar).
+const ITEM_TOOLS := preload("res://scripts/systems/item_catalog.gd")
+
+
 func tool_target_near() -> bool:
 	var g: Node = get("gathering")
 	if not is_instance_valid(g) or not is_instance_valid(player): return false
 	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
-	if item == "machado" and is_instance_valid(g.get("choppable")): return not (g.choppable.target(player.global_position) as Dictionary).is_empty()
-	if item == "picareta" and is_instance_valid(g.get("rocks")): return not (g.rocks.target(player.global_position) as Dictionary).is_empty()
+	if item in ITEM_TOOLS.AXES and is_instance_valid(g.get("choppable")): return not (g.choppable.target(player.global_position) as Dictionary).is_empty()
+	if item in ITEM_TOOLS.PICKS and is_instance_valid(g.get("rocks")): return not (g.rocks.target(player.global_position) as Dictionary).is_empty()
 	return false
 
 

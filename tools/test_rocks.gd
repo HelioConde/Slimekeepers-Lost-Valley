@@ -71,5 +71,33 @@ func run() -> void:
 	for i in 4: await physics_frame
 	for i in 3: await process_frame
 	check(str(region.hud_hint.text).contains("muito grande"), "pedra grande sugere uma menor (%s)" % region.hud_hint.text)
+	# Nível 2 (pedra polida): cada golpe vale 2; a picareta polida quebra a pedra grande.
+	BAG.add_item(self, "picareta_polida", 1)
+	set_meta("player_energy", 100)
+	for i in 3: await process_frame
+	await press()  # primeiro toque troca para a picareta polida (melhor da bolsa)
+	for i in 2: await process_frame
+	check(HOTBAR.selected_item(self) == "picareta_polida", "pedra grande escolhe a picareta polida (%s)" % HOTBAR.selected_item(self))
+	before = BAG.count_item(self, "pedra_pequena")
+	for i in 3:
+		await press()
+		while player.is_using_tool(): await process_frame
+	check(not (big.node as Node2D).visible, "3 golpes da picareta polida quebram a pedra grande")
+	region.get("item_drops").collect_all()
+	check(BAG.count_item(self, "pedra_pequena") == before + 8, "pedra grande solta 8 pedras pequenas")
+	# Machado polido: derruba a árvore grande (6 golpes = 3 de pedra polida) e rende o dobro.
+	var trees: Node = gathering.choppable
+	var big_tree := ""
+	for key: String in trees.trees:
+		if not trees.is_small(key) and (trees.trees[key] as Node2D).global_position.distance_to(Vector2(3200, 3200)) < 2500.0:
+			big_tree = key
+			break
+	check(not big_tree.is_empty(), "há árvore grande cortável")
+	if not big_tree.is_empty():
+		check(trees.fell_hits(big_tree) == 6 and trees.wood(big_tree) == 8, "árvore grande: 6 golpes, 8 madeiras")
+		var t := {"key": big_tree, "kind": "tree"}
+		var results: Array = []
+		for i in 3: results.append(trees.strike(t, 1, 2))
+		check(results == ["hit", "hit", "felled"], "machado polido (vale 2) derruba a árvore grande em 3 golpes (%s)" % [results])
 	print("ROCKS: %d failures" % failures)
 	quit(1 if failures else 0)

@@ -49,6 +49,22 @@ As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está 
   - O modo construir e as janelas pegam o clique antes.
 - Teste: `tools/test_drops_and_click.gd`.
 
+## Ferramentas de pedra polida — nível 2 (2026-11-23)
+
+Opção recomendada para "ferramentas melhores" (pedra polida agora, metal depois):
+
+| Item | Receita (bancada) | Efeito |
+|---|---|---|
+| Pedra polida | 2 pedras pequenas | material |
+| Machado de pedra polida | 3 madeiras + 3 pedras polidas + 2 cordas (exige o machado rudimentar) | cada golpe vale 2; derruba a **árvore grande** (6 golpes = 3 batidas), que rende 8 madeiras |
+| Picareta de pedra polida | 3 madeiras + 4 pedras polidas + 2 cordas (exige a picareta rudimentar) | cada golpe vale 2; quebra a **pedra grande** (6 golpes = 3 batidas, 8 pedras pequenas) |
+
+- A troca é automática: com o alvo à frente, [F] escolhe a melhor ferramenta da família que estiver na bolsa (`region_gathering._best`; famílias e força em `item_catalog.AXES/PICKS/POWER`).
+- Sem a ferramenta polida, a árvore e a pedra grandes continuam com "muito grande. Que tal uma menor?", agora com a dica da ferramenta polida.
+- Ícones: `assets/ui/items/{pedra_polida,machado_polido,picareta_polida}.png` (PixelLab, a partir dos ícones atuais).
+- Limitação: o golpe usa a mesma animação do machado e da picareta rudimentares; a cabeça de pedra no golpe ainda é a rudimentar.
+- Teste: `tools/test_rocks.gd` (pedra grande com a picareta polida, árvore grande com o machado polido).
+
 ## Decisões
 
 - O machado é exigido na bolsa para fabricar na bancada e não é gasto. Não há durabilidade por enquanto: não faz falta para o design atual.

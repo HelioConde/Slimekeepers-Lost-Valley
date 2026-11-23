@@ -3,7 +3,8 @@ usuário). Cada direção foi animada no PixelLab (v3) a partir da pose parada c
 que é o recorte de 144 px do golpe do machado na posição OFF do quadro de 192 px. O quadro
 0 de cada animação é essa pose: acha onde ela está no canvas novo e cola todos os quadros
 no quadro de 192 px na mesma posição do machado. Oeste espelha o leste.
-Uso: python tools/pixellab/install_sickle.py <pasta sweep/<arte>/<dir>/frame_NNN.png> <pasta das poses 144 px>
+Uso: python tools/pixellab/install_sickle.py <pasta sweep/<arte>/<dir>/frame_NNN.png> <pasta das poses 144 px> [raiz de saída]
+A raiz de saída (padrão: assets) permite montar uma prévia fora do jogo antes da aprovação.
 """
 import os
 import sys
@@ -40,19 +41,20 @@ def match(small, big):
 
 def main() -> None:
     src, rest = sys.argv[1], sys.argv[2]
+    root = sys.argv[3] if len(sys.argv) > 3 else "assets"
     for art in ("player", "player_moni"):
         for d, (ox, oy) in OFF.items():
             folder = os.path.join(src, art, d)
             files = sorted(f for f in os.listdir(folder) if f.endswith(".png"))
             diff, dx, dy = match(load(os.path.join(rest, f"{art}_{d}_000.png")), load(os.path.join(folder, files[0])))
             print(art, d, "encaixe", dx, dy, "diferença", round(diff, 2))
-            out = f"assets/{art}/tools/sickle/{d}"
+            out = f"{root}/{art}/tools/sickle/{d}"
             os.makedirs(out, exist_ok=True)
             for old in os.listdir(out):
                 if old.startswith("frame_"):
                     os.remove(os.path.join(out, old))
             if d == "east":
-                west = f"assets/{art}/tools/sickle/west"
+                west = f"{root}/{art}/tools/sickle/west"
                 os.makedirs(west, exist_ok=True)
                 for old in os.listdir(west):
                     if old.startswith("frame_"):
@@ -61,9 +63,12 @@ def main() -> None:
                 frame = Image.new("RGBA", (192, 192))
                 img = Image.open(os.path.join(folder, f)).convert("RGBA")
                 frame.paste(img, (ox - dx, oy - dy))  # canvas vazio: copia o alfa (posição pode ser negativa)
+                lost = int(np.count_nonzero(np.array(img)[..., 3])) - int(np.count_nonzero(np.array(frame)[..., 3]))
+                if lost > 0:
+                    print("  aviso:", art, d, f, "perdeu", lost, "pixels fora do quadro de 192")
                 frame.save(f"{out}/frame_{i:03d}.png")
                 if d == "east":
-                    ImageOps.mirror(frame).save(f"assets/{art}/tools/sickle/west/frame_{i:03d}.png")
+                    ImageOps.mirror(frame).save(f"{root}/{art}/tools/sickle/west/frame_{i:03d}.png")
 
 
 if __name__ == "__main__":

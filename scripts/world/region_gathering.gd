@@ -57,10 +57,10 @@ func update(delta: float) -> bool:
 		_forage_interaction(_pull_spot, delta)  # continua no mesmo ponto até terminar ou andar
 		return true
 	# Machado na mão e árvore ao alcance: cortar vem antes de arrancar o mato em volta.
-	if is_instance_valid(choppable) and HOTBAR.selected_item(get_tree()) == "machado" and _axe_interaction():
+	if is_instance_valid(choppable) and HOTBAR.selected_item(get_tree()) in ITEMS.AXES and _axe_interaction():
 		_pull_id = ""
 		return true
-	if HOTBAR.selected_item(get_tree()) == "picareta" and _rock_interaction():
+	if HOTBAR.selected_item(get_tree()) in ITEMS.PICKS and _rock_interaction():
 		_pull_id = ""
 		return true
 	if is_instance_valid(forage):
@@ -73,19 +73,27 @@ func update(delta: float) -> bool:
 	return is_instance_valid(choppable) and _axe_interaction()
 
 
-## Pedras médias (picareta) e grandes (picareta melhor, ainda não existe).
+## Ferramenta da família `tools` a usar: sempre a melhor da bolsa (a troca é automática).
+func _best(tools: Array) -> String:
+	for tool: String in tools:
+		if BAG.count_item(get_tree(), tool) > 0: return tool
+	return ""
+
+
+## Pedras médias (picareta) e grandes (picareta de pedra polida).
 func _rock_interaction() -> bool:
 	if not is_instance_valid(rocks): return false
 	var r: Dictionary = rocks.target(_focus())
 	if r.is_empty(): return false
 	var player: Node2D = region.player
-	if str(r.kind) == "large":
-		region.hud_hint.text = "Essa pedra é muito grande. Que tal uma menor?"
+	var tool := _best(ITEMS.PICKS)
+	if str(r.kind) == "large" and int(ITEMS.POWER.get(tool, 1)) < 2:
+		region.hud_hint.text = "Essa pedra é muito grande. Que tal uma menor? (ou uma picareta de pedra polida)"
 		return true
-	if BAG.count_item(get_tree(), "picareta") <= 0:
+	if tool.is_empty():
 		region.hud_hint.text = "Pedra média · precisa de uma picareta (fabrique na bancada)"
 		return true
-	if not _equip("picareta"): return true
+	if not _equip(tool): return true
 	region.hud_hint.text = "[F] Quebrar pedra (%d/%d)" % [rocks.hits(r.id), int(rocks.HITS[r.kind])]
 	if Input.is_action_pressed("interact") and not player.is_using_tool():  # segurar = golpes seguidos
 		if not ENERGY.spend(get_tree(), "chop"):
@@ -93,7 +101,7 @@ func _rock_interaction() -> bool:
 			return true
 		player.facing = player._get_direction_name(r.at - player.global_position)
 		if player.play_tool("pickaxe") <= 0.0: player.play_tool("hoe")  # protagonista sem arte de picareta
-		if rocks.strike(r, GameClock.day_number) == "broken":
+		if rocks.strike(r, GameClock.day_number, int(ITEMS.POWER.get(tool, 1))) == "broken":
 			region._notify("A pedra quebrou!")
 	return true
 
@@ -193,23 +201,25 @@ func _forage_interaction(spot: Dictionary, delta: float) -> void:
 func _axe_interaction() -> bool:
 	var player: Node2D = region.player
 	var t: Dictionary = choppable.target(_focus())
-	if t.is_empty() or BAG.count_item(get_tree(), "machado") <= 0:
+	var tool := _best(ITEMS.AXES)
+	if t.is_empty() or tool.is_empty():
 		return false
-	if not _equip("machado"): return true
-	if t.kind == "tree" and not choppable.is_small(t.key):
-		# Machado de pedra só derruba árvores pequenas; as grandes esperam machados melhores.
-		region.hud_hint.text = "Essa árvore é muito grande. Que tal uma menor?"
+	var power := int(ITEMS.POWER.get(tool, 1))
+	if t.kind == "tree" and not choppable.is_small(t.key) and power < 2:
+		# Machado rudimentar só derruba árvores pequenas; as grandes pedem o de pedra polida.
+		region.hud_hint.text = "Essa árvore é muito grande. Que tal uma menor? (ou um machado de pedra polida)"
 		return true
-	var total: int = choppable.HITS_TO_FELL if t.kind == "tree" else choppable.HITS_TO_PROCESS
+	if not _equip(tool): return true
+	var total: int = choppable.fell_hits(t.key) if t.kind == "tree" else choppable.HITS_TO_PROCESS
 	region.hud_hint.text = "[F] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
 	if Input.is_action_pressed("interact") and not player.is_using_tool():  # segurar = golpes seguidos
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
 		player.play_tool("axe")
-		match choppable.strike(t, GameClock.day_number):
+		match choppable.strike(t, GameClock.day_number, power):
 			"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
 			"processed":
 				region.bag_hud.call("refresh")
-				region._notify("Você conseguiu %d madeiras." % choppable.WOOD_PER_LOG)
+				region._notify("Você conseguiu %d madeiras." % choppable.wood(t.key))
 	return true

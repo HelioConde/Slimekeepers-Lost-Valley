@@ -15,6 +15,10 @@ const RECIPES := [
 	{"id": "bancada", "category": "producao", "tier": 1, "station": "maos", "inputs": {"graveto": 6, "pedra_pequena": 4, "corda": 2}, "output": {"bancada": 1}},
 	{"id": "bau_campo", "category": "armazenamento", "tier": 2, "station": "bancada", "inputs": {"madeira": 8, "corda": 2}, "output": {"bau_campo": 1}},
 	{"id": "picareta", "category": "ferramentas", "tier": 2, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_pequena": 5, "corda": 2}, "output": {"picareta": 1}},
+	{"id": "pedra_polida", "category": "producao", "tier": 2, "station": "bancada", "inputs": {"pedra_pequena": 2}, "output": {"pedra_polida": 1}},
+	# Nível 2 de ferramentas: pedra polida (golpe vale 2; árvore e pedra grandes).
+	{"id": "machado_polido", "category": "ferramentas", "tier": 3, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_polida": 3, "corda": 2}, "output": {"machado_polido": 1}},
+	{"id": "picareta_polida", "category": "ferramentas", "tier": 3, "station": "bancada", "requires": ["picareta"], "inputs": {"madeira": 3, "pedra_polida": 4, "corda": 2}, "output": {"picareta_polida": 1}},
 	{"id": "foice", "category": "ferramentas", "tier": 2, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 2, "pedra_pequena": 3, "corda": 1}, "output": {"foice": 1}},
 	{"id": "enxada", "category": "ferramentas", "tier": 2, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_pequena": 2, "corda": 1}, "output": {"enxada": 1}},
 	{"id": "porcao_folhas_prototipo", "category": "comida", "tier": 1, "station": "fogao", "cooking": true, "inputs": {"folhas_frescas": 1}, "output": {"porcao_folhas_prototipo": 1}},
