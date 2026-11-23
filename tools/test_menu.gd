@@ -97,10 +97,10 @@ func _run() -> void:
 		var slime := slimes[index] as Node2D
 		player.global_position = slime.global_position + Vector2(0, 24)
 		await _settle()
-		await _key(KEY_E)
-		_check(bool(slime.get("befriended")), "E befriends actual slime %d" % (index + 1))
+		await _key(KEY_F)
+		_check(bool(slime.get("befriended")), "F befriends actual slime %d" % (index + 1))
 		_check(int(world.get("friends_count")) == index + 1, "Mission counter updates from gameplay (%d/%d)" % [index + 1,expected_population])
-	await _key(KEY_E)
+	await _key(KEY_F)
 	_check(int(world.get("friends_count")) == expected_population, "Repeated interaction does not duplicate a friendship")
 	var goal: Label = world.get("hud_goal")
 	# Sem missões no HUD: a amizade é registrada, mas não aparece como objetivo.

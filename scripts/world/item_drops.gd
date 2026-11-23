@@ -72,7 +72,7 @@ func _process(delta: float) -> void:
 		var target := player.global_position + Vector2(0, -14)
 		var d := node.global_position.distance_to(target)
 		if d > MAGNET_RANGE and float(entry.speed) <= 0.0: continue
-		if BAG.count_item(get_tree(), str(entry.item)) >= ITEMS.max_stack(str(entry.item)):
+		if not BAG.can_add(get_tree(), str(entry.item), 1):
 			entry.speed = 0.0
 			continue  # bolsa cheia: fica no chão
 		entry.speed = minf(float(entry.speed) + FLY_SPEED * 3.0 * delta, FLY_SPEED * 2.0)

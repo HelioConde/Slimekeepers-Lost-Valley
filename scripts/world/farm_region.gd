@@ -74,12 +74,12 @@ func _process(delta: float) -> void:
 		hud_hint.text = house.build_hint()
 		return
 	if is_instance_valid(house) and house.near_bed(player):
-		hud_hint.text = "[E] Dormir até amanhã   •   [B] Construir"
+		hud_hint.text = "[F] Dormir até amanhã   •   [B] Construir"
 		if Input.is_action_just_pressed("interact"):
 			sleep()
 		return
 	if player.global_position.distance_to(WEST_GATE) < 70:
-		hud_hint.text = "[E] Ir para o Vale das Nascentes"
+		hud_hint.text = "[F] Ir para o Vale das Nascentes"
 		if Input.is_action_just_pressed("interact"):
 			Travel.travel(self, Travel.VALLEY, "valley_farm_gate")
 		return

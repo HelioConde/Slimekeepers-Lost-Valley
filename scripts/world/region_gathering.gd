@@ -1,6 +1,6 @@
 extends Node
 ## Coleta e corte compartilhados pelas regiões (Floresta e Vale das Nascentes):
-## árvores cortáveis com o machado e pontos de coleta (mato com [E] segurado,
+## árvores cortáveis com o machado e pontos de coleta (mato com [F] segurado,
 ## graveto/pedra com um toque). A região chama update(delta) no _process; devolve
 ## true quando a interação tomou o HUD neste quadro.
 
@@ -12,7 +12,7 @@ const ENERGY := preload("res://scripts/systems/energy_state.gd")
 var region: Node  # clearing_region: player, hud_hint, bag_hud, _notify()
 var choppable: Node
 var forage: Node2D
-var _pull_id := ""  # ponto sendo arrancado com [E] segurado
+var _pull_id := ""  # ponto sendo arrancado com [F] segurado
 var _pull_time := 0.0
 
 
@@ -42,7 +42,7 @@ func attach(owner_region: Node, chop: Node, spots: Node2D) -> void:
 	forage = spots
 
 
-## Onde procurar: o ponto clicado (mouse) ou os pés do jogador ([E]).
+## Onde procurar: o ponto clicado (mouse) ou os pés do jogador ([F]).
 func _focus() -> Vector2:
 	var clicked: Vector2 = region.get("click_point") if region.get("click_point") != null else Vector2.INF
 	return clicked if clicked.is_finite() else region.player.global_position
@@ -68,7 +68,7 @@ func _forage_interaction(spot: Dictionary, delta: float) -> void:
 	var item_name := str(ITEMS.info(spot.item).name).to_lower()
 	var hold: float = forage.pull_seconds(spot.item)
 	if hold > 0.0:
-		# Mato: segurar [E] até arrancar; soltar ou sair de perto recomeça.
+		# Mato: segurar [F] até arrancar; soltar ou sair de perto recomeça.
 		if Input.is_action_just_pressed("interact"):
 			_pull_id = spot.id
 			_pull_time = 0.0
@@ -87,7 +87,7 @@ func _forage_interaction(spot: Dictionary, delta: float) -> void:
 		_pull_id = ""
 		player.release_pose()  # levanta com o mato na mão
 	else:
-		region.hud_hint.text = "[E] Pegar " + item_name
+		region.hud_hint.text = "[F] Pegar " + item_name
 		if not Input.is_action_just_pressed("interact") or player.is_using_tool(): return
 		# Item pequeno: ajoelha e pega com uma mão.
 		player.facing = player._get_direction_name(spot.at - player.global_position)
@@ -111,7 +111,7 @@ func _axe_interaction() -> bool:
 		region.hud_hint.text = "Árvore grande demais para o machado rudimentar · precisa de um machado melhor"
 		return true
 	var total: int = choppable.HITS_TO_FELL if t.kind == "tree" else choppable.HITS_TO_PROCESS
-	region.hud_hint.text = "[E] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
+	region.hud_hint.text = "[F] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
 	if Input.is_action_just_pressed("interact") and not player.is_using_tool():
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))

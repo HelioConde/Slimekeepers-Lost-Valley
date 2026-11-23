@@ -1,8 +1,8 @@
 extends Node2D
 ## Construção posicionável (CRIACAO.md, etapa 4): com a bancada selecionada na barra,
-## uma prévia aparece à frente do jogador (verde = pode, vermelha = não pode) e [E]
+## uma prévia aparece à frente do jogador (verde = pode, vermelha = não pode) e [F]
 ## a coloca no mundo, gastando o item. Bancadas colocadas ficam salvas por região
-## (PLACED_KEY) e [E] perto de uma abre a janela de fabricação no modo bancada.
+## (PLACED_KEY) e [F] perto de uma abre a janela de fabricação no modo bancada.
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
@@ -60,7 +60,7 @@ func can_place(at: Vector2) -> bool:
 
 
 ## Chamado a cada quadro pela região. Devolve o texto de dica ("" = nada a dizer)
-## e trata [E]: colocar a bancada ou abrir a bancada próxima.
+## e trata [F]: colocar a bancada ou abrir a bancada próxima.
 func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
 	var holding := HOTBAR.selected_item(get_tree()) == "bancada" and BAG.count_item(get_tree(), "bancada") > 0
 	_ghost.visible = holding
@@ -77,11 +77,11 @@ func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
 			get_tree().set_meta(PLACED_KEY, saved)
 			_ghost.visible = false
 			return "placed"
-		return "[E] Colocar a bancada aqui" if ok else "Aqui não dá para colocar a bancada"
+		return "[F] Colocar a bancada aqui" if ok else "Aqui não dá para colocar a bancada"
 	var near := nearest_station(player.global_position)
 	if near != null:
 		if interact: open_bench.call()
-		return "[E] Usar a bancada de trabalho"
+		return "[F] Usar a bancada de trabalho"
 	return ""
 
 

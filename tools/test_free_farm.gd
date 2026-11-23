@@ -104,13 +104,13 @@ func run() -> void:
 			var leaves_before := BAG.count_item(self, "folhas_frescas")
 			await select("folhas_frescas")
 			var down := InputEventAction.new()
-			down.action = "feed"
+			down.action = "interact"
 			down.pressed = true
 			Input.parse_input_event(down)
 			await process_frame
 			await process_frame
 			var up := InputEventAction.new()
-			up.action = "feed"
+			up.action = "interact"
 			up.pressed = false
 			Input.parse_input_event(up)
 			await process_frame

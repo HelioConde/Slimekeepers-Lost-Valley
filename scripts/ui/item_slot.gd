@@ -1,0 +1,108 @@
+extends PanelContainer
+## Espaço de item em grade (mochila e fabricação): ícone, quantidade e uma dica
+## que aparece ao passar o mouse (nome + detalhes). Clique esquerdo = `clicked`.
+
+signal clicked
+
+const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const SLOT_ART := "res://assets/ui/hud/slot.png"
+const SIZE := Vector2(44, 44)
+
+var info_title := ""
+var info_body := ""
+var _icon: TextureRect
+var _count: Label
+var _ring: Panel
+
+
+func _init() -> void:
+	custom_minimum_size = SIZE
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	add_theme_stylebox_override("panel", slot_style())
+	_icon = TextureRect.new()
+	_icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_icon.custom_minimum_size = Vector2(32, 32)
+	_icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_icon)
+	_count = Label.new()
+	_count.add_theme_font_override("font", FONT)
+	_count.add_theme_font_size_override("font_size", 11)
+	_count.add_theme_color_override("font_color", Color("#fff6dc"))
+	_count.add_theme_color_override("font_outline_color", Color("#2b1d16"))
+	_count.add_theme_constant_override("outline_size", 3)
+	_count.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_count.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_count)
+	_ring = Panel.new()
+	var ring := StyleBoxFlat.new()
+	ring.draw_center = false
+	ring.border_color = Color("#f2c46d")
+	ring.set_border_width_all(2)
+	ring.set_corner_radius_all(3)
+	_ring.add_theme_stylebox_override("panel", ring)
+	_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_ring)
+
+
+## Moldura do espaço: arte do PixelLab (nine-slice) ou um quadro liso de reserva.
+static func slot_style() -> StyleBox:
+	if ResourceLoader.exists(SLOT_ART):
+		var box := StyleBoxTexture.new()
+		box.texture = load(SLOT_ART)
+		box.set_texture_margin_all(10)
+		box.set_content_margin_all(5)
+		return box
+	var flat := StyleBoxFlat.new()
+	flat.bg_color = Color("#4a3428")
+	flat.border_color = Color("#a57a52")
+	flat.set_border_width_all(2)
+	flat.set_corner_radius_all(3)
+	flat.set_content_margin_all(5)
+	return flat
+
+
+func setup(icon: Texture2D, count: int, selected: bool, title: String, body: String, dim: bool = false) -> void:
+	_icon.texture = icon
+	_icon.modulate = Color(1, 1, 1, 0.4) if dim else Color.WHITE
+	_count.text = str(count) if count > 1 else ""
+	_ring.visible = selected
+	info_title = title
+	info_body = body
+	tooltip_text = title  # não vazio: liga a dica personalizada abaixo
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		clicked.emit()
+		accept_event()
+
+
+func _make_custom_tooltip(_for_text: String) -> Object:
+	var box := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color("#2b1d16f0")
+	style.border_color = Color("#a57a52")
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(3)
+	style.set_content_margin_all(6)
+	box.add_theme_stylebox_override("panel", style)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 2)
+	box.add_child(column)
+	var head := Label.new()
+	head.text = info_title
+	head.add_theme_font_override("font", FONT)
+	head.add_theme_font_size_override("font_size", 13)
+	head.add_theme_color_override("font_color", Color("#f2c46d"))
+	column.add_child(head)
+	if not info_body.is_empty():
+		var body := Label.new()
+		body.text = info_body
+		body.add_theme_font_override("font", FONT)
+		body.add_theme_font_size_override("font_size", 11)
+		body.add_theme_color_override("font_color", Color("#f6e8c2"))
+		column.add_child(body)
+	return box

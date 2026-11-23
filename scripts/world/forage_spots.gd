@@ -7,7 +7,7 @@ extends Node2D
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FORAGE_KEY := "forage_taken"
 const REACH := 36.0
-## Todo mato do chão (GroundDetail) dá fibra; arrancar exige segurar [E] (pedido do
+## Todo mato do chão (GroundDetail) dá fibra; arrancar exige segurar [F] (pedido do
 ## usuário, 2026-11-22: "não pode ser fácil pegar"; depois reduzido para 3 s).
 const MATO_KINDS := ["grass", "grass_tuft_sunlit"]
 const PULL_SECONDS := {"fibra": 3.0}
@@ -112,7 +112,7 @@ static func _show(spot: Dictionary, shown: bool) -> void:
 		(spot.layer as TileMapLayer).erase_cell(spot.cell)
 
 
-## Segundos segurando [E] para coletar o item (0 = na hora).
+## Segundos segurando [F] para coletar o item (0 = na hora).
 static func pull_seconds(item: String) -> float:
 	return float(PULL_SECONDS.get(item, 0.0))
 

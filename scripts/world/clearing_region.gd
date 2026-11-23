@@ -30,14 +30,14 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	super._process(delta)
 	if player.position.distance_to(Vector2(1610,3120)) < 110:
-		hud_hint.text = "[E] Viajar para o Vale das Nascentes"
+		hud_hint.text = "[F] Viajar para o Vale das Nascentes"
 		if Input.is_action_just_pressed("interact"):
 			var travel = preload("res://scripts/world/region_travel.gd")
 			travel.travel(self,travel.VALLEY,"valley_north")
 			return
 	var spring := get_node_or_null("NaturalSpring")
 	if spring != null and _closest_slime() == null and spring.can_examine(player.global_position):
-		hud_hint.text = "[E] Examinar lago"
+		hud_hint.text = "[F] Examinar lago"
 		if Input.is_action_just_pressed("interact"):
 			_notify("Um pequeno lago de água cristalina repousa entre as árvores.")
 
@@ -79,7 +79,7 @@ func _compact_hud() -> void:
 	fade.target = player
 	$HUD/Interface.add_child(fade)
 	# Barra rápida de itens embaixo, no lugar da linha de teclas; mostra a ação
-	# disponível ([E] ...) no título quando houver.
+	# disponível ([F] ...) no título quando houver.
 	var hotbar := preload("res://scripts/ui/hotbar_hud.gd").new()
 	hotbar.hint_source = hud_hint
 	$HUD/Interface.add_child(hotbar)
@@ -209,6 +209,30 @@ func _clear_under_house(area: Rect2) -> void:
 				_house_hidden.append(node)
 
 
+var inventory_panel: Control
+const INVENTORY_WINDOWS := preload("res://scripts/ui/inventory_panel.gd").WINDOWS
+
+
+## Mochila ([E]): janela em grade dos 10 espaços (scripts/ui/inventory_panel.gd).
+func add_inventory_panel() -> Control:
+	inventory_panel = preload("res://scripts/ui/inventory_panel.gd").new()
+	inventory_panel.player = player
+	get_node("HUD/Interface").add_child(inventory_panel)
+	inventory_panel.changed.connect(func() -> void:
+		var bag_node: Node = get("bag_hud")
+		if is_instance_valid(bag_node): bag_node.call("refresh"))
+	return inventory_panel
+
+
+## Alguma janela (mochila, fabricação, baú) aberta: o mundo não recebe [F] nem clique.
+func window_open() -> bool:
+	if not has_node("HUD/Interface"): return false
+	for child in get_node("HUD/Interface").get_children():
+		if child is PanelContainer and child.visible and str(child.name) in INVENTORY_WINDOWS:
+			return true
+	return false
+
+
 ## Casa: modo construir ou dormir na cama. true quando tomou o HUD neste quadro.
 func handle_player_house(builder: Node2D) -> bool:
 	if not is_instance_valid(builder): return false
@@ -222,16 +246,16 @@ func handle_player_house(builder: Node2D) -> bool:
 		hud_hint.text = builder.build_hint()
 		return true
 	if builder.near_bed(player):
-		hud_hint.text = "[E] Dormir até amanhã   •   [B] Construir"
+		hud_hint.text = "[F] Dormir até amanhã   •   [B] Construir"
 		if Input.is_action_just_pressed("interact"): sleep_until_morning()
 		return true
 	if builder.near_furniture(player, "bau"):
-		hud_hint.text = "[E] Abrir o baú"
+		hud_hint.text = "[F] Abrir o baú"
 		if Input.is_action_just_pressed("interact"): open_chest()
 		return true
 	if builder.near_furniture(player, "fogao"):
 		# Cozinhar no fogão da casa: janela de receitas (data/crafting/recipes.gd, "fogao").
-		hud_hint.text = "[E] Cozinhar"
+		hud_hint.text = "[F] Cozinhar"
 		var panel: Control = get("crafting_panel")
 		if Input.is_action_just_pressed("interact") and is_instance_valid(panel): panel.call("open", "fogao")
 		return true
@@ -277,11 +301,16 @@ func add_free_farm(field_id: String, house_builder: Node2D) -> Node2D:
 	return farm
 
 
-## [E] do plantio quando o jogador olha para terra arada ou usa enxada/regador/semente.
+## [F] do plantio quando o jogador olha para terra arada ou usa enxada/regador/semente.
 func handle_farming(farm: Node2D) -> bool:
 	if not is_instance_valid(farm) or not farm.wants(player): return false
 	hud_hint.text = farm.hint(player)
-	if player.is_using_tool(): return true  # termina o golpe antes de outro [E]
+	if player.is_using_tool(): return true  # termina o golpe antes de outro [F]
+	# Comida na mão e nada a fazer com ela na terra à frente: [F] come.
+	var held: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
+	if Input.is_action_just_pressed("interact") and preload("res://scripts/systems/item_catalog.gd").energy(held) > 0 			and not farm.can_fill(player) and str(farm.action_with(farm.target_cell(player), held)).is_empty():
+		eat_selected()
+		return true
 	if Input.is_action_just_pressed("interact"):
 		var message: String = farm.interact(player)
 		if not message.is_empty(): _notify(message)
@@ -312,6 +341,15 @@ func open_chest() -> void:
 	_chest_panel.open()
 
 
+## Dica de [F] perto de um slime amigo quando a barra tem comida ("" = sem comida).
+func slime_food_hint(slime: Node2D) -> String:
+	var feeding := preload("res://scripts/systems/slime_feeding.gd")
+	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
+	if not bool(slime.get("befriended")) or not feeding.is_food(item): return ""
+	var items := preload("res://scripts/systems/item_catalog.gd")
+	return "[F] Dar %s a %s" % [str(items.info(item).name).to_lower(), slime.call("display_name")]
+
+
 ## [F] sem slime por perto: come a comida selecionada na barra e recupera energia
 ## (colheita +12, porção +30). Energia cheia: não come.
 func eat_selected() -> bool:
@@ -319,7 +357,7 @@ func eat_selected() -> bool:
 	var items := preload("res://scripts/systems/item_catalog.gd")
 	var bag := preload("res://scripts/systems/forest_bag.gd")
 	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
-	var gain := int(items.info(item).get("energy", energy.FOOD_ENERGY.get(items.kind(item), 0)))
+	var gain := items.energy(item)
 	if gain <= 0: return false
 	if energy.current(get_tree()) >= energy.MAX:
 		_notify("Energia já está cheia.")
@@ -352,9 +390,9 @@ func add_item_drops(farm: Node2D, gathering_node: Node) -> void:
 		if is_instance_valid(gathering_node.choppable): gathering_node.choppable.drop = spawn
 
 
-## Clique esquerdo = [E] no ponto clicado (pedido do usuário, como em jogos de
+## Clique esquerdo = [F] no ponto clicado (pedido do usuário, como em jogos de
 ## fazenda): dentro do alcance, o personagem vira para o clique e age; segurar o
-## botão = segurar [E] (arrancar mato). O modo construir e as janelas pegam o clique antes.
+## botão = segurar [F] (arrancar mato). O modo construir e as janelas pegam o clique antes.
 const CLICK_REACH := 96.0
 var _click_holding := false
 ## Ponto clicado enquanto o botão está apertado (coleta/corte miram nele); INF = sem clique.
@@ -370,7 +408,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			click_point = Vector2.INF
 			Input.action_release("interact")
 		return
-	if bool(get_tree().get_meta("build_mode", false)) or not is_instance_valid(player): return
+	if bool(get_tree().get_meta("build_mode", false)) or not is_instance_valid(player) or window_open(): return
 	var at: Vector2 = get_viewport().get_canvas_transform().affine_inverse() * mouse.position  # ponto do mundo clicado
 	if player.global_position.distance_to(at) > CLICK_REACH: return
 	if player.has_method("is_using_tool") and player.is_using_tool(): return

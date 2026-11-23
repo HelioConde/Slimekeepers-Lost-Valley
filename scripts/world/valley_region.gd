@@ -44,6 +44,7 @@ func _ready() -> void:
 	crafting_panel.player = player
 	$HUD/Interface.add_child(crafting_panel)
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
+	add_inventory_panel()
 	recipe_panel = RECIPE_PANEL.new()
 	$HUD/Interface.add_child(recipe_panel)
 	hud_title.text = "VALE DAS NASCENTES"
@@ -140,15 +141,15 @@ func _offer_prototype_food(slime: Node2D) -> void:
 	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).
 	var item: String = HOTBAR.selected_item(get_tree())
 	if FEEDING.is_food(item):
-		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number)
+		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number, str(slime.get("slime_type")))
 		if item == COOKING.RECIPE_ID and fed == "fed":
-			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true)  # registro da primeira porção
+			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true, false)  # só registra a primeira porção
 		match fed:
 			"fed":
 				slime.set("_happy_time", 2.4)
 				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
 				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
-			"needs_friendship": _notify("Primeiro conheça este slime usando E.")
+			"needs_friendship": _notify("Primeiro conheça este slime usando F.")
 			"already_fed": _notify(slime.display_name() + " já comeu hoje.")
 			_: _notify("Você não tem " + str(ITEMS.info(item).name).to_lower() + ".")
 		return
@@ -159,7 +160,7 @@ func _offer_prototype_food(slime: Node2D) -> void:
 			slime.set("_happy_time", 2.4)
 			_notify("Uma porcao de teste foi oferecida a " + slime.display_name() + ".")
 		"needs_friendship":
-			_notify("Primeiro conheca este slime usando E.")
+			_notify("Primeiro conheca este slime usando F.")
 		"already_offered":
 			_notify("Este slime ja recebeu uma porcao nesta partida.")
 		"needs_portion":
@@ -204,14 +205,14 @@ func _spawn_valley_forage() -> void:
 		return space.intersect_shape(query, 1).is_empty(), "vale_")
 	gathering.forage.refresh(GameClock.day_number)
 
-## Bancada no Vale (como na Floresta): prévia/colocar com ela na barra; [E] nela abre
+## Bancada no Vale (como na Floresta): prévia/colocar com ela na barra; [F] nela abre
 ## a fabricação da bancada.
 func _handle_station() -> bool:
 	if not is_instance_valid(placer): return false
 	var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
 	if station_hint == "placed":
 		bag_hud.call("refresh")
-		_notify("Bancada de trabalho montada! Use [E] nela para fabricar ferramentas.")
+		_notify("Bancada de trabalho montada! Use [F] nela para fabricar ferramentas.")
 		return true
 	if station_hint.is_empty(): return false
 	hud_hint.text = station_hint
@@ -233,22 +234,20 @@ func _process(delta: float) -> void:
 		if message_time <= 0: popup.text = ""
 	if is_instance_valid(recipe_panel):
 		recipe_panel.hide()
-	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: observar   •   B: construir casa"
-	if Input.is_action_just_pressed("feed") and _closest_slime() == null:
-		eat_selected()  # [F] sem slime por perto: comer
-	if is_instance_valid(crafting_panel) and crafting_panel.visible:
+	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   F: observar   •   B: construir casa"
+	if window_open():
 		hud_hint.text = ""
 	elif _handle_station():
-		pass  # bancada: prévia/colocar ou [E] fabricar
+		pass  # bancada: prévia/colocar ou [F] fabricar
 	elif handle_player_house(house):
 		pass  # casa: modo construir ou dormir na cama
 	elif player.position.distance_to(Vector2(1600,70)) < 100:
-		hud_hint.text = "[E] Voltar à Floresta do Despertar"
+		hud_hint.text = "[F] Voltar à Floresta do Despertar"
 		if Input.is_action_just_pressed("interact"):
 			Travel.travel(self,Travel.CLEARING,"clearing_south")
 			return
 	elif player.position.distance_to(Vector2(1780,3160)) < 100:
-		hud_hint.text = "[E] Observar o caminho ao sul"
+		hud_hint.text = "[F] Observar o caminho ao sul"
 		if Input.is_action_just_pressed("interact"):
 			_notify("O caminho segue pela ilha. Uma nova região chegará em breve.")
 	else:
@@ -257,8 +256,9 @@ func _process(delta: float) -> void:
 			if closest == null and is_instance_valid(gathering) and gathering.update(delta):
 				pass  # cortar árvore / arrancar mato
 			elif closest != null:
-				hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
-				if Input.is_action_just_pressed("feed"):
+				var food := slime_food_hint(closest)
+				hud_hint.text = food if not food.is_empty() else ("[F] Fazer amizade com " if not closest.befriended else "[F] Cumprimentar ") + closest.display_name()
+				if not food.is_empty() and Input.is_action_just_pressed("interact"):
 					_offer_prototype_food(closest)
 				elif Input.is_action_just_pressed("interact"):
 					closest.make_friend()
@@ -268,12 +268,14 @@ func _process(delta: float) -> void:
 			else:
 				for marker: Marker2D in $PointsOfInterest.get_children():
 					if player.position.distance_to(marker.position)<90:
-						hud_hint.text = "[E] " + str(marker.get_meta("label"))
+						hud_hint.text = "[F] " + str(marker.get_meta("label"))
 						if Input.is_action_just_pressed("interact"):
 							_notify(marker.get_meta("description"))
 							found_zones[marker.name] = true
 							_update_living_goal()
 						break
+				if hud_hint.text.begins_with("WASD") and Input.is_action_just_pressed("interact"):
+					eat_selected()  # [F] sem nada por perto: come a comida da barra
 	var water_night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
 	if is_instance_valid(_lanterns): _lanterns.apply_time(water_night, get_process_delta_time())
 	if is_instance_valid(_tree_glow): _tree_glow.apply_time(water_night, elapsed)

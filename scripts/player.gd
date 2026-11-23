@@ -87,7 +87,7 @@ func play_tool(tool: String) -> float:
 	return _tool_time
 
 ## Desce até o quadro `frame` da ação e fica parado nele (chamar a cada quadro
-## enquanto segura [E]; soltar volta ao normal quando o tempo acaba).
+## enquanto segura [F]; soltar volta ao normal quando o tempo acaba).
 func hold_pose(action: String, frame: int) -> void:
 	var name := "%s_%s" % [action, TOOL_FACING.get(facing, facing)]
 	_tool_time = maxf(_tool_time, 0.1)

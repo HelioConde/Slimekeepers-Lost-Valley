@@ -58,6 +58,33 @@ static func kind(item_id: String) -> String:
 	return str(info(item_id).get("kind", "other"))
 
 
+const KIND_NAMES := {"tool": "Ferramenta", "seed": "Semente", "crop": "Colheita", "food": "Comida",
+	"material": "Material", "station": "Estação de trabalho"}
+const FOOD_ENERGY := {"crop": 12, "food": 30}  # padrão por tipo; "energy" no item substitui
+
+
+## Grupo de comida (vegetal, fruta, marinha): preferência dos slimes por habitat.
+static func food_group(item_id: String) -> String:
+	if info(item_id).has("group"): return str(info(item_id).group)
+	return "vegetal" if kind(item_id) in ["crop", "food"] else ""
+
+
+## Energia que o item recupera ao comer (0 = não se come).
+static func energy(item_id: String) -> int:
+	return int(info(item_id).get("energy", FOOD_ENERGY.get(kind(item_id), 0)))
+
+
+## Texto da dica do item (tipo, energia, plantio).
+static func describe(item_id: String) -> String:
+	var lines: PackedStringArray = [str(KIND_NAMES.get(kind(item_id), "Item"))]
+	if energy(item_id) > 0:
+		lines.append("Comer: +%d de energia" % energy(item_id))
+	if info(item_id).has("crop"):
+		lines.append("Plante em terra arada")
+	return "
+".join(lines)
+
+
 static func icon(item_id: String) -> Texture2D:
 	if _icon_cache.has(item_id):
 		return _icon_cache[item_id]

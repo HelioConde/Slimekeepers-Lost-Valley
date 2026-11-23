@@ -43,7 +43,7 @@ func _process(delta: float) -> void:
     var closest := _closest_slime()
     if closest != null:
         var name_slime: String = str(closest.call("display_name"))
-        hud_hint.text = "[E] %s: %s" % [("Conversar novamente" if bool(closest.get("befriended")) else "Fazer amizade"), name_slime]
+        hud_hint.text = "[F] %s: %s" % [("Conversar novamente" if bool(closest.get("befriended")) else "Fazer amizade"), name_slime]
         if Input.is_action_just_pressed("interact"):
             if bool(closest.call("make_friend")):
                 friends_count += 1
@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
             else:
                 _notify("%s já é seu amigo!" % name_slime)
     else:
-        hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: interagir"
+        hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   F: interagir"
     if message_time > 0.0:
         message_time -= delta
         if message_time <= 0.0:

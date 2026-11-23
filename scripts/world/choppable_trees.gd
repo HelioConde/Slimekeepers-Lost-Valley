@@ -1,7 +1,7 @@
 extends Node
-## Árvores cortáveis (CRIACAO.md, etapa 3). Com o machado selecionado, [E] perto do
+## Árvores cortáveis (CRIACAO.md, etapa 3). Com o machado selecionado, [F] perto do
 ## tronco dá um golpe; após HITS_TO_FELL golpes a árvore cai: fica um toco e um
-## tronco caído ao lado. [E] com o machado no tronco o processa em madeira. A árvore
+## tronco caído ao lado. [F] com o machado no tronco o processa em madeira. A árvore
 ## volta a crescer após REGROW_DAYS dias. Não podem ser cortadas: árvores perto de
 ## habitats de slimes, pontos de interesse (inclui a Árvore Centenária) e as que o
 ## `protected` da região marcar. Estado salvo em CHOPPED_KEY (sessão + save).

@@ -1,8 +1,8 @@
 extends PanelContainer
 ## Janela de fabricação (CRIACAO.md). [C] abre as receitas "maos" em qualquer lugar;
-## a bancada abre as receitas "bancada" (open("bancada")). Cada linha mostra o
-## resultado, os ingredientes (tem/precisa) e o botão Fazer; ↑/↓ escolhem,
-## E/Enter fabricam, C/Esc fecham. Mesmo estilo da barra rápida.
+## a bancada abre "bancada" e o fogão "fogao". Receitas em grade (pedido do usuário,
+## 2026-11-22): passar o mouse mostra ingredientes (tem/precisa) e o que falta;
+## clicar fabrica. Setas escolhem, F/Enter fabricam, C/E/Esc fecham.
 
 signal crafted(recipe_id: String)
 
@@ -10,6 +10,10 @@ const CRAFTING := preload("res://scripts/systems/crafting.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const SLOT := preload("res://scripts/ui/item_slot.gd")
+const INVENTORY := preload("res://scripts/ui/inventory_panel.gd")
+const COLUMNS := 5
+const WINDOWS := INVENTORY.WINDOWS
 const TITLES := {"maos": "Fabricar com as mãos", "bancada": "Bancada de trabalho", "fogao": "Fogão"}
 
 var station := "maos"
@@ -17,7 +21,7 @@ var station := "maos"
 var player: Node
 var selected := 0
 var _title: Label
-var _list: VBoxContainer
+var _list: GridContainer
 var _status: Label
 var _rows: Array[Dictionary] = []
 
@@ -26,34 +30,24 @@ func _ready() -> void:
 	name = "CraftingPanel"
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	anchor_left = 0.5
-	anchor_right = 0.5
-	anchor_top = 0.5
-	anchor_bottom = 0.5
-	offset_left = -190
-	offset_right = 190
-	offset_top = -100  # cresce sozinho com mais receitas
-	offset_bottom = 100
-	grow_vertical = Control.GROW_DIRECTION_BOTH
-	var frame := StyleBoxFlat.new()
-	frame.bg_color = Color("#694657")
-	frame.set_corner_radius_all(4)
-	frame.set_content_margin_all(8)
-	add_theme_stylebox_override("panel", frame)
+	add_theme_stylebox_override("panel", INVENTORY.panel_style())
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 4)
 	add_child(column)
-	_title = _label(16, Color("#f6e8c2"))
+	_title = _label(16, Color("#3d2a1e"))
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(_title)
-	_list = VBoxContainer.new()
-	_list.add_theme_constant_override("separation", 3)
+	_list = GridContainer.new()
+	_list.columns = COLUMNS
+	_list.add_theme_constant_override("h_separation", 4)
+	_list.add_theme_constant_override("v_separation", 4)
 	column.add_child(_list)
-	_status = _label(12, Color("#f6e8c2"))
+	_status = _label(12, Color("#3d2a1e"))
+	_status.custom_minimum_size = Vector2(COLUMNS * 48, 0)
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(_status)
-	var help := _label(11, Color("#d9c2a8"))
-	help.text = "↑ ↓ escolher · E fabricar · C / Esc fechar"
+	var help := _label(11, Color("#5a3f2c"))
+	help.text = "Clique ou F fabrica · C / Esc fecha"
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(help)
 
@@ -89,51 +83,28 @@ func refresh() -> void:
 		_list.add_child(row.node)
 		_rows.append(row)
 	if not recipes.is_empty():
-		var why := CRAFTING.missing(get_tree(), str(recipes[selected].id))
-		_status.text = "Pronto para fazer." if why.is_empty() else why
+		var r: Dictionary = recipes[selected]
+		var why := CRAFTING.missing(get_tree(), str(r.id))
+		_status.text = str(ITEMS.info(str(r.output.keys()[0])).name) + ": " + ("pronto para fazer." if why.is_empty() else why)
+	_center.call_deferred()
 
 
 func _make_row(r: Dictionary, current: bool) -> Dictionary:
 	var output_id: String = r.output.keys()[0]
-	var ok := CRAFTING.can_craft(get_tree(), str(r.id))
-	var box := PanelContainer.new()
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color("#f6e8c2") if current else Color("#8a6676")
-	style.set_corner_radius_all(3)
-	style.set_content_margin_all(3)
-	box.add_theme_stylebox_override("panel", style)
-	var line := HBoxContainer.new()
-	line.add_theme_constant_override("separation", 6)
-	box.add_child(line)
-	var icon := TextureRect.new()
-	icon.texture = ITEMS.icon(output_id)
-	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
-	icon.custom_minimum_size = Vector2(32, 32)
-	line.add_child(icon)
-	var text := VBoxContainer.new()
-	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	text.add_theme_constant_override("separation", 0)
-	line.add_child(text)
-	var ink := Color("#3d2a33") if current else Color("#f6e8c2")
-	var title := _label(13, ink)
-	title.text = str(ITEMS.info(output_id).name)
-	text.add_child(title)
-	var parts: PackedStringArray = []
+	var why := CRAFTING.missing(get_tree(), str(r.id))
+	var lines: PackedStringArray = []
 	for item_id: String in r.inputs:
-		parts.append("%s %d/%d" % [str(ITEMS.info(item_id).name).to_lower(), BAG.count_item(get_tree(), item_id), int(r.inputs[item_id])])
+		lines.append("%s %d/%d" % [str(ITEMS.info(item_id).name), BAG.count_item(get_tree(), item_id), int(r.inputs[item_id])])
 	for tool_id: String in r.get("requires", []):
-		parts.append("precisa: " + str(ITEMS.info(tool_id).name).to_lower())
-	var needs := _label(11, ink)
-	needs.text = " · ".join(parts)
-	text.add_child(needs)
-	var button := Button.new()
-	button.text = "Fazer"
-	button.disabled = not ok
-	button.add_theme_font_override("font", FONT)
-	button.pressed.connect(_craft.bind(str(r.id)))
-	line.add_child(button)
-	return {"node": box, "id": str(r.id)}
+		lines.append("Precisa: " + str(ITEMS.info(tool_id).name).to_lower())
+	lines.append(ITEMS.describe(output_id))
+	lines.append("Clique para fazer" if why.is_empty() else why)
+	var slot := SLOT.new()
+	var amount := int(r.output[output_id])
+	slot.setup(ITEMS.icon(output_id), amount, current, str(ITEMS.info(output_id).name), "
+".join(lines), not why.is_empty())
+	slot.clicked.connect(_craft.bind(str(r.id)))
+	return {"node": slot, "id": str(r.id)}
 
 
 func _craft(recipe_id: String) -> void:
@@ -151,24 +122,43 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var key: int = event.keycode
 	if not visible:
-		if key == KEY_C:
+		if key == KEY_C and not _other_window_open():
 			open("maos")
 			get_viewport().set_input_as_handled()
 		return
 	match key:
-		KEY_C, KEY_ESCAPE:
+		KEY_C, KEY_E, KEY_ESCAPE:
 			close()
-		KEY_UP, KEY_W:
+		KEY_LEFT, KEY_A:
 			selected = maxi(0, selected - 1)
 			refresh()
-		KEY_DOWN, KEY_S:
+		KEY_RIGHT, KEY_D:
 			selected = mini(_rows.size() - 1, selected + 1)
 			refresh()
-		KEY_E, KEY_ENTER, KEY_KP_ENTER:
+		KEY_UP, KEY_W:
+			selected = maxi(0, selected - COLUMNS)
+			refresh()
+		KEY_DOWN, KEY_S:
+			selected = mini(_rows.size() - 1, selected + COLUMNS)
+			refresh()
+		KEY_F, KEY_ENTER, KEY_KP_ENTER:
 			if not _rows.is_empty(): _craft(str(_rows[selected].id))
 		_:
 			return
 	get_viewport().set_input_as_handled()
+
+
+func _other_window_open() -> bool:
+	for sibling in get_parent().get_children():
+		if sibling != self and sibling is PanelContainer and sibling.visible and str(sibling.name) in WINDOWS:
+			return true
+	return false
+
+
+## Centraliza na tela depois que a grade muda de tamanho.
+func _center() -> void:
+	reset_size()
+	position = ((get_parent_area_size() - size) * 0.5).round()
 
 
 func _label(size: int, color: Color) -> Label:

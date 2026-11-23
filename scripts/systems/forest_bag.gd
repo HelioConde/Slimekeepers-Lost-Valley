@@ -9,6 +9,9 @@ const LEAVES_ID := "folhas_frescas"
 const INVENTORY_KEY := "forest_bag_items"
 const PATCHES_KEY := "forest_seed_patches_collected"
 const FRIENDS_KEY := "forest_slime_friends"
+## Mochila com 10 espaços (pedido do usuário, 2026-11-22): cada item diferente
+## ocupa um espaço (pilha até max_stack), ferramentas inclusive.
+const SLOTS := 10
 
 static func _load_inventory(tree: SceneTree) -> Variant:
 	var raw: Variant = tree.get_meta(INVENTORY_KEY, {})
@@ -45,10 +48,27 @@ static func spend_item(tree: SceneTree, item_id: String, quantity: int = 1) -> b
 	tree.set_meta(INVENTORY_KEY, inventory.serialize())
 	return true
 
-## Respeita a capacidade por item (item_catalog.max_stack): cheio = false, nada muda.
+## Cabe `quantity` de `item_id`? Pilha até max_stack; item novo precisa de espaço livre.
+static func can_add(tree: SceneTree, item_id: String, quantity: int = 1) -> bool:
+	return _fits(inventory_snapshot(tree), item_id, quantity)
+
+
+static func _fits(items: Dictionary, item_id: String, quantity: int) -> bool:
+	var have := int(items.get(item_id, 0))
+	if have + quantity > ITEMS.max_stack(item_id):
+		return false
+	return have > 0 or items.size() < SLOTS
+
+
+## Espaços ocupados (itens diferentes na mochila).
+static func used_slots(tree: SceneTree) -> int:
+	return inventory_snapshot(tree).size()
+
+
+## Respeita a pilha (item_catalog.max_stack) e os 10 espaços: cheio = false, nada muda.
 static func add_item(tree: SceneTree, item_id: String, quantity: int = 1) -> bool:
 	var inventory = _load_inventory(tree)
-	if inventory != null and inventory.count(item_id) + quantity > ITEMS.max_stack(item_id):
+	if inventory != null and not _fits(inventory.serialize(), item_id, quantity):
 		return false
 	if inventory == null or not inventory.add(item_id, quantity):
 		return false
@@ -62,7 +82,7 @@ static func exchange_item(tree: SceneTree, consume_id: String, produce_id: Strin
 	var inventory = _load_inventory(tree)
 	if inventory == null or not inventory.remove(consume_id, quantity):
 		return false
-	if not inventory.add(produce_id, quantity):
+	if not _fits(inventory.serialize(), produce_id, quantity) or not inventory.add(produce_id, quantity):
 		return false
 	tree.set_meta(INVENTORY_KEY, inventory.serialize())
 	return true

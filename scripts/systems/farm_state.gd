@@ -59,7 +59,7 @@ static func is_ready(tree: SceneTree, cell: Vector2i, field: String = "vale") ->
 	return not id.is_empty() and stage(tree, cell, field) >= CROPS.last_stage(id)
 
 
-## O que [E] faz nesta célula: colher > regar > plantar > arar.
+## O que [F] faz nesta célula: colher > regar > plantar > arar.
 static func action_for(tree: SceneTree, cell: Vector2i, seed_crop: String, field: String = "vale") -> String:
 	if not is_tilled(tree, cell, field):
 		return "till"

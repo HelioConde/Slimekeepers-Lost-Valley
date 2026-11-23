@@ -1,5 +1,5 @@
 extends Node2D
-## Campo de cultivo: grade de células de 32 px. O [E] usa o item selecionado na
+## Campo de cultivo: grade de células de 32 px. O [F] usa o item selecionado na
 ## barra rápida na célula à frente: enxada ara, regador rega, semente planta;
 ## qualquer item colhe uma cultura pronta.
 ## A terra arada é pixel art procedural na paleta dos solos PixelLab, com bordas
@@ -13,7 +13,7 @@ const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const ENERGY := preload("res://scripts/systems/energy_state.gd")
 const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const CELL := 32
-## Alcance do [E]: célula à frente do jogador.
+## Alcance do [F]: célula à frente do jogador.
 const REACH := 22.0
 const DRY := [Color("#2c190e"), Color("#442a19"), Color("#503321"), Color("#5b3b26"), Color("#63412b"), Color("#705138")]
 const WET := [Color("#0b0402"), Color("#23150e"), Color("#2c1c14"), Color("#321e13"), Color("#3c2619"), Color("#473123")]
@@ -85,8 +85,8 @@ func contains(cell: Vector2i) -> bool:
 	return Rect2i(origin_cell, size_cells).has_point(cell)
 
 
-## O [E] desta célula é do campo? Terra arada, ou um item que age nela (enxada na
-## grama, regador, semente). Grama sem ferramenta não toma o [E] (mato, árvores...).
+## O [F] desta célula é do campo? Terra arada, ou um item que age nela (enxada na
+## grama, regador, semente). Grama sem ferramenta não toma o [F] (mato, árvores...).
 func wants(actor: Node2D) -> bool:
 	if can_fill(actor): return true
 	var cell := target_cell(actor)
@@ -133,18 +133,18 @@ func action_with(cell: Vector2i, item: String) -> String:
 
 func hint(actor: Node2D) -> String:
 	if can_fill(actor):
-		return "[E] Encher o regador (%d/%d)" % [FARM.can_water(get_tree()), FARM.CAN_MAX]
+		return "[F] Encher o regador (%d/%d)" % [FARM.can_water(get_tree()), FARM.CAN_MAX]
 	var cell := target_cell(actor)
 	var tree := get_tree()
 	var item := HOTBAR.selected_item(tree)
 	var crop_name := str(CROPS.get_crop(FARM.crop(tree, cell, field_id)).get("name", ""))
 	match action_with(cell, item):
-		"harvest": return "[E] Colher " + crop_name
-		"till": return "[E] Arar com a enxada"
+		"harvest": return "[F] Colher " + crop_name
+		"till": return "[F] Arar com a enxada"
 		"water":
 			if FARM.can_water(tree) <= 0: return "Regador vazio · encha no lago ou no riacho"
-			return "[E] Regar" + (" " + crop_name if not crop_name.is_empty() else " a terra") + " (água %d/%d)" % [FARM.can_water(tree), FARM.CAN_MAX]
-		"plant": return "[E] Plantar " + str(ITEMS.info(item).name).to_lower()
+			return "[F] Regar" + (" " + crop_name if not crop_name.is_empty() else " a terra") + " (água %d/%d)" % [FARM.can_water(tree), FARM.CAN_MAX]
+		"plant": return "[F] Plantar " + str(ITEMS.info(item).name).to_lower()
 	if not FARM.is_tilled(tree, cell, field_id): return "Grama · selecione a enxada"
 	if not crop_name.is_empty():
 		return crop_name + (" regada hoje · cresce amanhã" if FARM.is_watered(tree, cell, field_id) else " com sede · selecione o regador")

@@ -33,7 +33,7 @@ func refresh(tree: SceneTree) -> void:
 	for entry in entries:
 		var label_text := str(entry.get("label", "Receita"))
 		if bool(entry.get("available", false)):
-			lines.append("  %s - pronta para preparar [E]" % label_text)
+			lines.append("  %s - pronta para preparar [F]" % label_text)
 		else:
 			var missing: Dictionary = entry.get("missing", {})
 			if missing.is_empty():

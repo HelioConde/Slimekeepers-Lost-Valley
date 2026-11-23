@@ -40,10 +40,10 @@ func _press_e() -> void:
 	await _settle()
 
 func _press_f() -> void:
-	Input.action_press("feed")
+	Input.action_press("interact")
 	await process_frame
 	await process_frame
-	Input.action_release("feed")
+	Input.action_release("interact")
 	await _settle()
 
 ## Seleciona o item na barra e usa [E] (espera o golpe/rega acabar).
@@ -193,6 +193,9 @@ func _run() -> void:
 	_check(fed_slime != null, "Brotinho amigo segue disponivel para oferta")
 	if fed_slime != null:
 		current_scene.player.global_position = fed_slime.global_position + Vector2(0, 24)
+		await _settle()
+		var hotbar := preload("res://scripts/systems/hotbar_state.gd")
+		hotbar.select(self, hotbar.slots(self).find(COOKING.RECIPE_ID))  # porção na mão
 		await _settle()
 		_check(current_scene.hud_hint.text.contains("[F]"), "HUD oferece F para alimentar slime proximo")
 		await _press_f()

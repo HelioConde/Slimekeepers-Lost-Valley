@@ -38,7 +38,15 @@ static func missing(tree: SceneTree, recipe_id: String) -> String:
 		var need := int(r.inputs[item_id]) - BAG.count_item(tree, item_id)
 		if need > 0:
 			lacking.append("%d %s" % [need, _name(item_id)])
-	return "" if lacking.is_empty() else "Falta: " + ", ".join(lacking) + "."
+	if not lacking.is_empty():
+		return "Falta: " + ", ".join(lacking) + "."
+	var after := BAG.inventory_snapshot(tree)
+	for item_id: String in r.inputs:
+		if int(after.get(item_id, 0)) <= int(r.inputs[item_id]): after.erase(item_id)
+	for item_id: String in r.output:
+		if not after.has(item_id) and after.size() >= BAG.SLOTS:
+			return "Mochila cheia: libere um espaço."
+	return ""
 
 
 static func can_craft(tree: SceneTree, recipe_id: String) -> bool:

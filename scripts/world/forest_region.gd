@@ -68,13 +68,15 @@ func _ready() -> void:
 	crafting_panel.player = player
 	$HUD/Interface.add_child(crafting_panel)
 	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
+	add_inventory_panel()
 	# Novo Jogo confirmado: o protagonista escolhido desperta sentado no início.
 	if PROTAGONIST.intro_pending(get_tree()):
 		player.position = $SpawnPoints/PlayerSpawn.global_position
 		intro = preload("res://scripts/world/intro_wake.gd").new()
 		add_child(intro)
-		crafting_panel.set_process_unhandled_input(false)
-		intro.finished.connect(func() -> void: crafting_panel.set_process_unhandled_input(true))
+		for panel: Control in [crafting_panel, inventory_panel]:
+			panel.set_process_unhandled_input(false)
+			intro.finished.connect(func() -> void: panel.set_process_unhandled_input(true))
 		intro.start.call_deferred(player, [$HUD/Interface])
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()
@@ -290,7 +292,7 @@ func _process(delta: float) -> void:
 	if is_instance_valid(intro):  # despertar em andamento: nada de interações
 		hud_hint.text = ""
 		return
-	if is_instance_valid(crafting_panel) and crafting_panel.visible:
+	if window_open():
 		hud_hint.text = ""
 		return
 	if handle_player_house(house):
@@ -299,17 +301,17 @@ func _process(delta: float) -> void:
 		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
 		if station_hint == "placed":
 			bag_hud.call("refresh")
-			_notify("Bancada de trabalho montada! Use [E] nela para fabricar ferramentas.")
+			_notify("Bancada de trabalho montada! Use [F] nela para fabricar ferramentas.")
 			return
 		if not station_hint.is_empty():
 			hud_hint.text = station_hint
 			return
 	var closest := _closest_slime()
-	if closest == null and Input.is_action_just_pressed("feed"):
-		eat_selected()  # [F] sem slime por perto: comer
 	if closest != null:
-		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
-		if Input.is_action_just_pressed("feed"):
+		# [F] com comida na mão dá ao amigo; senão faz amizade / cumprimenta.
+		var food := slime_food_hint(closest)
+		hud_hint.text = food if not food.is_empty() else ("[F] Fazer amizade com " if not closest.befriended else "[F] Cumprimentar ") + closest.display_name()
+		if not food.is_empty() and Input.is_action_just_pressed("interact"):
 			_offer_prototype_food(closest)
 			return
 		if Input.is_action_just_pressed("interact"):
@@ -321,7 +323,7 @@ func _process(delta: float) -> void:
 		return
 	var seeds := _nearest_seed_patch()
 	if seeds != null:
-		hud_hint.text = "[E] Recolher sementes com ajuda do Brotinho" if BAG.has_brotinho_friend(get_tree()) else "Conheça um Brotinho para aprender a recolher estas sementes"
+		hud_hint.text = "[F] Recolher sementes com ajuda do Brotinho" if BAG.has_brotinho_friend(get_tree()) else "Conheça um Brotinho para aprender a recolher estas sementes"
 		if Input.is_action_just_pressed("interact"):
 			if bool(seeds.call("harvest")):
 				bag_hud.call("refresh")
@@ -336,14 +338,14 @@ func _process(delta: float) -> void:
 	# A margem do lago é um ponto exato: vale mais que o mato em volta.
 	var spring := get_node("NaturalSpring")
 	if spring.can_examine(player.global_position):
-		hud_hint.text = "[E] Examinar lago"
+		hud_hint.text = "[F] Examinar lago"
 		if Input.is_action_just_pressed("interact"): _notify("Um pequeno lago de água cristalina repousa entre as árvores.")
 		return
 	if is_instance_valid(gathering) and gathering.update(delta):
 		return
-	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir    B · construir casa"
+	hud_hint.text = "WASD / setas · explorar    Shift · correr    F · interagir    B · construir casa"
 	if player.position.distance_to(Forest.SOUTH_EXIT)<115:
-		hud_hint.text = "[E] Viajar para o Vale das Nascentes"
+		hud_hint.text = "[F] Viajar para o Vale das Nascentes"
 		if Input.is_action_just_pressed("interact"):
 			get_tree().set_meta("forest_places",found_places.duplicate())
 			var travel = preload("res://scripts/world/region_travel.gd")
@@ -351,27 +353,29 @@ func _process(delta: float) -> void:
 		return
 	for marker in $PointsOfInterest.get_children():
 		if marker.position.distance_to(player.position)<100:
-			hud_hint.text = "[E] Observar · "+marker.get_meta("title")
+			hud_hint.text = "[F] Observar · "+marker.get_meta("title")
 			if Input.is_action_just_pressed("interact"):
 				found_places[str(marker.name)] = true
 				_notify(marker.get_meta("description"))
 				_update_hud()
 			return
+	if Input.is_action_just_pressed("interact"):
+		eat_selected()  # [F] sem nada por perto: come a comida da barra
 
-## Machado na mão perto de árvore comum ou tronco caído: golpe com [E].
+## Machado na mão perto de árvore comum ou tronco caído: golpe com [F].
 func _offer_prototype_food(slime: Node2D) -> void:
 	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).
 	var item: String = HOTBAR.selected_item(get_tree())
 	if FEEDING.is_food(item):
-		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number)
+		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")), item, GameClock.day_number, str(slime.get("slime_type")))
 		if item == COOKING.RECIPE_ID and fed == "fed":
-			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true)  # registro da primeira porção
+			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true, false)  # só registra a primeira porção
 		match fed:
 			"fed":
 				slime.set("_happy_time", 2.4)
 				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
 				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
-			"needs_friendship": _notify("Primeiro conheça este slime usando E.")
+			"needs_friendship": _notify("Primeiro conheça este slime usando F.")
 			"already_fed": _notify(slime.display_name() + " já comeu hoje.")
 			_: _notify("Você não tem " + str(ITEMS.info(item).name).to_lower() + ".")
 		return
@@ -382,7 +386,7 @@ func _offer_prototype_food(slime: Node2D) -> void:
 			slime.set("_happy_time", 2.4)
 			_notify("Uma porcao de teste foi oferecida a " + slime.display_name() + ".")
 		"needs_friendship":
-			_notify("Primeiro conheca este slime usando E.")
+			_notify("Primeiro conheca este slime usando F.")
 		"already_offered":
 			_notify("Este slime ja recebeu uma porcao nesta partida.")
 		"needs_portion":

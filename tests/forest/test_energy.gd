@@ -56,3 +56,10 @@ func test_tired_message_matches_protagonist() -> void:
 	get_tree().set_meta(Who.KEY, "moni")
 	assert_str(Who.tired_message(get_tree())).starts_with("Cansada ")
 	get_tree().remove_meta(Who.KEY)
+
+
+func test_slime_likes_food_of_its_habitat() -> void:
+	var feeding := preload("res://scripts/systems/slime_feeding.gd")
+	assert_int(feeding.gain("cenoura", "brotinho")).is_equal(20)  # vegetal: preferido na floresta
+	assert_int(feeding.gain("cenoura", "bolhinha")).is_equal(10)  # perto da água prefere marinha
+	assert_int(feeding.gain("sopa_legumes", "musguinho")).is_equal(50)

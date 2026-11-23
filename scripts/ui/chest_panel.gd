@@ -1,6 +1,6 @@
 extends PanelContainer
 ## Janela do baú (BACKLOG P2): bolsa à esquerda, baú à direita. ← → trocam o lado,
-## ↑ ↓ escolhem o item, E move a pilha inteira para o outro lado, Esc / Q fecham.
+## ↑ ↓ escolhem o item, F move a pilha inteira para o outro lado, E / Esc / Q fecham.
 ## Mesmo estilo da janela de fabricação.
 
 const CHEST := preload("res://scripts/systems/chest_storage.gd")
@@ -57,7 +57,7 @@ func _ready() -> void:
 	_status = _label(12, Color("#f6e8c2"))
 	column.add_child(_status)
 	var help := _label(11, Color("#d9c2a8"))
-	help.text = "← → lado · ↑ ↓ escolher · E mover a pilha · Esc / Q fechar"
+	help.text = "← → lado · ↑ ↓ escolher · F mover a pilha · E / Esc fechar"
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(help)
 
@@ -125,12 +125,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	var key := event as InputEventKey
 	if not key or not key.pressed or key.echo: return
 	match key.physical_keycode:
-		KEY_ESCAPE, KEY_Q: close()
+		KEY_ESCAPE, KEY_Q, KEY_E: close()
 		KEY_LEFT, KEY_A: side = 0
 		KEY_RIGHT, KEY_D: side = 1
 		KEY_UP, KEY_W: selected -= 1
 		KEY_DOWN, KEY_S: selected += 1
-		KEY_E, KEY_ENTER: move_selected()
+		KEY_F, KEY_ENTER: move_selected()
 		_: return
 	if visible: refresh()
 	get_viewport().set_input_as_handled()
