@@ -5,6 +5,8 @@ extends Node2D
 
 const PLAYER_SCENE := preload("res://scenes/player.tscn")
 const SEND_EVERY := 1.0 / 15.0
+const ENERGY := preload("res://scripts/systems/energy_state.gd")
+const HEALTH := preload("res://scripts/systems/health_state.gd")
 
 var player: Node2D
 var remote: Node2D
@@ -35,7 +37,8 @@ func _process(delta: float) -> void:
 		_session.send({"t": "state", "scene": get_tree().current_scene.scene_file_path if get_tree().current_scene else "",
 			"x": player.global_position.x, "y": player.global_position.y,
 			"facing": str(player.get("facing")), "anim": str(player.get("current_animation")),
-			"frame": int((player.get("sprite") as AnimatedSprite2D).frame)})
+			"frame": int((player.get("sprite") as AnimatedSprite2D).frame),
+			"h": HEALTH.current(get_tree()), "e": ENERGY.current(get_tree())})  # barras do outro no HUD
 	if is_instance_valid(remote) and remote.visible:
 		remote.global_position = remote.global_position.lerp(_target, minf(1.0, delta * 12.0))
 

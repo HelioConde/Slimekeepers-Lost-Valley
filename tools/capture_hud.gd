@@ -25,7 +25,7 @@ func run() -> void:
 	root.add_child(region)
 	for i in 30: await process_frame
 	var hud: Node = region.get_node("HUD/Interface")
-	check(hud.get_node_or_null("Hotbar") != null and hud.get_node_or_null("EnergyBar") != null, "barra e energia no HUD")
+	check(hud.get_node_or_null("Hotbar") != null and hud.get_node_or_null("PlayerStatus") != null, "barra e energia no HUD")
 	var slime: Node2D = region.get("slimes")[0]
 	region.get("player").global_position = slime.global_position + Vector2(0, 30)
 	for i in 10: await process_frame

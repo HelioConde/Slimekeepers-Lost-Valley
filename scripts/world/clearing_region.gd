@@ -58,8 +58,12 @@ func _update_hud() -> void:
 
 func _compact_hud() -> void:
 	var panel: PanelContainer = $HUD/Interface/MissionPanel
-	panel.anchor_right = 0.0
-	panel.offset_right = 18
+	# Nome do lugar no alto, ao centro: o canto esquerdo é do retrato e das barras.
+	panel.anchor_left = 0.5
+	panel.anchor_right = 0.5
+	panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	panel.offset_left = 0
+	panel.offset_right = 0
 	panel.offset_bottom = 16
 	var style := panel.get_theme_stylebox("panel").duplicate() as StyleBoxFlat
 	style.set_content_margin_all(6)
@@ -88,7 +92,8 @@ func _compact_hud() -> void:
 	title_fade.tween_interval(3.0)
 	title_fade.tween_property(panel, "modulate:a", 0.0, 0.8)
 	title_fade.tween_callback(panel.hide)
-	$HUD/Interface.add_child(preload("res://scripts/ui/energy_hud.gd").new())
+	# Retrato, vida e energia no canto (e o outro jogador abaixo no multijogador).
+	$HUD/Interface.add_child(preload("res://scripts/ui/player_status_hud.gd").new())
 	# Slime por perto: retrato, nome e corações do laço (exemplo de HUD do usuário).
 	# Multijogador: mostra o outro jogador e envia a posição deste (net_presence.gd).
 	var presence := preload("res://scripts/net/net_presence.gd").new()

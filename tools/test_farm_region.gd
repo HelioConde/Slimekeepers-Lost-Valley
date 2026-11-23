@@ -40,7 +40,7 @@ func run() -> void:
 	check(house.get_node("Furniture").get_child_count() >= 5, "Casa mobiliada")
 	check(house.get_node("Walls").get_child_count() > 3, "Paredes em fileiras ordenadas por Y")
 	check(farm.get_node("VegetationHigh").get_child_count() > 30, "Borda de árvores")
-	check(farm.get_node_or_null("HUD/Interface/Hotbar") != null and farm.get_node_or_null("HUD/Interface/EnergyBar") != null, "Barra e energia no HUD")
+	check(farm.get_node_or_null("HUD/Interface/Hotbar") != null and farm.get_node_or_null("HUD/Interface/PlayerStatus") != null, "Barra e energia no HUD")
 	var shadows = farm.get_node("DayNightLighting/DayShadows")
 	# Dormir na cama: o jogador perto da cama recebe a ação.
 	farm.player.global_position = Vector2(14 * 32 + 16, 9 * 32)
