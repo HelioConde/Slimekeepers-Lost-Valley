@@ -9,7 +9,7 @@ const ALIAS := {"curious": "blink", "comemorar": "happy", "idle_feliz": "happy",
 	"work_loop": "idle", "work_finish": "happy", "procurar_terreno": "blink", "abrir_bau": "comer",
 	"hurt": "blink", "irritado": "blink", "attack_charge": "blink", "attack": "move",
 	"lancar_cipos": "happy", "derrotado_dissipar": "sleep", "jump": "move", "play": "happy",
-	"drink": "comer", "splash": "regar", "plant": "idle"}
+	"drink": "comer", "splash": "regar", "plant": "idle", "adubar": "happy", "regar": "happy"}
 ## Função de cada espécie na fazenda (decisão do usuário): "plant" toca a animação da função.
 const ROLE := {"brotinho": "plantar", "bolhinha": "regar", "musguinho": "adubar"}
 
@@ -28,7 +28,7 @@ func _initialize() -> void:
 	for anim: String in names:
 		var source := anim
 		if anim == "plant" and ROLE.has(species): source = ROLE[species]
-		if not ResourceLoader.exists("%s/%s/frame_000.png" % [art, source]): source = str(ALIAS.get(anim, "idle"))
+		if not ResourceLoader.exists("%s/%s/frame_000.png" % [art, source]): source = str(ALIAS.get(source, ALIAS.get(anim, "idle")))
 		if not ResourceLoader.exists("%s/%s/frame_000.png" % [art, source]): source = "idle"
 		frames.add_animation(anim)
 		frames.set_animation_speed(anim, old.get_animation_speed(anim) if old.has_animation(anim) else 8.0)
