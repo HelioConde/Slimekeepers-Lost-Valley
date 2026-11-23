@@ -1,6 +1,6 @@
 extends SceneTree
 ## Mapa da fazenda: carrega, tem casa sólida, campo próprio, dormir vira o dia e
-## recupera energia, e o caminho Vale <-> fazenda funciona.
+## recupera energia. Mapa antigo, sem acesso pelo Vale desde 2026-11-22.
 var checks := 0
 var failures := 0
 func check(ok: bool, label: String) -> void:
@@ -54,14 +54,6 @@ func run() -> void:
 	check(int(get_meta("player_energy")) == 100, "Dormir recupera energia")
 	check(Save.has_save() and Save.read().region == Travel.FARM, "Dormir salva o jogo na fazenda")
 	Save.delete()
-	# Vale <-> fazenda.
-	farm.player.global_position = farm.WEST_GATE
-	Travel.travel(farm, Travel.VALLEY, "valley_farm_gate")
-	await settle()
-	var valley: Node2D = current_scene
-	check(valley.name == "ValeDasNascentes" and valley.player.position.distance_to(valley.FARM_GATE) < 60, "Chega no Vale junto à placa")
-	Travel.travel(valley, Travel.FARM, "farm_west")
-	await settle()
-	check(current_scene.name == "Fazenda" and current_scene.player.position.distance_to(current_scene.WEST_GATE) < 90, "Volta pela entrada oeste")
+	# O portão Vale <-> Fazenda foi removido (FAZENDA.md, 2026-11-22): mapa antigo, sem acesso.
 	print("FARM_REGION: %d checks; %d failures" % [checks, failures])
 	quit(1 if failures else 0)

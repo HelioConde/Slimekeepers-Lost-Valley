@@ -53,3 +53,9 @@ com até 4 tarefas por espécie por dia (`scripts/world/farm_helpers.gd`):
   (`FARM.fertilize`; animação `adubar`, provisoriamente o "feliz").
 
 Teste: `tests/forest/test_farm_helpers.gd`; prova no jogo: `tools/capture_farm_helpers.gd`.
+
+## Mapa antigo da Fazenda
+
+`scenes/regions/Fazenda.tscn` (script `farm_region.gd`) continua no projeto, mas não tem
+acesso pelo Vale desde que o portão foi removido. `tools/test_farm_region.gd` confere só o
+mapa em si (casa, campo, dormir). Removê-lo de vez é decisão do usuário.
