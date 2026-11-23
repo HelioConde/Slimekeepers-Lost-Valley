@@ -39,7 +39,7 @@ func run() -> void:
 	root.add_child(region)
 	for i in 20: await process_frame
 	var hud: Control = region.get_node("HUD/Interface/TutorialHud")
-	check(hud.visible and str(hud._label.text).contains("WASD"), "primeira dica: andar")
+	check(hud.visible and str(hud._label.text).contains("básico") and hud._body.get_child_count() > 8, "primeira dica: andar com as teclas desenhadas")
 	if out != "":
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("%s/tutorial_0.png" % out)
