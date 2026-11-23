@@ -33,14 +33,16 @@ quem entra joga com o outro.
 - Quem entra fica com a Moni e cai no mapa do anfitrião.
 - Cada um vê o outro protagonista com a arte certa.
 - Os movimentos chegam dos dois lados.
+- Steam num PC só (`tools/test_steam_smoke.gd`, cliente Steam aberto): o GodotSteam inicia
+  com o App 480 e cria a sala só de amigos (2026-11-23). Falta o segundo jogador por outra conta.
 
 ## Ainda não sincronizado (próximas etapas)
 
 - Itens soltos no chão (o resto do mundo já sincroniza; ver abaixo).
 - Relógio: o convidado recebe o horário ao entrar; depois cada um avança sozinho.
 - Slimes e laços.
-- Steam de verdade: o código usa a API real do GodotSteam (nomes conferidos no Godot 4.7).
-  Falta testar com duas contas Steam em dois computadores.
+- Steam de verdade: a sala é criada pela Steam (teste num PC só). Falta entrar com uma
+  segunda conta Steam em outro computador.
 - O modo (cooperativo ou outro) está A DEFINIR.
 
 ## Mundo compartilhado (2026-11-23)
