@@ -15,7 +15,8 @@ MATERIAL = {"floor": "lower", "roof": "upper", "wall": "upper"}
 
 
 def is_grass(r, g, b):
-    return g > 70 and g > r * 1.15 and g > b * 1.4
+    # Esverdeado (grama e as sombras dela); madeira, telha e pedra cinza ficam.
+    return g > r + 4 and g > b + 4
 
 
 def convert(name, src, dst):
@@ -42,5 +43,6 @@ def convert(name, src, dst):
 
 if __name__ == "__main__":
     src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+    dst.mkdir(parents=True, exist_ok=True)  # pasta de saída nova não quebra a conversão
     for name in ("floor", "wall", "roof"):
         convert(name, src, dst)

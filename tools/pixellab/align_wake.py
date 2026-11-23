@@ -53,6 +53,9 @@ for n in sorted(d for d in os.listdir(raw) if os.path.isdir(os.path.join(raw, d)
 for name, (files, ox, oy) in plan.items():
     out = os.path.join(dst, name, 'south')
     os.makedirs(out, exist_ok=True)
+    for old in os.listdir(out):  # animação mais curta não herda quadros antigos
+        if old.startswith('frame_') and old.endswith('.png'):
+            os.remove(os.path.join(out, old))
     for i, f in enumerate(files):
         im = Image.open(f).convert('RGBA')
         canvas = Image.new('RGBA', (max(im.width + ox, seated.shape[1]) + 64, max(im.height + oy, seated.shape[0]) + 64))

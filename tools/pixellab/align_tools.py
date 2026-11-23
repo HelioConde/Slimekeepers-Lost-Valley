@@ -69,7 +69,9 @@ for tool, anim in ANIMS.items():
             frame = Image.open(os.path.join(src, name)).convert("RGBA")
             canvas = Image.new("RGBA", (SIZE, SIZE))
             # A rotação está em (dx, dy) no quadro: vai para (PAD, PAD). paste recorta bordas.
-            canvas.paste(frame, (PAD - dx, PAD - dy), frame)
+            # Sem máscara: o canvas está vazio, então copia o alfa exato (com a própria
+            # imagem como máscara as bordas suavizadas ficavam transparentes demais).
+            canvas.paste(frame, (PAD - dx, PAD - dy))
             out.append(clean_trails(canvas) if tool != "water" else canvas)
         targets = [(direction, out)]
         if direction in MIRROR:

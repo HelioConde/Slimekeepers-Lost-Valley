@@ -3,7 +3,7 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $evidenceDir = Join-Path $projectRoot $EvidenceFolder
 New-Item -ItemType Directory -Path $evidenceDir -Force | Out-Null
-$checks = @('test_forest_v2','test_habitats','test_forest_life','test_forest_audio','test_valley','test_valley_water','test_region_travel','test_menu','test_slime_ecosystem','test_environment_v3','test_environment_regions','test_living_regions','test_visual_rules','test_curated_exports','test_map_composition','test_pond_banks','test_day_night','test_water_reflections','test_day_shadows')
+$checks = @('test_clearing','test_forest_v2','test_habitats','test_forest_life','test_forest_audio','test_valley','test_valley_water','test_region_travel','test_menu','test_slime_ecosystem','test_environment_v3','test_environment_regions','test_living_regions','test_visual_rules','test_curated_exports','test_map_composition','test_pond_banks','test_day_night','test_water_reflections','test_day_shadows')
 foreach ($check in $checks) {
     $logPath = Join-Path $evidenceDir ($check + '.log')
     & $GodotBinary --headless --path $projectRoot --script "res://tools/$check.gd" -- --require-complete-art *> $logPath
