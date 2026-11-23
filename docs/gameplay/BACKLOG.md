@@ -14,20 +14,18 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 
 ## 1. Fazenda (núcleo)
 - [x] Arar, plantar, regar, colher; crescimento por dia regado (`docs/gameplay/FAZENDA.md`)
-- [x] Mapa de fazenda próprio: campo 16×10, casa provisória (cottage), saída para o Vale
+- [x] ~~Mapa de fazenda próprio~~ — removido: plantio livre com a enxada em qualquer chão (`FAZENDA.md`)
 - [x] Ferramentas com animação do personagem (enxada, regador)
-- [ ] **P1** Construção da casa: modo construir (paredes, piso, porta, janela) em grade, tilemap
-  novo (PixelLab), custo em materiais coletados (madeira/pedra), substitui a casa provisória
-- [ ] **P1** Interior da casa: entrar pela porta, cama para dormir, mobília posicionável
-  (cama, mesa, baú, tapete, plantas), salva no save
-- [ ] **P2** Regador com carga d'água (encher no riacho/poço)
+- [x] Construção da casa: sem casa inicial, arrastar o retângulo em qualquer lugar, custo em madeira/pedra, uma só (`CASA.md`)
+- [x] Interior da casa: porta, cama para dormir, mobília paga, fogão para cozinhar, salva no save
+- [x] Regador com carga d'água: 20 regas; enche com [E] olhando para o lago/riacho
 - [ ] **P2** Mais culturas e estágios próprios para repolho e beterraba (PixelLab)
 - [ ] **P2** Estações do ano: culturas por estação, morrem na troca
 - [ ] **P3** Espantalho, irrigador, adubo, árvores frutíferas
 - [ ] **P3** Terra arada volta a ser grama se ficar vazia vários dias
 
 ## 2. Ciclo do dia e progresso
-- [x] Dormir para virar o dia (porta da casa provisória; vai para a cama do interior)
+- [x] Dormir para virar o dia (cama da casa construída)
 - [x] Energia do jogador (ações gastam; dormir recupera)
 - [x] Save/load em disco ao dormir + Continuar no menu
 - [ ] **P2** Desmaio à meia-noite / acordar em casa
@@ -35,7 +33,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 ## 3. Inventário e recursos
 - [x] Barra rápida de itens com ícones PixelLab
 - [x] ~~Caixa de venda e dinheiro~~ — removido por decisão do usuário
-- [ ] **P1** Coleta de materiais (madeira de galhos/tocos, pedra) para construir
+- [x] Coleta de materiais: mato (fibra), graveto, pedra, árvores pequenas (madeira) na Floresta e no Vale
 - [ ] **P2** Sementes por troca/presente de slimes ou coleta silvestre (sem loja com dinheiro)
 - [ ] **P2** Baú de armazenamento (mobília)
 
@@ -44,7 +42,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [ ] **P2** Slimes ajudam na fazenda (Brotinho rega/cuida das plantas)
 - [ ] **P2** Brasinha e Gelito nas regiões atuais (canônicos; luz própria já existe)
 - [ ] **P3** Mostrar corações de afinidade ao interagir
-- [ ] **P3** Coleta silvestre diária na Floresta (renasce por dia)
+- [x] Coleta silvestre diária (mato, gravetos e pedras voltam no dia seguinte)
 
 ## 5. Culinária
 - [ ] **P2** Receitas com cenoura, beterraba e repolho na estação do Vale

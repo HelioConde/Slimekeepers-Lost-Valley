@@ -8,6 +8,9 @@ const CROPS := preload("res://scripts/systems/crop_catalog.gd")
 const KEY := "farm_cells"
 const STARTER_KEY := "farm_starter_seeds_given"
 const LAST_DAY_KEY := "farm_last_day"
+## Regador com carga d'água (BACKLOG P2): cada rega gasta 1; enche na água (lago, riacho).
+const CAN_KEY := "watering_can_water"
+const CAN_MAX := 20
 ## Kit inicial enquanto não existe loja.
 const STARTER_SEEDS := {"semente_cenoura": 8, "semente_beterraba": 6, "semente_repolho": 4}
 
@@ -145,4 +148,20 @@ static func grant_starter_seeds(tree: SceneTree) -> bool:
 	for item in STARTER_SEEDS:
 		BAG.add_item(tree, item, STARTER_SEEDS[item])
 	tree.set_meta(STARTER_KEY, true)
+	return true
+
+
+static func can_water(tree: SceneTree) -> int:
+	return int(tree.get_meta(CAN_KEY, CAN_MAX))
+
+
+static func fill_can(tree: SceneTree) -> void:
+	tree.set_meta(CAN_KEY, CAN_MAX)
+
+
+## Gasta 1 de água do regador; false se está vazio.
+static func use_can(tree: SceneTree) -> bool:
+	var left := can_water(tree)
+	if left <= 0: return false
+	tree.set_meta(CAN_KEY, left - 1)
 	return true

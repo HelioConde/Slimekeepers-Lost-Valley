@@ -12,6 +12,7 @@ madeira, a fogueira de cozinhar e o portão da Fazenda foram removidos do Vale.
 - Grama sem enxada/regador/semente não toma o [E]: mato, gravetos e árvores continuam normais.
 - Não se ara sobre árvore, pedra, água, arbusto nem dentro da casa. Ao arar, mato, flores,
   cogumelos e pedrinhas da célula somem.
+- **Regador:** leva água para **20 regas**; cada rega gasta 1. Com o regador na mão, olhe para o lago ou o riacho e aperte **[E]** para encher. Vazio, ele avisa e não rega.
 - **[R]** troca a semente (pula as que acabaram).
 - A cultura sobe **um estágio por dia em que foi regada**; toda a terra seca na virada do dia.
 - **Sementes silvestres** (recolhidas com o Brotinho) viram **folhas silvestres** → colheita de

@@ -29,6 +29,8 @@ const FACING := {"north": Vector2(0, -1), "south": Vector2(0, 1), "east": Vector
 ## qualquer chão em que farmable(célula) for true (sem colisão, água nem casa).
 var free_area := false
 var farmable: Callable
+## Ponto do mundo é água (lago, riacho)? Regador virado para ela enche.
+var water_at: Callable
 
 var last_action := ""
 var player: Node2D
@@ -84,6 +86,7 @@ func contains(cell: Vector2i) -> bool:
 ## O [E] desta célula é do campo? Terra arada, ou um item que age nela (enxada na
 ## grama, regador, semente). Grama sem ferramenta não toma o [E] (mato, árvores...).
 func wants(actor: Node2D) -> bool:
+	if can_fill(actor): return true
 	var cell := target_cell(actor)
 	if not contains(cell): return false
 	return FARM.is_tilled(get_tree(), cell, field_id) or action_with(cell, HOTBAR.selected_item(get_tree())) != ""
@@ -103,6 +106,15 @@ func has_target(actor: Node2D) -> bool:
 	return contains(target_cell(actor))
 
 
+## Regador selecionado, olhando para a água à frente (e sem terra arada ali).
+func can_fill(actor: Node2D) -> bool:
+	if HOTBAR.selected_item(get_tree()) != "regador" or not water_at.is_valid(): return false
+	var dir: Vector2 = FACING.get(str(actor.get("facing")), Vector2.DOWN).normalized()
+	for reach in [24.0, 40.0, 56.0, 72.0]:  # a água pode começar depois da margem
+		if bool(water_at.call(actor.global_position + dir * reach)): return true
+	return false
+
+
 ## Ação do item na célula: harvest, till, water, plant ou "" (nada a fazer).
 func action_with(cell: Vector2i, item: String) -> String:
 	var tree := get_tree()
@@ -118,6 +130,8 @@ func action_with(cell: Vector2i, item: String) -> String:
 
 
 func hint(actor: Node2D) -> String:
+	if can_fill(actor):
+		return "[E] Encher o regador (%d/%d)" % [FARM.can_water(get_tree()), FARM.CAN_MAX]
 	var cell := target_cell(actor)
 	var tree := get_tree()
 	var item := HOTBAR.selected_item(tree)
@@ -125,7 +139,9 @@ func hint(actor: Node2D) -> String:
 	match action_with(cell, item):
 		"harvest": return "[E] Colher " + crop_name
 		"till": return "[E] Arar com a enxada"
-		"water": return "[E] Regar" + (" " + crop_name if not crop_name.is_empty() else " a terra")
+		"water":
+			if FARM.can_water(tree) <= 0: return "Regador vazio · encha no lago ou no riacho"
+			return "[E] Regar" + (" " + crop_name if not crop_name.is_empty() else " a terra") + " (água %d/%d)" % [FARM.can_water(tree), FARM.CAN_MAX]
 		"plant": return "[E] Plantar " + str(ITEMS.info(item).name).to_lower()
 	if not FARM.is_tilled(tree, cell, field_id): return "Grama · selecione a enxada"
 	if not crop_name.is_empty():
@@ -135,8 +151,13 @@ func hint(actor: Node2D) -> String:
 
 ## Usa o item selecionado na célula à frente; devolve a mensagem para o jogador.
 func interact(actor: Node2D) -> String:
-	var cell := target_cell(actor)
 	var tree := get_tree()
+	if can_fill(actor):
+		FARM.fill_can(tree)
+		if actor.has_method("play_tool"): actor.play_tool("water")
+		last_action = "Regador cheio (%d/%d)." % [FARM.CAN_MAX, FARM.CAN_MAX]
+		return last_action
+	var cell := target_cell(actor)
 	var item := HOTBAR.selected_item(tree)
 	var message := ""
 	var action := action_with(cell, item)
@@ -155,7 +176,12 @@ func interact(actor: Node2D) -> String:
 				_clear_cell_decor(cell)
 			if actor.has_method("play_tool"): actor.play_tool("hoe")
 		"water":
-			if FARM.water(tree, cell, field_id): message = "Terra regada."
+			if FARM.can_water(tree) <= 0:
+				last_action = "O regador está vazio. Encha no lago ou no riacho."
+				return last_action
+			if FARM.water(tree, cell, field_id):
+				FARM.use_can(tree)
+				message = "Terra regada (água %d/%d)." % [FARM.can_water(tree), FARM.CAN_MAX]
 			if actor.has_method("play_tool"): actor.play_tool("water")
 		"plant":
 			var crop_id := str(ITEMS.info(item).crop)

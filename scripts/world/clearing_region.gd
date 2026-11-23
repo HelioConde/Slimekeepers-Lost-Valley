@@ -221,6 +221,15 @@ func add_free_farm(field_id: String, house_builder: Node2D) -> Node2D:
 		query.transform = Transform2D(0, Vector2(cell * 32) + Vector2(16, 16))
 		query.collision_mask = 2
 		return space.intersect_shape(query, 1).is_empty()
+	var pools: Array[Polygon2D] = []
+	for node in find_children("Water", "Polygon2D", true, false): pools.append(node)
+	if has_node("Water"):
+		for node in get_node("Water").get_children():
+			if node is Polygon2D: pools.append(node)
+	farm.water_at = func(at: Vector2) -> bool:  # regador enche no lago/riacho
+		for pool in pools:
+			if is_instance_valid(pool) and Geometry2D.is_point_in_polygon(pool.to_local(at), pool.polygon): return true
+		return false
 	add_child(farm)
 	return farm
 

@@ -25,6 +25,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"hotbar_selected",
 	"player_energy",
 	"farm_last_day",
+	"watering_can_water",
 	"slime_affinity",
 	"player_house",
 	"build_mode",

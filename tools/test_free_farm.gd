@@ -47,7 +47,7 @@ func run() -> void:
 	DisplayServer.window_set_size(Vector2i(1280, 720))
 	var clock: Node = root.get_node("GameClock")
 	for name: String in REGIONS:
-		for k in [FARM.KEY, BAG.INVENTORY_KEY, "player_energy", "player_house", "forage_taken"]:
+		for k in [FARM.KEY, BAG.INVENTORY_KEY, "player_energy", "player_house", "forage_taken", FARM.CAN_KEY]:
 			if has_meta(k): remove_meta(k)
 		var region: Node2D = load(REGIONS[name]).instantiate()
 		root.add_child(region)
@@ -95,8 +95,37 @@ func run() -> void:
 			for i in 3: await process_frame
 			days += 1
 		check(FARM.is_ready(self, cell, farm.field_id), "%s: regada todo dia, fica pronta em %d dias" % [name, days])
+		check(FARM.can_water(self) == FARM.CAN_MAX - days, "%s: cada rega gasta 1 de água do regador (%d)" % [name, FARM.can_water(self)])
 		await press()
 		check(BAG.count_item(self, "folhas_frescas") >= 1, "%s: colhe folhas frescas" % name)
+		# Regador vazio não rega; enche olhando para a água (lago da Floresta).
+		if name == "floresta":
+			set_meta(FARM.CAN_KEY, 0)
+			var dry_cell := cell + Vector2i(1, 0)
+			if farm.contains(dry_cell):
+				player.global_position = Vector2((dry_cell + Vector2i(0, -1)) * 32) + Vector2(16, 16)
+				player.facing = "south"
+				for i in 3: await physics_frame
+				await select("enxada")
+				await press()
+				await select("regador")
+				for i in 3: await process_frame
+				check(str(region.hud_hint.text).contains("vazio"), "floresta: regador vazio avisa (%s)" % region.hud_hint.text)
+				await press()
+				check(not FARM.is_watered(self, dry_cell, farm.field_id), "floresta: regador vazio não rega")
+			var spring: Node2D = region.get_node("NaturalSpring")
+			var bank: Vector2 = spring.get_node("InteractionPoint").global_position
+			var pool: Polygon2D = region.get_node("NaturalSpring/Pool/Water")
+			var center := Vector2.ZERO
+			for v in pool.polygon: center += pool.to_global(v)
+			center /= pool.polygon.size()
+			player.global_position = bank
+			player.facing = player._get_direction_name(center - bank)
+			for i in 3: await physics_frame
+			for i in 3: await process_frame
+			check(str(region.hud_hint.text).contains("Encher"), "floresta: na margem, regador oferece encher (%s)" % region.hud_hint.text)
+			await press()
+			check(FARM.can_water(self) == FARM.CAN_MAX, "floresta: [E] na água enche o regador")
 		# Árvore não é arável.
 		var chop: Node = region.get("gathering").choppable if region.get("gathering") else region.get("choppable")
 		var any_tree: Node2D = chop.trees[chop.trees.keys()[0]]
