@@ -50,7 +50,7 @@ func run() -> void:
 	check(medium.size() >= 30 and large.size() >= 10, "pedras médias (%d) e grandes (%d) pelo mapa" % [medium.size(), large.size()])
 	var player: Node2D = region.get("player")
 	var rock: Dictionary = medium[0]
-	player.global_position = rock.at + Vector2(0, 30)
+	player.global_position = rock.at + Vector2(0, -30)  # acima da pedra: golpe de frente
 	for i in 4: await physics_frame
 	for i in 3: await process_frame
 	check(str(region.hud_hint.text).contains("picareta"), "sem picareta, a pedra média pede uma (%s)" % region.hud_hint.text)
@@ -61,6 +61,7 @@ func run() -> void:
 	var before := BAG.count_item(self, "pedra_pequena")
 	for i in 3:
 		await press()
+		if i == 0: check(str(player.get("current_animation")) == "pickaxe_south", "golpe próprio da picareta (%s)" % player.get("current_animation"))
 		while player.is_using_tool(): await process_frame
 	check(not (rock.node as Node2D).visible, "3 golpes de picareta quebram a pedra média")
 	region.get("item_drops").collect_all()
