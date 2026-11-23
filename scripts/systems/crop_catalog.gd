@@ -7,11 +7,11 @@ const SEED_MOUND := "6db55afd"
 
 const CROPS := {
 	"cenoura": {"name": "Cenoura", "seed": "semente_cenoura", "harvest": "cenoura",
-		"stages": [SEED_MOUND, "52a49051", "a1536cea", "da7b84bb", "b13c2714"]},
+		"stages": [SEED_MOUND, "52a49051", "a1536cea", "d88578b1", "b13c2714"]},  # d88578b1: folhas de cenoura (2026-11-23)
 	"beterraba": {"name": "Beterraba", "seed": "semente_beterraba", "harvest": "beterraba",
 		"stages": [SEED_MOUND, "66f68c6d", "72d86ab5", "36b6e132", "bf92d2a6"]},
 	"repolho": {"name": "Repolho", "seed": "semente_repolho", "harvest": "repolho",
-		"stages": [SEED_MOUND, "52a49051", "da7b84bb", "88c7e97f", "e88ba163"]},
+		"stages": [SEED_MOUND, "52a49051", "5c71d294", "9fe87aa5", "e88ba163"]},  # roseta e cabeça se formando (2026-11-23)
 	# Sementes silvestres coletadas com o Brotinho na Floresta: viram folhas frescas.
 	"folhas_silvestres": {"name": "Folhas silvestres", "seed": "sementes_silvestres", "harvest": "folhas_frescas",
 		"stages": [SEED_MOUND, "cb446daf", "66f68c6d", "36b6e132"]},
