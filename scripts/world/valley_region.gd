@@ -3,14 +3,10 @@ const Valley = preload("res://scripts/world/valley_layout.gd")
 const Travel = preload("res://scripts/world/region_travel.gd")
 const Living = preload("res://scripts/world/living_region.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
-const GARDEN_BED := preload("res://scripts/world/valley_garden_bed.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
-const COOKING_STATION := preload("res://scripts/world/valley_cooking_station.gd")
-const FARM_FIELD := preload("res://scripts/world/farm_field.gd")
 ## Placa do caminho para a fazenda, a leste da chegada da Floresta.
-const FARM_GATE := Vector2(1700, 230)
 const RECIPE_PANEL := preload("res://scripts/ui/valley_recipe_panel.gd")
 const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
@@ -22,11 +18,9 @@ var elapsed := 0.0
 var reduce_motion := false
 var found_zones: Dictionary = {}
 var bag_hud: Node
-var garden_beds: Array[Node2D] = []
-var cooking_station: Node2D
 var gathering: Node  # region_gathering.gd: corte e coleta (como na Floresta)
 var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
-var farm_field: Node2D
+var farm: Node2D  # plantio livre: arar com a enxada em qualquer chão livre
 var recipe_panel: PanelContainer
 
 func _ready() -> void:
@@ -55,131 +49,12 @@ func _ready() -> void:
 	for fall in $Waterfalls.get_children():
 		var life:=fall.get_node_or_null("LivingFoam")
 		if life:life.set_reduced_motion(reduce_motion)
-	if get_tree().get_meta("region_arrival","") == "valley_farm_gate":
-		player.position = FARM_GATE + Vector2(0, 40)
-		camera.reset_smoothing()
 	if get_tree().has_meta("region_arrival"): get_tree().remove_meta("region_arrival")
-	_spawn_farm_gate()
 	_setup_living_valley()
 	preload("res://scripts/world/visual_rules.gd").new().apply(self,Valley.routes())
 	var art := preload("res://scripts/world/map_art_enrichment.gd").new()
 	art.region_kind = "valley"
 	add_child(art)
-	_spawn_starter_garden()
-	_spawn_cooking_station()
-	_spawn_farm_field()
-
-func _spawn_starter_garden() -> void:
-	var garden := Node2D.new()
-	garden.name = "StarterGarden"
-	add_child(garden)
-	for plot in [
-		{"id": "norte", "at": Vector2(1440, 560)},
-		{"id": "sul", "at": Vector2(1390, 625)},
-	]:
-		var bed := GARDEN_BED.new()
-		bed.configure(str(plot["id"]), plot["at"])
-		garden.add_child(bed)
-		garden_beds.append(bed)
-
-func _spawn_cooking_station() -> void:
-	cooking_station = COOKING_STATION.new()
-	# A oeste do pinheiro TreesBack/Tree_0210: a copa cobria a estação e o jogador
-	# no ponto de interação. 140 px do canteiro norte = raios 68 + 72 sem sobreposição.
-	cooking_station.position = Vector2(1440, 418)
-	add_child(cooking_station)
-
-func _spawn_farm_gate() -> void:
-	var gate := Node2D.new()
-	gate.name = "FarmGate"
-	gate.position = FARM_GATE
-	add_child(gate)
-	var sign_sprite := Sprite2D.new()
-	sign_sprite.name = "Sprite"
-	sign_sprite.texture = preload("res://assets/menu/provided/wood_sign.png")
-	sign_sprite.offset.y = -sign_sprite.texture.get_height() * 0.5 + 6
-	gate.add_child(sign_sprite)
-
-## Campo de cultivo no platô a leste do riacho, ao lado da cachoeira (6×4 células
-## livres de troncos, água, caminhos e colisões).
-func _spawn_farm_field() -> void:
-	farm_field = FARM_FIELD.new()
-	farm_field.origin_cell = Vector2i(24, 12)
-	farm_field.size_cells = Vector2i(6, 4)
-	farm_field.player = player
-	add_child(farm_field)
-
-func _handle_farm_interaction() -> bool:
-	if not is_instance_valid(farm_field) or not farm_field.has_target(player):
-		return false
-	hud_hint.text = farm_field.hint(player)
-	if player.has_method("is_using_tool") and player.is_using_tool():
-		return true  # termina o golpe antes de aceitar outro [E]
-	if Input.is_action_just_pressed("interact"):
-		var message: String = farm_field.interact(player)
-		if not message.is_empty(): _notify(message)
-		bag_hud.refresh()
-	return true
-
-func _handle_cooking_interaction() -> bool:
-	if not is_instance_valid(cooking_station):
-		return false
-	if player.global_position.distance_to(cooking_station.global_position) >= 68.0:
-		return false
-	recipe_panel.refresh(get_tree())
-	recipe_panel.show()
-	var check: Dictionary = COOKING.availability(get_tree())
-	hud_hint.text = "[E] Preparar porcao de folhas (teste)" if bool(check.get("available", false)) else "Preparo: falta 1 folha fresca colhida"
-	if Input.is_action_just_pressed("interact"):
-		var result: String = COOKING.prepare(get_tree())
-		if result == "prepared":
-			bag_hud.call("refresh")
-			recipe_panel.refresh(get_tree())
-			_notify("Preparo de teste pronto! Porcoes preparadas: %d" % COOKING.portions(get_tree()))
-		elif result == "needs_leaves":
-			_notify("Cultive e colha folhas frescas antes de preparar.")
-		else:
-			_notify("Nao foi possivel preparar; nenhum ingrediente foi gasto.")
-	return true
-
-func _nearest_garden_bed() -> Node2D:
-	var result: Node2D = null
-	var best_distance := 72.0
-	for bed in garden_beds:
-		if not is_instance_valid(bed):
-			continue
-		var distance := player.global_position.distance_to(bed.global_position)
-		if distance < best_distance:
-			best_distance = distance
-			result = bed
-	return result
-
-func _handle_garden_interaction() -> bool:
-	var bed := _nearest_garden_bed()
-	if bed == null:
-		return false
-	var state: String = str(bed.call("phase"))
-	match state:
-		"empty":
-			hud_hint.text = "[E] Plantar uma semente no canteiro" if BAG.seeds(get_tree()) > 0 else "Canteiro vazio · encontre sementes na floresta"
-		"growing":
-			hud_hint.text = "Cultivo crescendo · faltam %d minutos do jogo" % int(bed.call("remaining_minutes"))
-		"ready":
-			hud_hint.text = "[E] Colher folhas frescas"
-		"harvested":
-			hud_hint.text = "Canteiro colhido nesta partida"
-	if Input.is_action_just_pressed("interact"):
-		var action: String = str(bed.call("interact"))
-		match action:
-			"planted":
-				bag_hud.call("refresh")
-				_notify("Uma semente foi plantada. Volte quando crescer.")
-			"collected":
-				bag_hud.call("refresh")
-				_notify("Folhas frescas guardadas na bolsa!")
-			"needs_seed":
-				_notify("A bolsa esta vazia. Recolha sementes com o Brotinho.")
-	return true
 
 func _setup_living_valley() -> void:
 	var flowers: Array[Vector2] = []
@@ -241,6 +116,8 @@ func _setup_living_valley() -> void:
 	_update_living_goal()
 	_setup_gathering()
 	house = add_player_house("vale")
+	farm = add_free_farm("vale", house)
+	hide_forage_on_farm(farm, gathering.forage)
 
 func _on_water_slime(slime: Node2D) -> void:
 	slimes.append(slime)
@@ -281,10 +158,9 @@ func _offer_prototype_food(slime: Node2D) -> void:
 
 ## Corte e coleta no Vale: árvores de TreesBack/TreesFront e o mato de
 ## LowVegetation (ids e estado com prefixo "vale_"). Sem corte nos habitats de
-## slimes, pontos de interesse, chegada e estação de cozinha.
+## slimes, pontos de interesse e chegada.
 func _setup_gathering() -> void:
-	var keep: Array[Vector2] = [Valley.SPAWN, Vector2(1600, 70), FARM_GATE]
-	if is_instance_valid(cooking_station): keep.append(cooking_station.global_position)
+	var keep: Array[Vector2] = [Valley.SPAWN, Vector2(1600, 70)]
 	for marker in $PointsOfInterest.get_children(): keep.append((marker as Node2D).position)
 	gathering = preload("res://scripts/world/region_gathering.gd").new()
 	add_child(gathering)
@@ -341,17 +217,12 @@ func _process(delta: float) -> void:
 		if Input.is_action_just_pressed("interact"):
 			Travel.travel(self,Travel.CLEARING,"clearing_south")
 			return
-	elif player.position.distance_to(FARM_GATE) < 60:
-		hud_hint.text = "[E] Ir para a sua fazenda"
-		if Input.is_action_just_pressed("interact"):
-			Travel.travel(self,Travel.FARM,"farm_west")
-			return
 	elif player.position.distance_to(Vector2(1780,3160)) < 100:
 		hud_hint.text = "[E] Observar o caminho ao sul"
 		if Input.is_action_just_pressed("interact"):
 			_notify("O caminho segue pela ilha. Uma nova região chegará em breve.")
 	else:
-		if not _handle_farm_interaction() and not _handle_cooking_interaction() and not _handle_garden_interaction():
+		if not handle_farming(farm):
 			var closest := _closest_slime()
 			if closest == null and is_instance_valid(gathering) and gathering.update(delta):
 				pass  # cortar árvore / arrancar mato

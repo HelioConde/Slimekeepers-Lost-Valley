@@ -36,6 +36,7 @@ const FORAGE_PLAN := {"graveto": 6, "pedra_pequena": 8}
 var ground_detail: Node2D
 var gathering: Node  # region_gathering.gd: corte e coleta (compartilhado com o Vale)
 var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
+var farm: Node2D  # plantio livre: arar com a enxada em qualquer chão livre
 var _spawn_light: Node2D
 
 func _ready() -> void:
@@ -127,6 +128,7 @@ func _ready() -> void:
 	placer.blocked = func(at: Vector2) -> bool: return at.distance_to(pond) < 150.0
 	placer.setup(scene_file_path)
 	house = add_player_house("floresta")
+	farm = add_free_farm("floresta", house)
 	GameClock.day_changed.connect(choppable.apply_day)
 
 ## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
@@ -152,6 +154,7 @@ func _spawn_forage() -> void:
 	gathering = preload("res://scripts/world/region_gathering.gd").new()
 	add_child(gathering)
 	gathering.attach(self, choppable, forage)
+	hide_forage_on_farm(farm, forage)
 	if is_instance_valid(house):  # casa já construída: tira coleta e mato de baixo dela
 		_house_area = Rect2(-1, -1, 0, 0)
 		house.rebuild()
@@ -323,6 +326,9 @@ func _process(delta: float) -> void:
 				_notify("Primeiro, faça amizade com um Brotinho da floresta.")
 		return
 	# Cortar árvore e coletar (mato, graveto, pedra): componente compartilhado.
+	# Enxada/regador/semente ou terra arada à frente: plantio (antes do mato em volta).
+	if handle_farming(farm):
+		return
 	# A margem do lago é um ponto exato: vale mais que o mato em volta.
 	var spring := get_node("NaturalSpring")
 	if spring.can_examine(player.global_position):

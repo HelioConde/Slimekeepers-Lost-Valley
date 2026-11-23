@@ -11,6 +11,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const ENERGY := preload("res://scripts/systems/energy_state.gd")
+const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const CELL := 32
 ## Alcance do [E]: célula à frente do jogador.
 const REACH := 22.0
@@ -24,6 +25,10 @@ const FACING := {"north": Vector2(0, -1), "south": Vector2(0, 1), "east": Vector
 @export var size_cells := Vector2i(6, 4)
 ## Nome do campo no estado da sessão (cada mapa tem o seu).
 @export var field_id := "vale"
+## Campo livre (pedido do usuário, 2026-11-22): sem retângulo fixo; a enxada ara
+## qualquer chão em que farmable(célula) for true (sem colisão, água nem casa).
+var free_area := false
+var farmable: Callable
 
 var last_action := ""
 var player: Node2D
@@ -69,7 +74,19 @@ func cell_at(world: Vector2) -> Vector2i:
 
 
 func contains(cell: Vector2i) -> bool:
+	if free_area:
+		if FARM.is_tilled(get_tree(), cell, field_id): return true
+		_index_decor()
+		return not _bush_cells.has(cell) and farmable.is_valid() and bool(farmable.call(cell))
 	return Rect2i(origin_cell, size_cells).has_point(cell)
+
+
+## O [E] desta célula é do campo? Terra arada, ou um item que age nela (enxada na
+## grama, regador, semente). Grama sem ferramenta não toma o [E] (mato, árvores...).
+func wants(actor: Node2D) -> bool:
+	var cell := target_cell(actor)
+	if not contains(cell): return false
+	return FARM.is_tilled(get_tree(), cell, field_id) or action_with(cell, HOTBAR.selected_item(get_tree())) != ""
 
 
 ## Célula à frente do jogador (ou sob ele, se não houver célula à frente).
@@ -129,16 +146,22 @@ func interact(actor: Node2D) -> String:
 	match action:
 		"harvest":
 			var harvested := str(CROPS.get_crop(FARM.crop(tree, cell, field_id)).name)
-			if FARM.harvest(tree, cell, field_id): message = "%s colhida e guardada na bolsa!" % harvested
+			if FARM.harvest(tree, cell, field_id):
+				message = "%s colhida e guardada na bolsa!" % harvested
+				PROGRESS.mark_event(tree, PROGRESS.GARDEN_HARVESTED)  # marco da sessão (antes: canteiros)
 		"till":
-			if FARM.till(tree, cell, field_id): message = "Terra arada."
+			if FARM.till(tree, cell, field_id):
+				message = "Terra arada."
+				_clear_cell_decor(cell)
 			if actor.has_method("play_tool"): actor.play_tool("hoe")
 		"water":
 			if FARM.water(tree, cell, field_id): message = "Terra regada."
 			if actor.has_method("play_tool"): actor.play_tool("water")
 		"plant":
 			var crop_id := str(ITEMS.info(item).crop)
-			if FARM.plant(tree, cell, crop_id, field_id): message = "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
+			if FARM.plant(tree, cell, crop_id, field_id):
+				message = "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
+				PROGRESS.mark_event(tree, PROGRESS.GARDEN_PLANTED)
 	last_action = message
 	refresh()
 	return message
@@ -196,6 +219,9 @@ func _clear_decor() -> void:
 	var region := get_parent()
 	if not region:
 		return
+	if free_area:
+		for cell in FARM.cells(get_tree(), field_id): _clear_cell_decor(cell)
+		return
 	var rect := world_rect().grow(4)
 	for node in region.find_children("*", "Sprite2D", true, false):
 		var sprite := node as Sprite2D
@@ -211,8 +237,104 @@ func _clear_decor() -> void:
 		_hidden_decor.append(holder)
 
 
+var _decor_index := {}  # célula -> [nós de decoração] (campo livre)
+var _bush_cells := {}  # células com arbusto: não se ara (campo livre)
+var _decor_indexed := false
+
+
+## Índice da decoração baixa por célula (uma vez): mato, flores, cogumelos e
+## pedrinhas somem ao arar; arbusto bloqueia a célula.
+func _index_decor() -> void:
+	if _decor_indexed: return
+	_decor_indexed = true
+	var region := get_parent()
+	if not region: return
+	for node in region.find_children("*", "Sprite2D", true, false):
+		var sprite := node as Sprite2D
+		if is_ancestor_of(sprite) or not sprite.texture: continue
+		var path := sprite.texture.resource_path.to_lower()
+		var holder: Node2D = sprite.get_parent() if sprite.name == &"Sprite" else sprite
+		if "bush" in path or "shrub" in path:
+			var base := cell_at(holder.global_position)
+			for dy in range(-1, 1):  # a copa cobre a célula de cima também
+				for dx in range(-1, 2): _bush_cells[base + Vector2i(dx, dy)] = true
+			continue
+		if not ("grass" in path or "flower" in path or "fern" in path or "mushroom" in path or "clover" in path or "pebble" in path): continue
+		if not holder.find_children("*", "StaticBody2D", true, false).is_empty(): continue
+		var key := cell_at(holder.global_position)
+		if not _decor_index.has(key): _decor_index[key] = []
+		_decor_index[key].append(holder)
+
+
+## Mato, flores e cogumelos da célula arada somem (e o tile de mato da camada baixa).
+func _clear_cell_decor(cell: Vector2i) -> void:
+	var region := get_parent()
+	if not region: return
+	_index_decor()
+	for holder in _decor_index.get(cell, []):
+		if is_instance_valid(holder) and holder.visible:
+			holder.hide()
+			_hidden_decor.append(holder)
+	var low := region.get_node_or_null("VegetationLow") as TileMapLayer
+	if low:
+		var tile := low.local_to_map(low.to_local(Vector2(cell * CELL) + Vector2(CELL, CELL) * 0.5))
+		if low.get_cell_source_id(tile) != -1: low.erase_cell(tile)
+
+
+## Terra arada: tilesets PixelLab (seca e molhada) em dual-grid — cada tile fica num
+## vértice e escolhe a peça pelos 4 cantos (células) arados em volta; a molhada vai
+## por cima da seca. Sem os PNGs, cai no desenho procedural antigo.
+const SOIL_SHEETS := {"dry": "res://assets/tilesets/farm/soil_dry", "wet": "res://assets/tilesets/farm/soil_wet"}
+var _soil_atlas := {}
+
+
+func _soil_sheet(kind: String) -> Dictionary:
+	if not _soil_atlas.has(kind):
+		var base: String = SOIL_SHEETS[kind]
+		if ResourceLoader.exists(base + ".png") and FileAccess.file_exists(base + ".json"):
+			_soil_atlas[kind] = {"texture": load(base + ".png"),
+				"tiles": JSON.parse_string(FileAccess.get_file_as_string(base + ".json")).tiles}
+		else:
+			_soil_atlas[kind] = {}
+	return _soil_atlas[kind]
+
+
 func _draw_soil() -> void:
 	var cells: Dictionary = FARM.cells(get_tree(), field_id)
+	var dry := _soil_sheet("dry")
+	if dry.is_empty():
+		_draw_soil_procedural(cells)
+		return
+	var tilled := {}
+	var wet := {}
+	for cell in cells:
+		if not contains(cell): continue
+		tilled[cell] = true
+		if bool(cells[cell].get("watered", false)): wet[cell] = true
+	_draw_dual(dry, tilled)
+	var wet_sheet := _soil_sheet("wet")
+	if not wet_sheet.is_empty(): _draw_dual(wet_sheet, wet)
+
+
+func _draw_dual(sheet: Dictionary, on: Dictionary) -> void:
+	var done := {}
+	for cell in on:
+		for dy in 2:
+			for dx in 2:
+				var v: Vector2i = cell + Vector2i(dx, dy)
+				if done.has(v): continue
+				done[v] = true
+				var corners: PackedStringArray = []
+				for o in [Vector2i(-1, -1), Vector2i(0, -1), Vector2i(-1, 0), Vector2i(0, 0)]:
+					corners.append("m" if on.has(v + o) else "e")
+				var key := ",".join(corners)
+				var at: Array = sheet.tiles.get(key, [])
+				if at.is_empty(): continue
+				_soil.draw_texture_rect_region(sheet.texture, Rect2(Vector2(v * CELL) - Vector2(CELL, CELL) * 0.5, Vector2(CELL, CELL)),
+					Rect2(at[0], at[1], CELL, CELL))
+
+
+func _draw_soil_procedural(cells: Dictionary) -> void:
 	for cell in cells:
 		if not contains(cell):
 			continue

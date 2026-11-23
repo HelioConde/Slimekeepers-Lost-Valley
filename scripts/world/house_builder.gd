@@ -113,7 +113,12 @@ func _add_box(rect: Rect2) -> void:
 func corner_state(sheet: String, cell: Vector2i) -> String:
 	var data := house()
 	match sheet:
-		"floor", "roof":
+		"floor":
+			# Sem piso sob a parede de cima (aparecia uma faixa clara por fora); nas
+			# outras paredes o piso continua por baixo e não deixa vão de grama.
+			var top_wall: bool = data.wall.has(cell) and not data.floor.has(cell + Vector2i(0, -1))
+			return "m" if data.floor.has(cell) and not top_wall else "e"
+		"roof":
 			return "m" if data.floor.has(cell) else "e"
 		"wall":
 			if data.wall.has(cell): return "m"
@@ -248,11 +253,16 @@ func _process(delta: float) -> void:
 
 
 func near_bed(actor: Node2D) -> bool:
+	return near_furniture(actor, "cama")
+
+
+## Ator ao lado de um móvel desta casa (cama: dormir; fogão: cozinhar).
+func near_furniture(actor: Node2D, id: String) -> bool:
 	var furniture: Dictionary = house().furniture
 	for origin in furniture:
-		if furniture[origin] == "cama":
-			var bed := HOUSE.footprint(origin, "cama")  # Rect2i.get_center() arredonda: centro exato
-			var center := (Vector2(bed.position) + Vector2(bed.size) * 0.5) * CELL
+		if furniture[origin] == id:
+			var rect := HOUSE.footprint(origin, id)  # Rect2i.get_center() arredonda: centro exato
+			var center := (Vector2(rect.position) + Vector2(rect.size) * 0.5) * CELL
 			if actor.global_position.distance_to(center) < 48:
 				return true
 	return false

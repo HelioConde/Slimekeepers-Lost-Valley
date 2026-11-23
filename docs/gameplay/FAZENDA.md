@@ -1,26 +1,41 @@
-# Fazenda e cultivo
+# Plantio livre (arar, plantar, regar, colher)
 
-Primeira etapa do jogo livre de fazenda (sem missões). Campo de 6×4 células no platô a leste
-do riacho do Vale das Nascentes, ao lado da cachoeira (célula 24,12 → 768–960 × 384–512 px).
+Não há campo nem canteiros prontos (pedido do usuário, 2026-11-22: "essas fazendas não
+existem"). O jogador ara a grama com a **enxada** em **qualquer chão livre** da Floresta do
+Despertar ou do Vale das Nascentes e cultiva ali. O campo de teste 6×4, os dois canteiros de
+madeira, a fogueira de cozinhar e o portão da Fazenda foram removidos do Vale.
 
 ## Como jogar
-- Fique de frente para uma célula do campo e aperte **[E]**: a ação depende do estado —
-  **colher** (pronta) › **regar** (seca) › **plantar** (arada e vazia) › **arar** (grama).
+- Selecione o item na barra, olhe para a célula à frente e aperte **[E]**. A ação depende do
+  item e da célula: **colher** (pronta) › **arar** (enxada na grama) › **regar** (regador na
+  terra seca) › **plantar** (semente na terra arada vazia).
+- Grama sem enxada/regador/semente não toma o [E]: mato, gravetos e árvores continuam normais.
+- Não se ara sobre árvore, pedra, água, arbusto nem dentro da casa. Ao arar, mato, flores,
+  cogumelos e pedrinhas da célula somem.
 - **[R]** troca a semente (pula as que acabaram).
 - A cultura sobe **um estágio por dia em que foi regada**; toda a terra seca na virada do dia.
-- Colheitas vão para a bolsa (aparecem no painel quando existem).
-- Kit inicial (enquanto não há loja): 8 cenouras, 6 beterrabas, 4 repolhos.
-- Sementes silvestres da Floresta viram **folhas silvestres** → folhas frescas da culinária.
+- **Sementes silvestres** (recolhidas com o Brotinho) viram **folhas silvestres** → colheita de
+  **folhas frescas** → cozinhar no **fogão da casa** → porção para alimentar os slimes.
+- Plantar e colher marcam os mesmos marcos de sessão dos antigos canteiros.
+
+## Arte
+| Arquivo | Origem | Gerações |
+|---|---|---|
+| `assets/tilesets/farm/soil_dry.png/.json` | PixelLab tileset pro 32 px: terra arada seca ↔ grama | 15 |
+| `assets/tilesets/farm/soil_wet.png/.json` | PixelLab tileset pro 32 px: terra arada molhada ↔ a mesma grama (encadeada) | 15 |
+
+- Duas tentativas no modo padrão (1 geração cada) foram descartadas: a terra seca parecia tábuas e a molhada tinha gravetos.
+- `tools/pixellab/convert_soil_tilesets.py` deixa a grama transparente e grava o mapa de cantos.
+- O jogo desenha em dual-grid (como a casa): a terra molhada vai por cima da seca, e a borda irregular se mistura à grama do mapa.
+- Culturas: sprites PixelLab já exportados (`crop_catalog.gd`).
 
 ## Código
 | Arquivo | Papel |
 |---|---|
-| `scripts/systems/crop_catalog.gd` | Culturas: estágios (sprites PixelLab já exportados), semente, colheita |
-| `scripts/systems/farm_state.gd` | Estado da sessão: arar, plantar, regar, crescer por dia, colher |
-| `scripts/world/farm_field.gd` | Campo na cena: terra procedural (paleta dos solos PixelLab, seca/molhada, bordas pelas vizinhas), culturas com sombra, [E]/[R] |
-| `scripts/world/valley_region.gd` | Instala o campo e encaminha o [E] |
-| `tools/capture_farm_field.gd` | Simula dias de cultivo e captura o campo |
-
-Estado é de sessão (limpo no Novo Jogo, sem save em disco, como os demais sistemas).
-Decoração (mato, flores, cogumelos) dentro do campo some em execução; o mapa não é alterado.
-Nenhum crédito PixelLab foi gasto: culturas e paleta vêm de exportações já existentes.
+| `scripts/systems/crop_catalog.gd` | Culturas: estágios, semente, colheita |
+| `scripts/systems/farm_state.gd` | Estado da sessão por região (`floresta`, `vale`): arar, plantar, regar, crescer, colher |
+| `scripts/world/farm_field.gd` | `free_area`: célula arável por `farmable` (sem colisão nem casa, sem arbusto); terra em dual-grid; [E]/[R] |
+| `scripts/world/clearing_region.gd` | `add_free_farm()`, `handle_farming()`, `hide_forage_on_farm()` |
+| `tools/test_free_farm.gd` | Arar, plantar, regar, colher na Floresta e no Vale; árvore não é arável |
+| `tools/test_valley_garden.gd` | Ciclo completo Brotinho → sementes → arar no Vale → colher → cozinhar → alimentar → Novo Jogo |
+| `tools/capture_farm_field.gd` | Captura de um pedaço arado com terra seca, molhada e plantas |

@@ -313,3 +313,10 @@ Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools
 - Oeste é o espelho do leste. As diagonais usam o lado (`TOOL_FACING`).
 - Tempos por quadro: `ACTION_TIMING` em `scripts/player.gd`.
 - Captura no jogo: `docs/gameplay/ferramentas/pegar_no_jogo.png`.
+
+## Terra arada (plantio livre) — 2026-11-22
+
+- `assets/tilesets/farm/soil_dry.png/.json` e `soil_wet.png/.json`: PixelLab top-down tileset modo pro (15 gerações cada).
+  - Terra arada ↔ grama; a versão molhada é encadeada na mesma grama.
+  - Convertidos por `tools/pixellab/convert_soil_tilesets.py`: grama transparente e mapa de cantos para o dual-grid de `farm_field.gd`.
+- Dois tilesets do modo padrão (1 geração cada) foram descartados: tábuas e gravetos.

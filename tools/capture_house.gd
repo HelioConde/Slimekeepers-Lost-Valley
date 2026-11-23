@@ -76,6 +76,32 @@ func run() -> void:
 	for i in 3: await physics_frame
 	await shot(out + "/casa_dentro.png")
 	check(house.near_bed(player), "Perto da cama pode dormir")
+	# Fogão: cozinhar porções (substitui a fogueira do Vale).
+	var Cooking := preload("res://scripts/systems/valley_cooking.gd")
+	for item in House.FURNITURE_COSTS.fogao: Bag.add_item(self, item, int(House.FURNITURE_COSTS.fogao[item]))
+	house.toggle_build()
+	house.mode = "furniture"
+	house.furniture_choice = "fogao"
+	check(house.place_at(rect.position + Vector2i(5, 1)), "Fogão colocado (pago)")
+	house.toggle_build()
+	Bag.add_leaves(self)
+	player.global_position = Vector2((rect.position + Vector2i(5, 2)) * 32) + Vector2(16, 16)
+	for i in 3: await physics_frame
+	for i in 3: await process_frame  # o HUD da região atualiza no _process
+	check(house.near_furniture(player, "fogao") and str(region.hud_hint.text).contains("Cozinhar"), "Fogão oferece cozinhar (%s)" % region.hud_hint.text)
+	var down := InputEventAction.new()
+	down.action = "interact"
+	down.pressed = true
+	Input.parse_input_event(down)
+	await process_frame
+	await process_frame
+	var up := InputEventAction.new()
+	up.action = "interact"
+	up.pressed = false
+	Input.parse_input_event(up)
+	await process_frame
+	check(Cooking.portions(self) == 1, "Cozinhou uma porção no fogão")
+	player.global_position = Vector2(rect.position * 32) + Vector2(2 * 32 + 16, 2 * 32 + 16)
 	var clock := root.get_node("GameClock")
 	var day: int = clock.day_number
 	region.sleep_until_morning()

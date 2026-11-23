@@ -1,4 +1,6 @@
-# Primeiro canteiro do Vale das Nascentes
+# Primeiro canteiro do Vale das Nascentes (removido)
+
+> **Removido em 2026-11-22** a pedido do usuário: os canteiros de madeira não fazem parte do jogo. O plantio agora é livre, com a enxada em qualquer chão (ver `FAZENDA.md`). O texto abaixo fica como histórico.
 
 ## Prototipo jogavel
 

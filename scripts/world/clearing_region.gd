@@ -179,6 +179,19 @@ func handle_player_house(builder: Node2D) -> bool:
 		hud_hint.text = "[E] Dormir até amanhã   •   [B] Construir"
 		if Input.is_action_just_pressed("interact"): sleep_until_morning()
 		return true
+	if builder.near_furniture(player, "fogao"):
+		# Cozinhar no fogão da casa (substitui a fogueira de teste do Vale).
+		var cooking := preload("res://scripts/systems/valley_cooking.gd")
+		var ready: bool = bool(cooking.availability(get_tree()).get("available", false))
+		hud_hint.text = "[E] Cozinhar porção de folhas" if ready else "Fogão: falta 1 folha fresca colhida"
+		if Input.is_action_just_pressed("interact"):
+			if cooking.prepare(get_tree()) == "prepared":
+				var bag_node: Node = get("bag_hud")
+				if is_instance_valid(bag_node): bag_node.call("refresh")
+				_notify("Porção pronta! Porções: %d" % cooking.portions(get_tree()))
+			else:
+				_notify("Colha folhas frescas antes de cozinhar.")
+		return true
 	return false
 
 
@@ -189,3 +202,44 @@ func sleep_until_morning() -> void:
 	preload("res://scripts/systems/energy_state.gd").restore(get_tree())
 	var saved: bool = preload("res://scripts/systems/save_game.gd").save(get_tree(), GameClock, scene_file_path)
 	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  Jogo salvo." if saved else ""))
+
+
+## Plantio livre (FAZENDA.md): com a enxada, ara qualquer chão livre da região (sem
+## colisão — árvore, pedra, água, casa — e fora do piso da casa); planta, rega e colhe.
+func add_free_farm(field_id: String, house_builder: Node2D) -> Node2D:
+	var farm: Node2D = preload("res://scripts/world/farm_field.gd").new()
+	farm.field_id = field_id
+	farm.free_area = true
+	farm.player = player
+	var space := get_world_2d().direct_space_state
+	var box := RectangleShape2D.new()
+	box.size = Vector2(26, 26)
+	farm.farmable = func(cell: Vector2i) -> bool:
+		if is_instance_valid(house_builder) and house_builder.house().floor.has(cell): return false
+		var query := PhysicsShapeQueryParameters2D.new()
+		query.shape = box
+		query.transform = Transform2D(0, Vector2(cell * 32) + Vector2(16, 16))
+		query.collision_mask = 2
+		return space.intersect_shape(query, 1).is_empty()
+	add_child(farm)
+	return farm
+
+
+## [E] do plantio quando o jogador olha para terra arada ou usa enxada/regador/semente.
+func handle_farming(farm: Node2D) -> bool:
+	if not is_instance_valid(farm) or not farm.wants(player): return false
+	hud_hint.text = farm.hint(player)
+	if player.is_using_tool(): return true  # termina o golpe antes de outro [E]
+	if Input.is_action_just_pressed("interact"):
+		var message: String = farm.interact(player)
+		if not message.is_empty(): _notify(message)
+		var bag_node: Node = get("bag_hud")
+		if is_instance_valid(bag_node): bag_node.call("refresh")
+	return true
+
+
+## Mato coletável em cima de terra arada não é oferecido.
+func hide_forage_on_farm(farm: Node2D, forage: Node2D) -> void:
+	if not is_instance_valid(farm) or not is_instance_valid(forage): return
+	var farm_state := preload("res://scripts/systems/farm_state.gd")
+	forage.hidden_at = func(at: Vector2) -> bool: return farm_state.is_tilled(get_tree(), farm.cell_at(at), farm.field_id)
