@@ -34,8 +34,15 @@ static func fed_today(tree: SceneTree, slime_id: String, day: int) -> bool:
 ## Pontos de laço: cozida > crua; o dobro quando é o grupo preferido da espécie.
 static func gain(item_id: String, species: String = "") -> int:
 	var base := int(POINTS.get(ITEMS.kind(item_id), 0))
+	return base * 2 if is_favorite(item_id, species) else base
+
+
+## Comida favorita da espécie. "cozido" = qualquer prato do fogão (Colhita, Carreguim).
+static func is_favorite(item_id: String, species: String) -> bool:
 	var liked: String = LIKES.get(species, "")
-	return base * 2 if not liked.is_empty() and ITEMS.food_group(item_id) == liked else base
+	if liked.is_empty(): return false
+	if liked == "cozido": return ITEMS.kind(item_id) == "food"
+	return ITEMS.food_group(item_id) == liked
 
 
 ## Resultado: fed, needs_friendship, not_food, no_item, already_fed.
