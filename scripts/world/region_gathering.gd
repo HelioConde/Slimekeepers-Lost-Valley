@@ -68,7 +68,7 @@ func _forage_interaction(spot: Dictionary, delta: float) -> void:
 	var item_name := str(ITEMS.info(spot.item).name).to_lower()
 	var hold: float = forage.pull_seconds(spot.item)
 	if hold > 0.0:
-		# Mato: segurar [F] até arrancar; soltar ou sair de perto recomeça.
+		# Segurar [F] até soltar do chão; soltar ou sair de perto recomeça.
 		if Input.is_action_just_pressed("interact"):
 			_pull_id = spot.id
 			_pull_time = 0.0
@@ -76,13 +76,17 @@ func _forage_interaction(spot: Dictionary, delta: float) -> void:
 			_pull_time += delta
 		else:
 			_pull_id = ""
+		var pulling: bool = str(spot.item) == "fibra"
+		var verb: String = "Arrancar o mato" if pulling else "Pegar " + item_name
 		if _pull_id != spot.id:
-			region.hud_hint.text = "[Segure E] Arrancar o mato (%d s)" % int(hold)
+			region.hud_hint.text = "[Segure F] %s (%d s)" % [verb, int(ceil(hold))]
 			return
-		# Agacha com as duas mãos no mato e fica parado no quadro das mãos no chão.
+		# Mato: duas mãos, agachado; graveto e pedra: uma mão, ajoelhado. Fazendo força
+		# (puxa e solta) até soltar do chão.
 		player.facing = player._get_direction_name(spot.at - player.global_position)
-		player.hold_pose("pick_big", player.PICK_BIG_GROUND)
-		region.hud_hint.text = "Arrancando o mato... %d%%" % mini(99, int(_pull_time / hold * 100.0))
+		if pulling: player.hold_pose("pick_big", player.PICK_BIG_GROUND)
+		else: player.hold_pose("pick_small", player.PICK_SMALL_GROUND)
+		region.hud_hint.text = "%s... %d%%" % ["Arrancando o mato" if pulling else "Pegando " + item_name, mini(99, int(_pull_time / hold * 100.0))]
 		if _pull_time < hold: return
 		_pull_id = ""
 		player.release_pose()  # levanta com o mato na mão

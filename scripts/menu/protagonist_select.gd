@@ -200,6 +200,9 @@ func _on_confirm() -> void:
 	GameClock.reset_new_game()
 	SessionState.clear_session(get_tree())
 	PROTAGONIST.choose(get_tree(), selected)
+	# Multijogador: o anfitrião abre a sala com o protagonista escolhido.
+	var net := get_node_or_null("/root/NetSession")
+	if net != null and not str(net.pending_host).is_empty(): net.call("open_pending_host", selected)
 	# Carrega o mapa em segundo plano atrás de uma tela de carregamento (nada de
 	# tela preta parada): escurece, mostra o nome e um pontinho pulsando.
 	ResourceLoader.load_threaded_request(FOREST)

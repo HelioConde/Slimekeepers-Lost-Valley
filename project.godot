@@ -21,6 +21,7 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 [autoload]
 
 GameClock="*res://scripts/systems/game_clock.gd"
+NetSession="*res://scripts/net/net_session.gd"
 MCPRuntimeBridge="*res://addons/godot_mcp/services/mcp_runtime_bridge.gd"
 MCPInputBridge="*res://addons/godot_mcp/services/mcp_input_bridge.gd"
 MCPScreenshotBridge="*res://addons/godot_mcp/services/mcp_screenshot_bridge.gd"

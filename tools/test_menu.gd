@@ -68,11 +68,11 @@ func _run() -> void:
 	_check(root.gui_get_focus_owner() == new_game, "Simulated controller D-pad wraps to New Game")
 	await _joy(JOY_BUTTON_DPAD_DOWN)
 	_check(root.gui_get_focus_owner() == multiplayer_button, "Simulated controller D-pad skips disabled Continue")
-	# Multijogador: avisa que está em desenvolvimento (sem simular partida).
+	# Multijogador: hospedar pela Steam ou na rede local, ou entrar por IP.
 	multiplayer_button.grab_focus()
 	await _key(KEY_ENTER)
 	var notice: Control = menu.get("options_layer")
-	_check(is_instance_valid(notice) and str(notice.name) == "Notice" and _texts(notice).contains("em desenvolvimento"), "Multiplayer explains it is still in development")
+	_check(is_instance_valid(notice) and str(notice.name) == "Multiplayer" and notice.find_child("HostSteam", true, false) != null and notice.find_child("JoinLan", true, false) != null, "Multiplayer offers Steam host and local join")
 	await _key(KEY_ESCAPE)
 	_check(not is_instance_valid(menu.get("options_layer")) and root.gui_get_focus_owner() == multiplayer_button, "Escape closes the notice and restores focus")
 	credits.grab_focus()

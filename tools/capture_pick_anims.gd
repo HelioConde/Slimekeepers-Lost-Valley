@@ -63,29 +63,20 @@ func run() -> void:
 		# Mato: segurando [E], fica agachado no quadro das mãos no chão.
 		player.global_position = mato.at + Vector2(0, 14)
 		await physics_frame
-		hold("interact", 4.3)
-		await create_timer(1.5).timeout
-		check(str(player.current_animation).begins_with("pick_big_") and player.sprite.frame == player.PICK_BIG_GROUND,
+		hold("interact", 2.3)
+		await create_timer(1.0).timeout
+		check(str(player.current_animation).begins_with("pick_big_") and player.sprite.frame in [player.PICK_BIG_GROUND - 1, player.PICK_BIG_GROUND],
 			"%s agachado no mato (%s q%d)" % [who, player.current_animation, player.sprite.frame])
 		await shot(out, who + "_arrancar_mato", player)
-		await create_timer(3.4).timeout
+		await create_timer(2.0).timeout
 		check(str(player.current_animation).begins_with("pick_big_") and player.sprite.is_playing() or not player.is_using_tool(), "%s levanta depois de arrancar" % who)
 		while player.is_using_tool(): await process_frame
-		# Graveto: um toque, ajoelha com uma mão.
+		# Graveto: segura [F] 1 s, ajoelhado com uma mão (puxando).
 		player.global_position = graveto.at + Vector2(0, 14)
 		await physics_frame
 		await process_frame
-		var down := InputEventAction.new()
-		down.action = "interact"
-		down.pressed = true
-		Input.parse_input_event(down)
-		await process_frame
-		await process_frame
-		var up := InputEventAction.new()
-		up.action = "interact"
-		up.pressed = false
-		Input.parse_input_event(up)
-		await create_timer(0.35).timeout
+		hold("interact", 1.3)
+		await create_timer(0.6).timeout
 		check(str(player.current_animation).begins_with("pick_small_"), "%s pega graveto com uma mão (%s)" % [who, player.current_animation])
 		await shot(out, who + "_pegar_graveto", player)
 		region.queue_free()

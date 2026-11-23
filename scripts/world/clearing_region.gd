@@ -90,6 +90,10 @@ func _compact_hud() -> void:
 	title_fade.tween_callback(panel.hide)
 	$HUD/Interface.add_child(preload("res://scripts/ui/energy_hud.gd").new())
 	# Slime por perto: retrato, nome e corações do laço (exemplo de HUD do usuário).
+	# Multijogador: mostra o outro jogador e envia a posição deste (net_presence.gd).
+	var presence := preload("res://scripts/net/net_presence.gd").new()
+	presence.player = player
+	add_child(presence)
 	var bond := preload("res://scripts/ui/slime_bond_hud.gd").new()
 	bond.source = _closest_slime
 	$HUD/Interface.add_child(bond)

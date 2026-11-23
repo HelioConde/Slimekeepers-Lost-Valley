@@ -144,9 +144,9 @@ func run() -> void:
 			await physics_frame
 			for i in 3: await process_frame
 			if gathering.forage.nearest(player.global_position, root.get_node("GameClock").day_number).get("id", "") != spot.id: continue
-			await hold(2.0)
-			check(BAG.count_item(self, "fibra") == before, "%s: 2 s segurando não arranca" % name)
-			await hold(3.3)
+			await hold(1.0)
+			check(BAG.count_item(self, "fibra") == before, "%s: 1 s segurando não arranca" % name)
+			await hold(2.3)
 			region.get("item_drops").collect_all()  # a fibra cai no chão (item_drops)
 			got = BAG.count_item(self, "fibra") == before + 1
 			break

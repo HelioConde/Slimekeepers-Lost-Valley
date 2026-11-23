@@ -70,15 +70,15 @@ func run() -> void:
 	var forage: Node2D = region.get("forage")
 	check(is_instance_valid(forage) and forage.spots.size() >= 20, "pontos de coleta na Clareira (%d)" % (forage.spots.size() if forage else 0))
 	var player: Node2D = region.get_node("Player")
-	var mato: Array = forage.spots.filter(func(s: Dictionary) -> bool: return forage.pull_seconds(s.item) > 0.0)
+	var mato: Array = forage.spots.filter(func(s: Dictionary) -> bool: return s.item == "fibra")
 	check(mato.size() >= 20,"todo o mato da Clareira dá fibra (%d tufos)" % mato.size())
 	for spot: Dictionary in forage.spots:
 		if spot in mato: continue
 		player.global_position = spot.at + Vector2(0, 6)
 		await physics_frame
 		await process_frame
-		await press("interact")
-	# Mato: um toque rápido não arranca; segurar [E] 4 s arranca (6 tufos = 2 cordas).
+		await hold("interact", 2.3)  # graveto 1 s, pedra 2 s segurando [F]
+	# Mato: um toque rápido não arranca; segurar [F] 2 s arranca (6 tufos = 2 cordas).
 	player.global_position = mato[0].at + Vector2(0, 6)
 	await physics_frame
 	await process_frame
@@ -91,11 +91,11 @@ func run() -> void:
 		player.global_position = spot.at + Vector2(0, 6)
 		await physics_frame
 		await process_frame
-		await hold("interact", 2.0)
-		if spot == mato[0]: check(BAG.count_item(self, "fibra") == 0, "2 s segurando ainda não arranca")
-		await hold("interact", 4.3)
+		await hold("interact", 1.0)
+		if spot == mato[0]: check(BAG.count_item(self, "fibra") == 0, "1 s segurando ainda não arranca")
+		await hold("interact", 2.3)
 	region.item_drops.collect_all()  # itens caem no chão (item_drops)
-	check(BAG.count_item(self, "fibra") == 6, "segurar [E] 4 s arranca o mato (%d fibras)" % BAG.count_item(self, "fibra"))
+	check(BAG.count_item(self, "fibra") == 6, "segurar [F] 2 s arranca o mato (%d fibras)" % BAG.count_item(self, "fibra"))
 	# O resto (mato e pontos onde um tufo mais perto tinha prioridade) vai direto,
 	# para a bancada adiante ter fibra e pedra suficientes sem esperar 4 s por tufo.
 	for spot: Dictionary in forage.spots:
@@ -146,6 +146,7 @@ func run() -> void:
 	await process_frame
 	region.item_drops.collect_all()  # itens caem no chão (item_drops)
 	var wood_before := BAG.count_item(self, "madeira")
+	while player.is_using_tool(): await process_frame  # termina de levantar da última coleta
 	for i in 3:
 		await press("interact")
 		await _swing_done()

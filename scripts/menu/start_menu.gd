@@ -160,8 +160,7 @@ func _build_buttons() -> void:
 					button.disabled = true
 					button.tooltip_text = "Durma na sua casa para salvar o jogo."
 					button.focus_mode = Control.FOCUS_NONE
-			"Multijogador (MP)": button.pressed.connect(_show_notice.bind("Multijogador",
-				["O modo multijogador ainda está em desenvolvimento.","Ele será P2P pela Steam.","Por enquanto, a jornada é para um jogador."]))
+			"Multijogador (MP)": button.pressed.connect(_show_multiplayer)
 			"Configurações": button.pressed.connect(_show_options)
 			"Créditos": button.pressed.connect(_show_notice.bind("Créditos",
 				["Slimekeepers: Lost Valley","Criação e direção: Helio Conde","Motor: Godot Engine 4.7",
@@ -289,6 +288,95 @@ func _show_notice(heading: String, lines: Array) -> void:
 	card.reset_size()
 	_layout()
 	close.grab_focus()
+
+## Multijogador P2P (decisão do usuário: pela Steam). Dois jogadores: quem hospeda
+## escolhe Aren ou Moni; quem entra joga com o outro. Rede local para testar sem Steam.
+func _show_multiplayer() -> void:
+	if is_instance_valid(options_layer): return
+	_opener = get_viewport().gui_get_focus_owner()
+	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
+	var net := get_node("/root/NetSession")
+	options_layer = Control.new()
+	options_layer.name = "Multiplayer"
+	add_child(options_layer)
+	options_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var shade := ColorRect.new()
+	shade.color = Color(0.08,0.09,0.13,0.72)
+	options_layer.add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.custom_minimum_size = Vector2(480,0)
+	options_layer.add_child(card)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation",10)
+	card.add_child(stack)
+	var title := Label.new()
+	title.text = "Multijogador"
+	title.add_theme_font_size_override("font_size",34)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(title)
+	var info := Label.new()
+	info.text = "Quem hospeda escolhe Aren ou Moni; quem entra joga com o outro."
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(info)
+	var status := Label.new()
+	status.name = "Status"
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	status.text = str(net.status)
+	stack.add_child(status)
+	net.status_changed.connect(func(text: String) -> void:
+		if is_instance_valid(status): status.text = text)
+	var host_steam := Button.new()
+	host_steam.name = "HostSteam"
+	host_steam.text = "Hospedar pela Steam"
+	host_steam.pressed.connect(func() -> void:
+		var problem: String = net.steam_init()
+		if not problem.is_empty():
+			status.text = problem
+			return
+		net.pending_host = "steam"
+		_start_game())
+	stack.add_child(host_steam)
+	var host_lan := Button.new()
+	host_lan.name = "HostLan"
+	host_lan.text = "Hospedar na rede local"
+	host_lan.pressed.connect(func() -> void:
+		net.pending_host = "enet"
+		_start_game())
+	stack.add_child(host_lan)
+	var row := HBoxContainer.new()
+	stack.add_child(row)
+	var address := LineEdit.new()
+	address.name = "Address"
+	address.text = "127.0.0.1"
+	address.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(address)
+	var join_lan := Button.new()
+	join_lan.name = "JoinLan"
+	join_lan.text = "Entrar"
+	join_lan.pressed.connect(func() -> void:
+		var problem: String = net.join_enet(address.text.strip_edges())
+		if not problem.is_empty(): status.text = problem)
+	row.add_child(join_lan)
+	var steam_hint := Label.new()
+	steam_hint.text = "Pela Steam: aceite o convite do amigo na Steam com o jogo aberto."
+	steam_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	steam_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	steam_hint.add_theme_font_size_override("font_size",14)
+	stack.add_child(steam_hint)
+	var close := Button.new()
+	close.name = "Close"
+	close.text = "Voltar"
+	close.custom_minimum_size.y = 48
+	close.pressed.connect(_close_options)
+	stack.add_child(close)
+	net.steam_init()  # liga a Steam (se aberta) para receber convites
+	card.reset_size()
+	_layout()
+	host_steam.grab_focus()
 
 func _show_options() -> void:
 	if is_instance_valid(options_layer): return

@@ -10,7 +10,8 @@ const REACH := 36.0
 ## Todo mato do chão (GroundDetail) dá fibra; arrancar exige segurar [F] (pedido do
 ## usuário, 2026-11-22: "não pode ser fácil pegar"; depois reduzido para 3 s).
 const MATO_KINDS := ["grass", "grass_tuft_sunlit"]
-const PULL_SECONDS := {"fibra": 3.0}
+## Tempo segurando [F] para pegar (pedido do usuário, 2026-11-23): graveto 1 s, pedra e mato 2 s.
+const PULL_SECONDS := {"fibra": 2.0, "pedra_pequena": 2.0, "graveto": 1.0}
 ## Texturas de tufo de mato colocadas como props nos mapas (Vale, Floresta).
 const MATO_TEXTURES := ["environment/grass.png", "ground/grass_tuft_sunlit.png"]
 ## item, quantidade por coleta, arte no chão, deslocamento do sprite

@@ -220,8 +220,10 @@ func test_pick_actions_for_both_and_hold_on_ground() -> void:
 			player.hold_pose("pick_big", player.PICK_BIG_GROUND)
 			await get_tree().create_timer(0.02).timeout
 		assert_str(player.current_animation).is_equal("pick_big_south")
-		assert_int(player.sprite.frame).is_equal(player.PICK_BIG_GROUND)
+		# Fazendo força: alterna entre o quadro do chão e o anterior.
+		assert_int(player.sprite.frame).is_between(player.PICK_BIG_GROUND - 1, player.PICK_BIG_GROUND)
 		assert_bool(player.sprite.is_playing()).is_false()
+		player.sprite.frame = player.PICK_BIG_GROUND
 		assert_float(player.release_pose()).is_equal_approx(3.4 / 10.0, 0.01)
 		assert_bool(player.sprite.is_playing()).is_true()
 	get_tree().remove_meta("protagonist")

@@ -26,18 +26,24 @@ const ACTION_TIMING := {"pick_small": [0.9, 1.1, 1.2, 2.4, 1.1, 0.9],
 	"pick_big": [1.2, 1.0, 1.0, 1.2, 2.6, 1.2, 1.0, 1.2]}
 ## Quadro de pick_big com as mãos no chão: fica parado nele enquanto arranca o mato.
 const PICK_BIG_GROUND := 4
+## Quadro de pick_small com a mão no chão (graveto, pedra).
+const PICK_SMALL_GROUND := 3
 ## Despertar (intro_wake.gd): só sul, quadros contados no disco; laço = repete.
 const WAKE_ANIMATIONS := {"sit_idle": [5.0, true], "sit_look_left": [6.0, false], "sit_look_right": [6.0, false],
 	"sit_confused": [6.0, false], "stand_up": [9.0, false]}
 
 ## Idles alternadas (<arte>/animations/idle_a|idle_b/<dir>/): espera entre uma e outra (s).
-const IDLE_VARIANTS := ["idle_a", "idle_b"]
+const IDLE_VARIANTS := ["idle_a", "idle_b", "idle_c"]
+## idle_c (rara): estica o dedo e uma borboleta pousa; sorteada 1 vez em 4 quando existe.
+const RARE_IDLE := "idle_c"
 const IDLE_WAIT := Vector2(4.0, 8.0)
 const IDLE_FPS := 6.0
 
 @export var world_bounds: Rect2 = WORLD_BOUNDS
 var _tool_time := 0.0
 var _idle_time := 0.0
+## Multijogador: boneco do outro jogador usa a arte do protagonista dele.
+var protagonist_override := ""
 var _idle_wait := 3.0
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -75,7 +81,7 @@ func _physics_process(_delta: float) -> void:
 ## B: pisca e ajeita a postura; aprovadas pelo usuário em 2026-11-23) toca uma vez.
 func _update_idle(delta: float) -> void:
 	_idle_time += delta
-	var variant := current_animation.begins_with("idle_a_") or current_animation.begins_with("idle_b_")
+	var variant := current_animation.begins_with("idle_a_") or current_animation.begins_with("idle_b_") or current_animation.begins_with("idle_c_")
 	if variant and sprite.is_playing() and current_animation.ends_with("_" + facing):
 		return
 	var options: Array[String] = []
@@ -84,7 +90,9 @@ func _update_idle(delta: float) -> void:
 	if _idle_time >= _idle_wait and not options.is_empty():
 		_idle_time = 0.0
 		_idle_wait = randf_range(IDLE_WAIT.x, IDLE_WAIT.y)
-		_play_animation(options.pick_random() + "_" + facing)
+		var common := options.filter(func(v: String) -> bool: return v != RARE_IDLE)
+		var pick: String = RARE_IDLE if options.has(RARE_IDLE) and (common.is_empty() or randf() < 0.25) else common.pick_random()
+		_play_animation(pick + "_" + facing)
 		return
 	_play_animation("idle_" + facing)
 
@@ -120,13 +128,25 @@ func hold_pose(action: String, frame: int) -> void:
 	if current_animation != name:
 		current_animation = name
 		sprite.play(name)
-	if sprite.frame >= frame:
+	if sprite.frame >= frame or not sprite.is_playing():
+		# Fazendo força (pedido do usuário, 2026-11-23): no chão, alterna entre o quadro
+		# das mãos no chão e o anterior (puxa e solta) e treme 1 px, sem ficar parado.
 		sprite.pause()
-		sprite.frame = frame
+		_hold_time += get_process_delta_time()
+		var tug := fmod(_hold_time, HOLD_TUG * 2.0) >= HOLD_TUG
+		sprite.frame = maxi(0, frame - 1) if tug else frame
+		sprite.offset.x = (1.0 if tug else -1.0) if int(_hold_time * 24.0) % 2 == 0 else 0.0
+
+
+## Ritmo do puxão enquanto segura (s por meio ciclo).
+const HOLD_TUG := 0.2
+var _hold_time := 0.0
 
 
 ## Termina a ação a partir do quadro parado (levanta); devolve a duração (s).
 func release_pose() -> float:
+	sprite.offset.x = 0.0
+	_hold_time = 0.0
 	if not sprite.sprite_frames.has_animation(current_animation): return 0.0
 	var units := 0.0
 	for i in range(sprite.frame + 1, sprite.sprite_frames.get_frame_count(current_animation)):
@@ -140,12 +160,15 @@ func is_using_tool() -> bool:
 	return _tool_time > 0.0
 
 func _play_animation(name: String) -> void:
+	sprite.offset.x = 0.0
+	_hold_time = 0.0
 	if current_animation != name:
 		current_animation = name
 		sprite.play(name)
 
 func _build_frames() -> SpriteFrames:
 	var who: Dictionary = PROTAGONIST.data(get_tree()) if is_inside_tree() else PROTAGONIST.ALL[PROTAGONIST.DEFAULT]
+	if PROTAGONIST.ALL.has(protagonist_override): who = PROTAGONIST.ALL[protagonist_override]  # o outro jogador
 	var art: String = who.art
 	var frames := SpriteFrames.new()
 	if frames.has_animation("default"):
