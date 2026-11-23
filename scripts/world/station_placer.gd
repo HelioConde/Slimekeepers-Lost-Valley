@@ -37,6 +37,15 @@ func setup(id: String) -> void:
 			_spawn(Vector2(entry.x, entry.y))
 
 
+## Refaz as bancadas desta região a partir da sessão (multijogador: o outro colocou uma).
+func reload() -> void:
+	for station in _stations: station.queue_free()
+	_stations.clear()
+	for entry: Dictionary in _saved():
+		if str(entry.region) == region_id:
+			_spawn(Vector2(entry.x, entry.y))
+
+
 func _saved() -> Array:
 	return get_tree().get_meta(PLACED_KEY, [])
 

@@ -1,13 +1,14 @@
 extends Node
-## Mundo compartilhado no multijogador (scripts/net/net_session.gd): a fazenda, a
-## coleta, as pedras quebradas e as árvores cortadas valem para os dois jogadores.
+## Mundo compartilhado no multijogador (scripts/net/net_session.gd): fazenda, coleta,
+## pedras quebradas, árvores cortadas, bancadas, baú e casa valem para os dois.
 ## Cada lado confere as chaves da sessão a cada CHECK_EVERY s; o que mudou aqui vai
 ## inteiro para o outro, que grava e redesenha a região.
 ## shortcut: última escrita vence por chave (dois jogadores mexendo na mesma chave no
 ## mesmo meio segundo perdem uma ação); trocar por diferenças por item se incomodar.
-## Bancadas colocadas (placed_stations) ainda não sincronizam.
+## Itens soltos no chão ainda não sincronizam.
 
-const KEYS := ["farm_cells", "forage_taken", "rocks_broken", "chopped_trees"]
+const KEYS := ["farm_cells", "forage_taken", "rocks_broken", "chopped_trees",
+	"placed_stations", "chest_items", "player_house"]
 const CHECK_EVERY := 0.5
 
 var region: Node  ## região atual (farm, gathering, choppable)
@@ -31,7 +32,8 @@ func _process(delta: float) -> void:
 	if _time < CHECK_EVERY: return
 	_time = 0.0
 	for key: String in KEYS:
-		var value: Variant = get_tree().get_meta(key, {})
+		if not get_tree().has_meta(key): continue
+		var value: Variant = get_tree().get_meta(key)
 		var h := hash(value)
 		if _known.get(key) == h: continue
 		_known[key] = h
@@ -41,9 +43,10 @@ func _process(delta: float) -> void:
 func _on_message(data: Dictionary) -> void:
 	if str(data.get("t", "")) != "world": return
 	var key := str(data.get("key", ""))
-	if not KEYS.has(key) or not data.get("value") is Dictionary: return  # só chaves conhecidas
-	get_tree().set_meta(key, data.value)
-	_known[key] = hash(data.value)
+	var value: Variant = data.get("value")
+	if not KEYS.has(key) or not (value is Dictionary or value is Array): return  # só chaves conhecidas
+	get_tree().set_meta(key, value)
+	_known[key] = hash(value)
 	apply(region, GameClock.day_number)
 
 
@@ -59,3 +62,7 @@ static func apply(where: Node, day: int) -> void:
 			if is_instance_valid(node): node.refresh(day)
 	var choppable: Node = where.get("choppable")
 	if is_instance_valid(choppable): choppable.apply_day(day)
+	var placer: Node = where.get("placer")
+	if is_instance_valid(placer): placer.reload()
+	var house: Node = where.get("house")
+	if is_instance_valid(house) and house.has_method("rebuild"): house.rebuild()
