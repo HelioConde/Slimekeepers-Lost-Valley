@@ -141,13 +141,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	var key: int = event.keycode
 	if not visible:
-		if key == KEY_B and not _other_window_open() and not bool(get_tree().get_meta("build_mode", false)):
+		if key == KEY_B and not bool(get_tree().get_meta("build_mode", false)):
+			var bag := _sibling("InventoryPanel")  # [B] com a mochila aberta troca de janela
+			if bag and bag.visible: bag.call("close")
+			if _other_window_open(): return
 			open("maos")
 			get_viewport().set_input_as_handled()
 		return
 	match key:
-		KEY_B, KEY_E, KEY_ESCAPE:
+		KEY_B, KEY_ESCAPE:
 			close()
+		KEY_E:  # [E] troca para a mochila
+			close()
+			var bag := _sibling("InventoryPanel")
+			if bag: bag.call("open")
 		KEY_LEFT, KEY_A:
 			selected = maxi(0, selected - 1)
 			refresh()
@@ -165,6 +172,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		_:
 			return
 	get_viewport().set_input_as_handled()
+
+
+func _sibling(node_name: String) -> Control:
+	return get_parent().get_node_or_null(node_name) as Control if get_parent() else null
 
 
 func _other_window_open() -> bool:

@@ -15,11 +15,13 @@ const EDGE := Color("#6b4a32")
 const TAB := Color("#5c2a35")
 ## [título, texto com [TECLA], condição para passar]. Condições em _done().
 const STEPS := [
-	["Vamos começar pelo básico!", "Use as teclas [W] [A] [S] [D] para mover seu personagem. Segure [Shift] para correr.", "walk"],
-	["Coletando recursos", "Chegue perto de um graveto ou pedrinha e aperte [F] ou clique nele. Andar cancela.", "pick"],
-	["Sua mochila", "Aperte [E] para abrir a mochila e ver o que você juntou.", "bag"],
-	["Fabricando", "Aperte [B] para fabricar. Fibra do mato vira corda; corda, graveto e pedra viram um machado.", "craft"],
-	["Ferramentas", "Escolha a ferramenta na barra com [1] a [0] ou a roda do mouse. Segure [F] ou o clique para golpear árvores e pedras.", "swing"],
+	["Vamos começar pelo básico!", "Use as teclas [W] [A] [S] [D] para andar. Segure [Shift] para correr.", "walk"],
+	["Coletando recursos", "Junte 2 gravetos e 2 pedrinhas: chegue perto e aperte [F] (ou clique). Andar cancela.", "pick"],
+	["Arrancando mato", "Agora o mato: aperte [F] perto de um tufo e espere arrancar. Junte 3 fibras.", "fiber"],
+	["Sua mochila", "Aperte [E] para ver a mochila. [E] de novo fecha.", "bag"],
+	["Fabricando corda", "Aperte [B] e clique na corda: 3 fibras viram 1 corda.", "rope"],
+	["Seu primeiro machado", "No [B], clique no machado: corda, 2 gravetos e 2 pedrinhas.", "axe"],
+	["Cortando árvores", "Escolha o machado na barra (teclas [1] a [0] ou roda do mouse). Perto de uma árvore pequena, segure [F] ou o clique.", "swing"],
 	["Amigos slimes", "Chegue perto de um slime e aperte [F] para fazer amizade.", "friend"],
 	["Sua casa", "Em [B], \"Construir casa\" abre o modo construir. Dormir na cama salva o jogo.", "read"],
 ]
@@ -36,6 +38,7 @@ var _footer: Label
 var _tab: PanelContainer
 var _tail: Control
 var _walked := 0.0
+var _bag_seen := false  ## mochila já abriu nesta dica (passa ao fechar)
 var _time := 0.0
 
 
@@ -163,6 +166,7 @@ func _show() -> void:
 			_body.add_child(_text(word, 13, INK))
 	_footer.text = "[Tab] pular dica  ·  %d/%d" % [step() + 1, STEPS.size()]
 	_walked = 0.0
+	_bag_seen = false
 	_time = 0.0
 	reset_size()
 	_follow()
@@ -180,6 +184,7 @@ func _process(delta: float) -> void:
 	if not visible: _show()  # começou agora (fim do despertar)
 	_follow()
 	_time += delta
+	_footer.text = _progress(str(STEPS[step()][2])) + "[Tab] pular dica  ·  %d/%d" % [step() + 1, STEPS.size()]
 	if _done(str(STEPS[step()][2]), delta): advance()
 
 
@@ -189,6 +194,11 @@ func _follow() -> void:
 	if not is_instance_valid(player) or not is_inside_tree(): return
 	var head: Vector2 = get_viewport().get_canvas_transform() * (player.global_position + HEAD)
 	var screen := get_viewport_rect().size
+	var window := _open("inventory_panel") or _open("crafting_panel")
+	_tail.visible = not window
+	if window:  # janela aberta no centro: o balão sobe para o alto e não a cobre
+		position = Vector2(round((screen.x - size.x) * 0.5), 26)
+		return
 	var at := head - Vector2(size.x * 0.5, size.y + TAIL + 2)
 	position = Vector2(clampf(at.x, 6, screen.x - size.x - 6), clampf(at.y, 24, screen.y - size.y - 6)).round()
 	if is_instance_valid(_tail):  # o rabinho continua apontando para a cabeça
@@ -210,19 +220,41 @@ func _done(kind: String, delta: float) -> bool:
 			if player is CharacterBody2D and (player as CharacterBody2D).velocity.length() > 10.0: _walked += delta
 			return _walked > 1.5
 		"pick":
-			return BAG.count_item(tree, "graveto") + BAG.count_item(tree, "pedra_pequena") + BAG.count_item(tree, "fibra") > 0
+			return _has(tree, ["machado"]) or (BAG.count_item(tree, "graveto") >= 2 and BAG.count_item(tree, "pedra_pequena") >= 2)
+		"fiber":
+			return BAG.count_item(tree, "fibra") >= 3 or _has(tree, ["corda", "machado"])
 		"bag":
-			return _open("inventory_panel")
-		"craft":
-			return _open("crafting_panel")
+			_bag_seen = _bag_seen or _open("inventory_panel")
+			return _bag_seen and not _open("inventory_panel")
+		"rope":
+			return _has(tree, ["corda", "machado"])
+		"axe":
+			return _has(tree, ["machado"])
 		"swing":
 			var player: Node = region.get("player") if region else null
-			return (is_instance_valid(player) and player.has_method("is_using_tool") and player.is_using_tool() and str(player.get("current_animation")).begins_with("axe")) or _time > 20.0
+			return is_instance_valid(player) and player.has_method("is_using_tool") and player.is_using_tool() and str(player.get("current_animation")).begins_with("axe")
 		"friend":
 			for key in ["forest_slime_friends", "valley_slime_friends"]:
 				if not (tree.get_meta(key, {}) as Dictionary).is_empty(): return true
 			return false
 	return _time > READ_SECONDS
+
+
+## Contagem do que a dica pede (ex.: "Gravetos 1/2 · Pedrinhas 0/2   ").
+func _progress(kind: String) -> String:
+	var tree := get_tree()
+	var parts: PackedStringArray = []
+	match kind:
+		"pick":
+			parts.append("Gravetos %d/2" % mini(2, BAG.count_item(tree, "graveto")))
+			parts.append("Pedrinhas %d/2" % mini(2, BAG.count_item(tree, "pedra_pequena")))
+		"fiber":
+			parts.append("Fibras %d/3" % mini(3, BAG.count_item(tree, "fibra")))
+	return "" if parts.is_empty() else " · ".join(parts) + "     "
+
+
+static func _has(tree: SceneTree, items: Array) -> bool:
+	return items.any(func(i: String) -> bool: return BAG.count_item(tree, i) > 0)
 
 
 func _open(panel_name: String) -> bool:
