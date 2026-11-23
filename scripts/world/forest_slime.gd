@@ -319,6 +319,12 @@ func _arrive() -> void:
 		_social_partner._hop_time = 0.0
 		_decision_time = 2.4
 		_hop_time = 0.0
+		if is_instance_valid(sprite) and is_instance_valid(_social_partner.sprite):
+			sprite.flip_h = _social_partner.global_position.x < global_position.x  # um olha para o outro
+			_social_partner.sprite.flip_h = not sprite.flip_h
+			_squash()
+			_social_partner._squash()
+			_float_heart(Vector2.ZERO, 0.2)
 	elif behavior in ["plants", "splash", "swim"]:
 		if behavior == "swim": behavior = "splash" if swimming else "rest"
 		_decision_time = _rng.randf_range(2.0, 3.5)

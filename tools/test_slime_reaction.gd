@@ -69,5 +69,16 @@ func run() -> void:
 		await create_timer(0.3).timeout
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("%s/notice.png" % out)
+	# Brincadeira entre dois slimes: chegam, se olham e soltam um coração.
+	var a: Node2D = slimes[2] if slimes.size() > 2 else slime
+	var b: Node2D = slimes[3] if slimes.size() > 3 else other
+	if a != b:
+		a.set("_social_partner", b)
+		a.set("behavior", "social")
+		b.set("behavior", "curious")
+		a.call("_arrive")
+		check(str(a.get("behavior")) == "play" and str(b.get("behavior")) == "play", "os dois brincam")
+		check(a.get_children().any(func(c: Node) -> bool: return c.name.begins_with("ReactionHeart")), "brincadeira solta coração")
+		check(a.get("sprite").flip_h != b.get("sprite").flip_h, "um olha para o outro")
 	print("SLIME_REACTION: %d failures" % failures)
 	quit(1 if failures else 0)
