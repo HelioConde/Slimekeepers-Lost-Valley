@@ -3,6 +3,7 @@ extends CharacterBody2D
 signal friendship_started(persistent_id: String)
 const FRAMES: SpriteFrames = preload("res://assets/slimes/bestiary/brotinho/brotinho_frames.tres")
 const SPECIES := preload("res://scripts/world/slime_species.gd")
+static var HEART: Texture2D = preload("res://scripts/ui/hud_skin.gd").heart(true)
 const WALK_SPEED := 30.0
 const ACTIVE_DISTANCE := 1000.0
 
@@ -93,7 +94,40 @@ func _draw() -> void:
 func react(kind: String) -> void:
 	reaction = kind
 	_happy_time = 2.4
-	if is_instance_valid(sprite) and sprite.sprite_frames.has_animation(kind): sprite.play(kind)
+	if not is_instance_valid(sprite): return
+	# Para, olha para quem interagiu, se espreme de alegria e solta um coração.
+	if behavior not in ["sleep", "flee"]: _rest(2.4)
+	if is_instance_valid(player): sprite.flip_h = player.global_position.x < global_position.x
+	if sprite.sprite_frames.has_animation(kind): sprite.play(kind)
+	_squash()
+	_float_heart(Vector2.ZERO, 0.0)
+
+
+func _squash() -> void:
+	var base := Vector2.ONE * float(personality.get("scale", 1.0))
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", base * Vector2(1.14, 0.86), 0.08)
+	tween.tween_property(sprite, "scale", base * Vector2(0.92, 1.1), 0.1)
+	tween.tween_property(sprite, "scale", base, 0.14)
+
+
+## Coração de pixel (o mesmo do HUD do laço) que sobe e some sobre o slime.
+func _float_heart(offset: Vector2, delay: float) -> void:
+	var heart := Sprite2D.new()
+	heart.name = "ReactionHeart"
+	heart.texture = HEART
+	heart.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	heart.scale = Vector2(2, 2)
+	heart.z_index = 5
+	heart.position = Vector2(0, -46) + offset
+	heart.modulate.a = 0.0
+	add_child(heart, true)  # nomes legíveis: ReactionHeart, ReactionHeart2...
+	var tween := create_tween()
+	tween.tween_interval(delay)
+	tween.tween_property(heart, "modulate:a", 1.0, 0.12)
+	tween.parallel().tween_property(heart, "position:y", heart.position.y - 16.0, 1.1).set_ease(Tween.EASE_OUT)
+	tween.tween_property(heart, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(heart.queue_free)
 
 
 func display_name() -> String:
@@ -109,6 +143,8 @@ func make_friend() -> bool:
 	_happy_time = 2.4
 	_rest(2.4)
 	_play_animation("happy")
+	if is_instance_valid(sprite):
+		for i in 3: _float_heart(Vector2((i - 1) * 14, absi(i - 1) * 4), i * 0.15)  # amizade nova: três corações
 	friendship_started.emit(persistent_id)
 	return true
 
