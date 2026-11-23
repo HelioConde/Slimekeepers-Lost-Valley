@@ -62,6 +62,17 @@ criaturas), da Bíblia (`docs/narrativa/BIBLIA_NARRATIVA.md`), do `BACKLOG.md`, 
 19. **Visual pendente** (BACKLOG §6): sombras de pontes, pedras no rio, chuva.
 20. **Antes de lançar:** remover os comandos de admin (`scripts/debug/`).
 
+## Andamento (2026-11-23)
+
+Feito: 1 (variantes), 2 (painel com função e comida favorita), 14 (efeitos sonoros; falta
+música), 15 (aviso de pouca energia; custos mantidos), 16 (troca automática de ferramenta),
+17 (relógio sincronizado e conexão estável; itens no chão ficam com quem coletou), parte do
+9 (estágios próprios da cenoura e do repolho).
+
+Esperando decisão do usuário: 3 (qual espécie colhe/leva ao baú), 4 (comedouro e fome),
+5 (comida, habitat e função de Brasinha/Gelito), 7 (material das ferramentas melhores),
+8 (pedidos opcionais), estações (quais culturas em cada uma), música, 18 e a Fase C.
+
 ## Ordem sugerida
 
 Fase A (1 → 2 → 3 → 4), depois 7 e 8, com a Fase D em paralelo. Fase C só depois das
