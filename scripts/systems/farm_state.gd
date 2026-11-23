@@ -117,17 +117,29 @@ static func harvest(tree: SceneTree, cell: Vector2i, field: String = "vale") -> 
 
 
 ## Virada do dia: cultura regada sobe um estágio; toda a terra seca de novo.
+## Terra arada vazia volta a ser grama depois de tantos dias seguidos sem planta
+## (BACKLOG P3). Regar conta como cuidado e zera a contagem.
+const IDLE_DAYS_TO_GRASS := 3
+
+
 static func advance_day(tree: SceneTree) -> void:
 	var fields := _fields(tree)
 	for field in fields:
 		var cells: Dictionary = fields[field]
-		for cell in cells:
+		for cell in cells.keys():
 			var data: Dictionary = cells[cell]
 			var id := str(data.get("crop", ""))
 			if not id.is_empty() and bool(data.get("watered", false)):
 				data.stage = mini(int(data.stage) + 1, CROPS.last_stage(id))
+			if id.is_empty() and not bool(data.get("watered", false)):
+				data["idle"] = int(data.get("idle", 0)) + 1
+			else:
+				data["idle"] = 0
 			data.watered = false
-			cells[cell] = data
+			if int(data.idle) >= IDLE_DAYS_TO_GRASS:
+				cells.erase(cell)  # o mato tomou de volta
+			else:
+				cells[cell] = data
 	tree.set_meta(KEY, fields)
 
 

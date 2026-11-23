@@ -15,6 +15,7 @@ madeira, a fogueira de cozinhar e o portão da Fazenda foram removidos do Vale.
 - **Regador:** leva água para **20 regas**; cada rega gasta 1. Com o regador na mão, olhe para o lago ou o riacho e aperte **[E]** para encher. Vazio, ele avisa e não rega.
 - **[R]** troca a semente (pula as que acabaram).
 - A cultura sobe **um estágio por dia em que foi regada**; toda a terra seca na virada do dia.
+- Terra arada **vazia e sem rega por 3 dias** volta a ser grama.
 - **Sementes silvestres** (recolhidas com o Brotinho) viram **folhas silvestres** → colheita de
   **folhas frescas** → cozinhar no **fogão da casa** → porção para alimentar os slimes.
 - Plantar e colher marcam os mesmos marcos de sessão dos antigos canteiros.

@@ -100,3 +100,20 @@ func test_days_passed_elsewhere_are_caught_up() -> void:
 	assert_bool(Farm.is_watered(tree, cell, "fazenda")).is_false()
 	assert_bool(Farm.is_tilled(tree, cell, "vale")).is_false()  # campos separados
 	tree.remove_meta(Farm.LAST_DAY_KEY)
+
+
+func test_idle_tilled_soil_returns_to_grass() -> void:
+	# Terra arada vazia e sem rega por 3 dias volta a ser grama; regar ou plantar mantém.
+	var tree := get_tree()
+	var idle := Vector2i(1, 1)
+	var cared := Vector2i(2, 1)
+	var planted := Vector2i(3, 1)
+	for c in [idle, cared, planted]: Farm.till(tree, c)
+	Bag.add_item(tree, "semente_cenoura", 1)
+	Farm.plant(tree, planted, "cenoura")
+	for day in Farm.IDLE_DAYS_TO_GRASS:
+		Farm.water(tree, cared)
+		Farm.advance_day(tree)
+	assert_bool(Farm.is_tilled(tree, idle)).is_false()
+	assert_bool(Farm.is_tilled(tree, cared)).is_true()
+	assert_bool(Farm.is_tilled(tree, planted)).is_true()

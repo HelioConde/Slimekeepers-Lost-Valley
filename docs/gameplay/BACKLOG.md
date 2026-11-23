@@ -22,7 +22,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [ ] **P2** Mais culturas e estágios próprios para repolho e beterraba (PixelLab)
 - [ ] **P2** Estações do ano: culturas por estação, morrem na troca
 - [ ] **P3** Espantalho, irrigador, adubo, árvores frutíferas
-- [ ] **P3** Terra arada volta a ser grama se ficar vazia vários dias
+- [x] Terra arada volta a ser grama após 3 dias vazia e sem rega
 
 ## 2. Ciclo do dia e progresso
 - [x] Dormir para virar o dia (cama da casa construída)
