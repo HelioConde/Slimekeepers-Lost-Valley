@@ -319,13 +319,16 @@ func _process(delta: float) -> void:
 		return
 	if is_instance_valid(placer):
 		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
+		if station_hint in ["built", "built_bau_campo"]:
+			_notify("Bancada pronta! Use [F] nela para fabricar." if station_hint == "built" else "Baú pronto! Use [F] para guardar; o Carreguim também traz coisas para cá.")
+			return
 		if station_hint == "placed_bau_campo":
 			bag_hud.call("refresh")
-			_notify("Baú colocado! Use [F] nele para guardar. O Carreguim também leva coisas para cá.")
+			_notify("Planta do baú no chão! Vá até ela e aperte [F] para construir (5 s).")
 			return
 		if station_hint == "placed":
 			bag_hud.call("refresh")
-			_notify("Bancada de trabalho montada! Use [F] nela para fabricar ferramentas.")
+			_notify("Planta da bancada no chão! Vá até ela e aperte [F] para construir (10 s).")
 			return
 		if not station_hint.is_empty():
 			hud_hint.text = station_hint

@@ -196,6 +196,14 @@ func run() -> void:
 	await press("interact")
 	check(BAG.count_item(self, "bancada") == 0 and get_meta("placed_stations", []).size() == 1, "bancada colocada e salva")
 	check(not placer.can_place(placer.spot_for(player)), "não coloca outra em cima")
+	var plan: Node2D = placer.get("_stations")[0]
+	check(not bool(plan.get_meta("built")), "fica a planta da bancada até construir")
+	await press("interact")
+	await create_timer(4.0).timeout
+	check(not bool(plan.get_meta("built")) and float(plan.get_meta("progress")) > 2.0, "um toque em [F] começa a construir")
+	await create_timer(7.0).timeout
+	check(bool(plan.get_meta("built")) and bool(get_meta("placed_stations")[0].built), "bancada pronta em 10 s e salva")
+	for i in 3: await process_frame
 	await press("interact")
 	check(panel.visible and panel.station == "bancada", "[E] na bancada abre a fabricação da bancada")
 	BAG.spend_item(self, "semente_repolho", BAG.count_item(self, "semente_repolho"))  # bolsa de 10 espaços cheia

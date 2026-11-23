@@ -11,9 +11,16 @@ const ART := preload("res://assets/world/crafting/workbench.png")
 const FOOTPRINT := Vector2(44, 16)  # base sólida (pés da bancada)
 ## Construções que se colocam no chão: bancada e baú (2026-11-23; o Carreguim leva ao baú).
 const KINDS := {
-	"bancada": {"art": ART, "footprint": FOOTPRINT, "name": "a bancada"},
-	"bau_campo": {"art": preload("res://assets/objects/furniture/bau.png"), "footprint": Vector2(30, 12), "name": "o baú"},
+	"bancada": {"art": ART, "footprint": FOOTPRINT, "name": "a bancada", "build": 10.0},
+	"bau_campo": {"art": preload("res://assets/objects/furniture/bau.png"), "footprint": Vector2(30, 12), "name": "o baú", "build": 5.0},
 }
+## Planta de construção (pedido do usuário, 2026-11-23): colocar deixa a planta no chão;
+## [F] nela começa a construir (segue sozinho, andar cancela; o progresso fica salvo).
+## Futuro: um slime que ajuda a construir.
+const BLUEPRINT := Color(0.55, 0.85, 1.0, 0.55)
+const MOVES := ["move_left", "move_right", "move_up", "move_down"]
+var _building: Node2D  ## planta sendo construída agora
+var _save_wait := 0.0
 ## Abre o baú colocado (a região liga em open_chest(id)).
 var open_chest: Callable
 const AHEAD := 44.0
@@ -43,7 +50,7 @@ func setup(id: String) -> void:
 	add_child(_ghost)
 	for entry: Dictionary in _saved():
 		if str(entry.region) == region_id:
-			_spawn(Vector2(entry.x, entry.y), str(entry.get("kind", "bancada")))
+			_spawn(Vector2(entry.x, entry.y), str(entry.get("kind", "bancada")), bool(entry.get("built", true)), float(entry.get("progress", 0.0)))
 
 
 ## Refaz as bancadas desta região a partir da sessão (multijogador: o outro colocou uma).
@@ -52,7 +59,7 @@ func reload() -> void:
 	_stations.clear()
 	for entry: Dictionary in _saved():
 		if str(entry.region) == region_id:
-			_spawn(Vector2(entry.x, entry.y), str(entry.get("kind", "bancada")))
+			_spawn(Vector2(entry.x, entry.y), str(entry.get("kind", "bancada")), bool(entry.get("built", true)), float(entry.get("progress", 0.0)))
 
 
 func _saved() -> Array:
@@ -104,15 +111,23 @@ func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
 		_click = false
 		if place and ok:
 			BAG.spend_item(get_tree(), kind)
-			_spawn(at, kind)
+			_spawn(at, kind, false)
 			var saved := _saved().duplicate()
-			saved.append({"region": region_id, "x": at.x, "y": at.y, "kind": kind})
+			saved.append({"region": region_id, "x": at.x, "y": at.y, "kind": kind, "built": false, "progress": 0.0})
 			get_tree().set_meta(PLACED_KEY, saved)
 			_ghost.visible = false
 			return "placed" if kind == "bancada" else "placed_" + kind
 		var what: String = KINDS[kind].name
 		return ("Clique ou [F] para colocar " + what) if ok else ("Aqui não dá para colocar " + what)
+	if is_instance_valid(_building):
+		return _build_step(player)
 	var near := nearest_station(player.global_position)
+	if near != null and not bool(near.get_meta("built", true)):
+		var info: Dictionary = KINDS.get(str(near.get_meta("kind")), KINDS.bancada)
+		if interact:
+			_building = near
+			return _build_step(player)
+		return "[F] Construir %s (%d s)" % [str(info.name).trim_prefix("a ").trim_prefix("o "), int(ceil(float(info.build) - float(near.get_meta("progress", 0.0))))]
 	if near != null:
 		if str(near.get_meta("kind", "bancada")) == "bau_campo":
 			if interact and open_chest.is_valid(): open_chest.call(str(near.get_meta("chest_id")))
@@ -122,11 +137,55 @@ func update(player: Node2D, interact: bool, open_bench: Callable) -> String:
 	return ""
 
 
+## Um quadro de construção: o jogador trabalha agachado; andar cancela (fica o progresso).
+func _build_step(player: Node2D) -> String:
+	var station := _building
+	if MOVES.any(func(m: String) -> bool: return Input.is_action_pressed(m)) or station.global_position.distance_to(player.global_position) > USE_REACH * 1.5:
+		_building = null
+		if player.has_method("release_pose"): player.release_pose()
+		_store_progress(station)
+		return ""
+	var info: Dictionary = KINDS.get(str(station.get_meta("kind")), KINDS.bancada)
+	var progress: float = float(station.get_meta("progress", 0.0)) + get_process_delta_time()
+	station.set_meta("progress", progress)
+	player.facing = player._get_direction_name(station.global_position - player.global_position)
+	if player.has_method("hold_pose"): player.hold_pose("pick_big", player.PICK_BIG_GROUND)
+	_save_wait -= get_process_delta_time()
+	if _save_wait <= 0.0:
+		_save_wait = 1.0
+		_store_progress(station)
+	if progress < float(info.build):
+		return "Construindo %s... %d%% · andar cancela" % [str(info.name).trim_prefix("a ").trim_prefix("o "), mini(99, int(progress / float(info.build) * 100.0))]
+	_building = null
+	if player.has_method("release_pose"): player.release_pose()
+	station.set_meta("built", true)
+	_store_progress(station)
+	_finish(station)
+	return "built" if str(station.get_meta("kind")) == "bancada" else "built_" + str(station.get_meta("kind"))
+
+
+## Grava built/progresso da construção na sessão.
+func _store_progress(station: Node2D) -> void:
+	var saved := _saved().duplicate(true)
+	for entry: Dictionary in saved:
+		if str(entry.region) == region_id and Vector2(entry.x, entry.y).distance_to(station.global_position) < 1.0:
+			entry["built"] = bool(station.get_meta("built", true))
+			entry["progress"] = float(station.get_meta("progress", 0.0))
+	get_tree().set_meta(PLACED_KEY, saved)
+
+
+## Planta vira construção pronta: cor normal e passa a bloquear a passagem.
+func _finish(station: Node2D) -> void:
+	(station.get_node("Sprite") as Sprite2D).modulate = Color.WHITE
+	var body := station.get_node("Body") as StaticBody2D
+	body.collision_layer = 2
+
+
 ## Baús colocados (todas as regiões): [{id, region, at}] — o Carreguim escolhe entre eles.
 static func chests(tree: SceneTree) -> Array:
 	var out: Array = []
 	for entry: Dictionary in tree.get_meta(PLACED_KEY, []):
-		if str(entry.get("kind", "bancada")) == "bau_campo":
+		if str(entry.get("kind", "bancada")) == "bau_campo" and bool(entry.get("built", true)):
 			out.append({"id": chest_id(entry), "region": str(entry.region), "at": Vector2(entry.x, entry.y)})
 	return out
 
@@ -141,22 +200,27 @@ func nearest_station(at: Vector2) -> Node2D:
 	return null
 
 
-func _spawn(at: Vector2, kind: String = "bancada") -> void:
+func _spawn(at: Vector2, kind: String = "bancada", built: bool = true, progress: float = 0.0) -> void:
 	var info: Dictionary = KINDS.get(kind, KINDS.bancada)
 	var station := Node2D.new()
 	station.name = "Workbench" if kind == "bancada" else "Chest"
 	station.global_position = at
 	station.set_meta("kind", kind)
 	station.set_meta("chest_id", chest_id({"region": region_id, "x": at.x, "y": at.y}))
+	station.set_meta("built", built)
+	station.set_meta("progress", progress)
 	add_child(station)
 	var sprite := Sprite2D.new()
+	sprite.name = "Sprite"
+	if not built: sprite.modulate = BLUEPRINT  # planta: translúcida até construir
 	var art: Texture2D = info.art
 	sprite.texture = art
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	sprite.offset = Vector2(0, -art.get_height() * 0.5 + 4)
 	station.add_child(sprite)
 	var body := StaticBody2D.new()
-	body.collision_layer = 2
+	body.name = "Body"
+	body.collision_layer = 2 if built else 0  # a planta não bloqueia a passagem
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
 	rect.size = info.footprint

@@ -26,6 +26,7 @@ const STEPS := [
 	["Juntando madeira", "Derrube árvores pequenas e corte o tronco caído até juntar 6 madeiras.", "wood"],
 	["A bancada de trabalho", "No [B], faça a bancada: 6 madeiras, 3 cordas e 4 pedrinhas. Mais mato dá mais corda.", "bench"],
 	["Colocando a bancada", "Escolha a bancada na barra e clique [esq] no chão onde quer colocar.", "place"],
+	["Construindo a bancada", "Vá até a planta da bancada e aperte [F] ou [esq]. Leva 10 segundos (andar cancela).", "build"],
 	["Usando a bancada", "Chegue perto da bancada e aperte [F] ou [esq] para abrir", "use"],
 	["Pronto!", "Na bancada você fabrica todos os itens do jogo. Bom começo!", "read"],
 ]
@@ -284,6 +285,8 @@ func _done(kind: String, delta: float) -> bool:
 			return _has(tree, ["bancada"]) or _placed()
 		"place":
 			return _placed()
+		"build":
+			return (get_tree().get_meta("placed_stations", []) as Array).any(func(e: Dictionary) -> bool: return str(e.get("kind", "bancada")) == "bancada" and bool(e.get("built", true)))
 		"use":
 			var craft: Variant = region.get("crafting_panel") if region else null
 			return _open("crafting_panel") and str((craft as Node).get("station")) == "bancada"
@@ -326,7 +329,7 @@ func _targets(kind: String) -> Array:
 				if cut.has(key):  # tronco caído ainda não processado também vale madeira
 					if not bool(cut[key].get("processed", false)): found.append([chop.log_position(key), 20.0])
 				else: found.append([tree.global_position, 24.0])
-	elif kind == "use":
+	elif kind in ["use", "build"]:
 		var placer: Node = region.get("placer")
 		if is_instance_valid(placer):
 			for station: Node2D in placer.get("_stations"): found.append([station.global_position, 30.0])

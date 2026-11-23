@@ -87,12 +87,12 @@ func run() -> void:
 	BAG.add_item(self, "bancada")
 	for i in 3: await process_frame
 	check(int(get_meta(TUT.KEY)) == 9, "fazer a bancada passa para colocar")
-	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0}])
+	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0, "built": true}])
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 10, "colocar passa para usar")
+	check(int(get_meta(TUT.KEY)) == 11, "colocar (já construída) passa construir e chega em usar")
 	craft.call("open", "bancada")
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 11, "abrir a bancada passa para o fim")
+	check(int(get_meta(TUT.KEY)) == 12, "abrir a bancada passa para o fim")
 	craft.call("close")
 	await key(KEY_TAB)
 	for i in 3: await process_frame

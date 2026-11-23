@@ -183,11 +183,18 @@ func run() -> void:
 				await create_timer(0.3).timeout
 				await key(KEY_B)
 			"Colocando a bancada":
+				Input.warp_mouse(Vector2.ZERO)  # prévia à frente do jogador
 				await key(KEY_1 + HOTBAR.slots(self).find("bancada"))
 				await go_to(player.global_position + Vector2(0, 80))
 				player.facing = "south"
 				await snap("colocar")
 				await key(KEY_F)
+			"Construindo a bancada":
+				var plan: Node2D = region.get("placer").get("_stations")[0]
+				await go_to(plan.global_position + Vector2(0, 20))
+				await key(KEY_F)
+				await snap("construindo")
+				await create_timer(10.8).timeout
 			"Usando a bancada":
 				await snap("usar")
 				var placer: Node = region.get("placer")
