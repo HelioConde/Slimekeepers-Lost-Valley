@@ -15,6 +15,7 @@ const RECIPES := [
 	{"id": "bancada", "category": "producao", "tier": 1, "station": "maos", "inputs": {"graveto": 6, "pedra_pequena": 4, "corda": 2}, "output": {"bancada": 1}},
 	{"id": "bau_campo", "category": "armazenamento", "tier": 2, "station": "bancada", "inputs": {"madeira": 8, "corda": 2}, "output": {"bau_campo": 1}},
 	{"id": "picareta", "category": "ferramentas", "tier": 2, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_pequena": 5, "corda": 2}, "output": {"picareta": 1}},
+	{"id": "foice", "category": "ferramentas", "tier": 2, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 2, "pedra_pequena": 3, "corda": 1}, "output": {"foice": 1}},
 	{"id": "enxada", "category": "ferramentas", "tier": 2, "station": "bancada", "requires": ["machado"], "inputs": {"madeira": 3, "pedra_pequena": 2, "corda": 1}, "output": {"enxada": 1}},
 	{"id": "porcao_folhas_prototipo", "category": "comida", "tier": 1, "station": "fogao", "cooking": true, "inputs": {"folhas_frescas": 1}, "output": {"porcao_folhas_prototipo": 1}},
 	{"id": "cenoura_assada", "category": "comida", "tier": 1, "station": "fogao", "inputs": {"cenoura": 2}, "output": {"cenoura_assada": 1}},

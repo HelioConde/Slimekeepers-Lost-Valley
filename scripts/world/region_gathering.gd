@@ -122,8 +122,35 @@ func add_rocks(owner_region: Node, area: Rect2, plan: Dictionary, free: Callable
 	GameClock.day_changed.connect(rocks.refresh)
 
 
+## Foice (pedido do usuário, 2026-11-23): corta o mato de um golpe; só ela solta
+## sementes, com chance SEED_CHANCE (com a mão, só fibra).
+const SEED_CHANCE := 0.10
+const SICKLE_SEEDS := ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres"]
+var rng := RandomNumberGenerator.new()
+
+
+func _sickle_cut(spot: Dictionary) -> void:
+	var player: Node2D = region.player
+	region.hud_hint.text = "[F] Cortar o mato com a foice"
+	if not Input.is_action_pressed("interact") or player.is_using_tool(): return
+	player.facing = player._get_direction_name(spot.at - player.global_position)
+	if player.play_tool("sickle") <= 0.0: player.play_tool("hoe")  # sem arte de foice ainda
+	var problem: String = forage.take(spot, GameClock.day_number)
+	if not problem.is_empty():
+		region._notify(problem)
+		return
+	if rng.randf() < SEED_CHANCE:
+		var seed_id: String = SICKLE_SEEDS[rng.randi() % SICKLE_SEEDS.size()]
+		if forage.drop.is_valid(): forage.drop.call(seed_id, 1, spot.at)
+		else: BAG.add_item(get_tree(), seed_id, 1)
+	region.bag_hud.call("refresh")
+
+
 func _forage_interaction(spot: Dictionary, delta: float) -> void:
 	var player: Node2D = region.player
+	if str(spot.item) == "fibra" and HOTBAR.selected_item(get_tree()) == "foice" and _pull_id.is_empty():
+		_sickle_cut(spot)
+		return
 	var item_name := str(ITEMS.info(spot.item).name).to_lower()
 	var hold: float = forage.pull_seconds(spot.item)
 	if hold > 0.0:

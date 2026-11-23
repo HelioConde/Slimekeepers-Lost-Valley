@@ -7,7 +7,7 @@ const ICONS := "res://assets/ui/items/%s.png"
 
 ## Ferramentas na ordem da barra; só aparecem quando o jogador as tem na bolsa
 ## (fabricadas: docs/gameplay/CRIACAO.md). O jogo começa sem nenhuma.
-const TOOLS := ["machado", "picareta", "enxada", "regador"]
+const TOOLS := ["machado", "picareta", "foice", "enxada", "regador"]
 ## Saves de antes da fabricação recebem estas ferramentas ao carregar (save_game).
 const LEGACY_TOOLS := ["enxada", "regador"]
 ## Capacidade da bolsa por item; ferramentas e estações: 1.
@@ -15,6 +15,7 @@ const MAX_STACK := 99
 const ITEMS := {
 	"machado": {"name": "Machado rudimentar", "kind": "tool", "icon": "machado"},
 	"picareta": {"name": "Picareta rudimentar", "kind": "tool", "icon": "picareta"},
+	"foice": {"name": "Foice rudimentar", "kind": "tool", "icon": "foice"},  # corta o mato; às vezes solta semente
 	"enxada": {"name": "Enxada", "kind": "tool", "icon": "enxada"},
 	"regador": {"name": "Regador", "kind": "tool", "icon": "regador"},
 	"semente_cenoura": {"name": "Sementes de cenoura", "kind": "seed", "icon": "semente_cenoura", "crop": "cenoura"},
