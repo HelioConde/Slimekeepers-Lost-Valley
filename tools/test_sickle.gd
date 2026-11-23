@@ -52,6 +52,7 @@ func run() -> void:
 	check(str(region.hud_hint.text).contains("foice"), "com a foice o mato oferece cortar (%s)" % region.hud_hint.text)
 	Input.action_press("interact")
 	for i in 3: await process_frame
+	check(str(player.get("current_animation")).begins_with("sickle_"), "golpe próprio da foice, de lado (%s)" % player.get("current_animation"))
 	Input.action_release("interact")
 	await create_timer(0.5).timeout
 	drops.collect_all()

@@ -6,7 +6,7 @@ extends RefCounted
 ## Uso: SFX.play(get_tree(), "pegar")  ou  SFX.play(get_tree(), "golpe_machado", posicao)
 
 const RATE := 22050
-const SOUNDS := ["pegar", "golpe_machado", "golpe_picareta", "coracao", "fabricar"]
+const SOUNDS := ["pegar", "golpe_machado", "golpe_picareta", "coracao", "fabricar", "corte"]
 const GAIN := 0.55
 static var _cache: Dictionary = {}
 static var _volume := -1.0
@@ -83,6 +83,13 @@ static func _synth(sound: String) -> PackedFloat32Array:
 				var ring := sin(TAU * 1760.0 * t) * 0.5 + sin(TAU * 2640.0 * t) * 0.3
 				var tick := rng.randf_range(-1.0, 1.0) * exp(-k * 40.0)
 				return (ring + tick * 0.6) * exp(-k * 9.0))
+		"corte":  # "fsst" da foice no mato: ruído agudo que passa rápido
+			var prev := 0.0
+			return _tone(0.14, func(t: float, k: float) -> float:
+				var n := rng.randf_range(-1.0, 1.0)
+				var hp := n - prev  # passa-alta simples: só o chiado
+				prev = n
+				return hp * 0.5 * sin(PI * k) * (1.0 - k * 0.5))
 		"coracao":  # duas notas de sino (dó e mi)
 			return _tone(0.34, func(t: float, k: float) -> float:
 				var first := sin(TAU * 1047.0 * t) * exp(-t * 18.0)

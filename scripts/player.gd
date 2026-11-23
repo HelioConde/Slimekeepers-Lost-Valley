@@ -16,6 +16,9 @@ const SWING_FPS := 10.0
 const SWING_TIMING := [1.5, 0.9, 0.8, 1.5, 0.6, 0.4, 0.4, 2.0, 1.4]
 ## Golpe de lado e de costas aprovado (8 quadros: descanso, pega, alto, rastro x2, impacto x3).
 const SWING_SIDE_TIMING := [1.5, 1.2, 2.5, 0.6, 0.6, 2.0, 1.4, 1.4]
+## Foice (2026-11-23): corte de lado, varrendo rente ao mato (9 quadros em todas as
+## direções): prepara, varre rápido, volta.
+const SICKLE_TIMING := [1.2, 1.0, 0.9, 0.5, 0.5, 0.5, 0.9, 1.0, 1.2]
 ## Regar aprovado (8 quadros; frente, lado e costas): ergue, inclina, jato, poça; mais tempo no jato.
 const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## Ações de pegar no chão (<arte>/actions/<nome>/<dir>/; sul, leste, oeste, norte):
@@ -187,9 +190,10 @@ func release_pose() -> float:
 
 ## Som do golpe no quadro do impacto (frente: 9 quadros, impacto no 7; lado/costas: 8, no 5).
 func _on_frame_changed() -> void:
-	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else "")
+	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else ("corte" if current_animation.begins_with("sickle_") else ""))
 	if sound.is_empty() or not visible: return
 	var impact := 7 if sprite.sprite_frames.get_frame_count(current_animation) == SWING_TIMING.size() else 5
+	if sound == "corte": impact = 4  # meio da varrida
 	if sprite.frame == impact: preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
 
 
@@ -266,6 +270,8 @@ func _build_frames() -> SpriteFrames:
 			var timing: Array = SWING_TIMING
 			if tool == "water":
 				timing = WATER_TIMING if direction in ["south", "east", "west", "north"] else []
+			elif tool == "sickle":
+				timing = SICKLE_TIMING
 			elif textures.size() == SWING_SIDE_TIMING.size():
 				timing = SWING_SIDE_TIMING  # lado e costas: 8 quadros
 			var timed: bool = not timing.is_empty() and textures.size() == timing.size()
