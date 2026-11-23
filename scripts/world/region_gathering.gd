@@ -100,7 +100,8 @@ func _rock_interaction() -> bool:
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
 		player.facing = player._get_direction_name(r.at - player.global_position)
-		if player.play_tool("pickaxe") <= 0.0: player.play_tool("hoe")  # protagonista sem arte de picareta
+		var swing := "pickaxe_polished" if int(ITEMS.POWER.get(tool, 1)) >= 2 else "pickaxe"
+		if player.play_tool(swing) <= 0.0 and player.play_tool("pickaxe") <= 0.0: player.play_tool("hoe")  # sem arte própria
 		if rocks.strike(r, GameClock.day_number, int(ITEMS.POWER.get(tool, 1))) == "broken":
 			region._notify("A pedra quebrou!")
 	return true
@@ -216,7 +217,7 @@ func _axe_interaction() -> bool:
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
-		player.play_tool("axe")
+		if power < 2 or player.play_tool("axe_polished") <= 0.0: player.play_tool("axe")
 		match choppable.strike(t, GameClock.day_number, power):
 			"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
 			"processed":

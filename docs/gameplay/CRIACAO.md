@@ -62,7 +62,7 @@ Opção recomendada para "ferramentas melhores" (pedra polida agora, metal depoi
 - A troca é automática: com o alvo à frente, [F] escolhe a melhor ferramenta da família que estiver na bolsa (`region_gathering._best`; famílias e força em `item_catalog.AXES/PICKS/POWER`).
 - Sem a ferramenta polida, a árvore e a pedra grandes continuam com "muito grande. Que tal uma menor?", agora com a dica da ferramenta polida.
 - Ícones: `assets/ui/items/{pedra_polida,machado_polido,picareta_polida}.png` (PixelLab, a partir dos ícones atuais).
-- Limitação: o golpe usa a mesma animação do machado e da picareta rudimentares; a cabeça de pedra no golpe ainda é a rudimentar.
+- Golpe: o mesmo movimento aprovado do machado e da picareta, com a cabeça de pedra pintada no azul-acinzentado polido dos ícones (`assets/<arte>/tools/{axe,pickaxe}_polished/`, gerado por `tools/pixellab/polish_tool_frames.py`; cinzas do próprio personagem não mudam).
 - Teste: `tools/test_rocks.gd` (pedra grande com a picareta polida, árvore grande com o machado polido).
 
 ## Decisões

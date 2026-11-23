@@ -81,6 +81,7 @@ func run() -> void:
 	before = BAG.count_item(self, "pedra_pequena")
 	for i in 3:
 		await press()
+		if i == 0: check(str(player.get("current_animation")).begins_with("pickaxe_polished_"), "golpe com a cabeça de pedra polida (%s)" % player.get("current_animation"))
 		while player.is_using_tool(): await process_frame
 	check(not (big.node as Node2D).visible, "3 golpes da picareta polida quebram a pedra grande")
 	region.get("item_drops").collect_all()
