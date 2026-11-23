@@ -45,15 +45,24 @@
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/happy/frame_006.png" id="52_ivjga"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/happy/frame_007.png" id="53_liik7"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/happy/frame_008.png" id="54_tv0mc"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_000.png" id="55_gte5h"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_000.png" id="55_lcsdr"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_001.png" id="56_k2ei2"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_001.png" id="56_wn081"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_002.png" id="57_2oaj8"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_002.png" id="57_4iby0"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_003.png" id="58_8mhta"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_003.png" id="58_jclgl"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_004.png" id="59_c1i4q"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_004.png" id="59_ur7q7"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_005.png" id="60_8f6hc"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_005.png" id="60_40yq3"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_006.png" id="61_3eyot"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_006.png" id="61_lx6vl"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_007.png" id="62_74sco"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_007.png" id="62_wahuq"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/idle/frame_008.png" id="63_0atph"]
+[ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/plantar/frame_008.png" id="63_wwdrq"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/receber_carinho/frame_000.png" id="64_6uf3f"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/receber_carinho/frame_001.png" id="65_hl67c"]
 [ext_resource type="Texture2D" path="res://assets/slimes/bestiary/brotinho/v3/receber_carinho/frame_002.png" id="66_xl3dv"]
@@ -676,31 +685,31 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("1_gte5h")
+"texture": ExtResource("55_gte5h")
 }, {
 "duration": 1.0,
-"texture": ExtResource("2_wn081")
+"texture": ExtResource("56_wn081")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_2oaj8")
+"texture": ExtResource("57_2oaj8")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_8mhta")
+"texture": ExtResource("58_8mhta")
 }, {
 "duration": 1.0,
-"texture": ExtResource("5_c1i4q")
+"texture": ExtResource("59_c1i4q")
 }, {
 "duration": 1.0,
-"texture": ExtResource("6_40yq3")
+"texture": ExtResource("60_40yq3")
 }, {
 "duration": 1.0,
-"texture": ExtResource("7_3eyot")
+"texture": ExtResource("61_3eyot")
 }, {
 "duration": 1.0,
-"texture": ExtResource("8_74sco")
+"texture": ExtResource("62_74sco")
 }, {
 "duration": 1.0,
-"texture": ExtResource("9_wwdrq")
+"texture": ExtResource("63_wwdrq")
 }],
 "loop": 0,
 "name": &"plantar",
