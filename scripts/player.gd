@@ -64,6 +64,7 @@ func _ready() -> void:
 	$CollisionShape2D.shape = footprint
 	$CollisionShape2D.position = Vector2(0,-6)
 	sprite.sprite_frames = _build_frames()
+	sprite.frame_changed.connect(_on_frame_changed)
 	_play_animation("idle_south")
 
 func _physics_process(_delta: float) -> void:
@@ -182,6 +183,14 @@ func release_pose() -> float:
 	sprite.play()
 	_tool_time = units / sprite.sprite_frames.get_animation_speed(current_animation)
 	return _tool_time
+
+
+## Som do golpe no quadro do impacto (frente: 9 quadros, impacto no 7; lado/costas: 8, no 5).
+func _on_frame_changed() -> void:
+	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else "")
+	if sound.is_empty() or not visible: return
+	var impact := 7 if sprite.sprite_frames.get_frame_count(current_animation) == SWING_TIMING.size() else 5
+	if sprite.frame == impact: preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
 
 
 func is_using_tool() -> bool:

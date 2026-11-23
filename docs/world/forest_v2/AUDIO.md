@@ -7,3 +7,11 @@ A geração é incremental, 2.048 amostras por frame, com cache reutilizado na s
 Opções do menu: volume ambiente de 0 a 100 e silenciar ambiente. Preferências em `user://presentation.cfg`, seção `audio`, chaves `ambient_volume` (0..1) e `muted` (bool). Nenhuma preferência do usuário foi alterada pelo teste automatizado.
 
 Teste `tools/test_forest_audio.gd`: formato PCM, cinco clipes, amplitude não nula e abaixo de clipping, limite de volume, fade pela distância, mute e orçamento de três vozes. É validação técnica; qualidade subjetiva de áudio ainda precisa de escuta humana.
+
+## Efeitos sonoros (2026-11-23)
+
+`scripts/systems/sfx.gd` sintetiza no código, do mesmo jeito, cinco efeitos curtos: pegar
+item (plop), golpe de machado (pancada surda), golpe de picareta (tlim metálico), coração do
+slime (duas notas de sino) e fabricar (acorde subindo). Tocam no impacto do golpe, quando o
+item entra na mochila, no carinho/comida/amizade e ao fabricar. Usam o volume e o silenciar
+do ambiente do menu. Teste: `tests/forest/test_sfx.gd`. Música ainda não existe.

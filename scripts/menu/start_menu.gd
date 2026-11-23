@@ -433,7 +433,7 @@ func _show_options() -> void:
 	volume.custom_minimum_size.y = 22
 	volume.value_changed.connect(func(value:float):
 		_prefs.set_value("audio","ambient_volume",value/100.0)
-		_prefs.save("user://presentation.cfg")
+		_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 	)
 	stack.add_child(volume)
 	var mute := CheckButton.new()
@@ -442,7 +442,7 @@ func _show_options() -> void:
 	mute.button_pressed = bool(_prefs.get_value("audio","muted",false))
 	mute.toggled.connect(func(enabled:bool):
 		_prefs.set_value("audio","muted",enabled)
-		_prefs.save("user://presentation.cfg")
+		_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 	)
 	stack.add_child(mute)
 	var close := Button.new()
@@ -464,7 +464,7 @@ func _show_options() -> void:
 func _set_reduced_motion(enabled: bool) -> void:
 	_apply_reduced_motion(enabled)
 	_prefs.set_value("accessibility","reduce_motion",enabled)
-	_prefs.save("user://presentation.cfg")
+	_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 
 func _apply_reduced_motion(enabled: bool) -> void:
 	reduce_motion = enabled

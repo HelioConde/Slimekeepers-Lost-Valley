@@ -149,6 +149,7 @@ func react(kind: String) -> void:
 		if player.has_method("face"): player.face(global_position)  # os dois se olham
 	if sprite.sprite_frames.has_animation(kind): sprite.play(kind)
 	if kind in ["receber_carinho", "comer"]:
+		preload("res://scripts/systems/sfx.gd").play(get_tree(), "coracao", global_position)
 		_squash()
 		_float_heart(Vector2.ZERO, 0.0)
 	else:
@@ -210,6 +211,7 @@ func make_friend() -> bool:
 	_play_animation("happy")
 	if is_instance_valid(sprite):
 		for i in 3: _float_heart(Vector2((i - 1) * 14, absi(i - 1) * 4), i * 0.15)  # amizade nova: três corações
+		preload("res://scripts/systems/sfx.gd").play(get_tree(), "coracao", global_position)
 	friendship_started.emit(persistent_id)
 	return true
 

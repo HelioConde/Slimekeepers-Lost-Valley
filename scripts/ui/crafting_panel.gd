@@ -131,6 +131,7 @@ func _craft(recipe_id: String) -> void:
 		var output_id: String = CRAFTING.recipe(recipe_id).output.keys()[0]
 		refresh()
 		_status.text = "Você fez: " + str(ITEMS.info(output_id).name).to_lower() + "."
+		preload("res://scripts/systems/sfx.gd").play(get_tree(), "fabricar")
 		crafted.emit(recipe_id)
 	else:
 		refresh()

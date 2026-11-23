@@ -91,7 +91,9 @@ func _collect(entry: Dictionary) -> void:
 	var got := 0
 	while got < int(entry.amount) and BAG.add_item(get_tree(), str(entry.item), 1): got += 1
 	entry.amount = int(entry.amount) - got
-	if got > 0: picked.emit(str(entry.item), got)
+	if got > 0:
+		picked.emit(str(entry.item), got)
+		preload("res://scripts/systems/sfx.gd").play(get_tree(), "pegar")
 	if int(entry.amount) <= 0:
 		(entry.node as Node).queue_free()
 		drops.erase(entry)
