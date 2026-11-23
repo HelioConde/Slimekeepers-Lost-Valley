@@ -166,8 +166,10 @@ func _spawn_forage() -> void:
 	gathering.attach(self, choppable, forage)
 	# Pedras médias (picareta) e grandes (picareta melhor), longe do início e dos habitats.
 	var habitats: Array = Forest.habitats()
+	var trails := Forest.trails()
 	gathering.add_rocks(self, Rect2(96, 96, 6208, 6208), WORLD_ROCKS, func(at: Vector2) -> bool:
 		if at.distance_to(Forest.SPAWN) < 260.0: return false
+		if preload("res://scripts/world/valley_layout.gd").route_distance(at, trails) < 60.0: return false  # pedra não tranca trilha
 		for h in habitats:
 			if at.distance_to(h.center) < float(h.radius) + 60.0: return false
 		return free_at.call(at))
