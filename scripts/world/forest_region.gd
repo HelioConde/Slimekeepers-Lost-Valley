@@ -120,7 +120,8 @@ func _ready() -> void:
 	# Árvores cortáveis (CRIACAO.md): nunca em habitats de slimes nem pontos de interesse.
 	choppable = preload("res://scripts/world/choppable_trees.gd").new()
 	add_child(choppable)
-	choppable.setup([$VegetationHigh, $ExpandedForest], func(at: Vector2) -> bool:
+	_add_starter_trees()
+	choppable.setup([$VegetationHigh, $ExpandedForest, $VegetationHigh.get_node("StarterTrees")], func(at: Vector2) -> bool:
 		for h in Forest.habitats():
 			if at.distance_to(h.center) < float(h.radius) + 80.0: return true
 		for p in Forest.points_of_interest():
@@ -423,6 +424,43 @@ func _offer_prototype_food(slime: Node2D) -> void:
 			_notify("Cozinhe folhas frescas no Vale antes de oferecer comida.")
 		_:
 			_notify("Nao foi possivel oferecer a porcao; nenhum alimento foi gasto.")
+
+## Árvores pequenas perto do início (pedido do usuário, 2026-11-23): o jogador acha
+## logo onde cortar. Cópias de uma árvore pequena da cena, em volta do início, longe das
+## trilhas, do lago, dos habitats e umas das outras. Posições fixas (mesma semente).
+const STARTER_TREES := 10
+func _add_starter_trees() -> void:
+	var holder := Node2D.new()
+	holder.name = "StarterTrees"
+	holder.y_sort_enabled = true
+	$VegetationHigh.add_child(holder)
+	var template: Node2D
+	for node in $VegetationHigh.get_children():
+		if node is Node2D and node.get_meta("tree", false) and node.has_node("Sprite"):
+			var sprite := node.get_node("Sprite") as Sprite2D
+			if sprite.texture and sprite.texture.get_image().get_used_rect().size.y * absf(sprite.global_scale.y) <= 110.0:
+				template = node
+				break
+	if template == null: return
+	var trails := Forest.trails()
+	var pond: Vector2 = $NaturalSpring.global_position
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 4242
+	var placed: Array[Vector2] = []
+	var tries := 0
+	while placed.size() < STARTER_TREES and tries < 400:
+		tries += 1
+		var at := Forest.SPAWN + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(190.0, 520.0)
+		if at.distance_to(pond) < 170.0: continue
+		if preload("res://scripts/world/valley_layout.gd").route_distance(at, trails) < 70.0: continue
+		if Forest.habitats().any(func(h: Dictionary) -> bool: return at.distance_to(h.center) < float(h.radius) + 90.0): continue
+		if placed.any(func(p: Vector2) -> bool: return p.distance_to(at) < 90.0): continue
+		var tree := template.duplicate() as Node2D
+		tree.name = "StarterTree%d" % placed.size()
+		holder.add_child(tree)
+		tree.global_position = at.round()  # depois de entrar na cena (o grupo pode ter deslocamento)
+		placed.append(at)
+
 
 func _update_hud() -> void:
 	if hud_goal == null: return
