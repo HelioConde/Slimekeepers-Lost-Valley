@@ -37,6 +37,7 @@ const FURNITURE_COSTS := {
 }
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
+const CHEST := preload("res://scripts/systems/chest_storage.gd")
 
 
 static func empty() -> Dictionary:
@@ -132,7 +133,7 @@ static func build(tree: SceneTree, region: String, rect: Rect2i, blocked: Callab
 
 ## Desfaz a casa inteira e devolve piso, paredes e móveis.
 static func demolish(tree: SceneTree) -> bool:
-	if not exists(tree): return false
+	if not exists(tree) or not CHEST.is_empty(tree): return false  # baú cheio: esvaziar antes
 	var house := data(tree)
 	var rect: Rect2i = house.rect
 	if rect.has_area():
@@ -192,6 +193,7 @@ static func remove_furniture(tree: SceneTree, cell: Vector2i) -> bool:
 	var house := data(tree)
 	var origin := furniture_origin(tree, cell)
 	var id := str(house.furniture.get(origin, ""))
+	if id == "bau" and not CHEST.is_empty(tree): return false  # esvaziar o baú antes
 	if not house.furniture.erase(origin): return false
 	_refund(tree, FURNITURE_COSTS.get(id, {}))
 	tree.set_meta(KEY, house)

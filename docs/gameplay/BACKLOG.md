@@ -35,7 +35,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [x] ~~Caixa de venda e dinheiro~~ — removido por decisão do usuário
 - [x] Coleta de materiais: mato (fibra), graveto, pedra, árvores pequenas (madeira) na Floresta e no Vale
 - [ ] **P2** Sementes por troca/presente de slimes ou coleta silvestre (sem loja com dinheiro)
-- [ ] **P2** Baú de armazenamento (mobília)
+- [x] Baú de armazenamento: [E] no baú da casa abre bolsa × baú; guarda pilhas sem o limite de 99
 
 ## 4. Slimes e vida no mundo
 - [x] Alimentar slimes com colheitas/porção ([F] com o item da barra), 1×/dia, corações

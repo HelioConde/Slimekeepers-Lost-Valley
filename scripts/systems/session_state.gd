@@ -28,6 +28,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"watering_can_water",
 	"slime_affinity",
 	"player_house",
+	"chest_items",
 	"build_mode",
 	"slime_fed_day",
 	"valley_cooking_ledger",

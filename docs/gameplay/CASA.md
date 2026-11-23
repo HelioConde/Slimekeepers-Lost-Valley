@@ -18,6 +18,7 @@ usuário (2026-11-22).
 - **[E] perto da cama** dorme até 06:00 (energia cheia, dia seguinte, jogo salvo). Sem cama, não dá para dormir.
 - Acordado depois da **meia-noite**, o personagem desmaia: acorda às 06:00 com 50 de energia, ao lado da cama se a casa estiver na região atual (o jogo não é salvo).
 - **[E] perto do fogão** cozinha uma porção de folhas (precisa de folhas frescas).
+- **[E] perto do baú** abre a janela bolsa × baú: ← → trocam o lado, ↑ ↓ escolhem, E move a pilha inteira, Esc/Q fecham. O baú não tem limite por pilha (a bolsa tem 99). Com o baú cheio, não dá para tirá-lo nem demolir a casa (`scripts/systems/chest_storage.gd`, `scripts/ui/chest_panel.gd`).
 - Ao construir, mato, flores e itens coletáveis da área somem; voltam se a casa for demolida.
 
 ## Custos (`scripts/systems/house_state.gd`)

@@ -212,6 +212,9 @@ func _clear_under_house(area: Rect2) -> void:
 ## Casa: modo construir ou dormir na cama. true quando tomou o HUD neste quadro.
 func handle_player_house(builder: Node2D) -> bool:
 	if not is_instance_valid(builder): return false
+	if is_instance_valid(_chest_panel) and _chest_panel.visible:
+		hud_hint.text = ""
+		return true
 	if not str(builder.message).is_empty():
 		_notify(builder.message)
 		builder.message = ""
@@ -221,6 +224,10 @@ func handle_player_house(builder: Node2D) -> bool:
 	if builder.near_bed(player):
 		hud_hint.text = "[E] Dormir até amanhã   •   [B] Construir"
 		if Input.is_action_just_pressed("interact"): sleep_until_morning()
+		return true
+	if builder.near_furniture(player, "bau"):
+		hud_hint.text = "[E] Abrir o baú"
+		if Input.is_action_just_pressed("interact"): open_chest()
 		return true
 	if builder.near_furniture(player, "fogao"):
 		# Cozinhar no fogão da casa (substitui a fogueira de teste do Vale).
@@ -295,3 +302,18 @@ func hide_forage_on_farm(farm: Node2D, forage: Node2D) -> void:
 	if not is_instance_valid(farm) or not is_instance_valid(forage): return
 	var farm_state := preload("res://scripts/systems/farm_state.gd")
 	forage.hidden_at = func(at: Vector2) -> bool: return farm_state.is_tilled(get_tree(), farm.cell_at(at), farm.field_id)
+
+
+var _chest_panel: Control
+
+
+## Janela do baú da casa (guarda itens sem o limite da bolsa).
+func open_chest() -> void:
+	if not is_instance_valid(_chest_panel):
+		_chest_panel = preload("res://scripts/ui/chest_panel.gd").new()
+		_chest_panel.player = player
+		get_node("HUD/Interface").add_child(_chest_panel)
+		_chest_panel.changed.connect(func() -> void:
+			var bag_node: Node = get("bag_hud")
+			if is_instance_valid(bag_node): bag_node.call("refresh"))
+	_chest_panel.open()

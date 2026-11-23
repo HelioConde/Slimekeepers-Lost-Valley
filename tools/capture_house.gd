@@ -106,6 +106,34 @@ func run() -> void:
 	var day: int = clock.day_number
 	region.sleep_until_morning()
 	check(clock.day_number == day + 1 and clock.get_hour() == 6, "Dormir na cama leva ao dia seguinte 06:00")
+	# Baú: [E] abre a janela, E guarda a pilha da bolsa; cheio, não demole a casa.
+	var Chest := preload("res://scripts/systems/chest_storage.gd")
+	if has_meta(Chest.KEY): remove_meta(Chest.KEY)
+	for item in House.FURNITURE_COSTS.bau: Bag.add_item(self, item, int(House.FURNITURE_COSTS.bau[item]))
+	house.toggle_build()
+	house.mode = "furniture"
+	house.furniture_choice = "bau"
+	check(house.place_at(rect.position + Vector2i(1, 3)), "Baú colocado (pago)")
+	house.toggle_build()
+	Bag.add_item(self, "graveto", 7)
+	player.global_position = Vector2((rect.position + Vector2i(2, 3)) * 32) + Vector2(16, 16)
+	for i in 3: await physics_frame
+	for i in 3: await process_frame
+	check(str(region.hud_hint.text).contains("baú"), "Baú oferece abrir (%s)" % region.hud_hint.text)
+	await _tap("interact")
+	var panel: Control = region.get_node_or_null("HUD/Interface/ChestPanel")
+	check(panel != null and panel.visible, "[E] abre a janela do baú")
+	if panel != null:
+		var row: int = panel.entries(0).map(func(e: Array) -> String: return e[0]).find("graveto")
+		panel.selected = row
+		panel.move_selected()
+		check(Chest.count(self, "graveto") == 7 and Bag.count_item(self, "graveto") == 0, "E guarda a pilha de gravetos no baú")
+		await _key(KEY_ESCAPE)
+		check(not panel.visible, "Esc fecha o baú")
+	house.toggle_build()
+	house.mode = "house"
+	check(not house.erase_at(rect.position + Vector2i(2, 2)) and house.problem.contains("Esvazie"), "Baú cheio impede demolir a casa")
+	house.toggle_build()
 	# Acordado depois da meia-noite: desmaia e acorda às 06:00 ao lado da cama.
 	clock.set_time(23, 59)
 	player.global_position = Vector2(rect.position * 32) + Vector2(-64, -64)
@@ -116,3 +144,27 @@ func run() -> void:
 	check(house.near_bed(player), "Acorda ao lado da cama da casa")
 	print("HOUSE: %d failures" % failures)
 	quit(1 if failures else 0)
+
+
+func _tap(action: String) -> void:
+	var down := InputEventAction.new()
+	down.action = action
+	down.pressed = true
+	Input.parse_input_event(down)
+	await process_frame
+	await process_frame
+	var up := InputEventAction.new()
+	up.action = action
+	up.pressed = false
+	Input.parse_input_event(up)
+	await process_frame
+
+
+func _key(code: int) -> void:
+	var e := InputEventKey.new()
+	e.physical_keycode = code
+	e.keycode = code
+	e.pressed = true
+	root.push_input(e)
+	await process_frame
+	await process_frame

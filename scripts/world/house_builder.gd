@@ -309,7 +309,11 @@ func build_rect(rect: Rect2i) -> String:
 
 
 func demolish() -> bool:
-	if HOUSE.region_of(get_tree()) != region_id or not HOUSE.demolish(get_tree()): return false
+	if HOUSE.region_of(get_tree()) != region_id: return false
+	if not HOUSE.CHEST.is_empty(get_tree()):
+		problem = "Esvazie o baú antes de demolir"
+		return false
+	if not HOUSE.demolish(get_tree()): return false
 	problem = ""
 	message = "Casa demolida; o material voltou para a bolsa."
 	rebuild()
@@ -326,6 +330,9 @@ func place_at(cell: Vector2i) -> bool:
 func erase_at(cell: Vector2i) -> bool:
 	if mode == "house":
 		return house().floor.has(cell) and demolish()
+	if HOUSE.furniture_at(get_tree(), cell) == "bau" and not HOUSE.CHEST.is_empty(get_tree()):
+		problem = "Esvazie o baú antes de tirá-lo"
+		return false
 	var ok := HOUSE.region_of(get_tree()) == region_id and HOUSE.remove_furniture(get_tree(), cell)  # devolve o material
 	if ok:
 		problem = ""
