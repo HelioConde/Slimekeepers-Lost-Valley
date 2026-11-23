@@ -98,6 +98,23 @@ func run() -> void:
 		check(FARM.can_water(self) == FARM.CAN_MAX - days, "%s: cada rega gasta 1 de água do regador (%d)" % [name, FARM.can_water(self)])
 		await press()
 		check(BAG.count_item(self, "folhas_frescas") >= 1, "%s: colhe folhas frescas" % name)
+		# [F] sem slime por perto come a comida da barra e recupera energia.
+		if region.call("_closest_slime") == null:
+			set_meta("player_energy", 50)
+			var leaves_before := BAG.count_item(self, "folhas_frescas")
+			await select("folhas_frescas")
+			var down := InputEventAction.new()
+			down.action = "feed"
+			down.pressed = true
+			Input.parse_input_event(down)
+			await process_frame
+			await process_frame
+			var up := InputEventAction.new()
+			up.action = "feed"
+			up.pressed = false
+			Input.parse_input_event(up)
+			await process_frame
+			check(int(get_meta("player_energy")) == 62 and BAG.count_item(self, "folhas_frescas") == leaves_before - 1, "%s: comer folhas recupera 12 de energia" % name)
 		# Regador vazio não rega; enche olhando para a água (lago da Floresta).
 		if name == "floresta":
 			set_meta(FARM.CAN_KEY, 0)

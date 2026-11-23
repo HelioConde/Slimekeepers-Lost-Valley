@@ -210,6 +210,8 @@ func _process(delta: float) -> void:
 	if is_instance_valid(recipe_panel):
 		recipe_panel.hide()
 	hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: observar   •   B: construir casa"
+	if Input.is_action_just_pressed("feed") and _closest_slime() == null:
+		eat_selected()  # [F] sem slime por perto: comer
 	if handle_player_house(house):
 		pass  # casa: modo construir ou dormir na cama
 	elif player.position.distance_to(Vector2(1600,70)) < 100:

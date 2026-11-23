@@ -46,7 +46,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 
 ## 5. Culinária
 - [ ] **P2** Receitas com cenoura, beterraba e repolho na estação do Vale
-- [ ] **P3** Comida recupera energia
+- [x] Comida recupera energia: [F] sem slime por perto come o item da barra (colheita +12, porção +30)
 
 ## 6. Visual e atmosfera (pendências das etapas de iluminação)
 - [ ] **P2** Sombras das pontes e penhascos acompanharem o horário

@@ -317,3 +317,23 @@ func open_chest() -> void:
 			var bag_node: Node = get("bag_hud")
 			if is_instance_valid(bag_node): bag_node.call("refresh"))
 	_chest_panel.open()
+
+
+## [F] sem slime por perto: come a comida selecionada na barra e recupera energia
+## (colheita +12, porção +30). Energia cheia: não come.
+func eat_selected() -> bool:
+	var energy := preload("res://scripts/systems/energy_state.gd")
+	var items := preload("res://scripts/systems/item_catalog.gd")
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var item: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
+	var gain := int(energy.FOOD_ENERGY.get(items.kind(item), 0))
+	if gain <= 0: return false
+	if energy.current(get_tree()) >= energy.MAX:
+		_notify("Energia já está cheia.")
+		return false
+	if not bag.spend_item(get_tree(), item, 1): return false
+	energy.restore(get_tree(), gain)
+	var bag_node: Node = get("bag_hud")
+	if is_instance_valid(bag_node): bag_node.call("refresh")
+	_notify("Você comeu %s. Energia +%d (%d/%d)." % [str(items.info(item).name).to_lower(), gain, energy.current(get_tree()), energy.MAX])
+	return true

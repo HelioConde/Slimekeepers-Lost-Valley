@@ -304,6 +304,8 @@ func _process(delta: float) -> void:
 			hud_hint.text = station_hint
 			return
 	var closest := _closest_slime()
+	if closest == null and Input.is_action_just_pressed("feed"):
+		eat_selected()  # [F] sem slime por perto: comer
 	if closest != null:
 		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Dar comida (item da barra)"
 		if Input.is_action_just_pressed("feed"):
