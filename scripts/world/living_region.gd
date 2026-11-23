@@ -57,6 +57,9 @@ static func connect_environment(region: Node2D, life: Node2D, tree_groups: Array
 	audio.configure(region.player,water,zone)
 	audio.set_environment_state(state)
 	region.add_child(audio)
+	var music := preload("res://scripts/world/region_music.gd").new()  # só toca se a faixa aprovada existir
+	music.name = "RegionMusic"
+	region.add_child(music)
 	return audio
 
 static func conditions(region: Node2D, period: String, rain: float, wind: float, fog: float) -> void:
