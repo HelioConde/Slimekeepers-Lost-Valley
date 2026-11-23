@@ -9,7 +9,7 @@ const DIRS = ["south", "south-east", "east", "north-east", "north", "north-west"
 const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
 ## Ferramentas (<arte>/tools/<nome>/<dir>/, quadros contados no disco): velocidade.
 ## A ferramenta na mão é a mesma do ícone da barra (enxada, regador, machado).
-const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0}
+const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0, "pickaxe": 14.0}
 ## Golpe aprovado (9 quadros: descanso, ergue, alto x3, rastro x2, impacto x2):
 ## pausa no alto, descida rápida, pausa longa no impacto. Duração = valor / 10 s.
 const SWING_FPS := 10.0
