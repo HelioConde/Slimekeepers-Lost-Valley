@@ -315,7 +315,8 @@ func _process(delta: float) -> void:
 			if not closest.befriended:
 				closest.make_friend()
 				_update_hud()
-			_notify(closest.display_name()+" parece feliz com sua visita.")
+			var hearts := FEEDING.hearts(get_tree(), str(closest.get("persistent_id")))
+			_notify("%s parece feliz com sua visita. Laço: %d/%d corações." % [closest.display_name(), hearts, FEEDING.MAX_HEARTS])
 		return
 	var seeds := _nearest_seed_patch()
 	if seeds != null:

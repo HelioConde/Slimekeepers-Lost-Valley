@@ -235,7 +235,8 @@ func _process(delta: float) -> void:
 				elif Input.is_action_just_pressed("interact"):
 					closest.make_friend()
 					_update_living_goal()
-					_notify("Bolhinha salta e espalha pequenas gotas de alegria.")
+					var hearts := FEEDING.hearts(get_tree(), str(closest.get("persistent_id")))
+					_notify("%s salta e espalha pequenas gotas de alegria. Laço: %d/%d corações." % [closest.display_name(), hearts, FEEDING.MAX_HEARTS])
 			else:
 				for marker: Marker2D in $PointsOfInterest.get_children():
 					if player.position.distance_to(marker.position)<90:

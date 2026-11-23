@@ -41,7 +41,7 @@ Legenda: **P1** próximo · **P2** em seguida · **P3** depois.
 - [x] Alimentar slimes com colheitas/porção ([F] com o item da barra), 1×/dia, corações
 - [ ] **P2** Slimes ajudam na fazenda (Brotinho rega/cuida das plantas)
 - [ ] **P2** Brasinha e Gelito nas regiões atuais (canônicos; luz própria já existe)
-- [ ] **P3** Mostrar corações de afinidade ao interagir
+- [x] Mostrar corações de afinidade ao cumprimentar um slime com [E]
 - [x] Coleta silvestre diária (mato, gravetos e pedras voltam no dia seguinte)
 
 ## 5. Culinária
