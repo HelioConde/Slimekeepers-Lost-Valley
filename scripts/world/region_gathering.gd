@@ -89,7 +89,7 @@ func _rock_interaction() -> bool:
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
 		player.facing = player._get_direction_name(r.at - player.global_position)
-		if player.play_tool("pickaxe") <= 0.0: player.play_tool("hoe")  # picareta só tem o golpe de frente por enquanto
+		if player.play_tool("pickaxe") <= 0.0: player.play_tool("hoe")  # protagonista sem arte de picareta
 		if rocks.strike(r, GameClock.day_number) == "broken":
 			region._notify("A pedra quebrou!")
 	return true
