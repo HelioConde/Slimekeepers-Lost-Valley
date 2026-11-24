@@ -31,6 +31,7 @@ func run() -> void:
 	player.global_position += Vector2(0, -400)  # longe: o ímã do jogador não pega a colheita
 	var cell: Vector2i = farm.cell_at(Vector2(3200, 3200)) + Vector2i(3, 2)
 	FARM.till(self, cell, farm.field_id)
+	preload("res://scripts/systems/forest_bag.gd").add_item(self, "semente_cenoura", 1)  # sem kit inicial de sementes
 	FARM.plant(self, cell, "cenoura", farm.field_id)
 	for d in 6:
 		FARM.water(self, cell, farm.field_id)

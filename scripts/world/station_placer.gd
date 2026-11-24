@@ -16,7 +16,7 @@ const KINDS := {
 }
 ## Planta de construção (pedido do usuário, 2026-11-23): colocar deixa a planta no chão;
 ## [F] nela começa a construir (segue sozinho, andar cancela; o progresso fica salvo).
-## Futuro: um slime que ajuda a construir.
+## O Construlim (farm_helpers.gd) também constrói, sozinho ou junto com o jogador.
 const BLUEPRINT := Color(0.55, 0.85, 1.0, 0.55)
 const FILL_SHADER := preload("res://scripts/world/blueprint_fill.gdshader")
 const MOVES := ["move_left", "move_right", "move_up", "move_down"]
@@ -147,24 +147,42 @@ func _build_step(player: Node2D) -> String:
 		_store_progress(station)
 		return ""
 	var info: Dictionary = KINDS.get(str(station.get_meta("kind")), KINDS.bancada)
-	var progress: float = float(station.get_meta("progress", 0.0)) + get_process_delta_time()
-	station.set_meta("progress", progress)
-	var sprite_fill := (station.get_node("Sprite") as Sprite2D).material as ShaderMaterial
-	if sprite_fill: sprite_fill.set_shader_parameter("progress", clampf(progress / float(info.build), 0.0, 1.0))
 	player.facing = player._get_direction_name(station.global_position - player.global_position)
 	if player.has_method("hold_pose"): player.hold_pose("pick_big", player.PICK_BIG_GROUND)
-	_save_wait -= get_process_delta_time()
-	if _save_wait <= 0.0:
-		_save_wait = 1.0
-		_store_progress(station)
-	if progress < float(info.build):
+	if not add_progress(station, get_process_delta_time()):
+		var progress: float = float(station.get_meta("progress", 0.0))
 		return "Construindo %s... %d%% · andar cancela" % [str(info.name).trim_prefix("a ").trim_prefix("o "), mini(99, int(progress / float(info.build) * 100.0))]
 	_building = null
 	if player.has_method("release_pose"): player.release_pose()
+	return "built" if str(station.get_meta("kind")) == "bancada" else "built_" + str(station.get_meta("kind"))
+
+
+## Soma `seconds` de obra à planta (jogador ou Construlim; os dois juntos = o dobro).
+## Devolve true quando ela fica pronta (ou já estava).
+func add_progress(station: Node2D, seconds: float) -> bool:
+	if bool(station.get_meta("built", true)): return true
+	var info: Dictionary = KINDS.get(str(station.get_meta("kind")), KINDS.bancada)
+	var progress: float = float(station.get_meta("progress", 0.0)) + seconds
+	station.set_meta("progress", progress)
+	var sprite_fill := (station.get_node("Sprite") as Sprite2D).material as ShaderMaterial
+	if sprite_fill: sprite_fill.set_shader_parameter("progress", clampf(progress / float(info.build), 0.0, 1.0))
+	_save_wait -= seconds
+	if _save_wait <= 0.0:
+		_save_wait = 1.0
+		_store_progress(station)
+	if progress < float(info.build): return false
 	station.set_meta("built", true)
 	_store_progress(station)
 	_finish(station)
-	return "built" if str(station.get_meta("kind")) == "bancada" else "built_" + str(station.get_meta("kind"))
+	return true
+
+
+## Plantas ainda não construídas nesta região (o Construlim escolhe a mais perto).
+func blueprints() -> Array[Node2D]:
+	var out: Array[Node2D] = []
+	for station in _stations:
+		if is_instance_valid(station) and not bool(station.get_meta("built", true)): out.append(station)
+	return out
 
 
 ## Grava built/progresso da construção na sessão.

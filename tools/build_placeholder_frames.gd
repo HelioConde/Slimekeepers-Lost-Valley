@@ -3,8 +3,8 @@ extends SceneTree
 ## (Colhita, Carreguim). Animações sem arte usam a mais parecida (ALIAS) ou o parado.
 ## Nenhum quadro pode ter braço ou perna (conferir antes).
 ## Uso: godot --headless --path . --script res://tools/build_placeholder_frames.gd -- <especie>
-const ANIMS := ["idle", "move", "blink", "happy", "sleep", "comer", "receber_carinho", "colher", "carregar", "plant", "curious", "play", "comemorar"]
-const ALIAS := {"plant": "colher", "curious": "blink", "play": "happy", "comemorar": "happy", "colher": "happy", "carregar": "happy"}
+const ANIMS := ["idle", "move", "blink", "happy", "sleep", "comer", "receber_carinho", "colher", "carregar", "plant", "curious", "play", "comemorar", "construir"]
+const ALIAS := {"plant": "colher", "curious": "blink", "play": "happy", "comemorar": "happy", "colher": "happy", "carregar": "happy", "construir": "happy"}
 const FPS := {"idle": 6.0, "move": 10.0, "sleep": 4.0}
 func _initialize() -> void:
 	var sp: String = OS.get_cmdline_user_args()[0]

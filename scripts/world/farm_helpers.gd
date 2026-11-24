@@ -17,7 +17,7 @@ const VARIANTS := preload("res://scripts/systems/slime_variants.gd")
 const KEY := "farm_helpers_done"
 const FRIEND_KEYS := ["forest_slime_friends", "valley_slime_friends"]
 const ROLES := {"brotinho": "plantar", "bolhinha": "regar", "musguinho": "adubar",
-	"colhita": "colher", "carreguim": "carregar"}
+	"colhita": "colher", "carreguim": "carregar", "construlim": "construir"}
 const CHEST := preload("res://scripts/systems/chest_storage.gd")
 const PLACER := preload("res://scripts/world/station_placer.gd")
 const CARRY_RADIUS := 360.0  ## Carreguim junta o que está no chão até essa distância da fazenda
@@ -31,6 +31,10 @@ const DAY_HOURS := Vector2i(6, 19)
 const NONE := Vector2i(-99999, -99999)
 
 var farm: Node2D  ## farm_field.gd (field_id, refresh)
+## station_placer.gd da região: plantas (bancada, baú) que o Construlim constrói.
+var placer: Node2D
+## Construlim gasta TASK_COST a cada BUILD_TASK_SECONDS de obra (bancada de 10 s = 2 tarefas).
+const BUILD_TASK_SECONDS := 5.0
 ## Solta a colheita da Colhita no chão (item_drops.spawn); vazio = direto na bolsa.
 static var drop: Callable
 var _helpers: Dictionary = {}  # species -> {sprite, cell, timer}
@@ -141,6 +145,9 @@ func _process(delta: float) -> void:
 		if species == "carreguim":
 			_carry_step(tree, h, day, daytime, delta)
 			continue
+		if species == "construlim":
+			_build_step(tree, h, day, daytime, delta)
+			continue
 		if h.cell == NONE:
 			var resting := bool((tree.get_meta("slime_work_off", {}) as Dictionary).get(species, false))  # "Parar de trabalhar"
 			if daytime and not resting and can_work(tree, species, day):
@@ -199,6 +206,37 @@ func _carry_step(tree: SceneTree, h: Dictionary, day: int, daytime: bool, delta:
 	sprite.global_position = sprite.global_position.move_toward(goal, SPEED * pace * delta)
 	sprite.flip_h = goal.x < sprite.global_position.x
 	_play(sprite, "move")
+
+
+## Construlim (pedido do usuário, 2026-11-23): sozinho, vai até a planta mais perto da
+## região e constrói no mesmo ritmo do jogador (os dois juntos terminam na metade do tempo).
+func _build_step(tree: SceneTree, h: Dictionary, day: int, daytime: bool, delta: float) -> void:
+	var sprite: AnimatedSprite2D = h.sprite
+	var resting := bool((tree.get_meta("slime_work_off", {}) as Dictionary).get("construlim", false))
+	if not daytime or resting or not can_work(tree, "construlim", day) or not is_instance_valid(placer):
+		_play(sprite, "idle")
+		return
+	var target: Node2D = null
+	for station: Node2D in placer.call("blueprints"):
+		if target == null or station.global_position.distance_to(sprite.global_position) < target.global_position.distance_to(sprite.global_position):
+			target = station
+	if target == null:
+		_play(sprite, "idle")
+		return
+	var pace: float = VARIANTS.WORK_SPEED[VARIANTS.best_friend(tree, "construlim", FRIEND_KEYS)]
+	var goal := target.global_position + Vector2(-30, 6)  # ao lado da planta
+	if sprite.global_position.distance_to(goal) > 4.0:
+		sprite.global_position = sprite.global_position.move_toward(goal, SPEED * pace * delta)
+		sprite.flip_h = goal.x < sprite.global_position.x
+		_play(sprite, "move")
+		return
+	_play(sprite, "construir")
+	var work := delta * pace
+	h.timer += work
+	if h.timer >= BUILD_TASK_SECONDS:
+		h.timer -= BUILD_TASK_SECONDS
+		_spend(tree, "construlim", day)
+	if placer.call("add_progress", target, work): h.timer = 0.0
 
 
 var _chest_id := ""

@@ -118,8 +118,9 @@ func run(line: String) -> String:
 			var friends: Dictionary = (tree.get_meta("forest_slime_friends", {}) as Dictionary).duplicate()
 			friends["colhita/admin/0"] = true
 			friends["carreguim/admin/0"] = true
+			friends["construlim/admin/0"] = true
 			tree.set_meta("forest_slime_friends", friends)
-			return "Colhita e Carreguim agora são amigos e vão para a fazenda."
+			return "Colhita, Carreguim e Construlim agora são amigos e vão para a fazenda."
 		"ir":
 			if args.size() < 2 or not REGIONS.has(args[1]): return "Uso: ir floresta|vale"
 			tree.call_deferred("change_scene_to_file", REGIONS[args[1]])

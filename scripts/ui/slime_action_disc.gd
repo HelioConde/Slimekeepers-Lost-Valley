@@ -66,7 +66,7 @@ func open(target: Node2D) -> void:
 	actions = [
 		{"id": "carinho", "name": "Carinho" if friend else "Ainda desconfiado", "icon": SKIN.heart(true), "enabled": friend},
 		{"id": "comida", "name": "Dar comida", "icon": ITEMS.icon("cenoura_assada"), "enabled": true},
-		{"id": "trabalho", "name": ("Escolher baú" if species == "carreguim" else ("Parar de trabalhar" if working else "Voltar a trabalhar")), "icon": ITEMS.icon("bau_campo" if species == "carreguim" else "enxada"), "enabled": friend},
+		{"id": "trabalho", "name": ("Escolher baú" if species == "carreguim" else ("Parar de trabalhar" if working else "Voltar a trabalhar")), "icon": ITEMS.icon("bau_campo" if species == "carreguim" else ("bancada" if species == "construlim" else "enxada")), "enabled": friend},
 		{"id": "seguir", "name": "Ficar em casa" if at_farm else "Ir para a fazenda", "icon": _steps_icon(), "enabled": friend},
 	]
 	for icon in _icons: icon.queue_free()

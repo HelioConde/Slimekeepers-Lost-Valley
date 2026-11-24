@@ -4,7 +4,9 @@ extends RefCounted
 ## Preferência por habitat (pedido do usuário, 2026-11-22; docs/gameplay/COMIDA_DOS_SLIMES.md):
 ## comida do grupo que a espécie prefere dá o dobro de pontos.
 const LIKES := {"brotinho": "vegetal", "musguinho": "vegetal", "bolhinha": "marinha",
-	"colhita": "cozido", "carreguim": "cozido"}  # Colhita e Carreguim preferem pratos cozidos (2026-11-23)
+	"colhita": "cozido", "carreguim": "cozido",  # Colhita e Carreguim preferem pratos cozidos (2026-11-23)
+	"construlim": "raiz"}  # Construlim: raízes cruas (cenoura, beterraba), escolha do usuário 2026-11-23
+const ROOTS := ["cenoura", "beterraba"]
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
@@ -42,6 +44,7 @@ static func is_favorite(item_id: String, species: String) -> bool:
 	var liked: String = LIKES.get(species, "")
 	if liked.is_empty(): return false
 	if liked == "cozido": return ITEMS.kind(item_id) == "food"
+	if liked == "raiz": return item_id in ROOTS
 	return ITEMS.food_group(item_id) == liked
 
 

@@ -140,6 +140,7 @@ func _ready() -> void:
 	farm = add_free_farm("floresta", house)
 	var helpers: Node2D = preload("res://scripts/world/farm_helpers.gd").new()
 	helpers.farm = farm
+	helpers.placer = placer  # Construlim constrói as plantas desta região
 	add_child(helpers)
 	GameClock.day_changed.connect(choppable.apply_day)
 
