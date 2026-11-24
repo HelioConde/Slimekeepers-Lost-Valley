@@ -77,15 +77,6 @@ func test_cannot_plant_without_seed_or_on_grass_or_twice() -> void:
 	assert_bool(Farm.harvest(tree, cell)).is_false()  # não está pronta
 
 
-func test_starter_seed_pack_is_given_once() -> void:
-	var tree := get_tree()
-	assert_bool(Farm.grant_starter_seeds(tree)).is_true()
-	var carrots := Bag.count_item(tree, "semente_cenoura")
-	assert_int(carrots).is_greater(0)
-	assert_bool(Farm.grant_starter_seeds(tree)).is_false()
-	assert_int(Bag.count_item(tree, "semente_cenoura")).is_equal(carrots)
-
-
 func test_days_passed_elsewhere_are_caught_up() -> void:
 	var tree := get_tree()
 	if tree.has_meta(Farm.LAST_DAY_KEY): tree.remove_meta(Farm.LAST_DAY_KEY)

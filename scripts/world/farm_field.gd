@@ -53,7 +53,6 @@ func _ready() -> void:
 	_soil.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_soil.draw.connect(_draw_soil)
 	add_child(_soil)
-	FARM.grant_starter_seeds(get_tree())
 	if FARM.catch_up(get_tree(), GameClock.day_number) > 0:
 		ENERGY.restore(get_tree())
 	if not GameClock.day_changed.is_connected(_on_day_changed):

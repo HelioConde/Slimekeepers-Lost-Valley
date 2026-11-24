@@ -47,7 +47,10 @@ func test_full_loop_with_hotbar_items() -> void:
 	var actor: Node2D = parts[1]
 	actor.global_position = Vector2(11 * 32 + 16, 10 * 32 + 4)  # célula (11,10), olhando para (11,11)
 	await await_idle_frame()
-	assert_int(Bag.count_item(get_tree(), "semente_cenoura")).is_greater(0)  # kit inicial
+	# Sem kit inicial (pedido do usuário, 2026-11-23): o jogador não começa com sementes.
+	for seed_id in ["semente_cenoura", "semente_beterraba", "semente_repolho", "sementes_silvestres"]:
+		assert_int(Bag.count_item(get_tree(), seed_id)).is_equal(0)
+	Bag.add_item(get_tree(), "semente_cenoura", 8)  # sementes da foice, para seguir o ciclo
 	var cell: Vector2i = field.target_cell(actor)
 	assert_bool(field.contains(cell)).is_true()
 	_select("regador")
