@@ -7,7 +7,7 @@ extends Node
 ## muted) vezes GAIN, para a música ficar por baixo do ambiente.
 
 const TRACKS := {
-	"floresta_dia": {"path": "res://assets/audio/music/floresta_dia.mp3", "loop_start": 0.0, "loop_end": 0.0},
+	"floresta_dia": {"path": "res://assets/audio/music/floresta_dia.mp3", "loop_start": 63.181, "loop_end": 167.221},  # versão 1, aprovada
 }
 const GAIN := 0.45
 const FADE_IN := 4.0

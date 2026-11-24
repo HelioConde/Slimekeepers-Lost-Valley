@@ -7,7 +7,7 @@ Opção recomendada: música gerada no PixelLab (`create_music`), com aprovaçã
 | Parte | Estado |
 |---|---|
 | Tocador `scripts/world/region_music.gd` | Feito. Toca a introdução uma vez, depois repete o trecho do loop sem emenda. Usa o volume e o "silenciar" das opções de áudio, × 0,45, para ficar abaixo do ambiente, e entra com fade de 4 s. Sem o arquivo da faixa, fica em silêncio. Entra nas regiões vivas (`living_region.gd`). Teste: `tests/forest/test_region_music.gd` |
-| Faixa "Floresta — dia" | Aguardando o usuário escolher a versão 1 ou a 2. As prévias ficam em `docs/gameplay/audio_previa/`, fora do Git, com `.gdignore` para o Godot não importar |
+| Faixa "Floresta — dia" | Feito: versão 1 aprovada pelo usuário (2026-11-23), em `assets/audio/music/floresta_dia.mp3`, loop 167,221 s → 63,181 s. As prévias ficam em `docs/gameplay/audio_previa/`, fora do Git, com `.gdignore` |
 
 ## Pontos de loop (versões em loop do PixelLab, `make_music_loop`)
 
