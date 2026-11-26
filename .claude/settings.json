@@ -6,10 +6,18 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-community"
       }
+    },
+    "model-router": {
+      "source": {
+        "source": "github",
+        "repo": "nobodyohm-web/claude-code-model-router",
+        "ref": "351d04433a3cbd66ed18e60ee8d187002a396ebc"
+      }
     }
   },
   "enabledPlugins": {
-    "godot-prompter@claude-community": true
+    "godot-prompter@claude-community": true,
+    "model-router@model-router": true
   },
   "permissions": {
     "deny": [
