@@ -37,6 +37,41 @@ var _extras: Dictionary = {}  # key -> [stump, log]
 
 ## prefix separa o estado salvo de cada mapa ("" = Floresta, chaves antigas).
 ## all_children: grupos só de árvores (Vale), sem a marca metadata/tree.
+## Tocos e troncos de cenário (playtest ID 50): o machado processa o tronco caído em
+## madeira e a pá arranca o toco; somem de vez (estado em CHOPPED_KEY com "scenery").
+const SCENERY_ART := {"fallen_log": "log", "environment/stump.png": "stump"}
+var scenery: Dictionary = {}  # chave "cena:<caminho>" -> {node, kind}
+
+
+func setup_scenery(root: Node) -> void:
+	for sprite: Sprite2D in root.find_children("*", "Sprite2D", true, false):
+		if sprite.texture == null or not sprite.is_visible_in_tree(): continue
+		var path := sprite.texture.resource_path
+		for art: String in SCENERY_ART:
+			if not art in path or _is_tree_extra(sprite): continue
+			var holder: Node2D = sprite.get_parent() if sprite.name == &"Sprite" else sprite
+			var key := "cena:%s" % root.get_path_to(holder)
+			scenery[key] = {"node": holder, "kind": SCENERY_ART[art]}
+			var at := holder.global_position
+			var cell := Vector2i((at / CELL).floor())
+			if not _grid.has(cell): _grid[cell] = []
+			_grid[cell].append(key)
+			if state(get_tree()).has(key): _hide_scenery(key)
+
+
+## Toco/tronco que esta classe pôs ao derrubar uma árvore (não é cenário).
+func _is_tree_extra(sprite: Node) -> bool:
+	for parts in _extras.values():
+		if sprite in parts: return true
+	return false
+
+
+func _hide_scenery(key: String) -> void:
+	var node: Node2D = scenery[key].node
+	node.hide()
+	for body in node.find_children("*", "StaticBody2D", true, false): (body as StaticBody2D).collision_layer = 0
+
+
 func setup(groups: Array, protected: Callable, prefix: String = "", all_children: bool = false) -> void:
 	name = "ChoppableTrees"
 	for group: Node in groups:
@@ -88,6 +123,13 @@ func target(at: Vector2) -> Dictionary:
 	for dy in range(-1, 2):
 		for dx in range(-1, 2):
 			for key: String in _grid.get(base + Vector2i(dx, dy), []):
+				if scenery.has(key):
+					if scenery[key].kind == "log" and not chopped.has(key):
+						var d_scene := at.distance_to((scenery[key].node as Node2D).global_position)
+						if d_scene < best_d:
+							best = {"key": key, "kind": "log"}
+							best_d = d_scene
+					continue
 				var tree: Node2D = trees[key]
 				if not tree.is_visible_in_tree(): continue  # oculta (penhasco, debaixo da casa): sem alvo fantasma (ID 05)
 				if chopped.has(key):
@@ -134,6 +176,7 @@ func log_scale(key: String) -> float:
 
 ## Onde o tronco cai: ao lado do toco, no lado da queda (proporcional ao tamanho da árvore).
 func log_position(key: String) -> Vector2:
+	if scenery.has(key): return (scenery[key].node as Node2D).global_position
 	var side := float((state(get_tree()).get(key, {}) as Dictionary).get("side", 1))
 	return (trees[key] as Node2D).global_position + Vector2(LOG_OFFSET.x * side, LOG_OFFSET.y) * (tree_scale(key) * 0.5)
 
@@ -157,6 +200,7 @@ func fell_hits(key: String) -> int:
 
 ## Madeira por tronco: a árvore grande rende o dobro.
 func wood(key: String) -> int:
+	if scenery.has(key): return WOOD_PER_LOG
 	return WOOD_PER_LOG * (1 if is_small(key) else 2)
 
 
@@ -165,6 +209,17 @@ func wood(key: String) -> int:
 func strike(t: Dictionary, day: int, power: int = 1, from: Vector2 = Vector2.INF) -> String:
 	var key: String = t.key
 	_hits[key] = hits(key) + power
+	if scenery.has(key):  # tronco de cenário: processa direto em madeira
+		_shake(scenery[key].node)
+		if hits(key) < HITS_TO_PROCESS: return "hit"
+		_hits.erase(key)
+		var done := state(get_tree()).duplicate(true)
+		done[key] = {"day": day, "processed": true, "scenery": true}
+		get_tree().set_meta(CHOPPED_KEY, done)
+		if drop.is_valid(): drop.call("madeira", wood(key), log_position(key))
+		else: BAG.add_item(get_tree(), "madeira", wood(key))
+		_hide_scenery(key)
+		return "processed"
 	var tree: Node2D = trees[key]
 	_shake(tree.get_node("Sprite") if t.kind == "tree" else _extras[key][1])
 	if t.kind == "tree":
@@ -214,16 +269,29 @@ func stump_target(at: Vector2) -> String:
 	for dy in range(-1, 2):
 		for dx in range(-1, 2):
 			for key: String in _grid.get(base + Vector2i(dx, dy), []):
-				if not chopped.has(key) or bool(chopped[key].get("stump_removed", false)): continue
-				var d := at.distance_to((trees[key] as Node2D).global_position)
+				if scenery.has(key):
+					if scenery[key].kind != "stump" or chopped.has(key): continue
+				elif not chopped.has(key) or bool(chopped[key].get("stump_removed", false)): continue
+				var d := at.distance_to(spot_of(key))
 				if d < best_d:
 					best = key
 					best_d = d
 	return best
 
 
+## Posição de uma árvore ou peça de cenário.
+func spot_of(key: String) -> Vector2:
+	return (scenery[key].node as Node2D).global_position if scenery.has(key) else (trees[key] as Node2D).global_position
+
+
 ## Arranca o toco: o lugar fica livre de vez (a árvore não volta a crescer).
 func remove_stump(key: String) -> void:
+	if scenery.has(key):
+		var done := state(get_tree()).duplicate(true)
+		done[key] = {"day": 0, "stump_removed": true, "scenery": true}
+		get_tree().set_meta(CHOPPED_KEY, done)
+		_hide_scenery(key)
+		return
 	var chopped := state(get_tree()).duplicate(true)
 	if not chopped.has(key): return
 	chopped[key]["stump_removed"] = true

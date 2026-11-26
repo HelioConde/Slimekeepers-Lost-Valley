@@ -120,7 +120,7 @@ func _stump_interaction() -> bool:
 	if not ENERGY.spend(get_tree(), "chop"):
 		region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 		return true
-	var at: Vector2 = (choppable.trees[key] as Node2D).global_position
+	var at: Vector2 = choppable.spot_of(key)
 	player.facing = player._get_direction_name(at - player.global_position)
 	var anim: float = player.play_tool("shovel")
 	if anim <= 0.0: anim = player.play_tool("hoe")  # Moni ainda sem arte de pá

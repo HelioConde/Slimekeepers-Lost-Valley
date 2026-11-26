@@ -131,6 +131,7 @@ func _ready() -> void:
 			if at.distance_to(p.at) < 160.0: return true
 		return false)
 	choppable.apply_day(GameClock.day_number)
+	choppable.setup_scenery(self)  # tocos e troncos de cenário (playtest ID 50)
 	# Bancadas colocadas pelo jogador (CRIACAO.md, etapa 4).
 	placer = preload("res://scripts/world/station_placer.gd").new()
 	placer.open_chest = open_chest  # baús colocados no chão
