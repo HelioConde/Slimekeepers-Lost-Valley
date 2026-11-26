@@ -453,7 +453,7 @@ func _add_starter_trees() -> void:
 	$VegetationHigh.add_child(holder)
 	var template: Node2D
 	for node in $VegetationHigh.get_children():
-		if node is Node2D and node.get_meta("tree", false) and node.has_node("Sprite"):
+		if node is Node2D and node.visible and node.get_meta("tree", false) and node.has_node("Sprite"):  # oculta pelas regras visuais não serve de modelo
 			var sprite := node.get_node("Sprite") as Sprite2D
 			if sprite.texture and sprite.texture.get_image().get_used_rect().size.y * absf(sprite.global_scale.y) <= 110.0:
 				template = node
@@ -473,6 +473,7 @@ func _add_starter_trees() -> void:
 		if Forest.habitats().any(func(h: Dictionary) -> bool: return at.distance_to(h.center) < float(h.radius) + 90.0): continue
 		if placed.any(func(p: Vector2) -> bool: return p.distance_to(at) < 90.0): continue
 		var tree := template.duplicate() as Node2D
+		tree.show()
 		tree.name = "StarterTree%d" % placed.size()
 		holder.add_child(tree)
 		tree.global_position = at.round()  # depois de entrar na cena (o grupo pode ter deslocamento)

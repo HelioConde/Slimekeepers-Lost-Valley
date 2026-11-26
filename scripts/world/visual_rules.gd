@@ -57,6 +57,8 @@ func apply(region: Node2D, paths: Dictionary) -> Dictionary:
 							if at.distance_squared_to(other)<spacing*spacing:crowded=true
 				if crowded:
 					prop.hide()
+					# Oculta não pode bloquear nem virar alvo (playtest IDs 05 e 28).
+					for body in prop.find_children("*","StaticBody2D",true,false): body.collision_layer = 0
 					_stats.thinned_plants+=1
 				else:
 					if not _plants.has(key):_plants[key]=[]

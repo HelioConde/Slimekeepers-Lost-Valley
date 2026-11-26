@@ -43,6 +43,9 @@ func setup(groups: Array, protected: Callable, prefix: String = "", all_children
 		for node in group.get_children():  # marca metadata/tree do próprio nó da árvore
 			if not (node is Node2D) or not node.has_node("Sprite"): continue
 			if not all_children and not node.get_meta("tree", false): continue
+			if not (node as Node2D).visible:  # oculta na cena ou pelas regras visuais: sem colisão nem alvo (playtest IDs 05 e 28)
+				for body in node.find_children("*", "StaticBody2D", true, false): (body as StaticBody2D).collision_layer = 0
+				continue
 			var at: Vector2 = (node as Node2D).global_position
 			if protected.call(at): continue
 			var key := "%s%s/%s" % [prefix, group.name, node.name]
@@ -84,6 +87,7 @@ func target(at: Vector2) -> Dictionary:
 		for dx in range(-1, 2):
 			for key: String in _grid.get(base + Vector2i(dx, dy), []):
 				var tree: Node2D = trees[key]
+				if not tree.is_visible_in_tree(): continue  # oculta (penhasco, debaixo da casa): sem alvo fantasma (ID 05)
 				if chopped.has(key):
 					if bool(chopped[key].get("processed", false)): continue
 					var d_log := at.distance_to(log_position(key))
