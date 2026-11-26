@@ -25,9 +25,9 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Pendente | |
 | 46 | Baú sincronizado em tempo real no MP | Crítica | Pendente | |
 | 47 | Cama na progressão da casa | Crítica | Feito (com teste) | 98415b60 (aviso, sessão Luz V4) + entrada Cama na aba Construção (crafting_panel) · tools/test_craft_select.gd |
-| 01 | Recursos básicos perto da estrada | P1 | Pendente | |
-| 06 | Pedras no início | P1 | Pendente | |
-| 07 | Quebrar pedras, mais rendimento | P1 | Pendente | |
+| 01 | Recursos básicos perto da estrada | P1 | Feito (com teste) | 214eae2a (sessão Luz V4): gravetos e pedrinhas à beira das trilhas perto do início · test_forest_foraging |
+| 06 | Pedras no início | P1 | Feito (com teste) | 214eae2a (sessão Luz V4) + 54 (sem bloqueio por nível) · test_rocks, test_crafting_flow |
+| 07 | Quebrar pedras, mais rendimento | P1 | Feito (com teste) | b3092823 (sessão Luz V4): pedra média 5, grande 12 · test_rocks |
 | 05 | Árvores fantasmas | P1 | Pendente | Reproduzir |
 | 03 | Botão X nos painéis | P1 | Feito (com teste) | close_button.gd · tools/test_close_buttons.gd (disco do slime e lista do Vale ficam sem X: não são janelas) |
 | 04 | Selecionar receita sem fabricar | P1 | Feito (com teste) | a4b187dc · crafting_panel · tools/test_craft_select.gd |
