@@ -22,7 +22,10 @@ const LOG_OFFSET := Vector2(54, 10)  # tronco cai ao lado do toco (árvore escal
 const SMALL_TREE_MAX_HEIGHT := 120.0
 ## Toco e tronco proporcionais à árvore: fração da escala do sprite da árvore.
 const STUMP_SCALE := 0.48
-const LOG_SCALE := 0.7
+## Comprimento do tronco caído = esta fração da altura visível da árvore (playtest ID 44:
+## o tronco não pode parecer maior que a árvore).
+const LOG_LENGTH_OF_TREE := 0.45
+const LOG_ART_LENGTH := 83.0  ## largura visível da arte do tronco (px)
 
 var trees: Dictionary = {}  # key -> Node2D
 ## Solta a madeira no chão (item, quantidade, ponto); vazio = direto na bolsa.
@@ -104,12 +107,23 @@ func tree_scale(key: String) -> float:
 var _used_height := {}  # textura -> altura visível (get_image é caro)
 
 
-## Pequena = cortável com o machado de pedra.
-func is_small(key: String) -> bool:
+## Altura visível da árvore no mundo (px).
+func visible_height(key: String) -> float:
 	var sprite := (trees[key] as Node2D).get_node("Sprite") as Sprite2D
 	if not _used_height.has(sprite.texture):
 		_used_height[sprite.texture] = sprite.texture.get_image().get_used_rect().size.y
-	return float(_used_height[sprite.texture]) * absf(sprite.global_scale.y) <= SMALL_TREE_MAX_HEIGHT
+	return float(_used_height[sprite.texture]) * absf(sprite.global_scale.y)
+
+
+## Pequena = cortável com o machado de pedra.
+func is_small(key: String) -> bool:
+	return visible_height(key) <= SMALL_TREE_MAX_HEIGHT
+
+
+## Escala local do tronco caído: comprimento proporcional à altura da árvore.
+func log_scale(key: String) -> float:
+	var node_scale := absf((trees[key] as Node2D).global_scale.x)
+	return visible_height(key) * LOG_LENGTH_OF_TREE / (LOG_ART_LENGTH * maxf(node_scale, 0.001))
 
 
 ## Onde o tronco cai (ao lado do toco, proporcional ao tamanho da árvore).
@@ -166,7 +180,7 @@ func _fell_visual(key: String, processed: bool) -> void:
 	if not _extras.has(key):
 		var s := tree_scale(key)
 		var stump := _sprite(tree, STUMP, Vector2(0, -22), STUMP_SCALE * s)
-		var log := _sprite(tree, LOG, Vector2(0, -20), LOG_SCALE * s)
+		var log := _sprite(tree, LOG, Vector2(0, -20), log_scale(key))
 		log.position = log_position(key) - tree.global_position
 		_extras[key] = [stump, log]
 	(_extras[key][1] as Sprite2D).visible = not processed

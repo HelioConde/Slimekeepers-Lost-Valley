@@ -101,6 +101,9 @@ func run() -> void:
 		var results: Array = []
 		for i in 3: results.append(trees.strike(t, 1, 2))
 		check(results == ["hit", "hit", "felled"], "machado polido (vale 2) derruba a árvore grande em 3 golpes (%s)" % [results])
+		var log: Sprite2D = trees._extras[big_tree][1]
+		var log_len: float = 83.0 * absf(log.global_scale.x)
+		check(log_len <= trees.visible_height(big_tree) * 0.5, "tronco caído menor que a árvore (%.0f px x %.0f px de altura; playtest ID 44)" % [log_len, trees.visible_height(big_tree)])
 	# ID 53: com a picareta na mão, um toque recolhe o monte de pedrinhas.
 	var pebbles: Array = forage.spots.filter(func(sp: Dictionary) -> bool: return sp.item == "pedra_pequena" and not forage.is_taken(self, sp.id, root.get_node("GameClock").day_number))
 	if not pebbles.is_empty():
