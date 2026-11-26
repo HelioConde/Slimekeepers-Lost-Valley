@@ -162,7 +162,11 @@ func interact(actor: Node2D) -> String:
 	var item := HOTBAR.selected_item(tree)
 	var message := ""
 	var action := action_with(cell, item)
-	if action in ENERGY.COSTS and not ENERGY.spend(tree, action):
+	if action == "till" and not ENERGY.can_afford(tree, action):  # a enxada gasta no contato (ID 10)
+		ENERGY.spend(tree, action)  # conta a insistência sem energia (exaustão, ID 35)
+		last_action = preload("res://scripts/systems/protagonist.gd").tired_message(get_tree())
+		return last_action
+	if action in ENERGY.COSTS and action != "till" and not ENERGY.spend(tree, action):
 		last_action = preload("res://scripts/systems/protagonist.gd").tired_message(get_tree())
 		return last_action
 	match action:
@@ -174,10 +178,15 @@ func interact(actor: Node2D) -> String:
 				message = "%s colhida e guardada na bolsa!" % harvested
 				PROGRESS.mark_event(tree, PROGRESS.GARDEN_HARVESTED)  # marco da sessão (antes: canteiros)
 		"till":
-			if FARM.till(tree, cell, field_id):
-				message = "Terra arada."
-				_clear_cell_decor(cell)
-			if actor.has_method("play_tool"): actor.play_tool("hoe")
+			# Aragem sincronizada (playtest ID 10): o chão só muda, e a energia só sai, no
+			# contato da enxada; sem animação de golpe, na hora.
+			var anim: float = actor.play_tool("hoe") if actor.has_method("play_tool") else 0.0
+			if anim > 0.0 and actor.has_signal("tool_impact"):
+				if not actor.is_connected("tool_impact", _on_tool_impact): actor.connect("tool_impact", _on_tool_impact)
+				_pending_till = cell
+				message = "Arando..."
+			else:
+				message = _till_now(cell)
 		"water":
 			if FARM.can_water(tree) <= 0:
 				last_action = "O regador está vazio. Encha no lago ou no riacho."
@@ -194,6 +203,26 @@ func interact(actor: Node2D) -> String:
 	last_action = message
 	refresh()
 	return message
+
+
+const NO_CELL := Vector2i(-999999, -999999)
+var _pending_till := NO_CELL
+
+
+func _on_tool_impact() -> void:
+	if _pending_till == NO_CELL: return
+	var cell := _pending_till
+	_pending_till = NO_CELL
+	last_action = _till_now(cell)
+
+
+func _till_now(cell: Vector2i) -> String:
+	var tree := get_tree()
+	if not ENERGY.spend(tree, "till"): return preload("res://scripts/systems/protagonist.gd").tired_message(tree)
+	if not FARM.till(tree, cell, field_id): return ""
+	_clear_cell_decor(cell)
+	refresh()
+	return "Terra arada."
 
 
 func _on_day_changed(day: int) -> void:

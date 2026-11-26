@@ -79,7 +79,16 @@ func run() -> void:
 		await select("enxada")
 		for i in 3: await process_frame
 		check(str(region.hud_hint.text).contains("Arar"), "%s: enxada na grama oferece arar (%s)" % [name, region.hud_hint.text])
-		await press()
+		var hoe_down := InputEventAction.new()
+		hoe_down.action = "interact"
+		hoe_down.pressed = true
+		Input.parse_input_event(hoe_down)
+		for i in 3: await process_frame
+		check(not FARM.is_tilled(self, cell, farm.field_id), "%s: chão intacto até o contato da enxada (playtest ID 10)" % name)
+		var hoe_up := InputEventAction.new()
+		hoe_up.action = "interact"
+		Input.parse_input_event(hoe_up)
+		await create_timer(1.6).timeout
 		check(FARM.is_tilled(self, cell, farm.field_id), "%s: enxada ara a célula à frente" % name)
 		if not out.is_empty():
 			await RenderingServer.frame_post_draw
