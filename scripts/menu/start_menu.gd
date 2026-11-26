@@ -6,7 +6,7 @@ const LogoPlaque = preload("res://scripts/menu/logo_plaque.gd")
 const Ruins = preload("res://scripts/menu/ruins_backdrop.gd")
 ## Ações do menu (rótulo, nome do nó, ícone em assets/menu/ruins/icons/).
 const ACTIONS := [["Novo Jogo","NovoJogo","novo_jogo"],["Continuar","Continuar","continuar"],
-	["Multijogador","Multijogador","multijogador"],["Configurações","Configuracoes","configuracoes"],
+	["Multijogador","Multijogador","multijogador"],["Como jogar","ComoJogar","como_jogar"],["Configurações","Configuracoes","configuracoes"],
 	["Créditos","Creditos","creditos"],["Sair","Sair","sair"]]
 const SessionState = preload("res://scripts/systems/session_state.gd")
 const SaveGame = preload("res://scripts/systems/save_game.gd")
@@ -162,6 +162,11 @@ func _build_buttons() -> void:
 					button.tooltip_text = "O jogo salva sozinho a cada amanhecer."
 					button.focus_mode = Control.FOCUS_NONE
 			"Multijogador": button.pressed.connect(_show_multiplayer)
+			# Guia de primeiros passos (playtest ID 16): o mesmo texto do Tutorial do menu do Esc.
+			"Como jogar": button.pressed.connect(_show_notice.bind("Primeiros passos",
+				Array(str(preload("res://scripts/ui/pause_overlay.gd").HELP).split("
+
+"))))
 			"Configurações": button.pressed.connect(_show_options)
 			"Créditos": button.pressed.connect(_show_notice.bind("Créditos",
 				["Slimekeepers: Lost Valley","Criação e direção: Helio Conde","Motor: Godot Engine 4.7",

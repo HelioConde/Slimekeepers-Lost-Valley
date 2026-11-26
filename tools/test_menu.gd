@@ -30,15 +30,17 @@ func _run() -> void:
 	current_scene = menu
 	await _settle()
 	var actions := menu.get_node("Actions") as VBoxContainer
-	if not _check(actions.get_child_count() == 6, "Menu contains the six intended actions"):
+	if not _check(actions.get_child_count() == 7, "Menu contains the seven intended actions (inclui Como jogar, ID 16)"):
 		_finish()
 		return
 	var new_game := actions.get_child(0) as Button
 	var continue_button := actions.get_child(1) as Button
 	var multiplayer_button := actions.get_child(2) as Button
-	var options := actions.get_child(3) as Button
-	var credits := actions.get_child(4) as Button
-	var exit_button := actions.get_child(5) as Button
+	var guide := actions.get_child(3) as Button
+	var options := actions.get_child(4) as Button
+	var credits := actions.get_child(5) as Button
+	var exit_button := actions.get_child(6) as Button
+	_check(guide.text == "Como jogar", "Main menu offers the first-steps guide (ID 16)")
 	_check(new_game.text == "Novo Jogo" and multiplayer_button.text == "Multijogador" and options.text == "Configurações" and credits.text == "Créditos" and exit_button.text == "Sair", "Action labels preserve the actual destinations")
 	_check(new_game.icon != null and exit_button.icon != null, "Actions show their icons")
 	_check(continue_button.disabled and continue_button.focus_mode == Control.FOCUS_NONE, "Continue is disabled without a save system")
@@ -59,7 +61,10 @@ func _run() -> void:
 	await _key(KEY_DOWN)
 	_check(root.gui_get_focus_owner() == multiplayer_button, "Keyboard Down skips disabled Continue")
 	await _key(KEY_DOWN)
+	_check(root.gui_get_focus_owner() == guide, "Keyboard Down reaches Como jogar")
+	await _key(KEY_DOWN)
 	_check(root.gui_get_focus_owner() == options, "Keyboard Down reaches Settings")
+	await _key(KEY_UP)
 	await _key(KEY_UP)
 	await _key(KEY_UP)
 	_check(root.gui_get_focus_owner() == new_game, "Keyboard Up returns to New Game")

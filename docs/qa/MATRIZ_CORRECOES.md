@@ -33,13 +33,13 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 04 | Selecionar receita sem fabricar | P1 | Feito (com teste) | a4b187dc · crafting_panel · tools/test_craft_select.gd |
 | 02 | Idle prematuro da Moni | P1 | Pendente | |
 | 08 | Animação da foice (Moni) | P1 | Pendente | Foice longa instalada em 2026-11-23 (e7a21fa6); revisar com o playtest |
-| 09 | Foice corta em área | P1 | Pendente | |
-| 10 | Aragem no frame do impacto | P1 | Pendente | |
+| 09 | Foice corta em área | P1 | Feito (com teste) | 471371b3 (sessão Luz V4): foice corta todo o mato do arco no contato · test_sickle |
+| 10 | Aragem no frame do impacto | P1 | Feito (com teste) | bd40f798 (sessão Luz V4): enxada ara no contato · test_free_farm |
 | 11 | Animação e duração do plantio | P2 | Pendente | Arte nova bloqueada pelo PixelLab; usar pose existente |
 | 13 | Agente de playtest sem conhecimento privilegiado | P1 | Pendente | |
 | 14 | "Multijogador" sem "(MP)" | P2 | Feito (com teste) | start_menu · tools/test_menu.gd (rótulo) |
 | 15 | Idioma e volume de música separado | P1 | Em andamento | volume do ambiente e silenciar no menu do Esc (23390052); falta idioma e volume de música separado |
-| 16 | Tutorial explicativo no menu | P1 | Em andamento | Primeiros passos no menu do Esc (23390052); falta no menu principal |
+| 16 | Tutorial explicativo no menu | P1 | Feito (com teste) | botão Como jogar no menu principal + Tutorial no menu do Esc (23390052) · test_menu, test_pause_menu |
 | 17 | MP começa na seleção de protagonista | P1 | Pendente | |
 | 18 | Tutorial para os dois jogadores | P1 | Pendente | |
 | 19 | Pedra inicial não coletável | P1 | Pendente | |
