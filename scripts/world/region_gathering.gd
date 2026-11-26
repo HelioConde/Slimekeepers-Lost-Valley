@@ -190,10 +190,27 @@ func _sickle_cut(spot: Dictionary) -> void:
 	region.bag_hud.call("refresh")
 
 
+## Monte de pedrinhas com a picareta na mão (playtest ID 53): um toque e um golpe, a
+## pedra sai no contato. Com a mão continua o "segurar para pegar".
+func _pick_pebbles(spot: Dictionary) -> void:
+	var player: Node2D = region.player
+	region.hud_hint.text = "[F] Recolher as pedrinhas com a picareta"
+	if not Input.is_action_just_pressed("interact") or player.is_using_tool(): return
+	player.facing = player._get_direction_name(spot.at - player.global_position)
+	var anim: float = player.play_tool("pickaxe")
+	_at_impact(anim > 0.0, func() -> void:
+		var problem: String = forage.take(spot, GameClock.day_number)
+		region.bag_hud.call("refresh")
+		if not problem.is_empty(): region._notify(problem))
+
+
 func _forage_interaction(spot: Dictionary, delta: float) -> void:
 	var player: Node2D = region.player
 	if str(spot.item) == "fibra" and HOTBAR.selected_item(get_tree()) == "foice" and _pull_id.is_empty():
 		_sickle_cut(spot)
+		return
+	if str(spot.item) == "pedra_pequena" and HOTBAR.selected_item(get_tree()) in ITEMS.PICKS and _pull_id.is_empty():
+		_pick_pebbles(spot)
 		return
 	var item_name := str(ITEMS.info(spot.item).name).to_lower()
 	var hold: float = forage.pull_seconds(spot.item)
