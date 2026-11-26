@@ -58,9 +58,12 @@ func _process(delta: float) -> void:
         if message_time <= 0.0:
             popup.text = ""
 
+## Alcance para falar com um slime: perto do personagem, como a bancada (playtest ID 26; era 90).
+const SLIME_REACH := 48.0
+
 func _closest_slime() -> Node2D:
     var closest: Node2D = null
-    var distance := 90.0
+    var distance := SLIME_REACH
     for slime in slimes:
         var new_distance := player.global_position.distance_to(slime.global_position)
         if new_distance < distance:
