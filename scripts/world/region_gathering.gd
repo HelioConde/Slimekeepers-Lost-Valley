@@ -60,6 +60,8 @@ func update(delta: float) -> bool:
 	if is_instance_valid(choppable) and HOTBAR.selected_item(get_tree()) in ITEMS.AXES and _axe_interaction():
 		_pull_id = ""
 		return true
+	if HOTBAR.selected_item(get_tree()) == "pa" and is_instance_valid(choppable) and _stump_interaction():
+		return true
 	if HOTBAR.selected_item(get_tree()) in ITEMS.PICKS and _rock_interaction():
 		_pull_id = ""
 		return true
@@ -105,6 +107,29 @@ func _run_impact() -> void:
 	var effect := _pending
 	_pending = Callable()
 	if effect.is_valid(): effect.call()
+
+
+## Pá (playtest ID 30): perto de um toco, [F] cava e o toco sai no contato da pá,
+## deixando 1 madeira. O lugar fica livre de vez.
+func _stump_interaction() -> bool:
+	var key: String = choppable.stump_target(_focus())
+	if key.is_empty(): return false
+	var player: Node2D = region.player
+	region.hud_hint.text = "[F] Arrancar o toco com a pá"
+	if not Input.is_action_just_pressed("interact") or player.is_using_tool(): return true
+	if not ENERGY.spend(get_tree(), "chop"):
+		region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
+		return true
+	var at: Vector2 = (choppable.trees[key] as Node2D).global_position
+	player.facing = player._get_direction_name(at - player.global_position)
+	var anim: float = player.play_tool("shovel")
+	if anim <= 0.0: anim = player.play_tool("hoe")  # Moni ainda sem arte de pá
+	_at_impact(anim > 0.0, func() -> void:
+		choppable.remove_stump(key)
+		if forage.drop.is_valid(): forage.drop.call("madeira", 1, at)
+		else: BAG.add_item(get_tree(), "madeira", 1)
+		region._notify("O toco saiu. O lugar ficou livre."))
+	return true
 
 
 ## Ferramenta da família `tools` a usar: sempre a melhor da bolsa (a troca é automática).

@@ -7,7 +7,7 @@ const ICONS := "res://assets/ui/items/%s.png"
 
 ## Ferramentas na ordem da barra; só aparecem quando o jogador as tem na bolsa
 ## (fabricadas: docs/gameplay/CRIACAO.md). O jogo começa sem nenhuma.
-const TOOLS := ["machado", "machado_polido", "picareta", "picareta_polida", "foice", "enxada", "regador"]
+const TOOLS := ["machado", "machado_polido", "picareta", "picareta_polida", "foice", "enxada", "pa", "regador"]
 ## Ferramentas de pedra polida (nível 2): cada golpe vale POWER golpes e derrubam a
 ## árvore e a pedra grandes. Por família, a melhor primeiro.
 const AXES := ["machado_polido", "machado"]
@@ -24,6 +24,7 @@ const ITEMS := {
 	"picareta_polida": {"name": "Picareta de pedra polida", "kind": "tool", "icon": "picareta_polida"},
 	"foice": {"name": "Foice rudimentar", "kind": "tool", "icon": "foice"},  # corta o mato; às vezes solta semente
 	"enxada": {"name": "Enxada", "kind": "tool", "icon": "enxada"},
+	"pa": {"name": "Pá", "kind": "tool", "icon": "pa"},  # arranca tocos (playtest ID 30)
 	"regador": {"name": "Regador", "kind": "tool", "icon": "regador"},
 	"semente_cenoura": {"name": "Sementes de cenoura", "kind": "seed", "icon": "semente_cenoura", "crop": "cenoura"},
 	"semente_beterraba": {"name": "Sementes de beterraba", "kind": "seed", "icon": "semente_beterraba", "crop": "beterraba"},

@@ -67,7 +67,9 @@ func apply_day(day: int) -> void:
 	for key in chopped.keys():
 		if not trees.has(key):
 			continue
-		if day - int(chopped[key].day) >= REGROW_DAYS:
+		if bool(chopped[key].get("stump_removed", false)):  # toco arrancado com a pá: não volta a crescer
+			_fell_visual(key, bool(chopped[key].get("processed", false)))
+		elif day - int(chopped[key].day) >= REGROW_DAYS:
 			chopped.erase(key)
 			changed = true
 			_restore(key)
@@ -195,10 +197,38 @@ func _fell_visual(key: String, processed: bool) -> void:
 	if not _extras.has(key):
 		var s := tree_scale(key)
 		var stump := _sprite(tree, STUMP, Vector2(0, -22), STUMP_SCALE * s)
+		stump.name = "Stump"
 		var log := _sprite(tree, LOG, Vector2(0, -20), log_scale(key))
 		log.position = log_position(key) - tree.global_position
 		_extras[key] = [stump, log]
 	(_extras[key][1] as Sprite2D).visible = not processed
+	(_extras[key][0] as Sprite2D).visible = not bool((state(get_tree()).get(key, {}) as Dictionary).get("stump_removed", false))
+
+
+## Toco ao alcance com a pá (playtest ID 30): árvore derrubada cujo toco ainda está lá.
+func stump_target(at: Vector2) -> String:
+	var chopped := state(get_tree())
+	var best := ""
+	var best_d := REACH
+	var base := Vector2i((at / CELL).floor())
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			for key: String in _grid.get(base + Vector2i(dx, dy), []):
+				if not chopped.has(key) or bool(chopped[key].get("stump_removed", false)): continue
+				var d := at.distance_to((trees[key] as Node2D).global_position)
+				if d < best_d:
+					best = key
+					best_d = d
+	return best
+
+
+## Arranca o toco: o lugar fica livre de vez (a árvore não volta a crescer).
+func remove_stump(key: String) -> void:
+	var chopped := state(get_tree()).duplicate(true)
+	if not chopped.has(key): return
+	chopped[key]["stump_removed"] = true
+	get_tree().set_meta(CHOPPED_KEY, chopped)
+	_fell_visual(key, bool(chopped[key].get("processed", false)))
 
 
 func _restore(key: String) -> void:
