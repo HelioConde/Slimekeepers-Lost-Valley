@@ -18,6 +18,8 @@ signal changed
 var player: Node
 var _grid: GridContainer
 var _status: Label
+var _amount: SpinBox
+var _drop_button: Button
 
 
 func _ready() -> void:
@@ -34,6 +36,21 @@ func _ready() -> void:
 	_grid.add_theme_constant_override("h_separation", 4)
 	_grid.add_theme_constant_override("v_separation", 4)
 	column.add_child(_grid)
+	# Soltar no chão o item escolhido, na quantidade escolhida (playtest ID 21).
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_child(row)
+	_amount = SpinBox.new()
+	_amount.min_value = 1
+	_amount.get_line_edit().focus_mode = Control.FOCUS_NONE  # [E]/[Q] não viram texto
+	row.add_child(_amount)
+	_drop_button = Button.new()
+	_drop_button.name = "DropButton"
+	_drop_button.text = "Soltar no chão"
+	_drop_button.focus_mode = Control.FOCUS_NONE
+	_drop_button.add_theme_font_override("font", FONT)
+	_drop_button.pressed.connect(drop_selected)
+	row.add_child(_drop_button)
 	_status = _label("", 11, Color("#5a3f2c"), true)
 	column.add_child(_status)
 	CLOSE_BUTTON.attach(self, close)
@@ -77,14 +94,28 @@ func refresh() -> void:
 			slot.setup(ITEMS.icon(item), amount, i == current, str(ITEMS.info(item).name), body)
 		slot.clicked.connect(_pick.bind(i))
 		_grid.add_child(slot)
-	_status.text = "Espaços: %d/%d   ·   E / Esc fechar" % [BAG.used_slots(get_tree()), BAG.SLOTS]
+	var have := BAG.count_item(get_tree(), HOTBAR.selected_item(get_tree()))
+	_amount.max_value = maxi(1, have)
+	_amount.editable = have > 1
+	_drop_button.disabled = have <= 0
+	_status.text = "Espaços: %d/%d   ·   Q soltar   ·   E / Esc fechar" % [BAG.used_slots(get_tree()), BAG.SLOTS]
 	_center.call_deferred()
 
 
 func _pick(index: int) -> void:
 	HOTBAR.select(get_tree(), index)
+	_amount.value = 1
 	refresh()
 	changed.emit()
+
+
+## Solta no chão (item_drops.drop_from_bag) a quantidade escolhida do item selecionado.
+func drop_selected() -> void:
+	var drops := get_tree().get_first_node_in_group("item_drops")
+	if drops and drops.call("drop_from_bag", HOTBAR.selected_item(get_tree()), int(_amount.value)):
+		_amount.value = 1
+		refresh()
+		changed.emit()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -95,6 +126,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif visible and event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		close()
+		get_viewport().set_input_as_handled()
+	elif visible and event is InputEventKey and event.pressed and not event.is_echo() and (event as InputEventKey).physical_keycode == KEY_Q:
+		drop_selected()
 		get_viewport().set_input_as_handled()
 
 

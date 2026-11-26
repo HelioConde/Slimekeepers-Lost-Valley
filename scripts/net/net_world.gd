@@ -5,8 +5,8 @@ extends Node
 ## inteiro para o outro, que grava e redesenha a região.
 ## shortcut: última escrita vence por chave (dois jogadores mexendo na mesma chave no
 ## mesmo meio segundo perdem uma ação); trocar por diferenças por item se incomodar.
-## Itens soltos no chão não sincronizam de propósito: vão para quem coletou (evita
-## duplicar itens). Relógio: o anfitrião manda a hora a cada CLOCK_EVERY s.
+## Itens soltos no chão sincronizam em scripts/world/item_drops.gd (id por drop; o
+## anfitrião decide quem pega). Relógio: o anfitrião manda a hora a cada CLOCK_EVERY s.
 
 const KEYS := ["farm_cells", "forage_taken", "rocks_broken", "chopped_trees",
 	"placed_stations", "chest_items", "player_house", "placed_chest_items"]

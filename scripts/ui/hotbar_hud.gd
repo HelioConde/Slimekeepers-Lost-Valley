@@ -6,6 +6,8 @@ const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
 const SKIN := preload("res://scripts/ui/hud_skin.gd")
+const BAG := preload("res://scripts/systems/forest_bag.gd")
+const WINDOWS := preload("res://scripts/ui/inventory_panel.gd").WINDOWS
 const SLOT := 48
 const REFRESH_SECONDS := 0.25
 
@@ -131,6 +133,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if tree.get_meta("build_mode", false):
 		return  # no modo construir, roda e teclas são da construção
 	var key := event as InputEventKey
+	# [Q] solta 1 do item escolhido; Shift+[Q], a pilha toda (playtest ID 21). Janela
+	# aberta (mochila, fabricação, baú) usa o Q dela.
+	if key and key.pressed and not key.echo and key.physical_keycode == KEY_Q and _no_window_open():
+		var item := HOTBAR.selected_item(tree)
+		var drops := tree.get_first_node_in_group("item_drops")
+		if drops and not item.is_empty():
+			drops.call("drop_from_bag", item, BAG.count_item(tree, item) if key.shift_pressed else 1)
+			refresh()
+		get_viewport().set_input_as_handled()
+		return
 	if key and key.pressed and not key.echo and key.physical_keycode >= KEY_0 and key.physical_keycode <= KEY_9:
 		HOTBAR.select(tree, (key.physical_keycode - KEY_1) if key.physical_keycode != KEY_0 else 9)
 		refresh()
@@ -140,6 +152,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		HOTBAR.select(tree, HOTBAR.selected_index(tree) + (1 if wheel.button_index == MOUSE_BUTTON_WHEEL_DOWN else -1))
 		refresh()
 		get_viewport().set_input_as_handled()
+
+
+func _no_window_open() -> bool:
+	for sibling in get_parent().get_children():
+		if sibling is Control and (sibling as Control).visible and str(sibling.name) in WINDOWS: return false
+	return true
 
 
 func refresh() -> void:

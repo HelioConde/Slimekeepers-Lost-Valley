@@ -19,7 +19,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Feito (com teste) | b886a650 (sessão Luz V4) · energy_state, clearing_region · tools/test_exhaustion.gd. Pendência MP: o dia só deve virar quando os dois dormirem |
 | 39 | Virada do dia não recupera energia | P0 | Feito (com teste) | 663335d5 (sessão Luz V4) · farm_field, energy_state · test_farm_field |
 | 22 | B/Esc não pausam o mundo em MP | P0 | Feito (com teste, MP simulado) | 23390052 · menu do Esc não pausa em MP; B/E/baú já não pausavam · test_pause_menu. Falta teste com duas instâncias |
-| 20 | Coleta e drops visíveis para todos | P0 | Pendente | |
+| 20 | Coleta e drops visíveis para todos | P0 | Feito (com teste, 2 instâncias) | item_drops: id estável, anfitrião decide quem pega · tools/test_mp_drops.gd (ENet real). Falta Steam e latência simulada |
 | 12 | Menu MP trava / troca P2P↔Local | P0 | Pendente | |
 | 24 | Construir a mesma planta em dupla | P0 | Pendente | |
 | 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Pendente | |
@@ -43,7 +43,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 17 | MP começa na seleção de protagonista | P1 | Pendente | |
 | 18 | Tutorial para os dois jogadores | P1 | Pendente | |
 | 19 | Pedra inicial não coletável | P1 | Pendente | |
-| 21 | Soltar itens para o outro jogador | P1 | Pendente | |
+| 21 | Soltar itens para o outro jogador | P1 | Feito (com teste, 2 instâncias) | [Q] solta 1, Shift+[Q] a pilha; mochila com quantidade · tools/test_drop_from_bag.gd, test_mp_drops |
 | 23 | Prévia da planta visível aos dois | P1 | Pendente | |
 | 25 | Brilho estourado dos cogumelos | P1 | Pendente | |
 | 26 | Alcance menor para interagir com slimes | P1 | Feito (com teste) | world.gd SLIME_REACH 48 · test_slime_disc, test_slime_reaction |
