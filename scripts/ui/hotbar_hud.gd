@@ -81,7 +81,7 @@ func _ready() -> void:
 		slot.add_child(count)
 		# Número do espaço numa plaquinha clara no canto (como no exemplo).
 		var badge := Label.new()
-		badge.text = str(index + 1)
+		badge.text = str((index + 1) % 10)  # 1–9 e 0, como as teclas (playtest ID 38)
 		badge.add_theme_font_override("font", FONT)
 		badge.add_theme_font_size_override("font_size", 10)
 		badge.add_theme_color_override("font_color", SKIN.INK)
