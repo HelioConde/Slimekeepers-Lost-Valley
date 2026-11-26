@@ -5,7 +5,7 @@ quem entra joga com o outro.
 
 ## Como jogar
 
-1. **Menu → Multijogador (MP)**.
+1. **Menu → Multijogador**.
 2. **Hospedar pela Steam**: escolha o protagonista. Uma sala só de amigos (2 vagas) é criada e
    o convite de amigos da Steam abre.
 3. O amigo aceita o convite na Steam com o jogo aberto. Ele entra com o outro protagonista,

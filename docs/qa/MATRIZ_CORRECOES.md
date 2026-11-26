@@ -37,7 +37,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 10 | Aragem no frame do impacto | P1 | Pendente | |
 | 11 | Animação e duração do plantio | P2 | Pendente | Arte nova bloqueada pelo PixelLab; usar pose existente |
 | 13 | Agente de playtest sem conhecimento privilegiado | P1 | Pendente | |
-| 14 | "Multijogador" sem "(MP)" | P2 | Pendente | |
+| 14 | "Multijogador" sem "(MP)" | P2 | Feito (com teste) | start_menu · tools/test_menu.gd (rótulo) |
 | 15 | Idioma e volume de música separado | P1 | Pendente | |
 | 16 | Tutorial explicativo no menu | P1 | Pendente | |
 | 17 | MP começa na seleção de protagonista | P1 | Pendente | |

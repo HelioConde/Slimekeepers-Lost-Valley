@@ -1,5 +1,5 @@
 extends SceneTree
-## Clica de verdade em "Multijogador (MP)" no menu e salva a tela.
+## Clica de verdade em "Multijogador" no menu e salva a tela.
 ## Uso: godot --path . --rendering-driver opengl3 --script res://tools/capture_menu_multiplayer.gd -- <pasta>
 
 func _initialize() -> void:

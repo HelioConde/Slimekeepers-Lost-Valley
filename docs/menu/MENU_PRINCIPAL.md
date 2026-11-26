@@ -30,7 +30,7 @@ Vaga-lumes e o slime azul (frames da Bolhinha: respira, pisca, reage ao foco) co
 Novo Jogo → seleção de Aren ou Moni → introdução → jogo.
 
 - **Continuar**: só fica ativo com um save válido.
-- **Multijogador (MP)**: abre um aviso de que o modo ainda está em desenvolvimento (decisão do usuário, 2026-11-23: será P2P pela Steam). Não há
+- **Multijogador**: abre um aviso de que o modo ainda está em desenvolvimento (decisão do usuário, 2026-11-23: será P2P pela Steam). Não há
   partida simulada.
 - **Configurações**: a janela de opções de antes.
 - **Créditos**: abre a janela de créditos.

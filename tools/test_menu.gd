@@ -39,7 +39,7 @@ func _run() -> void:
 	var options := actions.get_child(3) as Button
 	var credits := actions.get_child(4) as Button
 	var exit_button := actions.get_child(5) as Button
-	_check(new_game.text == "Novo Jogo" and multiplayer_button.text == "Multijogador (MP)" and options.text == "Configurações" and credits.text == "Créditos" and exit_button.text == "Sair", "Action labels preserve the actual destinations")
+	_check(new_game.text == "Novo Jogo" and multiplayer_button.text == "Multijogador" and options.text == "Configurações" and credits.text == "Créditos" and exit_button.text == "Sair", "Action labels preserve the actual destinations")
 	_check(new_game.icon != null and exit_button.icon != null, "Actions show their icons")
 	_check(continue_button.disabled and continue_button.focus_mode == Control.FOCUS_NONE, "Continue is disabled without a save system")
 	_check(root.gui_get_focus_owner() == new_game, "Initial focus is New Game")
