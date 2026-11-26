@@ -13,11 +13,11 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 
 | ID | Correção | Prio | Estado | Arquivos / teste / observação |
 |---|---|---|---|---|
-| 56 | Continuar abre progresso antigo | P0 | Pendente | |
-| 57 | Autosave a cada amanhecer | P0 | Pendente | |
-| 58 | Slots independentes de save | P0 | Pendente | |
-| 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Pendente | |
-| 39 | Virada do dia não recupera energia | P0 | Pendente | |
+| 56 | Continuar abre progresso antigo | P0 | Feito (com teste) | 5fbe3f24 · save_game (espaços, .bak), start_menu · test_save_game, test_menu |
+| 57 | Autosave a cada amanhecer | P0 | Feito (com teste) | 5fbe3f24 · clearing_region._on_time_for_autosave · tools/test_autosave.gd |
+| 58 | Slots independentes de save | P0 | Feito (com teste) | 5fbe3f24 · start_menu (escolha e confirmação) · test_save_game (espaços isolados) |
+| 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Em andamento | sessão Luz V4 (energy_state, clearing_region) |
+| 39 | Virada do dia não recupera energia | P0 | Feito (com teste) | 663335d5 (sessão Luz V4) · farm_field, energy_state · test_farm_field |
 | 22 | B/Esc não pausam o mundo em MP | P0 | Pendente | |
 | 20 | Coleta e drops visíveis para todos | P0 | Pendente | |
 | 12 | Menu MP trava / troca P2P↔Local | P0 | Pendente | |
@@ -30,7 +30,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 07 | Quebrar pedras, mais rendimento | P1 | Pendente | |
 | 05 | Árvores fantasmas | P1 | Pendente | Reproduzir |
 | 03 | Botão X nos painéis | P1 | Pendente | |
-| 04 | Selecionar receita sem fabricar | P1 | Pendente | |
+| 04 | Selecionar receita sem fabricar | P1 | Feito (com teste) | a4b187dc · crafting_panel · tools/test_craft_select.gd |
 | 02 | Idle prematuro da Moni | P1 | Pendente | |
 | 08 | Animação da foice (Moni) | P1 | Pendente | Foice longa instalada em 2026-11-23 (e7a21fa6); revisar com o playtest |
 | 09 | Foice corta em área | P1 | Pendente | |
@@ -56,8 +56,8 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 33 | Números legíveis (2/5/8) | P1 | Pendente | |
 | 34 | Respawn diário por tipo (pedras limitadas) | P1 | Pendente | |
 | 36 | Tremor da árvore no J2 | P1 | Pendente | |
-| 37 | Barra rápida alarga no modo construção | P1 | Pendente | |
-| 38 | Barra: 1–9 e 0 | P1 | Pendente | |
+| 37 | Barra rápida alarga no modo construção | P1 | Feito (com teste) | c0317d49 · hotbar_hud · tools/test_hotbar_click.gd |
+| 38 | Barra: 1–9 e 0 | P1 | Feito (com teste) | de6841c9 · hotbar_hud · tools/test_hotbar_click.gd |
 | 41 | Objeto visual bugado | P1 | Pendente | Precisa da imagem do .docx |
 | 42 | Arrastar e soltar no inventário e na barra | Alta | Pendente | |
 | 43 | Durabilidade e quebra de ferramentas | Alta | Pendente | |
