@@ -62,6 +62,7 @@ func run() -> void:
 	for i in 3:
 		await press()
 		if i == 0: check(str(player.get("current_animation")) == "pickaxe_south", "golpe próprio da picareta (%s)" % player.get("current_animation"))
+		if i == 0: check(rocks.hits(rock.id) == 0, "pedra intacta até o contato da picareta (playtest ID 55)")
 		while player.is_using_tool(): await process_frame
 	check(not (rock.node as Node2D).visible, "3 golpes de picareta quebram a pedra média")
 	region.get("item_drops").collect_all()

@@ -73,6 +73,40 @@ func update(delta: float) -> bool:
 	return is_instance_valid(choppable) and _axe_interaction()
 
 
+## Golpe com efeito no quadro de contato (playtest IDs 32 e 55): o dano, o tremor e a
+## quebra esperam o sinal tool_impact do jogador; sem animação de golpe, aplicam na hora.
+## Um golpe novo substitui o pendente (um golpe nunca vale dois).
+var _pending := Callable()
+
+
+func _at_impact(animated: bool, effect: Callable) -> void:
+	var player: Node = region.player
+	if not animated or not player.has_signal("tool_impact"):
+		effect.call()
+		return
+	if not player.is_connected("tool_impact", _run_impact): player.connect("tool_impact", _run_impact)
+	_pending = effect
+
+
+func _rock_hit(r: Dictionary, power: int) -> void:
+	if rocks.strike(r, GameClock.day_number, power) == "broken":
+		region._notify("A pedra quebrou!")
+
+
+func _chop_hit(t: Dictionary, power: int) -> void:
+	match choppable.strike(t, GameClock.day_number, power):
+		"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
+		"processed":
+			region.bag_hud.call("refresh")
+			region._notify("Você conseguiu %d madeiras." % choppable.wood(t.key))
+
+
+func _run_impact() -> void:
+	var effect := _pending
+	_pending = Callable()
+	if effect.is_valid(): effect.call()
+
+
 ## Ferramenta da família `tools` a usar: sempre a melhor da bolsa (a troca é automática).
 func _best(tools: Array) -> String:
 	for tool: String in tools:
@@ -100,9 +134,11 @@ func _rock_interaction() -> bool:
 			return true
 		player.facing = player._get_direction_name(r.at - player.global_position)
 		var swing := "pickaxe_polished" if int(ITEMS.POWER.get(tool, 1)) >= 2 else "pickaxe"
-		if player.play_tool(swing) <= 0.0 and player.play_tool("pickaxe") <= 0.0: player.play_tool("hoe")  # sem arte própria
-		if rocks.strike(r, GameClock.day_number, int(ITEMS.POWER.get(tool, 1))) == "broken":
-			region._notify("A pedra quebrou!")
+		var anim: float = player.play_tool(swing)
+		if anim <= 0.0: anim = player.play_tool("pickaxe")
+		if anim <= 0.0: player.play_tool("hoe")  # sem arte própria
+		var power := int(ITEMS.POWER.get(tool, 1))
+		_at_impact(anim > 0.0, _rock_hit.bind(r, power))  # quebra no contato da picareta (playtest ID 55)
 	return true
 
 
@@ -214,10 +250,7 @@ func _axe_interaction() -> bool:
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
-		if power < 2 or player.play_tool("axe_polished") <= 0.0: player.play_tool("axe")
-		match choppable.strike(t, GameClock.day_number, power):
-			"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
-			"processed":
-				region.bag_hud.call("refresh")
-				region._notify("Você conseguiu %d madeiras." % choppable.wood(t.key))
+		var anim: float = player.play_tool("axe_polished") if power >= 2 else 0.0
+		if anim <= 0.0: anim = player.play_tool("axe")
+		_at_impact(anim > 0.0, _chop_hit.bind(t, power))  # tremor e dano no contato do machado (playtest ID 32)
 	return true

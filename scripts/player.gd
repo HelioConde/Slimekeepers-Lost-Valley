@@ -190,12 +190,19 @@ func release_pose() -> float:
 
 
 ## Som do golpe no quadro do impacto (frente: 9 quadros, impacto no 7; lado/costas: 8, no 5).
+## Quadro de contato da ferramenta (machado, picareta, foice): o efeito no mundo espera
+## este sinal (playtest IDs 32 e 55), junto com o som do impacto.
+signal tool_impact
+
+
 func _on_frame_changed() -> void:
 	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else ("corte" if current_animation.begins_with("sickle_") else ""))
-	if sound.is_empty() or not visible: return
+	if sound.is_empty(): return
 	var impact := 7 if sprite.sprite_frames.get_frame_count(current_animation) == SWING_TIMING.size() else 5
 	if sound == "corte": impact = 4  # meio da varrida
-	if sprite.frame == impact: preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
+	if sprite.frame != impact: return
+	if visible: preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
+	tool_impact.emit()
 
 
 func is_using_tool() -> bool:
