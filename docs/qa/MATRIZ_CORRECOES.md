@@ -18,7 +18,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 58 | Slots independentes de save | P0 | Feito (com teste) | 5fbe3f24 · start_menu (escolha e confirmação) · test_save_game (espaços isolados) |
 | 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Feito (com teste) | b886a650 (sessão Luz V4) · energy_state, clearing_region · tools/test_exhaustion.gd. Pendência MP: o dia só deve virar quando os dois dormirem |
 | 39 | Virada do dia não recupera energia | P0 | Feito (com teste) | 663335d5 (sessão Luz V4) · farm_field, energy_state · test_farm_field |
-| 22 | B/Esc não pausam o mundo em MP | P0 | Pendente | |
+| 22 | B/Esc não pausam o mundo em MP | P0 | Feito (com teste, MP simulado) | 23390052 · menu do Esc não pausa em MP; B/E/baú já não pausavam · test_pause_menu. Falta teste com duas instâncias |
 | 20 | Coleta e drops visíveis para todos | P0 | Pendente | |
 | 12 | Menu MP trava / troca P2P↔Local | P0 | Pendente | |
 | 24 | Construir a mesma planta em dupla | P0 | Pendente | |
@@ -38,8 +38,8 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 11 | Animação e duração do plantio | P2 | Pendente | Arte nova bloqueada pelo PixelLab; usar pose existente |
 | 13 | Agente de playtest sem conhecimento privilegiado | P1 | Pendente | |
 | 14 | "Multijogador" sem "(MP)" | P2 | Feito (com teste) | start_menu · tools/test_menu.gd (rótulo) |
-| 15 | Idioma e volume de música separado | P1 | Pendente | |
-| 16 | Tutorial explicativo no menu | P1 | Pendente | |
+| 15 | Idioma e volume de música separado | P1 | Em andamento | volume do ambiente e silenciar no menu do Esc (23390052); falta idioma e volume de música separado |
+| 16 | Tutorial explicativo no menu | P1 | Em andamento | Primeiros passos no menu do Esc (23390052); falta no menu principal |
 | 17 | MP começa na seleção de protagonista | P1 | Pendente | |
 | 18 | Tutorial para os dois jogadores | P1 | Pendente | |
 | 19 | Pedra inicial não coletável | P1 | Pendente | |
@@ -73,7 +73,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 55 | Impacto da picareta no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
 | 59 | Alimentar com ingredientes e pratos; preferências por ingrediente | P1 | Pendente | |
 | 60 | Disco do slime só com ações disponíveis | P1 | Pendente | |
-| 61 | Menu de Esc centraliza a navegação; tirar o botão Menu do HUD | P1 | Pendente | |
+| 61 | Menu de Esc centraliza a navegação; tirar o botão Menu do HUD | P1 | Feito (com teste) | 23390052 · pause_overlay, world.gd (sem botão Menu) · tools/test_pause_menu.gd, test_menu |
 | 62 | Playtest solo por observação visual | P1 | Pendente | Depois dos P0 |
 | 63 | Usuário no J1 e Claude no J2 | P1 | Pendente | Precisa do usuário |
 | 64 | Comparativo com Stardew Valley | P1 | Pendente | Precisa de Stardew instalado e controlável |
