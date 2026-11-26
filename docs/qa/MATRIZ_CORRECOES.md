@@ -72,7 +72,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 54 | Sem bloqueio por nível: o nível muda eficiência e desgaste | P1 | Feito (com teste) | f416a25b (sessão Luz V4) |
 | 55 | Impacto da picareta no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
 | 59 | Alimentar com ingredientes e pratos; preferências por ingrediente | P1 | Pendente | |
-| 60 | Disco do slime só com ações disponíveis | P1 | Pendente | |
+| 60 | Disco do slime só com ações disponíveis | P1 | Feito (com teste) | slime_action_disc: só ações disponíveis (desconfiado = só comida) · test_slime_disc |
 | 61 | Menu de Esc centraliza a navegação; tirar o botão Menu do HUD | P1 | Feito (com teste) | 23390052 · pause_overlay, world.gd (sem botão Menu) · tools/test_pause_menu.gd, test_menu |
 | 62 | Playtest solo por observação visual | P1 | Pendente | Depois dos P0 |
 | 63 | Usuário no J1 e Claude no J2 | P1 | Pendente | Precisa do usuário |

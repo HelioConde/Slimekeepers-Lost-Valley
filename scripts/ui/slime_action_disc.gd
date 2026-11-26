@@ -69,6 +69,8 @@ func open(target: Node2D) -> void:
 		{"id": "trabalho", "name": ("Escolher baú" if species == "carreguim" else ("Parar de trabalhar" if working else "Voltar a trabalhar")), "icon": ITEMS.icon("bau_campo" if species == "carreguim" else ("bancada" if species == "construlim" else "enxada")), "enabled": friend},
 		{"id": "seguir", "name": "Ficar em casa" if at_farm else "Ir para a fazenda", "icon": _steps_icon(), "enabled": friend},
 	]
+	# Playtest ID 60: só as ações disponíveis agora (o slime ainda desconfiado só aceita comida).
+	actions = actions.filter(func(a: Dictionary) -> bool: return bool(a.enabled))
 	for icon in _icons: icon.queue_free()
 	_icons.clear()
 	for a: Dictionary in actions:

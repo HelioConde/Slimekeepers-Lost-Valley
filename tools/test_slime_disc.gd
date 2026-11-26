@@ -80,5 +80,14 @@ func run() -> void:
 	check(list.visible and (list.get_child(0) as Button).text.contains("mais perto"), "Carreguim escolhe o baú")
 	(list.get_child(0) as Button).emit_signal("pressed")
 	check(has_meta("carreguim_chest"), "baú do Carreguim gravado")
+	# Playtest ID 60: slime ainda desconfiado só mostra o que dá para fazer (dar comida).
+	var stranger: Node2D = null
+	for s: Node2D in get_nodes_in_group("living_slimes"):
+		if not bool(s.get("befriended")): stranger = s
+	if stranger:
+		disc.call("open", stranger)
+		var ids: Array = disc.get("actions").map(func(a: Dictionary) -> String: return str(a.id))
+		check(ids == ["comida"], "slime desconfiado: só Dar comida no disco (%s)" % [ids])
+		disc.call("close")
 	print("SLIME_DISC: %d failures" % failures)
 	quit(1 if failures else 0)
