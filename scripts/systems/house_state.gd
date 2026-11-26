@@ -19,8 +19,8 @@ const FURNITURE := {
 	"fogao": {"name": "Fogão", "art": "fogao", "solid": true, "size": Vector2i(1, 1)},
 }
 const FURNITURE_ORDER := ["cama", "mesa", "cadeira", "bau", "tapete", "planta", "estante", "fogao"]
-## Tamanho externo (paredes inclusas): mínimo 2×2 por dentro (cabe a cama).
-const MIN_SIZE := Vector2i(4, 4)
+## Tamanho externo (paredes inclusas): mínimo 5×5 = 3×3 por dentro; a cama 1×2 ocupa uma coluna e sobram 2 para andar até a porta (4×4 deixava 1).
+const MIN_SIZE := Vector2i(5, 5)
 const MAX_SIZE := Vector2i(16, 12)
 ## Custo por célula de piso e de parede, e por móvel (itens da bolsa).
 const FLOOR_COST := {"madeira": 1}

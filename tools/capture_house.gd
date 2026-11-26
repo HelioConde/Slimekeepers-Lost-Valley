@@ -52,6 +52,12 @@ func run() -> void:
 	house.cursor_cell = rect.end - Vector2i.ONE
 	check(house.build_hint().contains("7×5") and house.build_hint().contains("madeira"), "Prévia do arraste mostra tamanho e custo")
 	await shot(out + "/casa_arrastando.png")
+	# Menor que o mínimo: aviso na dica, recusa sem gastar nada (ID 49).
+	house.cursor_cell = rect.position + Vector2i(3, 3)
+	check(house.build_hint().contains("Pequena demais (mínimo 5×5)"), "Arrastar menor que o mínimo avisa na dica (%s)" % house.build_hint())
+	check(house.build_rect(house.drag_area()).contains("Pequena demais") and not House.exists(self), "Casa menor que o mínimo é recusada")
+	await shot(out + "/casa_pequena_demais.png")
+	house.cursor_cell = rect.end - Vector2i.ONE
 	check(house.build_rect(rect).begins_with("Falta"), "Sem material não constrói")
 	var cost := House.rect_cost(rect)
 	for item in cost: Bag.add_item(self, item, int(cost[item]))
@@ -75,6 +81,10 @@ func run() -> void:
 	player.global_position = Vector2(rect.position * 32) + Vector2(2 * 32 + 16, 2 * 32 + 16)
 	for i in 3: await physics_frame
 	await shot(out + "/casa_dentro.png")
+	# Porta: a célula da porta e a soleira são piso interno (ID 51), não capim de fora.
+	var door_px: Rect2 = house.door_floor_rect()
+	check(door_px.position == Vector2(House.door_of(rect) * 32) and door_px.size.x == 32.0 and door_px.size.y > 32.0 and not house.house().wall.has(House.door_of(rect)),
+		"Célula da porta usa o piso interno (%s)" % str(door_px))
 	check(house.near_bed(player), "Perto da cama pode dormir")
 	# Fogão: cozinhar porções (substitui a fogueira do Vale).
 	var Cooking := preload("res://scripts/systems/valley_cooking.gd")

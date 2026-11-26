@@ -64,9 +64,9 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 44 | Escala do tronco caído | Alta | Feito (com teste) | 5cc04936 (sessão Luz V4) |
 | 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Pendente | |
 | 48 | Balões contextuais (ferramenta, cansaço, cama) | Alta | Em andamento | 98415b60 (sessão Luz V4): aviso de pouca energia sem cama/com cama |
-| 49 | Tamanho mínimo da casa | Alta | Pendente | |
+| 49 | Tamanho mínimo da casa | Alta | Feito (com teste) | mínimo 5×5 (3×3 por dentro, cama + passagem); aviso ao arrastar menor · test_house_state, capture_house |
 | 50 | Cortar tocos e troncos de cenário | Alta | Pendente | |
-| 51 | Porta e piso da casa | Alta | Pendente | |
+| 51 | Porta e piso da casa | Alta | Feito (com teste) | house_builder._draw_floor: piso interno na célula da porta e soleira · capture_house. Pendência: tufos de capim da região ainda por cima do piso |
 | 52 | Escala personagem × casa | Alta | Pendente | |
 | 53 | Monte pequeno de pedras num toque | P1 | Feito (com teste) | be44a472 (sessão Luz V4) |
 | 54 | Sem bloqueio por nível: o nível muda eficiência e desgaste | P1 | Feito (com teste) | f416a25b (sessão Luz V4) |

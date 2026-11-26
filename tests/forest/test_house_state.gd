@@ -67,6 +67,22 @@ func test_size_limits_and_blocked_ground() -> void:
 	assert_str(House.build(tree, "vale", Rect2i(0, 0, 5, 5), Callable(), Vector2i(1, 1))).contains("Saia")
 
 
+func test_minimum_size_refused_without_spending_and_minimum_accepted() -> void:
+	var tree := get_tree()
+	var stock := {"madeira": 99, "pedra_pequena": 99}
+	_give(stock)
+	for size in [Vector2i(4, 4), Vector2i(4, 8), Vector2i(8, 4), Vector2i(1, 1)]:
+		assert_str(House.build(tree, "vale", Rect2i(Vector2i.ZERO, size))).contains("Pequena demais (mínimo 5×5)")
+	assert_bool(House.exists(tree)).is_false()
+	for item in stock: assert_int(Bag.count_item(tree, item)).is_equal(99)  # nada gasto
+	var rect := Rect2i(Vector2i.ZERO, House.MIN_SIZE)
+	assert_str(House.build(tree, "vale", rect)).is_empty()
+	_give({"fibra": 6})
+	# Cama 1×2 numa coluna interna e ainda sobra um corredor até a porta (meio da parede de baixo).
+	assert_str(House.place_furniture(tree, Vector2i(1, 1), "cama")).is_empty()
+	assert_bool(House.is_inside(tree, House.door_of(rect) + Vector2i(0, -1))).is_true()
+
+
 func test_furniture_costs_and_refunds() -> void:
 	var tree := get_tree()
 	var rect := Rect2i(10, 6, 7, 5)

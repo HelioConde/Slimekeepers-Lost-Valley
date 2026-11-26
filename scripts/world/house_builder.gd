@@ -189,6 +189,23 @@ func _draw_tiles(target: Node2D, sheet: String, vertices: Array[Vector2i], tint:
 
 func _draw_floor() -> void:
 	_draw_tiles(_floor_layer, "floor", _vertices("floor"))
+	var door := door_floor_rect()
+	if door.size == Vector2.ZERO:
+		return
+	# A porta não tem parede por cima: sem isto a borda do piso deixa o capim de fora aparecer nela (playtest ID 51).
+	var at: Array = _atlas.floor.tiles.get("m,m,m,m", [0, 0])
+	var origin := door.position - _floor_layer.position
+	_floor_layer.draw_texture_rect_region(_atlas.floor.texture, Rect2(origin, Vector2(CELL, CELL)), Rect2(at[0], at[1], CELL, CELL))
+	var step := door.size.y - CELL  # soleira: cobre a faixa onde a face da parede cairia
+	_floor_layer.draw_texture_rect_region(_atlas.floor.texture, Rect2(origin + Vector2(0, CELL), Vector2(CELL, step)), Rect2(at[0], at[1], CELL, step))
+
+
+## Piso da porta em pixels: a célula da porta mais a soleira (WALL_FACE) logo abaixo. Vazio sem casa.
+func door_floor_rect() -> Rect2:
+	var rect: Rect2i = house().rect
+	if rect.size == Vector2i.ZERO:
+		return Rect2()
+	return Rect2(Vector2(HOUSE.door_of(rect) * CELL), Vector2(CELL, CELL + WALL_FACE))
 
 
 func _draw_roof() -> void:
@@ -396,6 +413,8 @@ func build_hint() -> String:
 	if mode == "house":
 		var rect := drag_area()
 		detail = ": arraste para marcar  %d×%d = %s" % [rect.size.x, rect.size.y, HOUSE.cost_text(HOUSE.rect_cost(rect))]
+		if rect.size.x < HOUSE.MIN_SIZE.x or rect.size.y < HOUSE.MIN_SIZE.y:
+			detail = ": %d×%d  %s" % [rect.size.x, rect.size.y, HOUSE.build_problem(get_tree(), rect)]
 		if HOUSE.exists(get_tree()): detail = ": " + HOUSE.build_problem(get_tree(), rect)
 	else:
 		var id: String = furniture_choice
