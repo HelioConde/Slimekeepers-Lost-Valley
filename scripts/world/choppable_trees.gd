@@ -126,9 +126,18 @@ func log_scale(key: String) -> float:
 	return visible_height(key) * LOG_LENGTH_OF_TREE / (LOG_ART_LENGTH * maxf(node_scale, 0.001))
 
 
-## Onde o tronco cai (ao lado do toco, proporcional ao tamanho da árvore).
+## Onde o tronco cai: ao lado do toco, no lado da queda (proporcional ao tamanho da árvore).
 func log_position(key: String) -> Vector2:
-	return (trees[key] as Node2D).global_position + LOG_OFFSET * (tree_scale(key) * 0.5)
+	var side := float((state(get_tree()).get(key, {}) as Dictionary).get("side", 1))
+	return (trees[key] as Node2D).global_position + Vector2(LOG_OFFSET.x * side, LOG_OFFSET.y) * (tree_scale(key) * 0.5)
+
+
+## Lado da queda (playtest ID 29): cortando pela esquerda cai à direita (+1) e vice-versa;
+## por cima ou por baixo, sorteia. `from` = posição de quem deu o golpe final.
+static func fall_side(tree_at: Vector2, from: Vector2) -> int:
+	if not from.is_finite() or absf(from.x - tree_at.x) < 10.0:
+		return 1 if randf() < 0.5 else -1
+	return 1 if from.x < tree_at.x else -1
 
 
 func hits(key: String) -> int:
@@ -147,7 +156,7 @@ func wood(key: String) -> int:
 
 ## Um golpe de machado (power: quantos golpes vale; pedra polida = 2).
 ## Devolve "hit", "felled" ou "processed".
-func strike(t: Dictionary, day: int, power: int = 1) -> String:
+func strike(t: Dictionary, day: int, power: int = 1, from: Vector2 = Vector2.INF) -> String:
 	var key: String = t.key
 	_hits[key] = hits(key) + power
 	var tree: Node2D = trees[key]
@@ -156,8 +165,10 @@ func strike(t: Dictionary, day: int, power: int = 1) -> String:
 		if hits(key) < fell_hits(key): return "hit"
 		_hits.erase(key)
 		var chopped := state(get_tree()).duplicate(true)
-		chopped[key] = {"day": day, "processed": false}
+		var side := fall_side(tree.global_position, from)
+		chopped[key] = {"day": day, "processed": false, "side": side}
 		get_tree().set_meta(CHOPPED_KEY, chopped)
+		_fall_animation(tree, side)
 		_fell_visual(key, false)
 		return "felled"
 	if hits(key) < HITS_TO_PROCESS: return "hit"
@@ -206,6 +217,25 @@ func _sprite(parent: Node2D, texture: Texture2D, offset: Vector2, size: float = 
 	sprite.set_meta("no_shadow", true)
 	parent.add_child(sprite)
 	return sprite
+
+
+## Queda animada: uma cópia da copa gira em torno da base para o lado e some; o tronco
+## aparece no destino (o _fell_visual já o pôs lá).
+func _fall_animation(tree: Node2D, side: int) -> void:
+	var sprite := tree.get_node_or_null("Sprite") as Sprite2D
+	if sprite == null: return
+	var ghost := Sprite2D.new()  # cópia limpa: duplicate() levaria o script que esconde a copa
+	ghost.name = "Falling"
+	for prop in ["texture", "offset", "centered", "flip_h", "region_enabled", "region_rect", "modulate", "texture_filter", "z_index"]:
+		ghost.set(prop, sprite.get(prop))
+	ghost.set_meta("no_shadow", true)
+	tree.get_parent().add_child(ghost)  # no pai: algumas árvores (StarterTrees) ficam com o nó oculto
+	ghost.global_position = sprite.global_position
+	ghost.global_scale = sprite.global_scale
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "rotation", deg_to_rad(84.0) * side, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(ghost, "modulate:a", 0.0, 0.25).set_delay(0.4)
+	tween.tween_callback(ghost.queue_free)
 
 
 func _shake(item: CanvasItem) -> void:

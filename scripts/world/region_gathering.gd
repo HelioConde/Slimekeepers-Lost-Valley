@@ -94,7 +94,7 @@ func _rock_hit(r: Dictionary, power: int) -> void:
 
 
 func _chop_hit(t: Dictionary, power: int) -> void:
-	match choppable.strike(t, GameClock.day_number, power):
+	match choppable.strike(t, GameClock.day_number, power, region.player.global_position):
 		"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
 		"processed":
 			region.bag_hud.call("refresh")
