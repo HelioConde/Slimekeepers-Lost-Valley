@@ -28,7 +28,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 01 | Recursos básicos perto da estrada | P1 | Feito (com teste) | 214eae2a (sessão Luz V4): gravetos e pedrinhas à beira das trilhas perto do início · test_forest_foraging |
 | 06 | Pedras no início | P1 | Feito (com teste) | 214eae2a (sessão Luz V4) + 54 (sem bloqueio por nível) · test_rocks, test_crafting_flow |
 | 07 | Quebrar pedras, mais rendimento | P1 | Feito (com teste) | b3092823 (sessão Luz V4): pedra média 5, grande 12 · test_rocks |
-| 05 | Árvores fantasmas | P1 | Pendente | Reproduzir |
+| 05 | Árvores fantasmas | P1 | Feito (com teste) | 7c16705b (sessão Luz V4): árvores ocultas sem colisão nem alvo; árvores do início visíveis · tools/test_tree_collision.gd |
 | 03 | Botão X nos painéis | P1 | Feito (com teste) | close_button.gd · tools/test_close_buttons.gd (disco do slime e lista do Vale ficam sem X: não são janelas) |
 | 04 | Selecionar receita sem fabricar | P1 | Feito (com teste) | a4b187dc · crafting_panel · tools/test_craft_select.gd |
 | 02 | Idle prematuro da Moni | P1 | Pendente | |
@@ -48,7 +48,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 25 | Brilho estourado dos cogumelos | P1 | Pendente | |
 | 26 | Alcance menor para interagir com slimes | P1 | Feito (com teste) | world.gd SLIME_REACH 48 · test_slime_disc, test_slime_reaction |
 | 27 | Amanhecer gradual | P1 | Pendente | |
-| 28 | Física de contato das árvores | P1 | Pendente | |
+| 28 | Física de contato das árvores | P1 | Feito (com teste) | 7c16705b (sessão Luz V4) · tools/test_tree_collision.gd |
 | 29 | Queda da árvore para o lado do corte | P1 | Feito (com teste) | 0074c132 (sessão Luz V4) |
 | 30 | Pá para remover tocos | P1 | Pendente | Ícone e animação: verificar assets (PixelLab suspenso) |
 | 31 | Foice do Aren | P1 | Pendente | Ver 08 |
