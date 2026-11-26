@@ -50,7 +50,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 27 | Amanhecer gradual | P1 | Pendente | |
 | 28 | Física de contato das árvores | P1 | Feito (com teste) | 7c16705b (sessão Luz V4) · tools/test_tree_collision.gd |
 | 29 | Queda da árvore para o lado do corte | P1 | Feito (com teste) | 0074c132 (sessão Luz V4) |
-| 30 | Pá para remover tocos | P1 | Pendente | Ícone e animação: verificar assets (PixelLab suspenso) |
+| 30 | Pá para remover tocos | P1 | Feito (com teste) | 86c60701 (sessão Luz V4): pá na bancada, arranca o toco no contato · test_shovel. Pendência de arte: golpe próprio da Moni com a pá (PixelLab suspenso) |
 | 31 | Foice do Aren | P1 | Pendente | Ver 08 |
 | 32 | Tremor e impacto do machado no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
 | 33 | Números legíveis (2/5/8) | P1 | Pendente | |
