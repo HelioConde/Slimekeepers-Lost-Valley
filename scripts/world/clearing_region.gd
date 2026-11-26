@@ -155,6 +155,12 @@ func add_player_house(region_id: String) -> Node2D:
 		GameClock.time_changed.connect(_on_time_for_faint)
 	if not GameClock.time_changed.is_connected(_on_time_for_autosave):
 		GameClock.time_changed.connect(_on_time_for_autosave)
+	var tired := Timer.new()  # exaustão (ID 35): as regiões não chamam o _process da base
+	tired.name = "ExhaustionCheck"
+	tired.wait_time = 0.25
+	tired.autostart = true
+	tired.timeout.connect(_check_exhaustion)
+	add_child(tired)
 	return builder
 
 
@@ -191,11 +197,27 @@ func _on_time_for_faint(_day: int, hour: int, _minute: int) -> void:
 	faint()
 
 
+## Exaustão (relatório de playtest ID 35): insistiu em ações sem energia → dorme onde está,
+## acorda às 06:00 do dia seguinte com metade da energia. Não pede energia para dormir.
+## shortcut: no multijogador avança o relógio como o desmaio; falta o "dormir no lugar
+## enquanto o parceiro joga e o dia vira quando os dois dormirem".
+func _check_exhaustion() -> void:
+	if not is_inside_tree() or not preload("res://scripts/systems/energy_state.gd").exhausted(get_tree()): return
+	exhausted_sleep()
+
+
+func exhausted_sleep() -> void:
+	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
+	var until := 360.0 - minutes if minutes < 360.0 else (1440.0 - minutes) + 360.0  # próximas 06:00
+	GameClock.advance_minutes(until)
+	preload("res://scripts/systems/energy_state.gd").wake_from_forced_sleep(get_tree())
+	_notify("Sem forças, você dormiu ali mesmo e acordou com metade da energia.")
+
+
 func faint() -> void:
 	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
 	GameClock.advance_minutes(360.0 - minutes)  # até 06:00 (já passou da meia-noite)
-	var energy := preload("res://scripts/systems/energy_state.gd")
-	get_tree().set_meta(energy.KEY, FAINT_ENERGY)
+	preload("res://scripts/systems/energy_state.gd").wake_from_forced_sleep(get_tree())  # 50%
 	var bed := _bed_position()
 	if bed != Vector2.INF:
 		player.global_position = bed

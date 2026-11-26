@@ -63,3 +63,19 @@ func test_slime_likes_food_of_its_habitat() -> void:
 	assert_int(feeding.gain("cenoura", "brotinho")).is_equal(20)  # vegetal: preferido na floresta
 	assert_int(feeding.gain("cenoura", "bolhinha")).is_equal(10)  # perto da água prefere marinha
 	assert_int(feeding.gain("sopa_legumes", "musguinho")).is_equal(50)
+
+
+## ID 35: insistir sem energia conta tentativas; na terceira, exausto. Sono forçado = 50%.
+func test_exhaustion_strikes_and_forced_sleep() -> void:
+	var tree := get_tree()
+	tree.set_meta(Energy.KEY, 0)
+	tree.set_meta(Energy.STRIKES_KEY, 0)
+	for i in Energy.EXHAUST_STRIKES - 1:
+		assert_bool(Energy.spend(tree, "chop")).is_false()
+	assert_bool(Energy.exhausted(tree)).is_false()
+	Energy.spend(tree, "chop")
+	assert_bool(Energy.exhausted(tree)).is_true()
+	Energy.wake_from_forced_sleep(tree)
+	assert_int(Energy.current(tree)).is_equal(Energy.MAX / 2)
+	assert_bool(Energy.exhausted(tree)).is_false()
+	tree.remove_meta(Energy.KEY)

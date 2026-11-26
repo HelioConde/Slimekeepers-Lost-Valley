@@ -25,6 +25,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"autosave_day",
 	"hotbar_selected",
 	"player_energy",
+	"energy_tired_strikes",
 	"farm_last_day",
 	"watering_can_water",
 	"slime_affinity",
