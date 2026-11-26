@@ -34,6 +34,8 @@ var intro: Node
 ## A fibra vem de todo o mato do chão (forage_spots.add_mato).
 const FORAGE_PLAN := {"graveto": 6, "pedra_pequena": 8}
 const WORLD_FORAGE := {"graveto": 60, "pedra_pequena": 60}
+## Recursos do começo à beira das trilhas (playtest IDs 01 e 06).
+const TRAIL_FORAGE := {"graveto": 14, "pedra_pequena": 12}
 const WORLD_ROCKS := {"medium": 40, "large": 14}
 var ground_detail: Node2D
 var gathering: Node  # region_gathering.gd: corte e coleta (compartilhado com o Vale)
@@ -163,6 +165,13 @@ func _spawn_forage() -> void:
 	forage.setup(Forest.SPAWN, 70.0, 430.0, FORAGE_PLAN, free_at)
 	# Recursos básicos pelo mapa todo (pedido do usuário: o início tinha poucas pedras).
 	forage.setup(Vector2(3200, 3200), 480.0, 3100.0, WORLD_FORAGE, free_at, "w_", 150.0)
+	# Playtest IDs 01 e 06: gravetos e pedrinhas à beira das trilhas perto do início, onde um
+	# iniciante procura (sem bloquear a passagem: 35 a 90 px do centro da trilha).
+	var trail_paths := Forest.trails()
+	var at_trail_edge := func(at: Vector2) -> bool:
+		var d: float = preload("res://scripts/world/valley_layout.gd").route_distance(at, trail_paths)
+		return d > 35.0 and d < 90.0 and free_at.call(at)
+	forage.setup(Forest.SPAWN, 250.0, 800.0, TRAIL_FORAGE, at_trail_edge, "t_", 48.0)
 	if is_instance_valid(ground_detail): forage.add_mato(ground_detail)
 	forage.add_mato_tiles($VegetationLow, preload("res://assets/menu/environment/grass.png"))
 	forage.add_mato_props($WoodlandDetails, "")
