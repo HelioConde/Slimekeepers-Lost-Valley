@@ -7,6 +7,7 @@ const CHEST := preload("res://scripts/systems/chest_storage.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const CLOSE_BUTTON := preload("res://scripts/ui/close_button.gd")
 
 signal changed
 
@@ -60,6 +61,7 @@ func _ready() -> void:
 	help.text = "← → lado · ↑ ↓ escolher · F mover a pilha · E / Esc fechar"
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(help)
+	CLOSE_BUTTON.attach(self, close)
 
 
 ## "" = baú da casa; senão o id de um baú colocado no chão (station_placer).

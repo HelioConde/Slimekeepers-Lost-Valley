@@ -17,6 +17,7 @@ const SLOT := preload("res://scripts/ui/item_slot.gd")
 const INVENTORY := preload("res://scripts/ui/inventory_panel.gd")
 const PLACER := preload("res://scripts/world/station_placer.gd")
 const COLUMNS := 5
+const CLOSE_BUTTON := preload("res://scripts/ui/close_button.gd")
 const WINDOWS := INVENTORY.WINDOWS
 const TITLES := {"maos": "Fabricar com as mãos", "bancada": "Bancada de trabalho", "fogao": "Fogão"}
 const CATEGORIES := [["ferramentas", "Ferramentas"], ["producao", "Produção"], ["slimes", "Slimes"],
@@ -112,6 +113,7 @@ func _ready() -> void:
 	help.text = "Clique ou F fabrica · Q/R troca de aba · B / Esc fecha"
 	help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	column.add_child(help)
+	CLOSE_BUTTON.attach(self, close)
 
 
 func open(new_station: String = "maos") -> void:

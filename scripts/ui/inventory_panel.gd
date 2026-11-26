@@ -9,6 +9,7 @@ const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const SLOT := preload("res://scripts/ui/item_slot.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
 const COLUMNS := 5
+const CLOSE_BUTTON := preload("res://scripts/ui/close_button.gd")
 ## Janelas que travam o jogador (só uma aberta por vez).
 const WINDOWS := ["InventoryPanel", "CraftingPanel", "ChestPanel"]
 
@@ -35,6 +36,7 @@ func _ready() -> void:
 	column.add_child(_grid)
 	_status = _label("", 11, Color("#5a3f2c"), true)
 	column.add_child(_status)
+	CLOSE_BUTTON.attach(self, close)
 
 
 ## Fundo das janelas: o mesmo painel de madeira com folhas do HUD (referência do
