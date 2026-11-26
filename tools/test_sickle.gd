@@ -46,7 +46,16 @@ func run() -> void:
 			gathering.rng.seed = s
 			break
 	HOTBAR.select(self, HOTBAR.slots(self).find("foice"))
+	# Um ponto de mato com vizinhos no raio do golpe (área, playtest ID 09).
 	var spot: Dictionary = mato[0]
+	for cand: Dictionary in mato:
+		if gathering.sickle_targets(cand.at).size() >= 2:
+			spot = cand
+			break
+	var in_arc: Array = gathering.sickle_targets(spot.at)
+	var outside: Array = mato.filter(func(s: Dictionary) -> bool:
+		var d: float = (s.at as Vector2).distance_to(spot.at)
+		return d > gathering.SICKLE_RADIUS + 8.0 and d < gathering.SICKLE_RADIUS + 60.0)
 	player.global_position = spot.at + Vector2(0, 6)
 	for i in 4: await physics_frame
 	check(str(region.hud_hint.text).contains("foice"), "com a foice o mato oferece cortar (%s)" % region.hud_hint.text)
@@ -57,11 +66,13 @@ func run() -> void:
 	await create_timer(0.5).timeout
 	drops.collect_all()
 	check(forage.is_taken(self, spot.id, day), "um golpe corta o mato")
-	check(BAG.count_item(self, "fibra") >= 1 and seeds() == before + 1, "foice dá fibra e, com sorte, semente (fibra %d, sementes %d)" % [BAG.count_item(self, "fibra"), seeds() - before])
+	check(in_arc.size() >= 2 and in_arc.all(func(s: Dictionary) -> bool: return forage.is_taken(self, s.id, day)), "um golpe corta todo o mato do arco (%d tufos; playtest ID 09)" % in_arc.size())
+	check(outside.is_empty() or outside.all(func(s: Dictionary) -> bool: return not forage.is_taken(self, s.id, day)), "mato fora do arco fica (%d)" % outside.size())
+	check(BAG.count_item(self, "fibra") >= 1 and seeds() >= before + 1, "foice dá fibra e, com sorte, semente (fibra %d, sementes %d)" % [BAG.count_item(self, "fibra"), seeds() - before])
 	# Com a mão: arranca (3 s) e não dá semente.
 	HOTBAR.select(self, -1)
 	while player.is_using_tool(): await process_frame  # termina o golpe da foice
-	var spot2: Dictionary = mato[1]
+	var spot2: Dictionary = mato.filter(func(s: Dictionary) -> bool: return (s.at as Vector2).distance_to(spot.at) > 300.0)[0]
 	player.global_position = spot2.at + Vector2(0, 6)
 	for i in 4: await physics_frame
 	var seeds_hand := seeds()

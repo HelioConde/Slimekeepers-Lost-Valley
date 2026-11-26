@@ -178,15 +178,34 @@ func _sickle_cut(spot: Dictionary) -> void:
 	region.hud_hint.text = "[F] Cortar o mato com a foice"
 	if not Input.is_action_pressed("interact") or player.is_using_tool(): return
 	player.facing = player._get_direction_name(spot.at - player.global_position)
-	if player.play_tool("sickle") <= 0.0: player.play_tool("hoe")  # sem arte de foice ainda
-	var problem: String = forage.take(spot, GameClock.day_number)
-	if not problem.is_empty():
-		region._notify(problem)
-		return
-	if rng.randf() < SEED_CHANCE:
-		var seed_id: String = SICKLE_SEEDS[rng.randi() % SICKLE_SEEDS.size()]
-		if forage.drop.is_valid(): forage.drop.call(seed_id, 1, spot.at)
-		else: BAG.add_item(get_tree(), seed_id, 1)
+	var anim: float = player.play_tool("sickle")
+	if anim <= 0.0: player.play_tool("hoe")  # sem arte de foice
+	# Golpe em área (playtest ID 09): no contato, corta todo mato dentro do arco à frente.
+	var center: Vector2 = player.global_position + (spot.at - player.global_position).limit_length(SICKLE_REACH)
+	_at_impact(anim > 0.0, _sickle_hit.bind(center))
+
+
+## Raio do golpe da foice em volta do ponto à frente do jogador.
+const SICKLE_REACH := 26.0
+const SICKLE_RADIUS := 40.0
+
+
+func sickle_targets(center: Vector2) -> Array:
+	var day: int = GameClock.day_number
+	return forage.spots.filter(func(sp: Dictionary) -> bool:
+		return str(sp.item) == "fibra" and (sp.at as Vector2).distance_to(center) <= SICKLE_RADIUS and not forage.is_taken(get_tree(), str(sp.id), day))
+
+
+func _sickle_hit(center: Vector2) -> void:
+	for sp: Dictionary in sickle_targets(center):
+		var problem: String = forage.take(sp, GameClock.day_number)
+		if not problem.is_empty():
+			region._notify(problem)
+			break
+		if rng.randf() < SEED_CHANCE:
+			var seed_id: String = SICKLE_SEEDS[rng.randi() % SICKLE_SEEDS.size()]
+			if forage.drop.is_valid(): forage.drop.call(seed_id, 1, sp.at)
+			else: BAG.add_item(get_tree(), seed_id, 1)
 	region.bag_hud.call("refresh")
 
 
