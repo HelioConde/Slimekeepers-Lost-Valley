@@ -7,6 +7,11 @@ const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
 
 
 static func through_selection(tree: SceneTree, who: String = "aren") -> void:
+	# "Novo Jogo" agora abre a escolha de espaço (playtest ID 58): usa o espaço 1 numa pasta
+	# de teste, nunca os saves do jogador.
+	if is_instance_valid(tree.current_scene) and tree.current_scene.has_method("_new_in_slot"):
+		load("res://scripts/systems/save_game.gd").prefix = "user://test_new_game_slot_"
+		tree.current_scene.call("_new_in_slot", 1)
 	for i in 120:
 		await tree.process_frame
 		if is_instance_valid(tree.current_scene) and tree.current_scene.has_method("select"): break

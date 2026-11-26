@@ -94,3 +94,47 @@ func test_new_save_does_not_grant_tools() -> void:
 	assert_str(Save.restore(tree, clock)).is_equal(FARM_SCENE)
 	assert_int(Bag.count_item(tree, "enxada")).is_equal(0)
 	assert_int(Bag.count_item(tree, "fibra")).is_equal(3)
+
+
+## Espaços independentes (relatório de playtest ID 58): gravar um não mexe no outro, e
+## "Continuar" escolhe o mais recente.
+func test_slots_are_independent_and_latest_wins() -> void:
+	var tree := get_tree()
+	var clock: Node = auto_free(Clock.new())
+	Save.path = ""
+	Save.prefix = "user://test_slots_%d_" % Time.get_ticks_usec()
+	Save.use_slot(1)
+	Bag.add_item(tree, "repolho", 1)
+	assert_bool(Save.save(tree, clock, FARM_SCENE)).is_true()
+	Session.clear_session(tree)
+	Save.use_slot(2)
+	Bag.add_item(tree, "cenoura", 3)
+	clock.advance_minutes(1440.0)
+	assert_bool(Save.save(tree, clock, FARM_SCENE)).is_true()
+	assert_array(Save.used_slots()).contains_exactly([1, 2])
+	assert_int(Save.info(2).day).is_greater(int(Save.info(1).day))
+	Save.use_slot(1)
+	Session.clear_session(tree)
+	Save.restore(tree, clock)
+	assert_int(Bag.count_item(tree, "repolho")).is_equal(1)
+	assert_int(Bag.count_item(tree, "cenoura")).is_equal(0)  # espaço 2 não vazou
+	for n in [1, 2]:
+		Save.use_slot(n)
+		Save.delete()
+	Save.prefix = Save.DEFAULT_PREFIX
+	Save.use_slot(1)
+
+
+## Gravação atômica (ID 57): arquivo principal estragado → a leitura usa o .bak.
+func test_corrupt_main_falls_back_to_backup() -> void:
+	var tree := get_tree()
+	var clock: Node = auto_free(Clock.new())
+	Bag.add_item(tree, "repolho", 4)
+	assert_bool(Save.save(tree, clock, FARM_SCENE)).is_true()
+	assert_bool(Save.save(tree, clock, FARM_SCENE)).is_true()  # o primeiro vira .bak
+	var file := FileAccess.open(Save.path, FileAccess.WRITE)
+	file.store_string("lixo")
+	file.close()
+	Session.clear_session(tree)
+	assert_str(Save.restore(tree, clock)).is_equal(FARM_SCENE)
+	assert_int(Bag.count_item(tree, "repolho")).is_equal(4)

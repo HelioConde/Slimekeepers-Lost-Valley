@@ -37,6 +37,7 @@ func _ready() -> void:
 	ruins.name = "Ruins"
 	panorama.add_child(ruins)
 	ruins.reduce_motion = reduce_motion
+	SaveGame.migrate_legacy()  # save de arquivo único vira o espaço 1 (sem apagar)
 	_build_logo()
 	_build_buttons()
 	_build_mascot()
@@ -153,12 +154,12 @@ func _build_buttons() -> void:
 		match caption:
 			"Novo Jogo": button.pressed.connect(_start_game)
 			"Continuar":
-				# Ativo quando há save válido em disco (gravado ao dormir).
-				if SaveGame.has_save():
+				# Ativo quando algum espaço tem save (gravado ao amanhecer e ao dormir).
+				if not SaveGame.used_slots().is_empty():
 					button.pressed.connect(_continue_game)
 				else:
 					button.disabled = true
-					button.tooltip_text = "Durma na sua casa para salvar o jogo."
+					button.tooltip_text = "O jogo salva sozinho a cada amanhecer."
 					button.focus_mode = Control.FOCUS_NONE
 			"Multijogador (MP)": button.pressed.connect(_show_multiplayer)
 			"Configurações": button.pressed.connect(_show_options)
@@ -235,16 +236,74 @@ func _layout() -> void:
 		panel.scale = Vector2.ONE * ui_scale
 		panel.position = ((size - panel.size*ui_scale)/2).round()
 
+## Continuar (relatório de playtest IDs 56 e 58): com um só espaço salvo, abre direto;
+## com mais de um, mostra a lista para escolher a partida.
 func _continue_game() -> void:
+	var used := SaveGame.used_slots()
+	if used.size() == 1: _load_slot(int(used[0]))
+	elif used.size() > 1: _show_slots(false)
+
+func _load_slot(n: int) -> void:
+	SaveGame.use_slot(n)
 	var region := SaveGame.restore(get_tree(), GameClock)
 	if region.is_empty():
 		return
 	get_window().content_scale_size = Vector2i(960,540)
 	get_tree().change_scene_to_file(region)
 
-## Novo Jogo abre a seleção de protagonista; ela reinicia a partida ao confirmar.
+## Novo Jogo escolhe o espaço; espaço ocupado pede confirmação antes de ser substituído.
+## A seleção de protagonista reinicia a partida ao confirmar.
 func _start_game() -> void:
+	_show_slots(true)
+
+func _new_in_slot(n: int) -> void:
+	SaveGame.use_slot(n)
 	get_tree().change_scene_to_file("res://scenes/protagonist_select.tscn")
+
+static func slot_label(n: int) -> String:
+	var i := SaveGame.info(n)
+	if i.is_empty(): return "Espaço %d · vazio" % n
+	var who: String = {"aren": "Aren", "moni": "Moni"}.get(str(i.protagonist), "?")
+	var when: Dictionary = Time.get_datetime_dict_from_unix_time(int(i.saved_at) + int(Time.get_time_zone_from_system().bias) * 60)  # bias em minutos
+	return "Espaço %d · Dia %d · %s%s · salvo %02d/%02d %02d:%02d" % [n, int(i.day), who,
+		" · multijogador" if str(i.mode) == "mp" else "", when.day, when.month, when.hour, when.minute]
+
+func _show_slots(new_game: bool) -> void:
+	var actions: Array = []
+	for n in range(1, SaveGame.SLOTS + 1):
+		var empty := SaveGame.info(n).is_empty()
+		if not new_game and empty: continue
+		var pick: Callable = (func() -> void: _new_in_slot(n)) if new_game and empty else 			((func() -> void: _confirm_overwrite(n)) if new_game else (func() -> void: _load_slot(n)))
+		actions.append([slot_label(n), pick])
+	actions.append(["Voltar", _close_options])
+	_show_dialog("Novo jogo" if new_game else "Continuar", ["Escolha o espaço da partida."], actions)
+
+func _confirm_overwrite(n: int) -> void:
+	_close_options()
+	_show_dialog("Substituir?", [slot_label(n), "A partida deste espaço será substituída pela nova quando o jogo salvar. As outras não mudam."],
+		[["Substituir e começar", func() -> void: _new_in_slot(n)], ["Voltar", func() -> void:
+			_close_options()
+			_show_slots(true)]])
+
+## Janela com título, textos e botões [[texto, callable], ...] no estilo das demais.
+func _show_dialog(heading: String, lines: Array, actions: Array) -> void:
+	if is_instance_valid(options_layer): return
+	_show_notice(heading, lines)
+	var stack := options_layer.get_node("Card").get_child(0) as VBoxContainer
+	var close := stack.get_node("Close") as Button
+	var first: Button = null
+	for a: Array in actions:
+		var b := Button.new()
+		b.text = str(a[0])
+		b.custom_minimum_size.y = 46
+		b.pressed.connect(a[1])
+		stack.add_child(b)
+		if first == null: first = b
+	stack.remove_child(close)
+	close.queue_free()
+	(options_layer.get_node("Card") as Control).reset_size()
+	_layout()
+	if first: first.grab_focus()
 
 var _opener: Control
 

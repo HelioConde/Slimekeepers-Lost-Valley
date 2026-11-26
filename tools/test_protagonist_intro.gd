@@ -36,10 +36,11 @@ func run() -> void:
 	var who: String = args[1] if args.size() > 1 else "aren"
 	if not out.is_empty(): DirAccess.make_dir_recursive_absolute(out)
 	DisplayServer.window_set_size(Vector2i(1280, 720))
-	SAVE.path = "user://test_intro_save.txt"
+	SAVE.prefix = "user://test_intro_slot_"  # espaços de teste, nunca os do jogador
+	SAVE.use_slot(1)
 	change_scene_to_file("res://scenes/start_menu.tscn")
 	await frames(30)
-	current_scene.call("_start_game")
+	current_scene.call("_new_in_slot", 1)  # Novo Jogo → espaço 1 → seleção
 	await frames(30)
 	check(current_scene.scene_file_path == "res://scenes/protagonist_select.tscn", "Novo Jogo abre a seleção")
 	var sel: Control = current_scene
@@ -62,13 +63,15 @@ func run() -> void:
 	sel.call("_on_back")
 	await frames(20)
 	check(current_scene.scene_file_path == "res://scenes/start_menu.tscn", "Voltar retorna ao menu")
-	current_scene.call("_start_game")
+	current_scene.call("_new_in_slot", 1)  # Novo Jogo → espaço 1 → seleção
 	await frames(20)
 	current_scene.call("select", who)
 	current_scene.call("_on_confirm")
 	await create_timer(0.9).timeout
 	await shot("03b_carregando")
-	await create_timer(1.2).timeout
+	for i in 200:  # a Floresta é grande: espera trocar de cena (até ~20 s), sem tempo fixo
+		if is_instance_valid(current_scene) and current_scene.scene_file_path == "res://scenes/regions/FlorestaDoDespertarV2.tscn": break
+		await create_timer(0.1).timeout
 	await frames(30)
 	check(current_scene.scene_file_path == "res://scenes/regions/FlorestaDoDespertarV2.tscn", "confirmar carrega a Floresta")
 	check(PROTAGONIST.current(self) == who, "protagonista registrado: " + who)

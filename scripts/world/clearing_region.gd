@@ -153,6 +153,8 @@ func add_player_house(region_id: String) -> Node2D:
 	if panel is Node and is_instance_valid(panel): panel.set("builder", builder)
 	if not GameClock.time_changed.is_connected(_on_time_for_faint):
 		GameClock.time_changed.connect(_on_time_for_faint)
+	if not GameClock.time_changed.is_connected(_on_time_for_autosave):
+		GameClock.time_changed.connect(_on_time_for_autosave)
 	return builder
 
 
@@ -164,6 +166,22 @@ const FAINT_ENERGY := 50
 func _exit_tree() -> void:
 	if GameClock.time_changed.is_connected(_on_time_for_faint):
 		GameClock.time_changed.disconnect(_on_time_for_faint)
+	if GameClock.time_changed.is_connected(_on_time_for_autosave):
+		GameClock.time_changed.disconnect(_on_time_for_autosave)
+
+
+## Autosave a cada amanhecer (relatório de playtest ID 57): uma vez por dia, a partir das
+## 06:00, depois da virada e da reposição do dia. Independe de ter cama.
+const AUTOSAVE_HOUR := 6
+const AUTOSAVE_KEY := "autosave_day"
+
+
+func _on_time_for_autosave(day: int, hour: int, _minute: int) -> void:
+	if hour < AUTOSAVE_HOUR or not is_inside_tree(): return
+	if int(get_tree().get_meta(AUTOSAVE_KEY, -1)) == day: return
+	get_tree().set_meta(AUTOSAVE_KEY, day)  # antes de gravar: o save já sai com o dia marcado
+	if preload("res://scripts/systems/save_game.gd").save(get_tree(), GameClock, scene_file_path):
+		_notify("Jogo salvo (dia %d)." % day)
 
 
 ## Acordado depois da meia-noite: desmaia e acorda às 06:00 ao lado da cama (se a

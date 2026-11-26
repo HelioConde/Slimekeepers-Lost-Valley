@@ -17,6 +17,7 @@ func shot(path: String) -> void:
 func run() -> void:
 	var out: String = OS.get_cmdline_user_args()[0]
 	load("res://scripts/systems/save_game.gd").path = "user://capture_menu_no_save.txt"
+	load("res://scripts/systems/save_game.gd").prefix = "user://capture_menu_slot_"  # menu lê os espaços: nunca os do jogador
 	for size in [Vector2i(1280, 720), Vector2i(1920, 1080), Vector2i(960, 540)]:
 		DisplayServer.window_set_size(size)
 		root.size = size

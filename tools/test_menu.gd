@@ -20,6 +20,7 @@ func _initialize() -> void:
 func _run() -> void:
 	# Sem save: o save real do jogador (se houver) não interfere no teste.
 	load("res://scripts/systems/save_game.gd").path = "user://test_menu_no_save.txt"
+	load("res://scripts/systems/save_game.gd").prefix = "user://test_menu_slot_"  # menu lê os espaços: nunca os do jogador
 	_prefs_existed = FileAccess.file_exists("user://presentation.cfg")
 	if _prefs_existed:
 		_prefs_before = FileAccess.get_file_as_bytes("user://presentation.cfg")
@@ -137,7 +138,9 @@ func _run() -> void:
 	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/start_menu.tscn", "Gameplay Menu button returns to the title scene")
 	_check(root.content_scale_size == Vector2i.ZERO, "Returning to the menu restores presentation sizing")
 	if current_scene != null and current_scene.has_node("Actions"):
-		_check(current_scene.get_node("Actions").get_child(1).disabled, "Returning does not invent a save or enable Continue")
+		# Autosave do amanhecer (ID 57) pode ter gravado o dia 1: Continuar segue o que há em disco.
+		var has_slot: bool = not load("res://scripts/systems/save_game.gd").used_slots().is_empty()
+		_check(current_scene.get_node("Actions").get_child(1).disabled != has_slot, "Continue matches the saves on disk (autosave), none invented")
 	_finish()
 
 func _key(code: Key, shift: bool = false) -> void:

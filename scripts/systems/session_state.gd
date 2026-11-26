@@ -22,6 +22,7 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"valley_starter_garden_harvests",
 	"farm_cells",
 	"farm_starter_seeds_given",
+	"autosave_day",
 	"hotbar_selected",
 	"player_energy",
 	"farm_last_day",
