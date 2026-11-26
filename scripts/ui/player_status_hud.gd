@@ -20,6 +20,15 @@ var force_other := false
 ## Aviso de pouca energia (balance-check 2026-11-23): uma vez ao cair abaixo de LOW;
 ## a barra pisca enquanto estiver baixa.
 const LOW := 25
+
+
+## Dica de pouca energia conforme a casa (playtest IDs 47 e 48): sem cama, construir uma;
+## com cama, ir dormir.
+static func low_energy_tip(tree: SceneTree) -> String:
+	var furniture: Dictionary = preload("res://scripts/systems/house_state.gd").data(tree).furniture
+	if furniture.values().has("cama"):
+		return "Pouca energia! Vá dormir na sua cama (ou coma algo)."
+	return "Pouca energia! Construa uma cama (bancada → Construção → Móveis) ou coma algo."
 var _warned := false  ## testes e capturas: mostra o cartão sem conexão
 
 
@@ -162,7 +171,7 @@ func refresh() -> void:
 		_warned = true
 		var scene := get_tree().current_scene
 		if scene and scene.has_method("_notify"):
-			scene.call("_notify", "Pouca energia! Coma algo (comida na barra e [F]) ou durma na cama.")
+			scene.call("_notify", low_energy_tip(get_tree()))
 	elif energy >= LOW:
 		_warned = false
 	var connected: bool = _session != null and bool(_session.get("connected"))
