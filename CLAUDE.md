@@ -35,6 +35,19 @@ Projeto real, não um projeto Godot novo. Antes de propor alterações, leia `RE
 ## GodotPrompter
 Ao implementar um subsistema Godot, procure primeiro uma skill `godot-prompter:*` adequada, mas não duplique o trabalho dos subagentes locais nem altere o projeto apenas porque um template sugeriu. Prefira a versão do motor declarada em `project.godot` e os padrões já existentes.
 
+## Roteamento automático de modelos (autorizado pelo usuário, 2026-11-26)
+- Perfil `balanced` do Guided Model Router: Sonnet é o modelo principal e orquestrador (`model` em `.claude/settings.json`).
+- Classificar cada tarefa e subtarefa pela complexidade e **delegar aos subagentes do Model Router sem pedir confirmação**:
+  - `quick-haiku`: tarefas simples, pesquisas, pequenas alterações e documentação.
+  - `worker-sonnet`: desenvolvimento normal, funcionalidades e testes.
+  - `deep-opus`: arquitetura, multiplayer, sincronização, salvamentos, bugs complexos e desempenho.
+  - `deep-fable`: só problemas excepcionalmente complexos, quando disponível e dentro dos limites autorizados.
+- Não usar um modelo mais forte quando um mais econômico basta. Não delegar quando o modelo principal resolve direto com menos consumo.
+- Se um modelo falhar repetidamente ou não conseguir validar o que fez, escalar para o próximo nível.
+- O fallback por API do roteador fica desligado (`haiku_fallback: false`); não definir `ANTHROPIC_API_KEY`.
+- Preservar as skills especializadas existentes. Não instalar outro roteador.
+- Monitorar com `/router-stats`: "sugestões" são dicas, "delegações" são o que de fato rodou. Não confundir as duas.
+
 ## Economia de tokens — Claude Code local
 - Prefira busca por símbolos e intervalos de linhas; não despeje cenas, logs ou JSON enormes no contexto.
 - Use `context-window-hygiene` em sessões longas e `session-handoff-notes` ao retomar trabalho.

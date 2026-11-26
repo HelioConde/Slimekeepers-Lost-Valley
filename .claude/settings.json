@@ -1,5 +1,18 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "sonnet[1m]",
+  "effortLevel": "medium",
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.claude/settings.local.json)"
+    ]
+  },
+  "enabledPlugins": {
+    "godot-prompter@claude-community": true,
+    "model-router@model-router": true
+  },
   "extraKnownMarketplaces": {
     "claude-community": {
       "source": {
@@ -14,16 +27,5 @@
         "ref": "351d04433a3cbd66ed18e60ee8d187002a396ebc"
       }
     }
-  },
-  "enabledPlugins": {
-    "godot-prompter@claude-community": true,
-    "model-router@model-router": true
-  },
-  "permissions": {
-    "deny": [
-      "Read(./.env)",
-      "Read(./.env.*)",
-      "Read(./.claude/settings.local.json)"
-    ]
   }
 }
