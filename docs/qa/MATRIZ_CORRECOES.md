@@ -24,7 +24,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 24 | Construir a mesma planta em dupla | P0 | Pendente | |
 | 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Pendente | |
 | 46 | Baú sincronizado em tempo real no MP | Crítica | Pendente | |
-| 47 | Cama na progressão da casa | Crítica | Em andamento | sessão Luz V4: 98415b60 (aviso contextual); falta "Cama" na aba Construção |
+| 47 | Cama na progressão da casa | Crítica | Feito (com teste) | 98415b60 (aviso, sessão Luz V4) + entrada Cama na aba Construção (crafting_panel) · tools/test_craft_select.gd |
 | 01 | Recursos básicos perto da estrada | P1 | Pendente | |
 | 06 | Pedras no início | P1 | Pendente | |
 | 07 | Quebrar pedras, mais rendimento | P1 | Pendente | |

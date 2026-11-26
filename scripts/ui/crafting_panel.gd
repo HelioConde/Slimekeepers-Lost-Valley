@@ -33,6 +33,9 @@ const SPECIALS := [
 		"text": "Paredes, piso e porta: arraste no chão para erguer a casa. A cama salva o jogo."},
 	{"id": "moveis", "category": "construcao", "tier": 1, "name": "Móveis da casa", "mode": "furniture",
 		"text": "Cama, baú, fogão, mesa e outros móveis dentro da casa."},
+	# Playtest IDs 47/48: a cama à vista na aba Construção; dormir nela recupera a energia e salva.
+	{"id": "cama", "category": "construcao", "tier": 1, "name": "Cama", "mode": "furniture", "furniture_choice": "cama",
+		"text": "Dentro da casa. Dormir na cama recupera toda a energia e salva o jogo (4 madeiras, 6 fibras)."},
 ]
 ## Onde cada estação libera receitas (o resto aparece com o aviso de onde fazer).
 const ALLOWED := {"maos": ["maos"], "bancada": ["maos", "bancada"], "fogao": ["fogao"]}
@@ -131,10 +134,11 @@ func close() -> void:
 
 
 ## Fecha a janela e entra no modo construir da casa (mode: "house" ou "furniture").
-func start_building(mode: String = "house") -> void:
+func start_building(mode: String = "house", furniture: String = "") -> void:
 	if not is_instance_valid(builder): return
 	close()
 	builder.set("mode", mode)
+	if not furniture.is_empty(): builder.set("furniture_choice", furniture)
 	if not builder.building: builder.toggle_build()
 
 
@@ -229,6 +233,7 @@ func _output_id(r: Dictionary) -> String:
 func _icon(r: Dictionary) -> Texture2D:
 	if str(r.get("id")) == "casa": return house_icon()
 	if str(r.get("id")) == "moveis": return load("res://assets/objects/furniture/cadeira.png")
+	if str(r.get("id")) == "cama": return load("res://assets/objects/furniture/cama.png")
 	return ITEMS.icon(_output_id(r))
 
 
@@ -283,7 +288,7 @@ func _activate(index: int) -> void:
 	if index < 0 or index >= list.size(): return
 	var r: Dictionary = list[index]
 	if r.has("mode"):
-		start_building(str(r.mode))
+		start_building(str(r.mode), str(r.get("furniture_choice", "")))
 		return
 	if not why_not(r).is_empty():
 		refresh()

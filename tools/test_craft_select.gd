@@ -43,5 +43,18 @@ func run() -> void:
 	action.emit_signal("pressed")
 	for i in 3: await process_frame
 	check(BAG.count_item(self, "corda") == 1, "botão desligado não fabrica de novo")
+	# Playtest IDs 47/48: "Cama" aparece na aba Construção e abre o modo móveis já na cama.
+	panel.call("open", "bancada")
+	panel.call("show_category", "construcao")
+	for i in 3: await process_frame
+	var list: Array = panel.call("entries")
+	var bed := list.map(func(r: Dictionary) -> String: return str(r.id)).find("cama")
+	check(bed >= 0, "Cama na aba Construção")
+	if bed >= 0:
+		panel.call("_activate", bed)
+		for i in 3: await process_frame
+		var builder: Node = panel.get("builder")
+		check(str(builder.get("mode")) == "furniture" and str(builder.get("furniture_choice")) == "cama" and bool(builder.get("building")), "Cama abre o modo móveis com a cama escolhida")
+		builder.call("toggle_build")
 	print("CRAFT_SELECT: %d failures" % failures)
 	quit(1 if failures else 0)
