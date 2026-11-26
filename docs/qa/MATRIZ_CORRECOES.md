@@ -16,7 +16,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 56 | Continuar abre progresso antigo | P0 | Feito (com teste) | 5fbe3f24 · save_game (espaços, .bak), start_menu · test_save_game, test_menu |
 | 57 | Autosave a cada amanhecer | P0 | Feito (com teste) | 5fbe3f24 · clearing_region._on_time_for_autosave · tools/test_autosave.gd |
 | 58 | Slots independentes de save | P0 | Feito (com teste) | 5fbe3f24 · start_menu (escolha e confirmação) · test_save_game (espaços isolados) |
-| 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Em andamento | sessão Luz V4 (energy_state, clearing_region) |
+| 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Feito (com teste) | b886a650 (sessão Luz V4) · energy_state, clearing_region · tools/test_exhaustion.gd. Pendência MP: o dia só deve virar quando os dois dormirem |
 | 39 | Virada do dia não recupera energia | P0 | Feito (com teste) | 663335d5 (sessão Luz V4) · farm_field, energy_state · test_farm_field |
 | 22 | B/Esc não pausam o mundo em MP | P0 | Pendente | |
 | 20 | Coleta e drops visíveis para todos | P0 | Pendente | |
@@ -24,12 +24,12 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 24 | Construir a mesma planta em dupla | P0 | Pendente | |
 | 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Pendente | |
 | 46 | Baú sincronizado em tempo real no MP | Crítica | Pendente | |
-| 47 | Cama na progressão da casa | Crítica | Pendente | Depende de arte da cama (conferir assets) |
+| 47 | Cama na progressão da casa | Crítica | Em andamento | sessão Luz V4: 98415b60 (aviso contextual); falta "Cama" na aba Construção |
 | 01 | Recursos básicos perto da estrada | P1 | Pendente | |
 | 06 | Pedras no início | P1 | Pendente | |
 | 07 | Quebrar pedras, mais rendimento | P1 | Pendente | |
 | 05 | Árvores fantasmas | P1 | Pendente | Reproduzir |
-| 03 | Botão X nos painéis | P1 | Pendente | |
+| 03 | Botão X nos painéis | P1 | Feito (com teste) | close_button.gd · tools/test_close_buttons.gd (disco do slime e lista do Vale ficam sem X: não são janelas) |
 | 04 | Selecionar receita sem fabricar | P1 | Feito (com teste) | a4b187dc · crafting_panel · tools/test_craft_select.gd |
 | 02 | Idle prematuro da Moni | P1 | Pendente | |
 | 08 | Animação da foice (Moni) | P1 | Pendente | Foice longa instalada em 2026-11-23 (e7a21fa6); revisar com o playtest |
@@ -46,13 +46,13 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 21 | Soltar itens para o outro jogador | P1 | Pendente | |
 | 23 | Prévia da planta visível aos dois | P1 | Pendente | |
 | 25 | Brilho estourado dos cogumelos | P1 | Pendente | |
-| 26 | Alcance menor para interagir com slimes | P1 | Pendente | |
+| 26 | Alcance menor para interagir com slimes | P1 | Feito (com teste) | world.gd SLIME_REACH 48 · test_slime_disc, test_slime_reaction |
 | 27 | Amanhecer gradual | P1 | Pendente | |
 | 28 | Física de contato das árvores | P1 | Pendente | |
-| 29 | Queda da árvore para o lado do corte | P1 | Pendente | Tween, sem arte nova |
+| 29 | Queda da árvore para o lado do corte | P1 | Feito (com teste) | 0074c132 (sessão Luz V4) |
 | 30 | Pá para remover tocos | P1 | Pendente | Ícone e animação: verificar assets (PixelLab suspenso) |
 | 31 | Foice do Aren | P1 | Pendente | Ver 08 |
-| 32 | Tremor e impacto do machado no contato | P1 | Pendente | |
+| 32 | Tremor e impacto do machado no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
 | 33 | Números legíveis (2/5/8) | P1 | Pendente | |
 | 34 | Respawn diário por tipo (pedras limitadas) | P1 | Pendente | |
 | 36 | Tremor da árvore no J2 | P1 | Pendente | |
@@ -61,16 +61,16 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 41 | Objeto visual bugado | P1 | Pendente | Precisa da imagem do .docx |
 | 42 | Arrastar e soltar no inventário e na barra | Alta | Pendente | |
 | 43 | Durabilidade e quebra de ferramentas | Alta | Pendente | |
-| 44 | Escala do tronco caído | Alta | Pendente | |
+| 44 | Escala do tronco caído | Alta | Feito (com teste) | 5cc04936 (sessão Luz V4) |
 | 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Pendente | |
-| 48 | Balões contextuais (ferramenta, cansaço, cama) | Alta | Pendente | |
+| 48 | Balões contextuais (ferramenta, cansaço, cama) | Alta | Em andamento | 98415b60 (sessão Luz V4): aviso de pouca energia sem cama/com cama |
 | 49 | Tamanho mínimo da casa | Alta | Pendente | |
 | 50 | Cortar tocos e troncos de cenário | Alta | Pendente | |
 | 51 | Porta e piso da casa | Alta | Pendente | |
 | 52 | Escala personagem × casa | Alta | Pendente | |
-| 53 | Monte pequeno de pedras num toque | P1 | Pendente | |
-| 54 | Sem bloqueio por nível: o nível muda eficiência e desgaste | P1 | Pendente | Contraria o bloqueio da árvore e da pedra grandes (fc97c023) |
-| 55 | Impacto da picareta no contato | P1 | Pendente | |
+| 53 | Monte pequeno de pedras num toque | P1 | Feito (com teste) | be44a472 (sessão Luz V4) |
+| 54 | Sem bloqueio por nível: o nível muda eficiência e desgaste | P1 | Feito (com teste) | f416a25b (sessão Luz V4) |
+| 55 | Impacto da picareta no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
 | 59 | Alimentar com ingredientes e pratos; preferências por ingrediente | P1 | Pendente | |
 | 60 | Disco do slime só com ações disponíveis | P1 | Pendente | |
 | 61 | Menu de Esc centraliza a navegação; tirar o botão Menu do HUD | P1 | Pendente | |
@@ -94,3 +94,5 @@ Revisão do roteador antes de declarar:
 - **Fallback pago:** `classify.sh` tem um fallback que manda o pedido ao Haiku pela API (`haiku_fallback: true` por padrão). Ele só dispara se `ANTHROPIC_API_KEY` existir no ambiente. Hoje a variável não existe (conferido sem ler o valor), então o fallback não roda. **Não definir essa variável** sem autorização.
 - **`jq`:** não está instalado. Sem ele os hooks se abstêm (não fazem nada) e o `/router-stats` não funciona. Os subagentes fixados (`quick-haiku`, `worker-sonnet`, `deep-opus` e outros) funcionam mesmo assim. Instalar o `jq` (ex.: `winget install jqlang.jq`) é decisão do usuário.
 - **Pendente:** registrar a versão instalada, os modelos disponíveis e uma delegação simples e outra complexa. Fica para depois de reiniciar a sessão.
+
+> Nota (2026-11-26): `tools/test_living_regions.gd` falha na linha 45 (nenhum slime no habitat V03 do Vale). Passava em 2570dd4c; causa ainda não investigada.
