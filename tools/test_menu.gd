@@ -131,11 +131,19 @@ func _run() -> void:
 	var goal: Label = world.get("hud_goal")
 	# Sem missões no HUD: a amizade é registrada, mas não aparece como objetivo.
 	_check(not goal.visible, "HUD shows no mission/objective line")
-	var return_button := world.get_node("HUD/Interface/ReturnToMenu") as Button
-	return_button.grab_focus()
+	# Voltar ao menu: Esc -> "Voltar ao menu principal" -> confirmar (o botão Menu do HUD saiu, ID 61).
+	_check(not world.has_node("HUD/Interface/ReturnToMenu"), "The old HUD Menu button is gone")
+	var pause := world.get_node("PauseOverlay")
+	await _key(KEY_ESCAPE)
+	if not pause.is_open(): await _key(KEY_ESCAPE)  # o 1º Esc fechou o disco de ações do slime (painel aberto tem prioridade)
+	_check(pause.is_open(), "Esc opens the pause menu")
+	pause.main_menu_button.grab_focus()
+	await _key(KEY_ENTER)
+	_check(pause.cancel_button.has_focus(), "Leaving asks for confirmation first")
+	pause.confirm_button.grab_focus()
 	await _key(KEY_ENTER)
 	await _settle()
-	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/start_menu.tscn", "Gameplay Menu button returns to the title scene")
+	_check(current_scene != null and current_scene.scene_file_path == "res://scenes/start_menu.tscn", "Esc menu returns to the title scene after confirming")
 	_check(root.content_scale_size == Vector2i.ZERO, "Returning to the menu restores presentation sizing")
 	if current_scene != null and current_scene.has_node("Actions"):
 		# Autosave do amanhecer (ID 57) pode ter gravado o dia 1: Continuar segue o que há em disco.

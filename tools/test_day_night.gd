@@ -102,7 +102,7 @@ func run():
    root.size=resolution
    root.content_scale_size=Vector2i(960,540)
    await settle()
-   check(not widget.get_global_rect().intersects(region.get_node("HUD/Interface/ReturnToMenu").get_global_rect()),"Clock does not cover Menu at "+str(resolution))
+   check(not region.has_node("HUD/Interface/ReturnToMenu"),"No Menu button under the clock at "+str(resolution))
  clock.set_time(18,35)
  var before:Dictionary=clock.get_save_data()
  var valley=await switch_to(Travel.VALLEY)

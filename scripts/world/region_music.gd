@@ -17,6 +17,8 @@ var _player: AudioStreamPlayer
 var _loop_start := 0.0
 var _loop_end := 0.0
 var _target_db := -80.0
+var _stream: AudioStream
+var _fade: Tween
 
 
 ## Posição depois de `pos`: ao passar do fim do trecho, volta ao começo dele.
@@ -28,25 +30,39 @@ static func wrap(pos: float, loop_start: float, loop_end: float) -> float:
 func _ready() -> void:
 	var info: Dictionary = TRACKS.get(track, {})
 	if info.is_empty() or not ResourceLoader.exists(str(info.path)): return
-	var stream := load(str(info.path)) as AudioStream
-	if stream is AudioStreamMP3: (stream as AudioStreamMP3).loop = true  # sem pontos: repete inteira
+	_stream = load(str(info.path)) as AudioStream
+	if _stream is AudioStreamMP3: (_stream as AudioStreamMP3).loop = true  # sem pontos: repete inteira
 	_loop_start = float(info.loop_start)
 	_loop_end = float(info.loop_end)
+	apply_settings()
+
+
+## Lê volume/mudo das opções e aplica na hora (o menu do Esc chama isto ao mudar).
+## Mudo ou volume 0: sem faixa não cria o player; com ele tocando, só silencia.
+func apply_settings() -> void:
+	if _stream == null: return
 	var prefs := ConfigFile.new()
 	var volume := 0.65
 	var muted := false
 	if prefs.load("user://presentation.cfg") == OK:
 		volume = clampf(float(prefs.get_value("audio", "ambient_volume", 0.65)), 0.0, 1.0)
 		muted = bool(prefs.get_value("audio", "muted", false))
-	if muted or volume <= 0.0: return
+	if is_instance_valid(_fade): _fade.kill()
+	if muted or volume <= 0.0:
+		if is_instance_valid(_player): _player.volume_db = -80.0
+		return
 	_target_db = linear_to_db(volume * GAIN)
+	if is_instance_valid(_player):
+		_player.volume_db = _target_db
+		return
 	_player = AudioStreamPlayer.new()
 	_player.name = "Music"
-	_player.stream = stream
+	_player.stream = _stream
 	_player.volume_db = -40.0
 	add_child(_player)
 	_player.play()
-	create_tween().tween_property(_player, "volume_db", _target_db, FADE_IN)
+	_fade = create_tween()
+	_fade.tween_property(_player, "volume_db", _target_db, FADE_IN)
 
 
 func _process(_delta: float) -> void:

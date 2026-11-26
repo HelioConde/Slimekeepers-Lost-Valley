@@ -150,38 +150,6 @@ func _create_hud() -> void:
     hud_goal.add_theme_color_override("font_color", Color("3e5c43"))
     contents.add_child(hud_goal)
 
-    var menu_button := Button.new()
-    menu_button.name = "ReturnToMenu"
-    menu_button.text = "Menu"
-    menu_button.tooltip_text = "Voltar à tela inicial. O protótipo ainda não salva a partida."
-    menu_button.add_theme_font_override("font", FONT)
-    menu_button.add_theme_font_size_override("font_size", 20)
-    menu_button.add_theme_color_override("font_color", Color("fff3d2"))
-    menu_button.add_theme_color_override("font_hover_color", Color("fff3d2"))
-    menu_button.add_theme_color_override("font_pressed_color", Color("fff3d2"))
-    menu_button.add_theme_color_override("font_focus_color", Color("fff3d2"))
-    interface.add_child(menu_button)
-    menu_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-    menu_button.offset_left = -116
-    menu_button.offset_right = -18
-    menu_button.offset_top = 16
-    menu_button.offset_bottom = 58
-    for state in ["normal", "hover", "pressed", "focus"]:
-        var button_style := StyleBoxFlat.new()
-        button_style.bg_color = Color("986841") if state == "normal" else Color("aa7747")
-        if state == "pressed":
-            button_style.bg_color = Color("765036")
-        button_style.border_color = Color("694657") if state == "normal" else Color("a7cf87")
-        button_style.set_border_width_all(2)
-        button_style.set_corner_radius_all(4)
-        button_style.set_content_margin_all(8)
-        if state == "focus":
-            button_style.draw_center = false
-        menu_button.add_theme_stylebox_override(state, button_style)
-    menu_button.pressed.connect(func() -> void:
-        get_tree().change_scene_to_file("res://scenes/start_menu.tscn")
-    )
-
     var hint_panel := PanelContainer.new()
     hint_panel.name = "InteractionHint"
     hint_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
