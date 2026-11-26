@@ -205,14 +205,13 @@ func refresh() -> void:
 		var blocked := not why_not(r).is_empty()
 		var out_id := _output_id(r)
 		var label_name := str(r.get("name", ITEMS.info(out_id).name))
-		slot.setup(_icon(r), int(r.get("output", {}).get(out_id, 1)) if not r.has("mode") else 1, i == selected, label_name, why_not(r) if blocked else "Clique para fazer", blocked)
+		slot.setup(_icon(r), int(r.get("output", {}).get(out_id, 1)) if not r.has("mode") else 1, i == selected, label_name, why_not(r) if blocked else "Clique para ver", blocked)
 		var index := i
+		# Playtest ID 04: clicar só escolhe e mostra a receita; fabricar é no botão
+		# (ou [F]/Enter). Passar o mouse não troca a escolha.
 		slot.clicked.connect(func() -> void:
 			selected = index
-			_activate(index))
-		slot.mouse_entered.connect(func() -> void:
-			selected = index
-			_show_detail(r))
+			refresh())
 		grid.add_child(slot)
 		_rows.append({"node": slot, "id": str(r.id), "special": r.has("mode")})
 	if not list.is_empty(): _show_detail(list[selected])
