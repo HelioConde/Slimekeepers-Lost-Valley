@@ -9,6 +9,9 @@ func check(ok: bool, message: String) -> void:
 		failures.append(message)
 		push_error(message)
 func settle() -> void:
+	# change_scene_to_file só troca a cena no fim do process frame; sem isto, os
+	# physics frames de recuperação (carga lenta) se esgotam antes do Vale povoar.
+	await process_frame
 	for i in 8: await physics_frame
 func run() -> void:
 	root.size = Vector2i(1280,720)
