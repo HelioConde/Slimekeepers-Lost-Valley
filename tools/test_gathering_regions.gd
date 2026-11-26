@@ -87,10 +87,11 @@ func run() -> void:
 			for i in 3: await process_frame
 			await press()
 			await create_timer(1.1).timeout
-			check(not chop.state(self).has(big_key) and str(region.hud_hint.text).contains("muito grande"), "%s: árvore grande sugere uma menor" % name)
+			# Playtest ID 54: o machado rudimentar também corta a grande, só que com mais golpes.
+			check(chop.hits(big_key) >= 1 and chop.fell_hits(big_key) == 6 and str(region.hud_hint.text).contains("machado melhor"), "%s: árvore grande aceita o machado rudimentar (mais golpes)" % name)
 		# Árvore pequena mais longe do início cai (o Vale só tem árvores grandes).
 		if name == "vale":
-			check(small_key == "", "vale: só árvores grandes (machado rudimentar não corta)")
+			check(small_key == "", "vale: só árvores grandes")
 		else:
 			var tree: Node2D = chop.trees[small_key]
 			player.global_position = tree.global_position + Vector2(0, 14)

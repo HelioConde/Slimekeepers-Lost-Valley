@@ -70,7 +70,7 @@ func run() -> void:
 	player.global_position = big.at + Vector2(0, 40)
 	for i in 4: await physics_frame
 	for i in 3: await process_frame
-	check(str(region.hud_hint.text).contains("muito grande"), "pedra grande sugere uma menor (%s)" % region.hud_hint.text)
+	check(str(region.hud_hint.text).contains("picareta melhor"), "pedra grande aceita a picareta rudimentar e sugere uma melhor (%s)" % region.hud_hint.text)  # ID 54
 	# Nível 2 (pedra polida): cada golpe vale 2; a picareta polida quebra a pedra grande.
 	BAG.add_item(self, "picareta_polida", 1)
 	set_meta("player_energy", 100)

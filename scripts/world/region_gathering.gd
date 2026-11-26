@@ -87,14 +87,13 @@ func _rock_interaction() -> bool:
 	if r.is_empty(): return false
 	var player: Node2D = region.player
 	var tool := _best(ITEMS.PICKS)
-	if str(r.kind) == "large" and int(ITEMS.POWER.get(tool, 1)) < 2:
-		region.hud_hint.text = "Essa pedra é muito grande. Que tal uma menor? (ou uma picareta de pedra polida)"
-		return true
+	# Playtest ID 54: qualquer picareta quebra qualquer pedra; a rudimentar só leva mais golpes.
 	if tool.is_empty():
 		region.hud_hint.text = "Pedra média · precisa de uma picareta (fabrique na bancada)"
 		return true
 	if not _equip(tool): return true
-	region.hud_hint.text = "[F] Quebrar pedra (%d/%d)" % [rocks.hits(r.id), int(rocks.HITS[r.kind])]
+	region.hud_hint.text = "[F] Quebrar pedra (%d/%d)%s" % [rocks.hits(r.id), int(rocks.HITS[r.kind]),
+		" · grande: uma picareta melhor quebra mais rápido" if str(r.kind) == "large" and int(ITEMS.POWER.get(tool, 1)) < 2 else ""]
 	if Input.is_action_pressed("interact") and not player.is_using_tool():  # segurar = golpes seguidos
 		if not ENERGY.spend(get_tree(), "chop"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
@@ -206,13 +205,11 @@ func _axe_interaction() -> bool:
 	if t.is_empty() or tool.is_empty():
 		return false
 	var power := int(ITEMS.POWER.get(tool, 1))
-	if t.kind == "tree" and not choppable.is_small(t.key) and power < 2:
-		# Machado rudimentar só derruba árvores pequenas; as grandes pedem o de pedra polida.
-		region.hud_hint.text = "Essa árvore é muito grande. Que tal uma menor? (ou um machado de pedra polida)"
-		return true
+	# Playtest ID 54: qualquer machado derruba qualquer árvore; o rudimentar só leva mais golpes.
 	if not _equip(tool): return true
 	var total: int = choppable.fell_hits(t.key) if t.kind == "tree" else choppable.HITS_TO_PROCESS
-	region.hud_hint.text = "[F] %s (%d/%d)" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total]
+	region.hud_hint.text = "[F] %s (%d/%d)%s" % ["Cortar árvore" if t.kind == "tree" else "Processar tronco em madeira", choppable.hits(t.key), total,
+		" · grande: um machado melhor corta mais rápido" if t.kind == "tree" and not choppable.is_small(t.key) and power < 2 else ""]
 	if Input.is_action_pressed("interact") and not player.is_using_tool():  # segurar = golpes seguidos
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
