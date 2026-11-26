@@ -1,6 +1,6 @@
 extends RefCounted
-## Energia do jogador na sessão: ferramentas gastam, dormir (ou a virada do dia)
-## recupera.
+## Energia do jogador na sessão: ferramentas gastam; só dormir (ou comer) recupera —
+## a virada do dia sozinha não devolve energia (relatório de playtest ID 39).
 
 const KEY := "player_energy"
 const MAX := 100

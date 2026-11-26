@@ -53,8 +53,8 @@ func _ready() -> void:
 	_soil.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_soil.draw.connect(_draw_soil)
 	add_child(_soil)
-	if FARM.catch_up(get_tree(), GameClock.day_number) > 0:
-		ENERGY.restore(get_tree())
+	# A virada do dia não devolve energia (playtest ID 39): só dormir recupera.
+	FARM.catch_up(get_tree(), GameClock.day_number)
 	if not GameClock.day_changed.is_connected(_on_day_changed):
 		GameClock.day_changed.connect(_on_day_changed)
 	_clear_decor.call_deferred()
@@ -197,8 +197,7 @@ func interact(actor: Node2D) -> String:
 
 
 func _on_day_changed(day: int) -> void:
-	if FARM.catch_up(get_tree(), day) > 0:
-		ENERGY.restore(get_tree())
+	FARM.catch_up(get_tree(), day)  # sem devolver energia (ID 39)
 	refresh()
 
 

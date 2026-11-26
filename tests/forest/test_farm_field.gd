@@ -93,3 +93,14 @@ func test_soil_tile_is_pixel_art_with_open_edges() -> void:
 		for x in 32:
 			colors[middle.get_pixel(x, y).to_html()] = true
 	assert_int(colors.size()).is_less_equal(6)  # paleta fechada, sem degradê
+
+
+## Relatório de playtest ID 39: a virada do dia não devolve energia; só dormir recupera.
+func test_day_change_does_not_restore_energy() -> void:
+	var parts := _rig()
+	var field: Node2D = parts[0]
+	var energy := preload("res://scripts/systems/energy_state.gd")
+	get_tree().set_meta(energy.KEY, 20)
+	field.call("_on_day_changed", int(get_tree().root.get_node("GameClock").day_number) + 1)
+	assert_int(energy.current(get_tree())).is_equal(20)
+	get_tree().remove_meta(energy.KEY)
