@@ -43,6 +43,11 @@ func _ready() -> void:
 	_name_label.add_theme_font_override("font", FONT)
 	_name_label.add_theme_font_size_override("font_size", 14)
 	_name_label.add_theme_color_override("font_color", SKIN.INK)
+	# Texto longo (dica do modo construção) não alarga a barra: corta com "…"; a dica
+	# inteira já aparece na linha de dicas abaixo (playtest ID 37).
+	_name_label.clip_text = true
+	_name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_name_label.custom_minimum_size.x = width - 44
 	column.add_child(_name_label)
 	var row := HBoxContainer.new()
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
