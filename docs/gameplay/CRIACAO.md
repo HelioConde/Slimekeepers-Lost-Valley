@@ -57,7 +57,7 @@ Opção recomendada para "ferramentas melhores" (pedra polida agora, metal depoi
 |---|---|---|
 | Pedra polida | 2 pedras pequenas | material |
 | Machado de pedra polida | 3 madeiras + 3 pedras polidas + 2 cordas (exige o machado rudimentar) | cada golpe vale 2; derruba a **árvore grande** (6 golpes = 3 batidas), que rende 8 madeiras |
-| Picareta de pedra polida | 3 madeiras + 4 pedras polidas + 2 cordas (exige a picareta rudimentar) | cada golpe vale 2; quebra a **pedra grande** (6 golpes = 3 batidas, 8 pedras pequenas) |
+| Picareta de pedra polida | 3 madeiras + 4 pedras polidas + 2 cordas (exige a picareta rudimentar) | cada golpe vale 2; quebra a **pedra grande** (6 golpes = 3 batidas, 12 pedras pequenas) |
 
 - A troca é automática: com o alvo à frente, [F] escolhe a melhor ferramenta da família que estiver na bolsa (`region_gathering._best`; famílias e força em `item_catalog.AXES/PICKS/POWER`).
 - Relatório de playtest ID 54 (2026-11-26): nenhuma ferramenta é bloqueada por nível. O machado e a picareta rudimentares também derrubam a árvore e quebram a pedra grandes, só que com o dobro de golpes; a dica sugere a ferramenta melhor.

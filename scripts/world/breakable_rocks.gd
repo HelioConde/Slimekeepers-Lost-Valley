@@ -1,12 +1,12 @@
 extends Node2D
 ## Pedras médias e grandes espalhadas pelo mapa (pedido do usuário, 2026-11-23).
-## - Pedra média: só com picareta; 3 golpes e solta 3 pedras pequenas no chão.
+## - Pedra média: só com picareta; 3 golpes e solta 5 pedras pequenas no chão.
 ## - Pedra grande: precisa de uma picareta melhor (ainda não existe no jogo).
 ## Pedra quebrada volta depois de REGROW_DAYS dias. Estado na sessão (KEY).
 
 const KEY := "rocks_broken"
 const HITS := {"medium": 3, "large": 6}
-const DROPS := {"medium": 3, "large": 8}
+const DROPS := {"medium": 5, "large": 12}  # playtest ID 07: rendimento maior
 const REGROW_DAYS := 5
 const REACH := 44.0
 const ART := {"medium": "res://assets/world/rocks/rock_medium.png", "large": "res://assets/world/rocks/rock_large.png"}

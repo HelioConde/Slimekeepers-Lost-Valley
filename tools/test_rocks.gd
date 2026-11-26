@@ -66,7 +66,7 @@ func run() -> void:
 		while player.is_using_tool(): await process_frame
 	check(not (rock.node as Node2D).visible, "3 golpes de picareta quebram a pedra média")
 	region.get("item_drops").collect_all()
-	check(BAG.count_item(self, "pedra_pequena") == before + 3, "pedra média solta 3 pedras pequenas")
+	check(BAG.count_item(self, "pedra_pequena") == before + 5, "pedra média solta 5 pedras pequenas (playtest ID 07)")
 	var big: Dictionary = large[0]
 	player.global_position = big.at + Vector2(0, 40)
 	for i in 4: await physics_frame
@@ -86,7 +86,7 @@ func run() -> void:
 		while player.is_using_tool(): await process_frame
 	check(not (big.node as Node2D).visible, "3 golpes da picareta polida quebram a pedra grande")
 	region.get("item_drops").collect_all()
-	check(BAG.count_item(self, "pedra_pequena") == before + 8, "pedra grande solta 8 pedras pequenas")
+	check(BAG.count_item(self, "pedra_pequena") == before + 12, "pedra grande solta 12 pedras pequenas")
 	# Machado polido: derruba a árvore grande (6 golpes = 3 de pedra polida) e rende o dobro.
 	var trees: Node = gathering.choppable
 	var big_tree := ""
