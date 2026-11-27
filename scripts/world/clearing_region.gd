@@ -131,8 +131,10 @@ func _compact_hud() -> void:
 	hint_style.set_content_margin_all(7)
 	hint.add_theme_stylebox_override("panel",hint_style)
 	hud_hint.add_theme_font_size_override("font_size",14)
-	popup.offset_top = 90
-	popup.offset_bottom = 138
+	# Abaixo dos pés, acima da barra: no alto (90 px) o aviso "+1 graveto" ficava atrás do
+	# balão da dica, que fica sobre a cabeça (benchmark 2026-11-27).
+	popup.offset_top = 320
+	popup.offset_bottom = 368
 	popup.add_theme_font_size_override("font_size",18)
 
 
