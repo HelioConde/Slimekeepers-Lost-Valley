@@ -16,9 +16,11 @@ func check(ok: bool, what: String) -> void:
 	if not ok: failures += 1
 
 
-func _text(panel: Control) -> String:
+## Quantidade desenhada no primeiro espaço do baú (playtest ID 45: grade de espaços).
+func _shown(panel: Control) -> String:
+	var slot: Node = panel.find_child("Chest0", true, false)
 	var out := ""
-	for label: Label in panel.find_children("*", "Label", true, false): out += label.text + "\n"
+	if slot: for label: Label in slot.find_children("*", "Label", true, false): out += label.text
 	return out
 
 
@@ -33,13 +35,13 @@ func run() -> void:
 	region.get_node("HUD/Interface").add_child(panel)
 	panel.call("open", "")
 	for i in 3: await process_frame
-	check(not _text(panel).contains("Madeira"), "baú começa sem madeira")
+	check(panel.call("entries", 1).is_empty(), "baú começa sem madeira")
 	set_meta(CHEST.KEY, {"madeira": 7})  # como o NetWorld grava o que o outro jogador guardou
 	for i in 3: await process_frame
-	check(_text(panel).contains("×7"), "madeira do outro jogador aparece sem reabrir")
+	check(_shown(panel) == "7", "madeira do outro jogador aparece sem reabrir")
 	set_meta(CHEST.KEY, {"madeira": 2})
 	for i in 3: await process_frame
-	check(_text(panel).contains("×2") and not _text(panel).contains("×7"), "retirada do outro jogador atualiza na hora")
+	check(_shown(panel) == "2", "retirada do outro jogador atualiza na hora")
 	panel.call("close")
 	print("CHEST_LIVE: %d failures" % failures)
 	quit(1 if failures else 0)

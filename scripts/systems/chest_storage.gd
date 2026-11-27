@@ -39,20 +39,22 @@ static func deposit(tree: SceneTree, item: String, amount: int, chest: String = 
 	_write(tree, chest, data)
 
 
-## Guarda toda a pilha do item no baú. Devolve quantos foram guardados.
-static func store(tree: SceneTree, item: String, chest: String = "") -> int:
-	var amount := BAG.count_item(tree, item)
+## Guarda `amount` do item no baú (-1 = a pilha toda). Devolve quantos foram guardados.
+static func store(tree: SceneTree, item: String, chest: String = "", amount: int = -1) -> int:
+	var have := BAG.count_item(tree, item)
+	amount = have if amount < 0 else mini(amount, have)
 	if amount <= 0 or not BAG.spend_item(tree, item, amount): return 0
 	deposit(tree, item, amount, chest)
 	return amount
 
 
-## Tira do baú para a bolsa o quanto couber. Devolve quantos foram tirados.
-static func take(tree: SceneTree, item: String, chest: String = "") -> int:
+## Tira do baú para a bolsa até `amount` (-1 = tudo), o quanto couber. Devolve quantos foram tirados.
+static func take(tree: SceneTree, item: String, chest: String = "", amount: int = -1) -> int:
 	var data := items(tree, chest)
 	var stored := int(data.get(item, 0))
+	var want := stored if amount < 0 else mini(amount, stored)
 	var moved := 0
-	while moved < stored and BAG.add_item(tree, item, 1):
+	while moved < want and BAG.add_item(tree, item, 1):
 		moved += 1
 	if moved == stored: data.erase(item)
 	else: data[item] = stored - moved
