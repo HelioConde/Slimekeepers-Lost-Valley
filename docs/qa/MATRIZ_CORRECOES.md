@@ -53,13 +53,13 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 30 | Pá para remover tocos | P1 | Feito (com teste) | 86c60701 (sessão Luz V4): pá na bancada, arranca o toco no contato · test_shovel. Pendência de arte: golpe próprio da Moni com a pá (PixelLab suspenso) |
 | 31 | Foice do Aren | P1 | Pendente | Ver 08 |
 | 32 | Tremor e impacto do machado no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
-| 33 | Números legíveis (2/5/8) | P1 | Pendente | |
-| 34 | Respawn diário por tipo (pedras limitadas) | P1 | Pendente | |
+| 33 | Números legíveis (2/5/8) | P1 | Pendente | adiado até a mochila (42) ser commitada: fonte de dígitos feita à mão (2/5/8 iguais na Pixelify) |
+| 34 | Respawn diário por tipo (pedras limitadas) | P1 | Feito (com teste) | 64aefa6e (sessão Luz V4): reposição por tipo (mato 1 dia, graveto 2, pedrinha 4) |
 | 36 | Tremor da árvore no J2 | P1 | Pendente | |
 | 37 | Barra rápida alarga no modo construção | P1 | Feito (com teste) | c0317d49 · hotbar_hud · tools/test_hotbar_click.gd |
 | 38 | Barra: 1–9 e 0 | P1 | Feito (com teste) | de6841c9 · hotbar_hud · tools/test_hotbar_click.gd |
 | 41 | Objeto visual bugado | P1 | Pendente | Precisa da imagem do .docx |
-| 42 | Arrastar e soltar no inventário e na barra | Alta | Pendente | |
+| 42 | Arrastar e soltar no inventário e na barra | Alta | Em andamento | sessão Luz V4: mochila com 10 espaços extras e arrastar/trocar (pedido novo do usuário) |
 | 43 | Durabilidade e quebra de ferramentas | Alta | Pendente | |
 | 44 | Escala do tronco caído | Alta | Feito (com teste) | 5cc04936 (sessão Luz V4) |
 | 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Pendente | |
