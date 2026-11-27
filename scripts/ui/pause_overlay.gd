@@ -303,6 +303,8 @@ func _build() -> void:
 		mute_check.add_theme_color_override(state, Color("#402f39"))
 	mute_check.toggled.connect(_save_audio)
 	options.add_child(mute_check)
+	options.add_child(_label("Idioma", 15, "#402f39", HORIZONTAL_ALIGNMENT_LEFT))
+	options.add_child(preload("res://scripts/systems/language.gd").selector())  # ID 15
 	options_back = _button(options, "OptionsBack", "Voltar", func() -> void: _show_page("menu"))
 
 	var tutorial := _page_box(column, "tutorial")

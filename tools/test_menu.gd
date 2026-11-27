@@ -105,10 +105,10 @@ func _run() -> void:
 	var reduce_motion := modal.find_child("ReduceMotion", true, false) as CheckButton
 	_check(root.gui_get_focus_owner() == reduce_motion, "Options begins with focus inside the modal")
 	_check(new_game.focus_mode == Control.FOCUS_NONE and options.focus_mode == Control.FOCUS_NONE and exit_button.focus_mode == Control.FOCUS_NONE, "Background actions cannot steal keyboard focus")
-	for index in range(12):  # 6 controles (com o volume da música, ID 15): duas voltas completas
+	for index in range(14):  # 7 controles (volume da música e idioma, ID 15): duas voltas completas
 		await _key(KEY_TAB)
 		var focused := root.gui_get_focus_owner()
-		_check(focused != null and modal.is_ancestor_of(focused), "Tab remains inside Options (%d/12)" % (index + 1))
+		_check(focused != null and modal.is_ancestor_of(focused), "Tab remains inside Options (%d/14)" % (index + 1))
 	_check(root.gui_get_focus_owner() == reduce_motion, "Modal Tab loop returns to first control")
 	await _key(KEY_ESCAPE)
 	_check(not is_instance_valid(menu.get("options_layer")), "Escape closes Options")

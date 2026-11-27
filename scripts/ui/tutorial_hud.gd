@@ -132,6 +132,13 @@ func _notification(what: int) -> void:
 		_tail.position = Vector2(size.x * 0.5 - TAIL, size.y - 3)
 
 
+## Palavra da dica: a frase já veio traduzida; a palavra sozinha não traduz de novo.
+func _word(value: String) -> Label:
+	var label := _text(value, 13, INK)
+	label.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
+	return label
+
+
 func _text(value: String, font_size: int, color: Color) -> Label:
 	var label := Label.new()
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -209,17 +216,17 @@ func _show() -> void:
 	var data: Array = STEPS[step()]
 	_label.text = str(data[0])
 	for child in _body.get_children(): child.queue_free()
-	var text := str(data[1])
-	if _together() and str(data[2]) in SHARED: text += " " + SHARED_NOTE
+	var text := tr(str(data[1]))  # traduz a frase inteira antes de quebrar em palavras (ID 15)
+	if _together() and str(data[2]) in SHARED: text += " " + tr(SHARED_NOTE)
 	for word in text.split(" "):
 		var close := word.find("]")
 		if word.begins_with("[") and close > 0:
 			var token := word.substr(1, close - 1)
 			_body.add_child(_mouse_icon(token) if token in ["esq", "roda"] else _keycap(token), true)  # nome legível mesmo com os antigos saindo
-			if close + 1 < word.length(): _body.add_child(_text(word.substr(close + 1), 13, INK))
+			if close + 1 < word.length(): _body.add_child(_word(word.substr(close + 1)))
 		else:
-			_body.add_child(_text(word, 13, INK))
-	_footer.text = "[Tab] pular dica  ·  %d/%d" % [step() + 1, STEPS.size()]
+			_body.add_child(_word(word))
+	_footer.text = tr("[Tab] pular dica") + "  ·  %d/%d" % [step() + 1, STEPS.size()]
 	_walked = 0.0
 	_bag_seen = false
 	_time = 0.0
@@ -244,7 +251,7 @@ func _process(delta: float) -> void:
 	if not visible: _show()  # começou agora (fim do despertar)
 	_follow()
 	_time += delta
-	_footer.text = _progress(str(STEPS[step()][2])) + "[Tab] pular dica  ·  %d/%d" % [step() + 1, STEPS.size()]
+	_footer.text = _progress(str(STEPS[step()][2])) + tr("[Tab] pular dica") + "  ·  %d/%d" % [step() + 1, STEPS.size()]
 	if _done(str(STEPS[step()][2]), delta): advance()
 
 
@@ -362,16 +369,16 @@ func _progress(kind: String) -> String:
 	var parts: PackedStringArray = []
 	match kind:
 		"pick":
-			parts.append("Gravetos %d/8" % mini(8, BAG.count_item(tree, "graveto")))
-			parts.append("Pedrinhas %d/6" % mini(6, BAG.count_item(tree, "pedra_pequena")))
+			parts.append(tr("Gravetos %d/8") % mini(8, BAG.count_item(tree, "graveto")))
+			parts.append(tr("Pedrinhas %d/6") % mini(6, BAG.count_item(tree, "pedra_pequena")))
 		"fiber":
-			parts.append("Fibras %d/9" % mini(9, BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3))
+			parts.append(tr("Fibras %d/9") % mini(9, BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3))
 		"rope":
-			parts.append("Cordas %d/3" % mini(3, BAG.count_item(tree, "corda")))
+			parts.append(tr("Cordas %d/3") % mini(3, BAG.count_item(tree, "corda")))
 		"deposit":
-			parts.append("Gravetos %d/6" % mini(6, BAG.count_item(tree, "graveto")))
-			parts.append("Pedrinhas %d/4" % mini(4, BAG.count_item(tree, "pedra_pequena")))
-			parts.append("Cordas %d/2" % mini(2, BAG.count_item(tree, "corda")))
+			parts.append(tr("Gravetos %d/6") % mini(6, BAG.count_item(tree, "graveto")))
+			parts.append(tr("Pedrinhas %d/4") % mini(4, BAG.count_item(tree, "pedra_pequena")))
+			parts.append(tr("Cordas %d/2") % mini(2, BAG.count_item(tree, "corda")))
 	return "" if parts.is_empty() else " · ".join(parts) + "     "
 
 

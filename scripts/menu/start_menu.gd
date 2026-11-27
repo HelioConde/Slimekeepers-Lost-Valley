@@ -22,6 +22,7 @@ var _crest: AnimatedSprite2D
 var _prefs := ConfigFile.new()
 
 func _ready() -> void:
+	preload("res://scripts/systems/language.gd").apply_saved()  # idioma salvo (ID 15)
 	GameClock.stop()
 	# Menu uses physical pixels; the gameplay's 960x540 canvas is restored on entry.
 	get_window().content_scale_size = Vector2i.ZERO
@@ -551,13 +552,19 @@ func _show_options() -> void:
 		_prefs.save("user://presentation.cfg")
 	)
 	stack.add_child(disc_hold)
+	# Idioma (playtest ID 15): português ou inglês; troca na hora.
+	var language_label := Label.new()
+	language_label.text = "Idioma"
+	stack.add_child(language_label)
+	var language := preload("res://scripts/systems/language.gd").selector()
+	stack.add_child(language)
 	var close := Button.new()
 	close.name = "Close"
 	close.text = "Voltar"
 	close.custom_minimum_size.y = 54
 	close.pressed.connect(_close_options)
 	stack.add_child(close)
-	var focusables := [motion,fullscreen,volume,music,mute,close]
+	var focusables := [motion,fullscreen,volume,music,mute,language,close]
 	for i in focusables.size():
 		focusables[i].focus_neighbor_top = focusables[i].get_path_to(focusables[(i+focusables.size()-1)%focusables.size()])
 		focusables[i].focus_neighbor_bottom = focusables[i].get_path_to(focusables[(i+1)%focusables.size()])
