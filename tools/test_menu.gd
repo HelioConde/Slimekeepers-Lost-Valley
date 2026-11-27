@@ -79,6 +79,15 @@ func _run() -> void:
 	await _key(KEY_ENTER)
 	var notice: Control = menu.get("options_layer")
 	_check(is_instance_valid(notice) and str(notice.name) == "Multiplayer" and notice.find_child("HostSteam", true, false) != null and notice.find_child("JoinLan", true, false) != null, "Multiplayer offers Steam host and local join")
+	# Hospedar abre a escolha de espaço (antes ficava sem efeito com a janela aberta).
+	(notice.find_child("HostLan", true, false) as Button).pressed.emit()
+	await process_frame
+	var slots: Control = menu.get("options_layer")
+	_check(is_instance_valid(slots) and slots.find_children("*", "Button", true, false).any(func(b: Node) -> bool: return (b as Button).text.begins_with("Espaço 1")) and str(root.get_node("NetSession").pending_host) == "enet", "Host on local network opens the slot choice")
+	await _key(KEY_ESCAPE)
+	root.get_node("NetSession").pending_host = ""
+	multiplayer_button.grab_focus()
+	await _key(KEY_ENTER)
 	await _key(KEY_ESCAPE)
 	_check(not is_instance_valid(menu.get("options_layer")) and root.gui_get_focus_owner() == multiplayer_button, "Escape closes the notice and restores focus")
 	credits.grab_focus()

@@ -152,7 +152,7 @@ func _build_buttons() -> void:
 		button.focus_entered.connect(_highlight.bind(button,true))
 		button.focus_exited.connect(_highlight.bind(button,false))
 		match caption:
-			"Novo Jogo": button.pressed.connect(_start_game)
+			"Novo Jogo": button.pressed.connect(_solo_new_game)
 			"Continuar":
 				# Ativo quando algum espaço tem save (gravado ao amanhecer e ao dormir).
 				if not SaveGame.used_slots().is_empty():
@@ -260,6 +260,18 @@ func _load_slot(n: int) -> void:
 ## A seleção de protagonista reinicia a partida ao confirmar.
 func _start_game() -> void:
 	_show_slots(true)
+
+## Hospedar: fecha a janela do Multijogador antes de abrir a escolha de espaço
+## (_show_dialog não abre por cima de outra janela, e o botão ficava sem efeito).
+func _host_new_game(kind: String) -> void:
+	_close_options()
+	get_node("/root/NetSession").pending_host = kind
+	_start_game()
+
+## Novo Jogo solo: descarta um "hospedar" que ficou pendente ao voltar da escolha de espaço.
+func _solo_new_game() -> void:
+	get_node("/root/NetSession").pending_host = ""
+	_start_game()
 
 func _new_in_slot(n: int) -> void:
 	SaveGame.use_slot(n)
@@ -404,15 +416,13 @@ func _show_multiplayer() -> void:
 		if not problem.is_empty():
 			status.text = problem
 			return
-		net.pending_host = "steam"
-		_start_game())
+		_host_new_game("steam"))
 	stack.add_child(host_steam)
 	var host_lan := Button.new()
 	host_lan.name = "HostLan"
 	host_lan.text = "Hospedar na rede local"
 	host_lan.pressed.connect(func() -> void:
-		net.pending_host = "enet"
-		_start_game())
+		_host_new_game("enet"))
 	stack.add_child(host_lan)
 	var row := HBoxContainer.new()
 	stack.add_child(row)
