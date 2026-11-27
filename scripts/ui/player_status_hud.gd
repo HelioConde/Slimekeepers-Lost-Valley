@@ -172,6 +172,7 @@ func refresh() -> void:
 		var scene := get_tree().current_scene
 		if scene and scene.has_method("_notify"):
 			scene.call("_notify", low_energy_tip(get_tree()))
+			if scene.has_method("say"): scene.call("say", "low_energy", low_energy_tip(get_tree()))  # balão do personagem (ID 48)
 	elif energy >= LOW:
 		_warned = false
 	var connected: bool = _session != null and bool(_session.get("connected"))

@@ -3,6 +3,7 @@ extends "res://scripts/world.gd"
 const PauseOverlay := preload("res://scripts/ui/pause_overlay.gd")
 const Layout = preload("res://scripts/world/clearing_layout.gd")
 var _visited_exits: Dictionary = {}
+var speech: Control  ## balão de fala contextual (ID 48)
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -101,6 +102,9 @@ func _compact_hud() -> void:
 	# /ADMIN (remover)
 	# Retrato, vida e energia no canto (e o outro jogador abaixo no multijogador).
 	$HUD/Interface.add_child(preload("res://scripts/ui/player_status_hud.gd").new())
+	speech = preload("res://scripts/ui/speech_bubble.gd").new()  # balões contextuais (ID 48)
+	speech.region = self
+	$HUD/Interface.add_child(speech)
 	# Slime por perto: retrato, nome e corações do laço (exemplo de HUD do usuário).
 	# Multijogador: mostra o outro jogador e envia a posição deste (net_presence.gd).
 	var presence := preload("res://scripts/net/net_presence.gd").new()
@@ -318,6 +322,11 @@ func add_inventory_panel() -> Control:
 		var bag_node: Node = get("bag_hud")
 		if is_instance_valid(bag_node): bag_node.call("refresh"))
 	return inventory_panel
+
+
+## Balão de fala do personagem (scripts/ui/speech_bubble.gd); um por situação, com intervalo.
+func say(situation: String, text: String) -> void:
+	if is_instance_valid(speech): speech.say(situation, text)
 
 
 ## Dicas do tutorial inicial (scripts/ui/tutorial_hud.gd); some quando termina.

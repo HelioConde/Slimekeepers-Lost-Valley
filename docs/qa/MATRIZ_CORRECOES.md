@@ -63,7 +63,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 43 | Durabilidade e quebra de ferramentas | Alta | Feito (com teste) | dc09b3c0 (sessão Luz V4): barrinha de desgaste; salvar ao voltar ao menu · test_hotbar_click |
 | 44 | Escala do tronco caído | Alta | Feito (com teste) | 5cc04936 (sessão Luz V4) |
 | 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Feito (com teste) | 2d9b8d06 (sessão Luz V4): baú em duas colunas, arrastar, atalhos 1/metade/tudo · test_chest_move |
-| 48 | Balões contextuais (ferramenta, cansaço, cama) | Alta | Em andamento | 98415b60 (sessão Luz V4): aviso de pouca energia sem cama/com cama |
+| 48 | Balões contextuais (ferramenta, cansaço, cama) | Alta | Feito (com teste) | speech_bubble.gd: balão acima da cabeça (árvore/pedra grande, sem ferramenta, pouca energia com/sem cama), intervalo por situação · tools/test_speech_bubbles.gd |
 | 49 | Tamanho mínimo da casa | Alta | Feito (com teste) | mínimo 5×5 (3×3 por dentro, cama + passagem); aviso ao arrastar menor · test_house_state, capture_house |
 | 50 | Cortar tocos e troncos de cenário | Alta | Feito (com teste) | 050c8675 (sessão Luz V4): troncos e tocos de cenário (machado processa, pá arranca) · test_scenery_wood |
 | 51 | Porta e piso da casa | Alta | Feito (com teste) | house_builder._draw_floor: piso interno na célula da porta e soleira · capture_house. Pendência: tufos de capim da região ainda por cima do piso |

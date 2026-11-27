@@ -162,6 +162,7 @@ func _rock_interaction() -> bool:
 	# Playtest ID 54: qualquer picareta quebra qualquer pedra; a rudimentar só leva mais golpes.
 	if tool.is_empty():
 		region.hud_hint.text = "Pedra média · precisa de uma picareta (fabrique na bancada)"
+		if Input.is_action_just_pressed("interact"): region.say("need_pick", "Preciso de uma picareta para isso. Dá para fazer na bancada.")
 		return true
 	if not _equip(tool): return true
 	region.hud_hint.text = "[F] Quebrar pedra (%d/%d)%s" % [rocks.hits(r.id), int(rocks.HITS[r.kind]),
@@ -170,6 +171,8 @@ func _rock_interaction() -> bool:
 		if not ENERGY.spend(get_tree(), "chop"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
+		if str(r.kind) == "large" and int(ITEMS.POWER.get(tool, 1)) < 2:
+			region.say("big_rock", "Essa pedra é grande... vai demorar. Uma picareta melhor ajuda.")
 		player.facing = player._get_direction_name(r.at - player.global_position)
 		var swing := "pickaxe_polished" if int(ITEMS.POWER.get(tool, 1)) >= 2 else "pickaxe"
 		var anim: float = player.play_tool(swing)
@@ -314,7 +317,9 @@ func _axe_interaction() -> bool:
 	var player: Node2D = region.player
 	var t: Dictionary = choppable.target(_focus())
 	var tool := _best(ITEMS.AXES)
-	if t.is_empty() or tool.is_empty():
+	if t.is_empty(): return false
+	if tool.is_empty():
+		if Input.is_action_just_pressed("interact"): region.say("need_axe", "Preciso de um machado para isso. Dá para fazer na bancada.")
 		return false
 	var power := int(ITEMS.POWER.get(tool, 1))
 	# Playtest ID 54: qualquer machado derruba qualquer árvore; o rudimentar só leva mais golpes.
@@ -326,6 +331,8 @@ func _axe_interaction() -> bool:
 		if not ENERGY.spend(get_tree(), "chop" if t.kind == "tree" else "process"):
 			region._notify(preload("res://scripts/systems/protagonist.gd").tired_message(get_tree()))
 			return true
+		if t.kind == "tree" and not choppable.is_small(t.key) and power < 2:
+			region.say("big_tree", "Essa é grande... vai demorar. Que tal uma menor ou um machado melhor?")
 		var anim: float = player.play_tool("axe_polished") if power >= 2 else 0.0
 		if anim <= 0.0: anim = player.play_tool("axe")
 		_at_impact(anim > 0.0, _chop_hit.bind(t, power))  # tremor e dano no contato do machado (playtest ID 32)
