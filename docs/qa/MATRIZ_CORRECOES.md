@@ -42,7 +42,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 16 | Tutorial explicativo no menu | P1 | Feito (com teste) | botão Como jogar no menu principal + Tutorial no menu do Esc (23390052) · test_menu, test_pause_menu |
 | 17 | MP começa na seleção de protagonista | P1 | Pendente | |
 | 18 | Tutorial para os dois jogadores | P1 | Pendente | |
-| 19 | Pedra inicial não coletável | P1 | Pendente | |
+| 19 | Pedra inicial não coletável | P1 | Feito (com teste) | pedrinhas decorativas (pebbles.png do GroundDetail) viram pontos de coleta reais · tools/test_start_stones.gd |
 | 21 | Soltar itens para o outro jogador | P1 | Feito (com teste, 2 instâncias) | [Q] solta 1, Shift+[Q] a pilha; mochila com quantidade · tools/test_drop_from_bag.gd, test_mp_drops |
 | 23 | Prévia da planta visível aos dois | P1 | Feito (com teste, 2 instâncias) | prévia (build_ghost) aparece e some no outro jogo · test_mp_build. Falta rótulo de qual jogador posiciona |
 | 25 | Brilho estourado dos cogumelos | P1 | Feito (com teste) | 21386fda (sessão Luz V4, merge de ce6ab356): brilho dos cogumelos limitado |

@@ -174,7 +174,9 @@ func _spawn_forage() -> void:
 		var d: float = preload("res://scripts/world/valley_layout.gd").route_distance(at, trail_paths)
 		return d > 35.0 and d < 90.0 and free_at.call(at)
 	forage.setup(Forest.SPAWN, 250.0, 800.0, TRAIL_FORAGE, at_trail_edge, "t_", 48.0)
-	if is_instance_valid(ground_detail): forage.add_mato(ground_detail)
+	if is_instance_valid(ground_detail):
+		forage.add_mato(ground_detail)
+		forage.add_pedrinhas(ground_detail)
 	forage.add_mato_tiles($VegetationLow, preload("res://assets/menu/environment/grass.png"))
 	forage.add_mato_props($WoodlandDetails, "")
 	forage.refresh(GameClock.day_number)

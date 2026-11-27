@@ -79,6 +79,15 @@ func add_mato(detail: Node2D) -> void:
 		spots.append({"id": "mato_%d_%d" % [roundi(at.x), roundi(at.y)], "item": "fibra", "at": at, "sprite": entry.sprite})
 
 
+## Pedrinhas do detalhe de chão (mesma arte das coletáveis) viram pontos de pedra pequena:
+## pedra decorativa ao lado do jogador parecia coletável e não era (playtest ID 19).
+func add_pedrinhas(detail: Node2D) -> void:
+	for entry: Dictionary in detail.placed:
+		if entry.kind != "pebbles": continue
+		var at: Vector2 = detail.to_global(entry.at)
+		spots.append({"id": "pedrad_%d_%d" % [roundi(at.x), roundi(at.y)], "item": "pedra_pequena", "at": at, "sprite": entry.sprite})
+
+
 ## Props de mato num grupo do mapa (Sprite2D direto ou nó com filho "Sprite"): cada
 ## um vira ponto de fibra e o nó inteiro (com a sombra) some quando colhido.
 ## prefix separa os ids salvos de cada mapa.
