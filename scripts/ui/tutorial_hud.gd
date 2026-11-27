@@ -53,6 +53,8 @@ var _walked := 0.0
 var _bag_seen := false
 var _highlight: Node2D  ## anel branco piscando nos alvos (tutorial_highlight.gd)
 var _scan := 0.0
+const NEAR_ITEMS := 720.0  ## coletáveis da dica: anéis de mais longe (benchmark rodada 2)
+const PER_ITEM := 3
 const NEAR := 460.0  ## só destaca alvos perto do jogador  ## mochila já abriu nesta dica (passa ao fechar)
 var _time := 0.0
 
@@ -321,13 +323,21 @@ func _targets(kind: String) -> Array:
 		if BAG.count_item(get_tree(), "pedra_pequena") < int(need[1]): want.append("pedra_pequena")
 		if BAG.count_item(get_tree(), "corda") + BAG.count_item(get_tree(), "fibra") / 3 < int(need[2]): want.append("fibra")
 		items[kind] = want
+	if kind == "pick":  # benchmark rodada 2: com gravetos quase prontos, os anéis iam todos para gravetos
+		items[kind] = (["graveto"] if BAG.count_item(get_tree(), "graveto") < 8 else []) 			+ (["pedra_pequena"] if BAG.count_item(get_tree(), "pedra_pequena") < 6 else [])
 	if items.has(kind):
 		var forage: Node = region.get("forage")
 		var day: int = get_tree().root.get_node("GameClock").day_number
 		if is_instance_valid(forage):
 			for spot: Dictionary in forage.spots:
-				if str(spot.item) in items[kind] and spot.at.distance_to(from) < NEAR and not forage.is_taken(get_tree(), spot.id, day):
-					found.append([spot.at, 14.0 if kind == "pick" else 18.0])
+				if str(spot.item) in items[kind] and spot.at.distance_to(from) < NEAR_ITEMS and not forage.is_taken(get_tree(), spot.id, day):
+					found.append([spot.at, 14.0 if kind == "pick" else 18.0, str(spot.item)])
+			# Até PER_ITEM anéis de cada tipo que ainda falta (antes: 6 mais perto, de qualquer tipo).
+			found.sort_custom(func(a: Array, b: Array) -> bool: return (a[0] as Vector2).distance_to(from) < (b[0] as Vector2).distance_to(from))
+			var per: Dictionary = {}
+			found = found.filter(func(e: Array) -> bool:
+				per[e[2]] = int(per.get(e[2], 0)) + 1
+				return int(per[e[2]]) <= PER_ITEM)
 	elif kind == "swing":
 		var chop: Node = region.get("choppable")
 		if is_instance_valid(chop):
