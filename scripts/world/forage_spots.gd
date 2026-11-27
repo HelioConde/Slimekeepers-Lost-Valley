@@ -12,6 +12,9 @@ const REACH := 36.0
 const MATO_KINDS := ["grass", "grass_tuft_sunlit"]
 ## Tempo segurando [F] para pegar (pedido do usuário, 2026-11-23): graveto 1 s, pedra e mato 2 s.
 const PULL_SECONDS := {"fibra": 2.0, "pedra_pequena": 2.0, "graveto": 1.0}
+## Reposição por tipo (playtest ID 34): o mato volta no dia seguinte; graveto em 2 dias;
+## pedrinha em 4 (pedra não brota do nada todo dia).
+const RESPAWN_DAYS := {"fibra": 1, "graveto": 2, "pedra_pequena": 4}
 ## Texturas de tufo de mato colocadas como props nos mapas (Vale, Floresta).
 const MATO_TEXTURES := ["environment/grass.png", "ground/grass_tuft_sunlit.png"]
 ## item, quantidade por coleta, arte no chão, deslocamento do sprite
@@ -156,7 +159,7 @@ func take(spot: Dictionary, day: int) -> String:
 	elif not BAG.add_item(get_tree(), spot.item, amount):
 		return "A bolsa não tem espaço para mais."
 	var taken: Dictionary = get_tree().get_meta(FORAGE_KEY, {}).duplicate()
-	taken[spot.id] = day
+	taken[spot.id] = day + int(RESPAWN_DAYS.get(str(spot.item), 1)) - 1  # guarda o último dia sem o recurso
 	get_tree().set_meta(FORAGE_KEY, taken)
 	_show(spot, false)
 	return ""
