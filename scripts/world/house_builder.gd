@@ -425,7 +425,7 @@ func demolish() -> bool:
 
 func place_at(cell: Vector2i) -> bool:
 	if mode != "furniture": return false
-	problem = "Construa a casa primeiro (Q: Casa)" if HOUSE.region_of(get_tree()) != region_id else 		HOUSE.place_furniture(get_tree(), cell, furniture_choice, blocked_cells())
+	problem = "Construa a casa primeiro (Q: Casa)" if HOUSE.region_of(get_tree()) != region_id else 		HOUSE.place_furniture(get_tree(), cell, furniture_choice, blocked_cells(), blocked_world)
 	if problem.is_empty(): rebuild()
 	return problem.is_empty()
 

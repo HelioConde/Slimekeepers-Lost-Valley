@@ -93,7 +93,7 @@ func test_furniture_costs_and_refunds() -> void:
 	assert_str(House.place_furniture(tree, Vector2i(11, 7), "cama")).is_empty()
 	assert_str(House.furniture_at(tree, Vector2i(11, 8))).is_equal("cama")  # ocupa 2 células
 	assert_int(Bag.count_item(tree, "madeira")).is_equal(0)
-	assert_str(House.place_furniture(tree, Vector2i(40, 40), "mesa")).contains("dentro da casa")
+	assert_str(House.place_furniture(tree, Vector2i(10, 6), "mesa")).is_equal("Lugar ocupado")  # parede
 	assert_bool(House.remove_furniture(tree, Vector2i(11, 8))).is_true()
 	assert_int(Bag.count_item(tree, "madeira")).is_equal(int(House.FURNITURE_COSTS.cama.madeira))
 
@@ -122,3 +122,16 @@ func test_wall_face_below_is_solid() -> void:
 	assert_bool(solid.has(Vector2i(13, 7))).is_true()  # face dela, dentro da casa
 	assert_bool(solid.has(House.door_of(rect))).is_false()
 	assert_bool(solid.has(Vector2i(13, 9))).is_false()
+
+
+## Móveis do lado de fora (pedido do usuário, 2026-11-27): só em chão livre do mapa.
+func test_furniture_outside_the_house() -> void:
+	var tree := get_tree()
+	var rect := Rect2i(10, 6, 7, 5)
+	_give(House.rect_cost(rect))
+	House.build(tree, "floresta", rect)
+	var rock := func(c: Vector2i) -> bool: return c == Vector2i(30, 30)
+	_give(House.FURNITURE_COSTS.mesa)
+	assert_str(House.place_furniture(tree, Vector2i(30, 30), "mesa", [], rock)).contains("árvore, pedra ou água")
+	assert_str(House.place_furniture(tree, Vector2i(25, 20), "mesa", [], rock)).is_empty()
+	assert_str(House.furniture_at(tree, Vector2i(25, 20))).is_equal("mesa")

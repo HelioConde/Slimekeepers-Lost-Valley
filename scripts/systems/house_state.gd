@@ -215,14 +215,17 @@ static func footprint(origin: Vector2i, id: String) -> Rect2i:
 
 ## Coloca um móvel dentro da casa (piso, sem parede nem outro móvel; sólido não na
 ## célula do jogador). Paga FURNITURE_COSTS. "" = colocou; senão o motivo.
-static func place_furniture(tree: SceneTree, cell: Vector2i, furniture_id: String, blocked: Array = []) -> String:
+## Móveis também vão do lado de fora (pedido do usuário, 2026-11-27): fora do piso, a
+## célula precisa estar livre no mapa (`world_blocked`: árvore, pedra, água).
+static func place_furniture(tree: SceneTree, cell: Vector2i, furniture_id: String, blocked: Array = [], world_blocked: Callable = Callable()) -> String:
 	if not FURNITURE.has(furniture_id): return "Móvel desconhecido"
 	var house := data(tree)
 	var rect := footprint(cell, furniture_id)
 	for y in range(rect.position.y, rect.end.y):
 		for x in range(rect.position.x, rect.end.x):
 			var c := Vector2i(x, y)
-			if not house.floor.has(c) or house.wall.has(c) or furniture_at(tree, c) != "": return "Só dentro da casa, em lugar livre"
+			if house.wall.has(c) or furniture_at(tree, c) != "": return "Lugar ocupado"
+			if not house.floor.has(c) and world_blocked.is_valid() and bool(world_blocked.call(c)): return "Aqui não dá: árvore, pedra ou água"
 			if FURNITURE[furniture_id].solid and c in blocked: return "Saia do lugar do móvel"
 	var cost: Dictionary = FURNITURE_COSTS.get(furniture_id, {})
 	var lack := missing(tree, cost)
