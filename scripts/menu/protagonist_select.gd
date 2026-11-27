@@ -198,6 +198,13 @@ func _panel(id: String) -> PanelContainer:
 	style.set_corner_radius_all(6)
 	style.set_content_margin_all(12)
 	p.add_theme_stylebox_override("panel", style)
+	# Clicar no cartão com o nome também escolhe (benchmark 2026-11-27: só a figura respondia).
+	p.mouse_filter = Control.MOUSE_FILTER_STOP
+	p.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	p.mouse_entered.connect(_on_hover.bind(id))
+	p.mouse_exited.connect(_on_unhover.bind(id))
+	p.gui_input.connect(func(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT: select(id))
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var column := VBoxContainer.new()
 	p.add_child(column)

@@ -56,7 +56,11 @@ func run() -> void:
 	await frames(20)
 	check((sel.figures[who] as TextureRect).texture == sel._textures[who][0], "saída do cursor volta à pose neutra")
 	check(sel._confirm.disabled, "confirmar desligado sem escolha")
-	sel.call("select", who)
+	# Clique no cartão com o nome (não só na figura) escolhe (benchmark 2026-11-27).
+	var click := InputEventMouseButton.new()
+	click.button_index = MOUSE_BUTTON_LEFT
+	click.pressed = true
+	(sel.panels[who] as Control).gui_input.emit(click)
 	await frames(10)
 	check(sel.selected == who and not sel._confirm.disabled, "clique fixa a escolha e libera Confirmar")
 	await shot("03_escolhido_" + who)
