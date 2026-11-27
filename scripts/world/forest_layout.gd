@@ -48,8 +48,8 @@ static func trails() -> Dictionary:
 	paths["AncientTree"] = Legacy._curve([Vector2(3190,2110),Vector2(3050,1960),Vector2(2860,1880)])
 	paths["EastHabitat"] = Legacy._curve([Vector2(4290,3270),Vector2(4480,3270)])
 	paths["SouthHabitat"] = Legacy._curve([Vector2(3130,4330),Vector2(3260,4460),Vector2(3350,4580),Vector2(3220,4860)])
-	paths["NorthernHills"] = Legacy._curve([Vector2(3270,1540),Vector2(3790,1500),Vector2(4270,1900),Vector2(4880,1700),Vector2(5110,1480),Vector2(5370,2200),Vector2(5360,3280)])
-	paths["LookoutSteps"] = Legacy._curve([Vector2(5110,1480),Vector2(5110,1260)])
+	paths["NorthernHills"] = Legacy._curve([Vector2(3270,1540),Vector2(3790,1500),Vector2(4270,1900),Vector2(4880,1700),Vector2(5110,1560),Vector2(5370,2200),Vector2(5360,3280)])
+	paths["LookoutSteps"] = Legacy._curve([Vector2(5110,1540),Vector2(5110,1260)])  # escada desceu com o platô ampliado (boss)
 	paths["HiddenGardenLoop"] = Legacy._curve([Vector2(5360,3280),Vector2(5480,3780),Vector2(5100,4250),Vector2(4660,4520),Vector2(3350,4580)])
 	paths["WesternForestLoop"] = Legacy._curve([Vector2(3300,5260),Vector2(2500,5380),Vector2(1880,4980),Vector2(1310,4100),Vector2(1420,3000),Vector2(1980,2120)])
 	return paths

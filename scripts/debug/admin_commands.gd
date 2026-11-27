@@ -97,6 +97,13 @@ func run(line: String) -> String:
 		"vida":
 			tree.set_meta(preload("res://scripts/systems/health_state.gd").KEY, 100)
 			return "Vida cheia."
+		"boss":  # libera o primeiro boss (Mirante Rochoso) e dá armas e flechas para testar
+			tree.set_meta(preload("res://scripts/combat/boss_arena.gd").UNLOCK_KEY, true)
+			var bag := preload("res://scripts/systems/forest_bag.gd")
+			for item in ["espada", "arco"]: if bag.count_item(tree, item) == 0: bag.add_item(tree, item, 1)
+			bag.add_item(tree, "flecha", 30)
+			_refresh()
+			return "Boss liberado no Mirante Rochoso; espada, arco e 30 flechas na bolsa."
 		"hora":
 			if args.size() < 2: return "Uso: hora <h> [min]"
 			tree.root.get_node("GameClock").set_time(int(args[1]), int(args[2]) if args.size() > 2 else 0)

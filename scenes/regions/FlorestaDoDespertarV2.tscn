@@ -2,8 +2,6 @@
 
 [ext_resource type="Script" uid="uid://blmps44cmsm0n" path="res://scripts/world/forest_region.gd" id="1_5l1pt"]
 [ext_resource type="Shader" uid="uid://j2a2ecvuil5p" path="res://scripts/world/forest_ground.gdshader" id="2_efgt1"]
-[ext_resource type="Texture2D" path="res://assets/world/forest/oak_lush.png" id="v6_oak_lush"]
-[ext_resource type="Texture2D" path="res://assets/world/forest/pine_lush.png" id="v6_pine_lush"]
 [ext_resource type="Texture2D" uid="uid://ckad6a1gvngaf" path="res://assets/tilesets/grass_dirt_v3_32x32.png" id="3_ectdh"]
 [ext_resource type="Texture2D" uid="uid://1heaurnxhx82" path="res://assets/menu/environment/grass.png" id="4_l2ncc"]
 [ext_resource type="Texture2D" path="res://assets/world/forest/wildflowers_cluster.png" id="5_cfu6o"]
@@ -34,6 +32,16 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_axc1j"]
 shader = ExtResource("2_efgt1")
+shader_parameter/use_wang = null
+shader_parameter/night_dim = null
+shader_parameter/night_value = null
+shader_parameter/night_tint = null
+shader_parameter/canopy_shade = null
+shader_parameter/night_forest_lift = null
+shader_parameter/sun_vector = null
+shader_parameter/long_shadow = null
+shader_parameter/golden = null
+shader_parameter/grass_soften = null
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cqabr"]
 texture = ExtResource("3_ectdh")
@@ -109,558 +117,651 @@ shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_id0aq"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2j6el"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wmdii"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tdxoi"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_g5nuc"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xjy1y"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sn04g"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_guhr3"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cqdn4"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tvs23"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1qtgc"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kcyjj"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x05hv"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5kub3"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_o0e4l"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_70x36"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ao348"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yv2oi"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j7ibe"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lsvh6"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tkdxv"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_guf1j"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ric33"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8rl4i"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_83vfv"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2cqkq"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m5sxu"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jidwn"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_oiicn"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xvvdx"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hn5nb"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tkuv6"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f745w"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ypefc"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1ih3t"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jgjoo"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ksp0h"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wykgb"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_go4c6"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_htccu"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ldfi0"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nasig"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iqjsh"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_edh5x"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ndifu"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x7kwu"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lc110"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hlsjo"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r2gvo"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vhqnv"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u3rxv"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pysl3"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_md53b"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fy172"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_clo1k"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7pf55"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ok8tw"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2s8xa"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pfjd4"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ivdjw"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ptl11"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pfrhw"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5givi"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_my0c2"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0lehb"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tkl6t"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4w7ew"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4m22l"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3sg7e"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yyn35"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.48
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nxgj2"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.37
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d0uah"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.45
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a5bya"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.45
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_t6iwy"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.45
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3o70y"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0rdtr"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ktcln"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l32rt"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wmaj8"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2x518"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2ul1d"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mnl3p"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3oha1"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v3525"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_la06s"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mto6d"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mna5i"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u74s5"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bo3tn"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ew1dd"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.54
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d2me8"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.32
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5lr57"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.32
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1uiwg"]
 size = Vector2(160, 110)
@@ -676,18 +777,22 @@ shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.35
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f6vew"]
 resource_local_to_scene = true
 shader = ExtResource("24_h6djv")
 shader_parameter/elapsed = 0.0
 shader_parameter/pool_radius = Vector2(85, 48)
+shader_parameter/night = null
+shader_parameter/golden = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ylfjr"]
 shader = ExtResource("20_gefaj")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hc2mh"]
 size = Vector2(48, 24)
@@ -718,1358 +823,1590 @@ shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yvbcb"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d6ji8"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_t71qm"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vsm8r"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_paw5q"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u0q4y"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dll57"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_gqql7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ptoml"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_y2tgp"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lvoro"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dh2bn"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5oyxs"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2ihac"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_gkl23"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_35ql6"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6beph"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_oaslh"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8stqs"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6dyxn"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cy5wa"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yq3kc"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f0e3o"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pmhe0"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dbv7l"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m2ves"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j2jio"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5gpgs"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2g3ef"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tpspa"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mrp8g"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2ivgh"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i5xh2"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_x7of5"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8gut8"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6qlte"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l5t1v"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8lpbq"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f7h6r"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_25r35"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_herxt"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aescr"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_utmm2"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_juocb"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v866u"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_milac"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lvmob"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yuo1j"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_owing"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qggk5"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_30qhv"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6qbfh"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0sd2g"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jvqfw"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_eu5q0"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qcv5j"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j0uih"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pwiqq"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6acqf"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mubui"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cv72s"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lax8h"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j0qw4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0im5y"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2e542"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3jvov"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bbadj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6xoim"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_uw6tl"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ewtv3"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5o7p1"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_02f6t"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_s4u7k"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1ypls"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mjbq7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bpekj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4sgwm"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jksbj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mt3dg"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_do011"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m4l4b"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_56qxx"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2gr54"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_h166k"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lty66"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wucwu"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ra0fp"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_he6r4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_oud71"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_eas2j"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_gdxo4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ghfv4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_g3lnt"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_eg3hm"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_71qt1"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_302h4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_87w06"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_fc46m"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_voxpo"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xp621"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mgmim"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_btgmm"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_l6360"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qxi0b"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5qvf7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_t2eth"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a6vus"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jw4e7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ud6st"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lelkv"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8knh6"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_a86me"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_y4ivx"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3n6qx"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5fa37"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p1213"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_882fi"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j2f0i"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_g6wnq"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dmkf8"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1dm8s"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ectit"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_35gx6"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_81jyh"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dr1xn"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_70yae"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e2jye"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e6s4w"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_453ob"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v5c1k"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cglii"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_avesn"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5vy1s"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qx5ap"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0a2g7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1lckk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lqc01"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1l4kk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_drbwp"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_56yjn"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_xehgk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w7rpj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lcc84"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jusme"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kqgqy"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v50pa"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yn1os"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ip16x"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ywuel"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_njc4j"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_4y6xl"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p0a7a"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_agw0h"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mutct"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2dhj7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1okq7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_yc1de"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8cwv1"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m3ap4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vdion"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ypb5i"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3swma"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ul3wx"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_388bs"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3nrkd"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dwqoy"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1327x"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f86dc"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cg2js"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2j7xa"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hagka"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1m8lx"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vy5my"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_47k02"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pdjt4"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ks427"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cl256"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d0bgg"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ponrc"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3fp3h"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_p5k6w"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_g68sj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3ajmm"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_acirf"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_txdpp"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j2kow"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m62yj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kh4mi"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_inttg"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ax61s"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cqk4j"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mv3le"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ed4a2"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.42
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j0tdk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d840n"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nncuk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_d6hxw"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1m2w6"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m17d3"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1v4b1"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dmj60"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.38
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ii8t6"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_q1737"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tr67b"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_pox02"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vxnfe"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f684q"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1gdlk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_la7ao"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ebigj"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_251mo"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_eg5lk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ppv6d"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lchvl"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_uf6m5"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0lspy"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hhhkw"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bsvy2"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_828gy"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6frpk"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bof33"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_evlqu"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_40yw7"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(224, 32)
 shader_parameter/texture_strength = 0.4
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8iew5"]
 shader = ExtResource("28_mlach")
 shader_parameter/terrain_atlas = ExtResource("3_ectdh")
 shader_parameter/atlas_origin = Vector2(0, 0)
 shader_parameter/texture_strength = 0.3
+shader_parameter/use_dirt_texture = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5o5s1"]
 shader = ExtResource("24_h6djv")
 shader_parameter/elapsed = 0.0
 shader_parameter/pool_radius = Vector2(150, 95)
+shader_parameter/night = null
+shader_parameter/golden = null
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_b054a"]
 shader = ExtResource("29_g4k6y")
+shader_parameter/grass_origin = null
+shader_parameter/use_grass = null
+shader_parameter/night_dim = null
+shader_parameter/night_value = null
+shader_parameter/night_tint = null
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8t1v0"]
 size = Vector2(6464, 32)
@@ -3956,7 +4293,7 @@ modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-95, -178)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 flip_h = true
 
@@ -6295,7 +6632,7 @@ polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_pine_lush")
+texture = ExtResource("12_ccfny")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_0223" unique_id=482210005]
@@ -6546,7 +6883,7 @@ polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_pine_lush")
+texture = ExtResource("12_ccfny")
 centered = false
 flip_h = true
 
@@ -6685,7 +7022,7 @@ modulate = Color(0.92, 1.03, 0.86, 1)
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_pine_lush")
+texture = ExtResource("12_ccfny")
 centered = false
 flip_h = true
 
@@ -8082,7 +8419,7 @@ modulate = Color(0.92, 1.03, 0.86, 1)
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_pine_lush")
+texture = ExtResource("12_ccfny")
 centered = false
 flip_h = true
 
@@ -8728,7 +9065,7 @@ modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 flip_h = true
 
@@ -9168,7 +9505,7 @@ modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-96, -182)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_pine_lush")
+texture = ExtResource("12_ccfny")
 centered = false
 flip_h = true
 
@@ -10422,7 +10759,7 @@ polygon = PackedVector2Array(44, -2, 46, 0, 42, 3, 34, 4, 26, 5, 19, 6, 14, 7, 8
 texture_filter = 1
 position = Vector2(-97, -178)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_0439" unique_id=501182243]
@@ -14081,7 +14418,7 @@ polygon = PackedVector2Array(22, -2, 23, -1, 21, 0, 17, 1, 13, 1, 10, 2, 7, 3, 4
 modulate = Color(0.83, 0.96, 0.9, 1)
 texture_filter = 1
 position = Vector2(-47.5, -89)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 flip_h = true
 
@@ -14652,7 +14989,7 @@ polygon = PackedVector2Array(16, -2, 17, -1, 16, 0, 13, 0, 9, 1, 7, 1, 5, 1, 3, 
 modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-48, -91)
-texture = ExtResource("v6_pine_lush")
+texture = ExtResource("12_ccfny")
 centered = false
 flip_h = true
 
@@ -17870,7 +18207,7 @@ modulate = Color(0.83, 0.96, 0.9, 1)
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_0852" unique_id=1153656246]
@@ -17959,7 +18296,7 @@ polygon = PackedVector2Array(49, -2, 51, 1, 47, 3, 38, 5, 28, 6, 21, 7, 16, 8, 9
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 flip_h = true
 
@@ -18953,7 +19290,7 @@ modulate = Color(0.92, 1.03, 0.86, 1)
 texture_filter = 1
 position = Vector2(-96, -180)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 flip_h = true
 
@@ -22778,7 +23115,7 @@ polygon = PackedVector2Array(24, -2, 26, -1, 24, 1, 19, 1, 14, 2, 11, 2, 8, 3, 5
 modulate = Color(1.05, 1.03, 0.85, 1)
 texture_filter = 1
 position = Vector2(-48, -90)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_1112" unique_id=900430789]
@@ -22937,7 +23274,7 @@ polygon = PackedVector2Array(44, -2, 46, 0, 42, 3, 34, 4, 26, 5, 19, 6, 14, 7, 8
 texture_filter = 1
 position = Vector2(-97, -178)
 scale = Vector2(2, 2)
-texture = ExtResource("v6_oak_lush")
+texture = ExtResource("14_qmerx")
 centered = false
 
 [node name="SolidBase" type="StaticBody2D" parent="VegetationHigh/Tree_1120" unique_id=520409908]
@@ -37735,29 +38072,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0249/SolidBase" unique_id=654577758]
 polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
 
-[node name="ForestTree_0250" type="Node2D" parent="ExpandedForest" unique_id=540579740]
-position = Vector2(5278, 1237)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_0250" unique_id=2047568129]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_0250" unique_id=761276586]
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_0250" unique_id=1872108262]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0250/SolidBase" unique_id=349307825]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_0251" type="Node2D" parent="ExpandedForest" unique_id=313096585]
 position = Vector2(1437, 4881)
 metadata/tree = true
@@ -47992,29 +48306,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0695/SolidBase" unique_id=1361275407]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_0696" type="Node2D" parent="ExpandedForest" unique_id=306727896]
-position = Vector2(5319, 1144)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_0696" unique_id=1844628503]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_0696" unique_id=149826250]
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_0696" unique_id=669516208]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0696/SolidBase" unique_id=909328502]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_0697" type="Node2D" parent="ExpandedForest" unique_id=1082284958]
 position = Vector2(5836, 3883)
 metadata/tree = true
@@ -51135,30 +51426,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0831/SolidBase" unique_id=1002870739]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_0832" type="Node2D" parent="ExpandedForest" unique_id=2016596823]
-position = Vector2(4996, 1094)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_0832" unique_id=1823956587]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_0832" unique_id=1137365132]
-modulate = Color(0.83, 0.96, 0.9, 1)
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_0832" unique_id=356631794]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0832/SolidBase" unique_id=683179844]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_0833" type="Node2D" parent="ExpandedForest" unique_id=36758529]
 position = Vector2(605, 821)
 metadata/tree = true
@@ -51409,29 +51676,6 @@ flip_h = true
 collision_layer = 2
 
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0843/SolidBase" unique_id=2099016234]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
-[node name="ForestTree_0844" type="Node2D" parent="ExpandedForest" unique_id=894333395]
-position = Vector2(4842, 1226)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_0844" unique_id=1893767450]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(44, -2, 46, 0, 42, 3, 34, 4, 26, 5, 19, 6, 14, 7, 8, 9, 0, 10, -9, 10, -16, 8, -22, 7, -28, 6, -35, 4, -40, 3, -41, 0, -38, -2, -35, -4, -33, -6, -34, -8, -33, -11, -27, -13, -17, -13, -8, -13, 0, -12, 7, -12, 15, -12, 23, -11, 30, -10, 33, -8, 35, -6, 39, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_0844" unique_id=1027891368]
-texture_filter = 1
-position = Vector2(-95, -178)
-scale = Vector2(2, 2)
-texture = ExtResource("13_2oxlg")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_0844" unique_id=623443575]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_0844/SolidBase" unique_id=461739595]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
 [node name="ForestTree_0845" type="Node2D" parent="ExpandedForest" unique_id=436381432]
@@ -56820,28 +57064,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1078/SolidBase" unique_id=377087740]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_1079" type="Node2D" parent="ExpandedForest" unique_id=838653190]
-position = Vector2(5394, 1338)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1079" unique_id=832939281]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(35, -2, 37, 0, 34, 2, 27, 3, 20, 3, 15, 4, 11, 5, 6, 7, 0, 8, -7, 7, -13, 6, -18, 5, -23, 4, -28, 3, -32, 2, -33, 0, -30, -2, -28, -3, -27, -5, -27, -7, -26, -9, -21, -11, -14, -11, -6, -11, 0, -10, 6, -10, 12, -10, 19, -10, 24, -8, 26, -7, 28, -5, 31, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1079" unique_id=1510776053]
-texture_filter = 1
-position = Vector2(-97, -176)
-scale = Vector2(2, 2)
-texture = ExtResource("15_mjwlk")
-centered = false
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1079" unique_id=489515323]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1079/SolidBase" unique_id=1356145192]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_1080" type="Node2D" parent="ExpandedForest" unique_id=1670199748]
 position = Vector2(5683, 4808)
 metadata/tree = true
@@ -58173,28 +58395,6 @@ flip_h = true
 collision_layer = 2
 
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1137/SolidBase" unique_id=828046345]
-polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
-
-[node name="ForestTree_1138" type="Node2D" parent="ExpandedForest" unique_id=4291748]
-position = Vector2(4855, 1138)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1138" unique_id=976601924]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(18, -2, 18, -1, 17, 0, 14, 0, 10, 1, 8, 1, 6, 2, 3, 2, 0, 3, -3, 3, -6, 2, -9, 2, -11, 1, -14, 1, -16, 0, -16, -1, -15, -2, -14, -3, -13, -3, -14, -4, -13, -5, -11, -6, -7, -6, -3, -6, 0, -6, 3, -6, 6, -6, 9, -6, 12, -5, 13, -4, 14, -4, 16, -3)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1138" unique_id=1634362982]
-texture_filter = 1
-position = Vector2(-47.5, -88)
-texture = ExtResource("15_mjwlk")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1138" unique_id=614602503]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1138/SolidBase" unique_id=1822433675]
 polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
 
 [node name="ForestTree_1139" type="Node2D" parent="ExpandedForest" unique_id=1947386516]
@@ -63629,29 +63829,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1373/SolidBase" unique_id=2071424862]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_1374" type="Node2D" parent="ExpandedForest" unique_id=953940909]
-position = Vector2(5151, 1053)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1374" unique_id=1447310679]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1374" unique_id=713168393]
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1374" unique_id=1292194960]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1374/SolidBase" unique_id=242874540]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_1375" type="Node2D" parent="ExpandedForest" unique_id=162390475]
 position = Vector2(2771, 5153)
 metadata/tree = true
@@ -65577,30 +65754,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1458/SolidBase" unique_id=1031690796]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_1459" type="Node2D" parent="ExpandedForest" unique_id=1329535259]
-position = Vector2(5293, 1354)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1459" unique_id=1922199043]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1459" unique_id=1191374672]
-modulate = Color(0.83, 0.96, 0.9, 1)
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1459" unique_id=1007686181]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1459/SolidBase" unique_id=758461986]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_1460" type="Node2D" parent="ExpandedForest" unique_id=1446878905]
 position = Vector2(5125, 6338)
 metadata/tree = true
@@ -66770,29 +66923,6 @@ collision_layer = 2
 
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1510/SolidBase" unique_id=835892135]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
-[node name="ForestTree_1511" type="Node2D" parent="ExpandedForest" unique_id=1534865086]
-position = Vector2(5335, 1293)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1511" unique_id=436564778]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(16, -2, 17, -1, 16, 0, 13, 0, 9, 1, 7, 1, 5, 1, 3, 2, 0, 2, -3, 2, -6, 2, -8, 1, -10, 1, -13, 0, -15, 0, -15, -1, -14, -2, -13, -3, -12, -3, -12, -4, -12, -5, -10, -6, -6, -6, -3, -6, 0, -6, 3, -6, 6, -6, 9, -5, 11, -5, 12, -4, 13, -3, 14, -3)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1511" unique_id=1768540796]
-modulate = Color(0.83, 0.96, 0.9, 1)
-texture_filter = 1
-position = Vector2(-48, -91)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1511" unique_id=349753058]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1511/SolidBase" unique_id=913585146]
-polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
 
 [node name="ForestTree_1512" type="Node2D" parent="ExpandedForest" unique_id=59756043]
 position = Vector2(5473, 5134)
@@ -71383,29 +71513,6 @@ centered = false
 collision_layer = 2
 
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1710/SolidBase" unique_id=184603181]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
-[node name="ForestTree_1711" type="Node2D" parent="ExpandedForest" unique_id=2005988555]
-position = Vector2(4962, 1196)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1711" unique_id=1510187759]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1711" unique_id=536776069]
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-flip_h = true
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1711" unique_id=1976612571]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1711/SolidBase" unique_id=1032105622]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
 [node name="ForestTree_1712" type="Node2D" parent="ExpandedForest" unique_id=1626439281]
@@ -77119,29 +77226,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1959/SolidBase" unique_id=1508155106]
 polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
 
-[node name="ForestTree_1960" type="Node2D" parent="ExpandedForest" unique_id=666786249]
-position = Vector2(4949, 1294)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_1960" unique_id=2060176353]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_1960" unique_id=532000400]
-modulate = Color(0.83, 0.96, 0.9, 1)
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_1960" unique_id=644813482]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_1960/SolidBase" unique_id=1010584770]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_1961" type="Node2D" parent="ExpandedForest" unique_id=1647060416]
 position = Vector2(2909, 5590)
 metadata/tree = true
@@ -80713,29 +80797,6 @@ centered = false
 collision_layer = 2
 
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2115/SolidBase" unique_id=1358595802]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
-[node name="ForestTree_2116" type="Node2D" parent="ExpandedForest" unique_id=708069019]
-position = Vector2(4856, 1299)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_2116" unique_id=2085488355]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_2116" unique_id=894604698]
-modulate = Color(0.92, 1.03, 0.86, 1)
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_2116" unique_id=620228674]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2116/SolidBase" unique_id=199986829]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
 [node name="ForestTree_2117" type="Node2D" parent="ExpandedForest" unique_id=1520183223]
@@ -84912,29 +84973,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2299/SolidBase" unique_id=1797973840]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_2300" type="Node2D" parent="ExpandedForest" unique_id=1907974034]
-position = Vector2(5246, 1141)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_2300" unique_id=1024980874]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(35, -2, 37, 0, 34, 2, 27, 3, 20, 3, 15, 4, 11, 5, 6, 7, 0, 8, -7, 7, -13, 6, -18, 5, -23, 4, -28, 3, -32, 2, -33, 0, -30, -2, -28, -3, -27, -5, -27, -7, -26, -9, -21, -11, -14, -11, -6, -11, 0, -10, 6, -10, 12, -10, 19, -10, 24, -8, 26, -7, 28, -5, 31, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_2300" unique_id=1349348449]
-modulate = Color(0.83, 0.96, 0.9, 1)
-texture_filter = 1
-position = Vector2(-97, -176)
-scale = Vector2(2, 2)
-texture = ExtResource("15_mjwlk")
-centered = false
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_2300" unique_id=1811465571]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2300/SolidBase" unique_id=1716802616]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
-
 [node name="ForestTree_2301" type="Node2D" parent="ExpandedForest" unique_id=1935133775]
 position = Vector2(926, 1721)
 metadata/tree = true
@@ -87757,27 +87795,6 @@ collision_layer = 2
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2422/SolidBase" unique_id=1646079071]
 polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
-[node name="ForestTree_2423" type="Node2D" parent="ExpandedForest" unique_id=1618700706]
-position = Vector2(4987, 1389)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_2423" unique_id=181321327]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(16, -2, 17, -1, 16, 0, 13, 0, 9, 1, 7, 1, 5, 1, 3, 2, 0, 2, -3, 2, -6, 2, -8, 1, -10, 1, -13, 0, -15, 0, -15, -1, -14, -2, -13, -3, -12, -3, -12, -4, -12, -5, -10, -6, -6, -6, -3, -6, 0, -6, 3, -6, 6, -6, 9, -5, 11, -5, 12, -4, 13, -3, 14, -3)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_2423" unique_id=1156584500]
-texture_filter = 1
-position = Vector2(-48, -91)
-texture = ExtResource("12_ccfny")
-centered = false
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_2423" unique_id=1110752880]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2423/SolidBase" unique_id=1352997248]
-polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
-
 [node name="ForestTree_2424" type="Node2D" parent="ExpandedForest" unique_id=2138516469]
 position = Vector2(4406, 6083)
 metadata/tree = true
@@ -89064,29 +89081,6 @@ collision_layer = 2
 
 [node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2479/SolidBase" unique_id=1728510322]
 polygon = PackedVector2Array(-10, -7, -7, -14, 7, -14, 10, -7, 7, 0, -7, 0)
-
-[node name="ForestTree_2480" type="Node2D" parent="ExpandedForest" unique_id=434392268]
-position = Vector2(5408, 1231)
-metadata/tree = true
-
-[node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/ForestTree_2480" unique_id=1170087471]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(32, -2, 34, 0, 31, 1, 25, 3, 19, 3, 14, 4, 10, 5, 6, 6, 0, 7, -6, 7, -12, 6, -16, 5, -21, 4, -26, 3, -30, 1, -30, 0, -28, -2, -25, -3, -25, -5, -25, -6, -24, -8, -20, -10, -13, -10, -6, -10, 0, -9, 5, -9, 11, -9, 17, -9, 22, -8, 24, -6, 26, -5, 29, -4)
-
-[node name="Sprite" type="Sprite2D" parent="ExpandedForest/ForestTree_2480" unique_id=2108057065]
-modulate = Color(0.83, 0.96, 0.9, 1)
-texture_filter = 1
-position = Vector2(-96, -182)
-scale = Vector2(2, 2)
-texture = ExtResource("12_ccfny")
-centered = false
-
-[node name="SolidBase" type="StaticBody2D" parent="ExpandedForest/ForestTree_2480" unique_id=1469327398]
-collision_layer = 2
-
-[node name="BaseCollision" type="CollisionPolygon2D" parent="ExpandedForest/ForestTree_2480/SolidBase" unique_id=232489388]
-polygon = PackedVector2Array(-17, -10, -11.9, -20, 11.9, -20, 17, -10, 11.9, 0, -11.9, 0)
 
 [node name="ForestTree_2481" type="Node2D" parent="ExpandedForest" unique_id=1151839666]
 position = Vector2(5723, 5776)
@@ -98091,7 +98085,7 @@ centered = false
 flip_h = true
 
 [node name="LookoutShoulder_3931" type="Node2D" parent="ExpandedForest" unique_id=939656012]
-position = Vector2(4900, 1430)
+position = Vector2(4900, 1490)
 
 [node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/LookoutShoulder_3931" unique_id=734798054]
 z_index = -1
@@ -98112,7 +98106,7 @@ collision_layer = 2
 polygon = PackedVector2Array(-22, -13, -15.4, -26, 15.4, -26, 22, -13, 15.4, 0, -15.4, 0)
 
 [node name="LookoutShoulder_3932" type="Node2D" parent="ExpandedForest" unique_id=1527329774]
-position = Vector2(5270, 1430)
+position = Vector2(5270, 1490)
 
 [node name="ContactShadow" type="Polygon2D" parent="ExpandedForest/LookoutShoulder_3932" unique_id=1595849560]
 z_index = -1
@@ -103413,66 +103407,6 @@ position = Vector2(-24, -39)
 texture = ExtResource("5_cfu6o")
 centered = false
 flip_h = true
-
-[node name="Wildflowers_3204" type="Node2D" parent="FlowerClusters" unique_id=215161603]
-position = Vector2(5127, 1359)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3204" unique_id=2116904890]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3204" unique_id=1168052081]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3205" type="Node2D" parent="FlowerClusters" unique_id=681292939]
-position = Vector2(5085, 1358)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3205" unique_id=1409439113]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3205" unique_id=136428295]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3206" type="Node2D" parent="FlowerClusters" unique_id=764117258]
-position = Vector2(5114, 1367)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3206" unique_id=1520915531]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3206" unique_id=594542510]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3207" type="Node2D" parent="FlowerClusters" unique_id=1390442405]
-position = Vector2(5125, 1391)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3207" unique_id=1385144931]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3207" unique_id=33105626]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
 
 [node name="Wildflowers_3208" type="Node2D" parent="FlowerClusters" unique_id=38441922]
 position = Vector2(5059, 1673)
@@ -111197,860 +111131,6 @@ texture = ExtResource("16_mfxlg")
 centered = false
 flip_h = true
 
-[node name="Wildflowers_3711" type="Node2D" parent="FlowerClusters" unique_id=456127297]
-position = Vector2(5276, 1260)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3711" unique_id=115264831]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3711" unique_id=375449883]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3712" type="Node2D" parent="FlowerClusters" unique_id=1377809318]
-position = Vector2(5278, 1240)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3712" unique_id=549600653]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3712" unique_id=666934633]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3713" type="Node2D" parent="FlowerClusters" unique_id=979984599]
-position = Vector2(5239, 1279)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3713" unique_id=1326470349]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3713" unique_id=280253321]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3714" type="Node2D" parent="FlowerClusters" unique_id=2119262334]
-position = Vector2(5283, 1268)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3714" unique_id=1587132544]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3714" unique_id=1093902280]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3715" type="Node2D" parent="FlowerClusters" unique_id=1794478259]
-position = Vector2(5242, 1275)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3715" unique_id=1771063691]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3715" unique_id=298030861]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Fern_3716" type="Node2D" parent="FlowerClusters" unique_id=699068018]
-position = Vector2(5225, 1275)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3716" unique_id=1083866123]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3716" unique_id=699047299]
-texture_filter = 1
-position = Vector2(-23, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-flip_h = true
-
-[node name="Shrub_3717" type="Node2D" parent="FlowerClusters" unique_id=861528241]
-position = Vector2(5280, 1240)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3717" unique_id=2137847814]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3717" unique_id=542384255]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-
-[node name="Wildflowers_3718" type="Node2D" parent="FlowerClusters" unique_id=851964275]
-position = Vector2(5195, 1335)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3718" unique_id=1719254156]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3718" unique_id=607937252]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3719" type="Node2D" parent="FlowerClusters" unique_id=1188086038]
-position = Vector2(5198, 1348)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3719" unique_id=507216440]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3719" unique_id=24965626]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3720" type="Node2D" parent="FlowerClusters" unique_id=1154142948]
-position = Vector2(5233, 1323)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3720" unique_id=1229828160]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3720" unique_id=1895091212]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3721" type="Node2D" parent="FlowerClusters" unique_id=1152635296]
-position = Vector2(5190, 1342)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3721" unique_id=1353661868]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3721" unique_id=997354305]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3722" type="Node2D" parent="FlowerClusters" unique_id=1823455252]
-position = Vector2(5229, 1349)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3722" unique_id=1679922516]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3722" unique_id=1516021942]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Fern_3723" type="Node2D" parent="FlowerClusters" unique_id=1425446230]
-position = Vector2(5182.5303, 1356.3173)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3723" unique_id=552011207]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3723" unique_id=315682107]
-texture_filter = 1
-position = Vector2(-23, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-flip_h = true
-
-[node name="Shrub_3724" type="Node2D" parent="FlowerClusters" unique_id=1359041971]
-position = Vector2(5237.5303, 1321.3173)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3724" unique_id=1162420061]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3724" unique_id=836561082]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-
-[node name="Wildflowers_3725" type="Node2D" parent="FlowerClusters" unique_id=1821256625]
-position = Vector2(5095, 1382)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3725" unique_id=1218706328]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3725" unique_id=1444079256]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3726" type="Node2D" parent="FlowerClusters" unique_id=311679373]
-position = Vector2(5110, 1363)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3726" unique_id=1581600748]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3726" unique_id=1666682775]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3727" type="Node2D" parent="FlowerClusters" unique_id=1619522010]
-position = Vector2(5115, 1368)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3727" unique_id=1390622491]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3727" unique_id=1876905172]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3728" type="Node2D" parent="FlowerClusters" unique_id=1600528356]
-position = Vector2(5083, 1368)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3728" unique_id=715527252]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3728" unique_id=1886715135]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3729" type="Node2D" parent="FlowerClusters" unique_id=1435831839]
-position = Vector2(5086, 1367)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3729" unique_id=1663896142]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3729" unique_id=2041526386]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Fern_3730" type="Node2D" parent="FlowerClusters" unique_id=12325446]
-position = Vector2(5080, 1390)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3730" unique_id=1315584530]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3730" unique_id=2065785086]
-texture_filter = 1
-position = Vector2(-23, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-flip_h = true
-
-[node name="Shrub_3731" type="Node2D" parent="FlowerClusters" unique_id=553563634]
-position = Vector2(5135, 1355)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3731" unique_id=1574372821]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3731" unique_id=90536328]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3732" type="Node2D" parent="FlowerClusters" unique_id=959576586]
-position = Vector2(5022, 1355)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3732" unique_id=1842135682]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3732" unique_id=1254049598]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3733" type="Node2D" parent="FlowerClusters" unique_id=1255036458]
-position = Vector2(4977, 1349)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3733" unique_id=1745928669]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3733" unique_id=371648797]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3734" type="Node2D" parent="FlowerClusters" unique_id=851032557]
-position = Vector2(5011, 1337)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3734" unique_id=579733550]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3734" unique_id=1621674036]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3735" type="Node2D" parent="FlowerClusters" unique_id=948934818]
-position = Vector2(5037, 1325)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3735" unique_id=701386433]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3735" unique_id=633596656]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3736" type="Node2D" parent="FlowerClusters" unique_id=830035875]
-position = Vector2(5015, 1343)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3736" unique_id=1109303003]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3736" unique_id=251135785]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Fern_3737" type="Node2D" parent="FlowerClusters" unique_id=163479758]
-position = Vector2(4977.4697, 1356.3173)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3737" unique_id=511407141]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3737" unique_id=1441020970]
-texture_filter = 1
-position = Vector2(-25, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-
-[node name="Shrub_3738" type="Node2D" parent="FlowerClusters" unique_id=331742130]
-position = Vector2(5032.4697, 1321.3173)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3738" unique_id=1036633539]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3738" unique_id=249946489]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3739" type="Node2D" parent="FlowerClusters" unique_id=1653653119]
-position = Vector2(4962, 1276)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3739" unique_id=487626050]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3739" unique_id=915222284]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3740" type="Node2D" parent="FlowerClusters" unique_id=425960772]
-position = Vector2(4985, 1262)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3740" unique_id=1345737359]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3740" unique_id=915336251]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3741" type="Node2D" parent="FlowerClusters" unique_id=1627104230]
-position = Vector2(4979, 1261)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3741" unique_id=1920798709]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3741" unique_id=1909045563]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3742" type="Node2D" parent="FlowerClusters" unique_id=1551816085]
-position = Vector2(4943, 1260)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3742" unique_id=732106850]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3742" unique_id=917436533]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3743" type="Node2D" parent="FlowerClusters" unique_id=1355431921]
-position = Vector2(4977, 1265)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3743" unique_id=1310235116]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3743" unique_id=93319268]
-modulate = Color(1, 1, 0.98, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Fern_3744" type="Node2D" parent="FlowerClusters" unique_id=1707068475]
-position = Vector2(4935, 1275)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3744" unique_id=1428636677]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3744" unique_id=566252429]
-texture_filter = 1
-position = Vector2(-23, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-flip_h = true
-
-[node name="Shrub_3745" type="Node2D" parent="FlowerClusters" unique_id=1643343293]
-position = Vector2(4990, 1240)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3745" unique_id=492417971]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3745" unique_id=245103318]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-
-[node name="Wildflowers_3746" type="Node2D" parent="FlowerClusters" unique_id=1675814998]
-position = Vector2(5004, 1190)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3746" unique_id=862569116]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3746" unique_id=1628039236]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3747" type="Node2D" parent="FlowerClusters" unique_id=485916016]
-position = Vector2(4978, 1165)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3747" unique_id=310812184]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3747" unique_id=1265879052]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3748" type="Node2D" parent="FlowerClusters" unique_id=1191174103]
-position = Vector2(4987, 1159)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3748" unique_id=1043869996]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3748" unique_id=689212905]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3749" type="Node2D" parent="FlowerClusters" unique_id=1920679201]
-position = Vector2(5016, 1181)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3749" unique_id=1163233051]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3749" unique_id=92737523]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3750" type="Node2D" parent="FlowerClusters" unique_id=270560959]
-position = Vector2(5033, 1187)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3750" unique_id=14906428]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3750" unique_id=1502718989]
-modulate = Color(1.06, 1.02, 0.86, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Fern_3751" type="Node2D" parent="FlowerClusters" unique_id=1805482779]
-position = Vector2(4977.4697, 1193.6827)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3751" unique_id=38389741]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3751" unique_id=1229359650]
-texture_filter = 1
-position = Vector2(-25, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-
-[node name="Shrub_3752" type="Node2D" parent="FlowerClusters" unique_id=642261397]
-position = Vector2(5032.4697, 1158.6827)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3752" unique_id=1563808685]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3752" unique_id=1389612257]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-
-[node name="Wildflowers_3753" type="Node2D" parent="FlowerClusters" unique_id=187375403]
-position = Vector2(5083, 1136)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3753" unique_id=278230504]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3753" unique_id=1211808702]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3754" type="Node2D" parent="FlowerClusters" unique_id=1865804299]
-position = Vector2(5106, 1128)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3754" unique_id=1152080326]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3754" unique_id=1655218491]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3755" type="Node2D" parent="FlowerClusters" unique_id=707387587]
-position = Vector2(5130, 1162)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3755" unique_id=268604330]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3755" unique_id=1979744273]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3756" type="Node2D" parent="FlowerClusters" unique_id=2086845196]
-position = Vector2(5126, 1155)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3756" unique_id=2047392025]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3756" unique_id=472113427]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3757" type="Node2D" parent="FlowerClusters" unique_id=1115337283]
-position = Vector2(5101, 1132)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3757" unique_id=1757825768]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3757" unique_id=1801899610]
-modulate = Color(0.92, 0.97, 1.1, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Fern_3758" type="Node2D" parent="FlowerClusters" unique_id=2046996944]
-position = Vector2(5080, 1160)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3758" unique_id=1303245338]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3758" unique_id=487130909]
-texture_filter = 1
-position = Vector2(-25, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-
-[node name="Shrub_3759" type="Node2D" parent="FlowerClusters" unique_id=666799994]
-position = Vector2(5135, 1125)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3759" unique_id=873257197]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3759" unique_id=70712488]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-
-[node name="Wildflowers_3760" type="Node2D" parent="FlowerClusters" unique_id=101375838]
-position = Vector2(5221, 1193)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3760" unique_id=1276999577]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3760" unique_id=1636806498]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3761" type="Node2D" parent="FlowerClusters" unique_id=1912284536]
-position = Vector2(5215, 1178)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3761" unique_id=1495487033]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3761" unique_id=1172496105]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3762" type="Node2D" parent="FlowerClusters" unique_id=886491397]
-position = Vector2(5205, 1165)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3762" unique_id=583759984]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3762" unique_id=1919984110]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-flip_h = true
-
-[node name="Wildflowers_3763" type="Node2D" parent="FlowerClusters" unique_id=240354275]
-position = Vector2(5219, 1173)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3763" unique_id=1286938708]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3763" unique_id=1539412165]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Wildflowers_3764" type="Node2D" parent="FlowerClusters" unique_id=1911947826]
-position = Vector2(5201, 1161)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Wildflowers_3764" unique_id=469143689]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(12, -2, 12, -1, 11, 0, 9, 0, 7, 0, 5, 1, 4, 1, 2, 2, 0, 2, -2, 2, -4, 2, -6, 1, -8, 1, -9, 0, -11, 0, -11, -1, -10, -2, -9, -3, -9, -3, -9, -4, -9, -5, -7, -6, -5, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 8, -5, 9, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Wildflowers_3764" unique_id=641150388]
-modulate = Color(1.08, 0.95, 1.03, 1)
-texture_filter = 1
-position = Vector2(-24, -39)
-texture = ExtResource("5_cfu6o")
-centered = false
-
-[node name="Fern_3765" type="Node2D" parent="FlowerClusters" unique_id=1069595983]
-position = Vector2(5182.5303, 1193.6827)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Fern_3765" unique_id=1741246777]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(11, -2, 11, -1, 10, 0, 8, 0, 6, 0, 5, 1, 3, 1, 2, 2, 0, 2, -2, 2, -4, 2, -5, 1, -7, 1, -9, 0, -10, 0, -10, -1, -9, -2, -8, -3, -8, -3, -8, -4, -8, -5, -6, -6, -4, -6, -2, -6, 0, -6, 2, -6, 4, -6, 6, -5, 7, -5, 8, -4, 9, -3, 10, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Fern_3765" unique_id=323544081]
-texture_filter = 1
-position = Vector2(-25, -37)
-texture = ExtResource("11_usrkw")
-centered = false
-
-[node name="Shrub_3766" type="Node2D" parent="FlowerClusters" unique_id=1517100633]
-position = Vector2(5237.5303, 1158.6827)
-
-[node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/Shrub_3766" unique_id=1403933743]
-z_index = -1
-color = Color(0.08, 0.18, 0.1, 0.22)
-polygon = PackedVector2Array(23, -2, 24, -1, 22, 0, 18, 1, 13, 2, 10, 2, 7, 3, 4, 4, 0, 4, -5, 4, -8, 3, -11, 3, -15, 2, -18, 1, -21, 0, -21, -1, -20, -2, -18, -3, -17, -4, -18, -5, -17, -7, -14, -8, -9, -8, -4, -8, 0, -7, 4, -7, 8, -7, 12, -7, 15, -6, 17, -5, 18, -4, 20, -3)
-
-[node name="Sprite" type="Sprite2D" parent="FlowerClusters/Shrub_3766" unique_id=718634339]
-texture_filter = 1
-position = Vector2(-48, -81)
-texture = ExtResource("16_mfxlg")
-centered = false
-
 [node name="Wildflowers_3767" type="Node2D" parent="FlowerClusters" unique_id=1500760844]
 position = Vector2(5213, 4238)
 
@@ -114209,7 +113289,7 @@ centered = false
 flip_h = true
 
 [node name="LookoutSteps_3933" type="Node2D" parent="FlowerClusters" unique_id=1495545347]
-position = Vector2(5110, 1480)
+position = Vector2(5110, 1540)
 
 [node name="ContactShadow" type="Polygon2D" parent="FlowerClusters/LookoutSteps_3933" unique_id=1703888009]
 z_index = -1
@@ -115363,11 +114443,13 @@ polygon = PackedVector2Array(3279, 1580, 3289, 1578, 3298, 1576, 3308, 1574, 331
 
 [node name="LookoutStepsEdge" type="Polygon2D" parent="ExpandedTrails" unique_id=1212458042]
 material = SubResource("ShaderMaterial_bsvy2")
+position = Vector2(0, 60)
 color = Color(0.6392157, 0.61960787, 0.3529412, 1)
 polygon = PackedVector2Array(5162, 1480, 5163, 1470, 5163, 1461, 5163, 1451, 5163, 1442, 5163, 1432, 5163, 1423, 5163, 1413, 5163, 1403, 5164, 1394, 5165, 1384, 5166, 1375, 5166, 1365, 5166, 1356, 5166, 1346, 5165, 1337, 5163, 1327, 5162, 1317, 5160, 1308, 5158, 1298, 5156, 1289, 5155, 1279, 5155, 1270, 5155, 1260, 5065, 1260, 5065, 1270, 5065, 1279, 5064, 1289, 5062, 1298, 5060, 1308, 5058, 1317, 5057, 1327, 5055, 1337, 5054, 1346, 5054, 1356, 5054, 1365, 5054, 1375, 5055, 1384, 5056, 1394, 5057, 1403, 5057, 1413, 5057, 1423, 5057, 1432, 5057, 1442, 5057, 1451, 5057, 1461, 5057, 1470, 5058, 1480)
 
 [node name="LookoutStepsPath" type="Polygon2D" parent="ExpandedTrails" unique_id=907010746]
 material = SubResource("ShaderMaterial_828gy")
+position = Vector2(0, 60)
 color = Color(0.70980394, 0.6392157, 0.41568628, 1)
 polygon = PackedVector2Array(5151, 1480, 5151, 1470, 5152, 1461, 5152, 1451, 5151, 1442, 5151, 1432, 5151, 1423, 5151, 1413, 5152, 1403, 5152, 1394, 5153, 1384, 5153, 1375, 5154, 1365, 5154, 1356, 5154, 1346, 5153, 1337, 5152, 1327, 5150, 1317, 5149, 1308, 5147, 1298, 5146, 1289, 5145, 1279, 5145, 1270, 5145, 1260, 5075, 1260, 5075, 1270, 5075, 1279, 5074, 1289, 5073, 1298, 5071, 1308, 5070, 1317, 5068, 1327, 5067, 1337, 5066, 1346, 5066, 1356, 5066, 1365, 5067, 1375, 5067, 1384, 5068, 1394, 5068, 1403, 5069, 1413, 5069, 1423, 5069, 1432, 5069, 1442, 5068, 1451, 5068, 1461, 5069, 1470, 5069, 1480)
 
@@ -115467,146 +114549,194 @@ z_index = -14
 [node name="LowCliffs" type="TileMapLayer" parent="NorthernLedges" unique_id=440323266]
 material = SubResource("ShaderMaterial_b054a")
 scale = Vector2(2, 2)
-tile_map_data = PackedByteArray("AABPABAAAAADAAEAAABQABAAAAACAAIAAABMABEAAAADAAEAAABNABEAAAABAAIAAABOABEAAAABAAIAAABPABEAAAADAAMAAABQABEAAAAAAAIAAABRABEAAAABAAIAAABSABEAAAACAAIAAABMABIAAAADAAIAAABNABIAAAAAAAMAAABOABIAAAAAAAMAAABPABIAAAAAAAMAAABQABIAAAAAAAMAAABRABIAAAAAAAMAAABSABIAAAAAAAIAAABTABIAAAACAAIAAABMABMAAAADAAIAAABNABMAAAAAAAMAAABOABMAAAAAAAMAAABPABMAAAAAAAMAAABQABMAAAAAAAMAAABRABMAAAAAAAMAAABSABMAAAAAAAMAAABTABMAAAABAAAAAABMABQAAAACAAAAAABNABQAAAAAAAAAAABOABQAAAAAAAMAAABPABQAAAAAAAMAAABQABQAAAAAAAMAAABRABQAAAAAAAMAAABSABQAAAABAAMAAABTABQAAAABAAEAAABNABUAAAACAAAAAABOABUAAAADAAAAAABPABUAAAADAAAAAABQABUAAAADAAAAAABRABUAAAADAAAAAABSABUAAAABAAEAAAA=")
+tile_map_data = PackedByteArray("AABPABAAAAABAAIAAABQABAAAAABAAIAAABMABEAAAADAAMAAABNABEAAAAAAAMAAABOABEAAAAAAAMAAABPABEAAAAAAAMAAABQABEAAAAAAAMAAABRABEAAAAAAAMAAABSABEAAAAAAAMAAABMABIAAAAAAAMAAABNABIAAAAAAAMAAABOABIAAAAAAAMAAABPABIAAAAAAAMAAABQABIAAAAAAAMAAABRABIAAAAAAAMAAABSABIAAAAAAAMAAABTABIAAAAAAAMAAABMABMAAAAAAAMAAABNABMAAAAAAAMAAABOABMAAAAAAAMAAABPABMAAAAAAAMAAABQABMAAAAAAAMAAABRABMAAAAAAAMAAABSABMAAAAAAAMAAABTABMAAAAAAAMAAABMABQAAAAAAAMAAABNABQAAAAAAAMAAABOABQAAAAAAAMAAABPABQAAAAAAAMAAABQABQAAAAAAAMAAABRABQAAAAAAAMAAABSABQAAAAAAAMAAABTABQAAAAAAAMAAABNABUAAAAAAAMAAABOABUAAAAAAAMAAABPABUAAAAAAAMAAABQABUAAAAAAAMAAABRABUAAAAAAAMAAABSABUAAAAAAAMAAABMABAAAAADAAEAAABNABAAAAABAAIAAABOABAAAAABAAIAAABRABAAAAABAAIAAABSABAAAAABAAIAAABTABAAAAACAAIAAABLABEAAAADAAEAAABTABEAAAAAAAIAAABUABEAAAACAAIAAABKABIAAAADAAEAAABLABIAAAADAAMAAABUABIAAAABAAAAAABKABMAAAADAAIAAABLABMAAAAAAAMAAABUABMAAAABAAAAAABKABQAAAACAAAAAABLABQAAAAAAAAAAABUABQAAAABAAAAAABLABUAAAACAAAAAABMABUAAAAAAAAAAABTABUAAAABAAMAAABUABUAAAABAAEAAABMABYAAAACAAAAAABNABYAAAADAAAAAABOABYAAAADAAAAAABPABYAAAADAAAAAABQABYAAAADAAAAAABRABYAAAADAAAAAABSABYAAAADAAAAAABTABYAAAABAAEAAAA=")
 tile_set = ExtResource("30_3x6dd")
 
-[node name="@StaticBody2D@233" type="StaticBody2D" parent="NorthernLedges" unique_id=1985935167]
+[node name="@StaticBody2D@2" type="StaticBody2D" parent="NorthernLedges" unique_id=87443830]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@234" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@233" unique_id=1638619136]
+[node name="@CollisionPolygon2D@3" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@2" unique_id=1168539158]
+polygon = PackedVector2Array(4928, 1088, 4864, 1088, 4864, 1024, 4928, 1024)
+
+[node name="@StaticBody2D@4" type="StaticBody2D" parent="NorthernLedges" unique_id=434468279]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@5" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@4" unique_id=2049028332]
+polygon = PackedVector2Array(4992, 1088, 4928, 1088, 4928, 1024, 4992, 1024)
+
+[node name="@StaticBody2D@6" type="StaticBody2D" parent="NorthernLedges" unique_id=2009722381]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@7" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@6" unique_id=1294886257]
+polygon = PackedVector2Array(5056, 1088, 4992, 1088, 4992, 1024, 5056, 1024)
+
+[node name="@StaticBody2D@8" type="StaticBody2D" parent="NorthernLedges" unique_id=711267203]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@9" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@8" unique_id=1887787283]
 polygon = PackedVector2Array(5120, 1088, 5056, 1088, 5056, 1024, 5120, 1024)
 
-[node name="@StaticBody2D@235" type="StaticBody2D" parent="NorthernLedges" unique_id=558276631]
+[node name="@StaticBody2D@10" type="StaticBody2D" parent="NorthernLedges" unique_id=140495758]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@236" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@235" unique_id=926748174]
+[node name="@CollisionPolygon2D@11" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@10" unique_id=846099397]
 polygon = PackedVector2Array(5184, 1088, 5120, 1088, 5120, 1024, 5184, 1024)
 
-[node name="@StaticBody2D@237" type="StaticBody2D" parent="NorthernLedges" unique_id=1722476366]
+[node name="@StaticBody2D@12" type="StaticBody2D" parent="NorthernLedges" unique_id=1194589227]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@238" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@237" unique_id=823342115]
+[node name="@CollisionPolygon2D@13" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@12" unique_id=533240511]
+polygon = PackedVector2Array(5248, 1088, 5184, 1088, 5184, 1024, 5248, 1024)
+
+[node name="@StaticBody2D@14" type="StaticBody2D" parent="NorthernLedges" unique_id=2076498038]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@15" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@14" unique_id=310870672]
+polygon = PackedVector2Array(5312, 1088, 5248, 1088, 5248, 1024, 5312, 1024)
+
+[node name="@StaticBody2D@16" type="StaticBody2D" parent="NorthernLedges" unique_id=1573306893]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@17" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@16" unique_id=1770610937]
+polygon = PackedVector2Array(5376, 1088, 5312, 1088, 5312, 1024, 5376, 1024)
+
+[node name="@StaticBody2D@18" type="StaticBody2D" parent="NorthernLedges" unique_id=904581964]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@19" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@18" unique_id=619382312]
+polygon = PackedVector2Array(4864, 1152, 4800, 1152, 4800, 1088, 4864, 1088)
+
+[node name="@StaticBody2D@20" type="StaticBody2D" parent="NorthernLedges" unique_id=488091469]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@21" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@20" unique_id=1519051790]
 polygon = PackedVector2Array(4928, 1152, 4864, 1152, 4864, 1088, 4928, 1088)
 
-[node name="@StaticBody2D@239" type="StaticBody2D" parent="NorthernLedges" unique_id=192779731]
+[node name="@StaticBody2D@22" type="StaticBody2D" parent="NorthernLedges" unique_id=358933269]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@240" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@239" unique_id=1619862277]
-polygon = PackedVector2Array(4992, 1152, 4928, 1152, 4928, 1088, 4992, 1088)
+[node name="@CollisionPolygon2D@23" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@22" unique_id=352261793]
+polygon = PackedVector2Array(5376, 1152, 5312, 1152, 5312, 1088, 5376, 1088)
 
-[node name="@StaticBody2D@241" type="StaticBody2D" parent="NorthernLedges" unique_id=1766609718]
+[node name="@StaticBody2D@24" type="StaticBody2D" parent="NorthernLedges" unique_id=1236637188]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@242" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@241" unique_id=680164838]
-polygon = PackedVector2Array(5056, 1152, 4992, 1152, 4992, 1088, 5056, 1088)
+[node name="@CollisionPolygon2D@25" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@24" unique_id=577780670]
+polygon = PackedVector2Array(5440, 1152, 5376, 1152, 5376, 1088, 5440, 1088)
 
-[node name="@StaticBody2D@243" type="StaticBody2D" parent="NorthernLedges" unique_id=1832119558]
+[node name="@StaticBody2D@26" type="StaticBody2D" parent="NorthernLedges" unique_id=172282136]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@244" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@243" unique_id=1356280818]
-polygon = PackedVector2Array(5120, 1152, 5056, 1152, 5056, 1088, 5120, 1088)
+[node name="@CollisionPolygon2D@27" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@26" unique_id=1772306009]
+polygon = PackedVector2Array(4800, 1216, 4736, 1216, 4736, 1152, 4800, 1152)
 
-[node name="@StaticBody2D@245" type="StaticBody2D" parent="NorthernLedges" unique_id=1962805013]
+[node name="@StaticBody2D@28" type="StaticBody2D" parent="NorthernLedges" unique_id=616783551]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@246" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@245" unique_id=1783486112]
-polygon = PackedVector2Array(5184, 1152, 5120, 1152, 5120, 1088, 5184, 1088)
+[node name="@CollisionPolygon2D@29" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@28" unique_id=1220737608]
+polygon = PackedVector2Array(4864, 1216, 4800, 1216, 4800, 1152, 4864, 1152)
 
-[node name="@StaticBody2D@247" type="StaticBody2D" parent="NorthernLedges" unique_id=1358754389]
+[node name="@StaticBody2D@30" type="StaticBody2D" parent="NorthernLedges" unique_id=283409101]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@248" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@247" unique_id=1012766273]
-polygon = PackedVector2Array(5248, 1152, 5184, 1152, 5184, 1088, 5248, 1088)
+[node name="@CollisionPolygon2D@31" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@30" unique_id=1075507853]
+polygon = PackedVector2Array(5440, 1216, 5376, 1216, 5376, 1152, 5440, 1152)
 
-[node name="@StaticBody2D@249" type="StaticBody2D" parent="NorthernLedges" unique_id=212642475]
+[node name="@StaticBody2D@32" type="StaticBody2D" parent="NorthernLedges" unique_id=2034003513]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@250" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@249" unique_id=1378645935]
-polygon = PackedVector2Array(5312, 1152, 5248, 1152, 5248, 1088, 5312, 1088)
+[node name="@CollisionPolygon2D@33" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@32" unique_id=2130889978]
+polygon = PackedVector2Array(4800, 1280, 4736, 1280, 4736, 1216, 4800, 1216)
 
-[node name="@StaticBody2D@251" type="StaticBody2D" parent="NorthernLedges" unique_id=50061438]
+[node name="@StaticBody2D@34" type="StaticBody2D" parent="NorthernLedges" unique_id=464818211]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@252" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@251" unique_id=734606498]
-polygon = PackedVector2Array(4928, 1216, 4864, 1216, 4864, 1152, 4928, 1152)
+[node name="@CollisionPolygon2D@35" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@34" unique_id=2118185569]
+polygon = PackedVector2Array(5440, 1280, 5376, 1280, 5376, 1216, 5440, 1216)
 
-[node name="@StaticBody2D@253" type="StaticBody2D" parent="NorthernLedges" unique_id=59065646]
+[node name="@StaticBody2D@36" type="StaticBody2D" parent="NorthernLedges" unique_id=1956080870]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@254" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@253" unique_id=1742265490]
-polygon = PackedVector2Array(5312, 1216, 5248, 1216, 5248, 1152, 5312, 1152)
+[node name="@CollisionPolygon2D@37" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@36" unique_id=470506866]
+polygon = PackedVector2Array(4800, 1344, 4736, 1344, 4736, 1280, 4800, 1280)
 
-[node name="@StaticBody2D@255" type="StaticBody2D" parent="NorthernLedges" unique_id=1120071813]
+[node name="@StaticBody2D@38" type="StaticBody2D" parent="NorthernLedges" unique_id=481469218]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@256" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@255" unique_id=52960916]
-polygon = PackedVector2Array(5376, 1216, 5312, 1216, 5312, 1152, 5376, 1152)
+[node name="@CollisionPolygon2D@39" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@38" unique_id=2136832026]
+polygon = PackedVector2Array(4864, 1344, 4800, 1344, 4800, 1280, 4864, 1280)
 
-[node name="@StaticBody2D@257" type="StaticBody2D" parent="NorthernLedges" unique_id=1604560950]
+[node name="@StaticBody2D@40" type="StaticBody2D" parent="NorthernLedges" unique_id=56030109]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@258" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@257" unique_id=1981380827]
-polygon = PackedVector2Array(4928, 1280, 4864, 1280, 4864, 1216, 4928, 1216)
+[node name="@CollisionPolygon2D@41" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@40" unique_id=728807218]
+polygon = PackedVector2Array(5440, 1344, 5376, 1344, 5376, 1280, 5440, 1280)
 
-[node name="@StaticBody2D@259" type="StaticBody2D" parent="NorthernLedges" unique_id=53871038]
+[node name="@StaticBody2D@42" type="StaticBody2D" parent="NorthernLedges" unique_id=1793465796]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@260" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@259" unique_id=1954868660]
-polygon = PackedVector2Array(5376, 1280, 5312, 1280, 5312, 1216, 5376, 1216)
+[node name="@CollisionPolygon2D@43" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@42" unique_id=646212978]
+polygon = PackedVector2Array(4864, 1408, 4800, 1408, 4800, 1344, 4864, 1344)
 
-[node name="@StaticBody2D@261" type="StaticBody2D" parent="NorthernLedges" unique_id=1138515222]
+[node name="@StaticBody2D@44" type="StaticBody2D" parent="NorthernLedges" unique_id=1741891820]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@262" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@261" unique_id=1694423877]
-polygon = PackedVector2Array(4928, 1344, 4864, 1344, 4864, 1280, 4928, 1280)
+[node name="@CollisionPolygon2D@45" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@44" unique_id=784227489]
+polygon = PackedVector2Array(4928, 1408, 4864, 1408, 4864, 1344, 4928, 1344)
 
-[node name="@StaticBody2D@263" type="StaticBody2D" parent="NorthernLedges" unique_id=714845379]
+[node name="@StaticBody2D@46" type="StaticBody2D" parent="NorthernLedges" unique_id=919648258]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@264" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@263" unique_id=76740132]
-polygon = PackedVector2Array(4992, 1344, 4928, 1344, 4928, 1280, 4992, 1280)
+[node name="@CollisionPolygon2D@47" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@46" unique_id=1098175448]
+polygon = PackedVector2Array(5376, 1408, 5312, 1408, 5312, 1344, 5376, 1344)
 
-[node name="@StaticBody2D@265" type="StaticBody2D" parent="NorthernLedges" unique_id=457451977]
+[node name="@StaticBody2D@48" type="StaticBody2D" parent="NorthernLedges" unique_id=215153408]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@266" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@265" unique_id=314202020]
-polygon = PackedVector2Array(5312, 1344, 5248, 1344, 5248, 1280, 5312, 1280)
+[node name="@CollisionPolygon2D@49" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@48" unique_id=1068957254]
+polygon = PackedVector2Array(5440, 1408, 5376, 1408, 5376, 1344, 5440, 1344)
 
-[node name="@StaticBody2D@267" type="StaticBody2D" parent="NorthernLedges" unique_id=18235646]
+[node name="@StaticBody2D@50" type="StaticBody2D" parent="NorthernLedges" unique_id=145791592]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@268" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@267" unique_id=1843314257]
-polygon = PackedVector2Array(5376, 1344, 5312, 1344, 5312, 1280, 5376, 1280)
+[node name="@CollisionPolygon2D@51" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@50" unique_id=1918594432]
+polygon = PackedVector2Array(4928, 1472, 4864, 1472, 4864, 1408, 4928, 1408)
 
-[node name="@StaticBody2D@269" type="StaticBody2D" parent="NorthernLedges" unique_id=226503631]
+[node name="@StaticBody2D@52" type="StaticBody2D" parent="NorthernLedges" unique_id=729540420]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@270" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@269" unique_id=1152492768]
-polygon = PackedVector2Array(4992, 1408, 4928, 1408, 4928, 1344, 4992, 1344)
+[node name="@CollisionPolygon2D@53" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@52" unique_id=2006423802]
+polygon = PackedVector2Array(4992, 1472, 4928, 1472, 4928, 1408, 4992, 1408)
 
-[node name="@StaticBody2D@271" type="StaticBody2D" parent="NorthernLedges" unique_id=1444546062]
+[node name="@StaticBody2D@54" type="StaticBody2D" parent="NorthernLedges" unique_id=2128243063]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@272" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@271" unique_id=925285240]
-polygon = PackedVector2Array(5050, 1408, 4992, 1408, 4992, 1344, 5050, 1344)
+[node name="@CollisionPolygon2D@55" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@54" unique_id=44864187]
+polygon = PackedVector2Array(5050, 1472, 4992, 1472, 4992, 1408, 5050, 1408)
 
-[node name="@StaticBody2D@273" type="StaticBody2D" parent="NorthernLedges" unique_id=1459927484]
+[node name="@StaticBody2D@56" type="StaticBody2D" parent="NorthernLedges" unique_id=786820877]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@274" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@273" unique_id=886654277]
-polygon = PackedVector2Array(5184, 1408, 5170, 1408, 5170, 1344, 5184, 1344)
+[node name="@CollisionPolygon2D@57" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@56" unique_id=108882856]
+polygon = PackedVector2Array(5184, 1472, 5170, 1472, 5170, 1408, 5184, 1408)
 
-[node name="@StaticBody2D@275" type="StaticBody2D" parent="NorthernLedges" unique_id=283379179]
+[node name="@StaticBody2D@58" type="StaticBody2D" parent="NorthernLedges" unique_id=108378054]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@276" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@275" unique_id=1937142007]
-polygon = PackedVector2Array(5248, 1408, 5184, 1408, 5184, 1344, 5248, 1344)
+[node name="@CollisionPolygon2D@59" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@58" unique_id=1119405220]
+polygon = PackedVector2Array(5248, 1472, 5184, 1472, 5184, 1408, 5248, 1408)
 
-[node name="@StaticBody2D@277" type="StaticBody2D" parent="NorthernLedges" unique_id=1104968388]
+[node name="@StaticBody2D@60" type="StaticBody2D" parent="NorthernLedges" unique_id=1493284093]
 collision_layer = 2
 
-[node name="@CollisionPolygon2D@278" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@277" unique_id=66760577]
-polygon = PackedVector2Array(5312, 1408, 5248, 1408, 5248, 1344, 5312, 1344)
+[node name="@CollisionPolygon2D@61" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@60" unique_id=399505217]
+polygon = PackedVector2Array(5312, 1472, 5248, 1472, 5248, 1408, 5312, 1408)
+
+[node name="@StaticBody2D@62" type="StaticBody2D" parent="NorthernLedges" unique_id=355880131]
+collision_layer = 2
+
+[node name="@CollisionPolygon2D@63" type="CollisionPolygon2D" parent="NorthernLedges/@StaticBody2D@62" unique_id=1606130609]
+polygon = PackedVector2Array(5376, 1472, 5312, 1472, 5312, 1408, 5376, 1408)
 
 [node name="ForestBoundary" type="Node2D" parent="." unique_id=1164912646]
 

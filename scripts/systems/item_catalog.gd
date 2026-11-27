@@ -7,7 +7,9 @@ const ICONS := "res://assets/ui/items/%s.png"
 
 ## Ferramentas na ordem da barra; só aparecem quando o jogador as tem na bolsa
 ## (fabricadas: docs/gameplay/CRIACAO.md). O jogo começa sem nenhuma.
-const TOOLS := ["machado", "machado_polido", "picareta", "picareta_polida", "foice", "enxada", "pa", "regador"]
+const TOOLS := ["espada", "arco", "machado", "machado_polido", "picareta", "picareta_polida", "foice", "enxada", "pa", "regador"]
+## Armas do combate com boss (docs/gameplay/BOSS_BROTINHO.md).
+const WEAPONS := ["espada", "arco"]
 ## Ferramentas de pedra polida (nível 2): cada golpe vale POWER golpes e derrubam a
 ## árvore e a pedra grandes. Por família, a melhor primeiro.
 const AXES := ["machado_polido", "machado"]
@@ -26,6 +28,11 @@ const ITEMS := {
 	"enxada": {"name": "Enxada", "kind": "tool", "icon": "enxada"},
 	"pa": {"name": "Pá", "kind": "tool", "icon": "pa"},  # arranca tocos (playtest ID 30)
 	"regador": {"name": "Regador", "kind": "tool", "icon": "regador"},
+	# Combate com boss (protótipo; ícones provisórios em tools/combat/draw_placeholder_icons.py).
+	"espada": {"name": "Espada de madeira", "kind": "tool", "icon": "espada"},
+	"arco": {"name": "Arco simples", "kind": "tool", "icon": "arco"},
+	"flecha": {"name": "Flecha", "kind": "material", "icon": "flecha"},
+	"orbe_energia": {"name": "Orbe de energia", "kind": "material", "icon": "orbe_energia"},  # magia do boss (máquina do final)
 	"semente_cenoura": {"name": "Sementes de cenoura", "kind": "seed", "icon": "semente_cenoura", "crop": "cenoura"},
 	"semente_beterraba": {"name": "Sementes de beterraba", "kind": "seed", "icon": "semente_beterraba", "crop": "beterraba"},
 	"semente_repolho": {"name": "Sementes de repolho", "kind": "seed", "icon": "semente_repolho", "crop": "repolho"},

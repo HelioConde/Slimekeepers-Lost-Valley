@@ -53,6 +53,7 @@ func _focus() -> Vector2:
 
 
 func update(delta: float) -> bool:
+	if preload("res://scripts/combat/player_combat.gd").is_weapon(HOTBAR.selected_item(get_tree())): return false  # arma: [F] ataca
 	if not _pull_id.is_empty():
 		_forage_interaction(_pull_spot, delta)  # continua no mesmo ponto até terminar ou andar
 		return true

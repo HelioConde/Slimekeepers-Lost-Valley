@@ -59,6 +59,18 @@ const MEDITATE_AFTER := 20.0
 var protagonist_override := ""
 var _idle_wait := 3.0
 
+## Rolamento (combate com boss, docs/gameplay/BOSS_BROTINHO.md): Espaço, sem tomar dano
+## enquanto rola. shortcut: usa a corrida com transparência até existir a arte de rolar.
+const ROLL_TIME := 0.32
+const ROLL_SPEED := 410.0
+const ROLL_COOLDOWN := 0.55
+signal rolled
+var invulnerable := false
+var rolling_since := -1.0  ## Time.get_ticks_msec() do início do rolamento (rolamento perfeito)
+var _roll_time := 0.0
+var _roll_cd := 0.0
+var _roll_dir := Vector2.DOWN
+
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 var facing: String = "south"
 var current_animation: String = ""
@@ -72,8 +84,19 @@ func _ready() -> void:
 	sprite.sprite_frames = _build_frames()
 	sprite.frame_changed.connect(_on_frame_changed)
 	_play_animation("idle_south")
+	if not InputMap.has_action("roll"):  # sem mexer no project.godot
+		InputMap.add_action("roll")
+		var space := InputEventKey.new()
+		space.physical_keycode = KEY_SPACE
+		InputMap.action_add_event("roll", space)
 
 func _physics_process(_delta: float) -> void:
+	_roll_cd = maxf(0.0, _roll_cd - _delta)
+	if _roll_time > 0.0:
+		_roll_step(_delta)
+		return
+	if Input.is_action_just_pressed("roll") and start_roll(Input.get_vector("move_left", "move_right", "move_up", "move_down")):
+		return
 	if is_using_tool():
 		# Durante o golpe da ferramenta o personagem fica parado, virado para o alvo.
 		_tool_time -= _delta
@@ -92,6 +115,40 @@ func _physics_process(_delta: float) -> void:
 		_update_idle(_delta)
 	move_and_slide()
 	global_position = global_position.clamp(world_bounds.position, world_bounds.end)
+
+## Rola na direção dada (ou para onde olha). false = em recarga ou ocupado.
+func start_roll(direction: Vector2) -> bool:
+	if _roll_cd > 0.0 or is_using_tool(): return false
+	_roll_dir = direction.normalized() if direction.length_squared() > 0.01 else _facing_vector()
+	facing = _get_direction_name(_roll_dir)
+	_roll_time = ROLL_TIME
+	_roll_cd = ROLL_TIME + ROLL_COOLDOWN
+	invulnerable = true
+	rolling_since = Time.get_ticks_msec()
+	sprite.modulate.a = 0.55
+	_play_animation("run_" + facing)
+	rolled.emit()
+	return true
+
+
+func is_rolling() -> bool:
+	return _roll_time > 0.0
+
+
+func _roll_step(delta: float) -> void:
+	_roll_time -= delta
+	velocity = _roll_dir * ROLL_SPEED
+	move_and_slide()
+	global_position = global_position.clamp(world_bounds.position, world_bounds.end)
+	if _roll_time <= 0.0:
+		invulnerable = false
+		sprite.modulate.a = 1.0
+
+
+func _facing_vector() -> Vector2:
+	var names := ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"]
+	return Vector2.UP.rotated(names.find(facing) * PI / 4.0)
+
 
 ## Parado: pose fixa; de tempos em tempos uma das idles (A: respira e olha em volta,
 ## B: pisca e ajeita a postura; aprovadas pelo usuário em 2026-11-23) toca uma vez.

@@ -6,6 +6,7 @@ const Living = preload("res://scripts/world/living_region.gd")
 ## slime aparecia (habitats a mais de 960 px do início). Ao terminar a dica da coleta, um
 ## Brotinho visita a beira da clareira e o Aren chama a atenção para ele.
 const FIRST_VISIT_KEY := "first_slime_visit"
+const BOSS_ARENA := Vector2(5110, 1250)  ## centro do Mirante Rochoso (platô ampliado)
 const FIRST_VISIT_STEP := 2  ## dica 3 (arrancar mato) em diante = coleta concluída
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
@@ -138,6 +139,7 @@ func _ready() -> void:
 		return false)
 	choppable.apply_day(GameClock.day_number)
 	choppable.setup_scenery(self)  # tocos e troncos de cenário (playtest ID 50)
+	_add_boss_combat()
 	# Bancadas colocadas pelo jogador (CRIACAO.md, etapa 4).
 	placer = preload("res://scripts/world/station_placer.gd").new()
 	placer.open_chest = open_chest  # baús colocados no chão
@@ -312,6 +314,18 @@ func _setup_ecosystem() -> void:
 
 func set_environment_conditions(period: String, rain: float=0.0, wind: float=1.0, fog: float=0.0) -> void:
 	Living.conditions(self,period,rain,wind,fog)
+
+## Primeiro boss (docs/gameplay/BOSS_BROTINHO.md): ataques do jogador e a arena no
+## Mirante Rochoso (local escolhido pelo usuário; platô ampliado para a luta).
+func _add_boss_combat() -> void:
+	var combat := preload("res://scripts/combat/player_combat.gd").new()
+	combat.player = player
+	add_child(combat)
+	var arena := preload("res://scripts/combat/boss_arena.gd").new()
+	arena.region = self
+	arena.position = BOSS_ARENA
+	add_child(arena)
+
 
 static func first_visit_habitat() -> Dictionary:
 	return {"id": "H00", "name": "Beira da Clareira", "center": Forest.SPAWN + Vector2(150, 10), "radius": 60.0,
