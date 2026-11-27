@@ -78,6 +78,7 @@ func steam_init() -> String:
 func host_steam(protagonist: String) -> String:
 	var problem := steam_init()
 	if not problem.is_empty(): return problem
+	_end_previous()
 	_begin("host", "steam", protagonist)
 	_steam.call("createLobby", 1, 2)  # 1 = LOBBY_TYPE_FRIENDS_ONLY
 	_set_status("Criando sala na Steam...")
@@ -87,6 +88,7 @@ func host_steam(protagonist: String) -> String:
 func join_steam(lobby: int) -> String:
 	var problem := steam_init()
 	if not problem.is_empty(): return problem
+	_end_previous()
 	_begin("guest", "steam", "")
 	_steam.call("joinLobby", lobby)
 	_set_status("Entrando na sala do amigo...")
@@ -134,6 +136,7 @@ func _on_lobby_chat_update(lobby: int, changed: int, _making: int, chat_state: i
 # --- ENet (rede local / testes) --------------------------------------------
 
 func host_enet(protagonist: String, port: int = ENET_PORT) -> String:
+	_end_previous()
 	_enet = ENetMultiplayerPeer.new()
 	var err := _enet.create_server(port, 1)
 	if err != OK: return "Não foi possível abrir a porta %d." % port
@@ -144,6 +147,7 @@ func host_enet(protagonist: String, port: int = ENET_PORT) -> String:
 
 
 func join_enet(address: String, port: int = ENET_PORT) -> String:
+	_end_previous()
 	_enet = ENetMultiplayerPeer.new()
 	var err := _enet.create_client(address, port)
 	if err != OK: return "Não foi possível conectar a %s:%d." % [address, port]
@@ -251,6 +255,12 @@ func _on_peer_gone() -> void:
 	connected = false
 	_set_status("O outro jogador saiu.")
 	peer_left.emit()
+
+
+## Playtest ID 12: hospedar/entrar de novo (ou trocar Steam <-> rede local) fecha a
+## sessão anterior antes; senão a porta ficava ocupada e a sala antiga aberta.
+func _end_previous() -> void:
+	if mode != "" or is_instance_valid(_enet): leave()
 
 
 func leave() -> void:
