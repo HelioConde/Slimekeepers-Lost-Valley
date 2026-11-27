@@ -211,6 +211,7 @@ func strike(t: Dictionary, day: int, power: int = 1, from: Vector2 = Vector2.INF
 	_hits[key] = hits(key) + power
 	if scenery.has(key):  # tronco de cenário: processa direto em madeira
 		_shake(scenery[key].node)
+		_send_fx(key, "log")
 		if hits(key) < HITS_TO_PROCESS: return "hit"
 		_hits.erase(key)
 		var done := state(get_tree()).duplicate(true)
@@ -223,7 +224,9 @@ func strike(t: Dictionary, day: int, power: int = 1, from: Vector2 = Vector2.INF
 	var tree: Node2D = trees[key]
 	_shake(tree.get_node("Sprite") if t.kind == "tree" else _extras[key][1])
 	if t.kind == "tree":
-		if hits(key) < fell_hits(key): return "hit"
+		if hits(key) < fell_hits(key):
+			_send_fx(key, "tree")
+			return "hit"
 		_hits.erase(key)
 		var chopped := state(get_tree()).duplicate(true)
 		var side := fall_side(tree.global_position, from)
@@ -231,7 +234,9 @@ func strike(t: Dictionary, day: int, power: int = 1, from: Vector2 = Vector2.INF
 		get_tree().set_meta(CHOPPED_KEY, chopped)
 		_fall_animation(tree, side)
 		_fell_visual(key, false)
+		_send_fx(key, "tree", side)
 		return "felled"
+	_send_fx(key, "log")
 	if hits(key) < HITS_TO_PROCESS: return "hit"
 	_hits.erase(key)
 	var chopped := state(get_tree()).duplicate(true)
@@ -348,3 +353,47 @@ func _shake(item: CanvasItem) -> void:
 	for i in 3:
 		tween.tween_property(node, "position", origin + Vector2(2 if i % 2 == 0 else -2, 0), 0.04)
 	tween.tween_property(node, "position", origin, 0.04)
+
+
+## Multijogador (playtest ID 36): o golpe de quem cortou chega ao outro jogador como
+## "chop_fx" (balanço e, no golpe final, a queda). Quem golpeou já animou localmente e
+## não recebe a própria mensagem. O estado (toco/tronco) segue pelo net_world.
+const FX_MESSAGE := "chop_fx"
+
+
+func _ready() -> void:
+	var session := get_node_or_null("/root/NetSession")
+	if session != null and not session.message.is_connected(_on_net_message):
+		session.message.connect(_on_net_message)
+
+
+func _send_fx(key: String, kind: String, side: int = 0) -> void:
+	var session := get_node_or_null("/root/NetSession")
+	if session == null or not bool(session.get("connected")): return
+	session.send({"t": FX_MESSAGE, "key": key, "kind": kind, "side": side})
+
+
+func _on_net_message(data: Dictionary) -> void:
+	if str(data.get("t", "")) == FX_MESSAGE: remote_fx(data)
+
+
+## Reproduz o golpe do outro jogador. side != 0 = golpe final: a árvore cai para esse lado.
+## Árvore de outro mapa (chave desconhecida aqui) é ignorada.
+func remote_fx(data: Dictionary) -> void:
+	var key := str(data.get("key", ""))
+	var side := int(data.get("side", 0))
+	if scenery.has(key):
+		_shake(scenery[key].node)
+		return
+	if not trees.has(key): return
+	var tree: Node2D = trees[key]
+	if str(data.get("kind", "")) == "log":
+		if _extras.has(key): _shake(_extras[key][1])
+		return
+	var sprite := tree.get_node_or_null("Sprite") as CanvasItem
+	if side == 0 or sprite == null or not sprite.visible:
+		if sprite != null: _shake(sprite)
+		return
+	_fall_animation(tree, signi(side))
+	for part in ["Sprite", "ContactShadow"]:  # a copa sai já; toco e tronco vêm com o estado
+		if tree.has_node(part): (tree.get_node(part) as CanvasItem).visible = false

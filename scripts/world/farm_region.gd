@@ -94,14 +94,14 @@ func _process(delta: float) -> void:
 
 ## Dorme até 06:00 do dia seguinte: o dia vira (culturas regadas crescem, terra
 ## seca) e a energia volta cheia.
+## No multijogador espera o parceiro dormir também (clearing_region.sleep_until_morning).
 func sleep() -> void:
-	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
-	var until_morning := (1440.0 - minutes) + 360.0
-	GameClock.advance_minutes(until_morning)
-	ENERGY.restore(get_tree())
+	sleep_until_morning()
+
+
+func wake_up(forced: bool) -> void:
 	if is_instance_valid(farm_field): farm_field.refresh()
-	var saved := SAVE.save(get_tree(), GameClock, scene_file_path)
-	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  Jogo salvo." if saved else ""))
+	super.wake_up(forced)
 
 
 func _update_hud() -> void:
