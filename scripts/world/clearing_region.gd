@@ -109,6 +109,9 @@ func _compact_hud() -> void:
 	var world_sync := preload("res://scripts/net/net_world.gd").new()  # fazenda, coleta, pedras e árvores
 	world_sync.region = self
 	add_child(world_sync)
+	var sleep_sync := preload("res://scripts/net/net_sleep.gd").new()  # o dia vira quando todos dormem (ID 35)
+	sleep_sync.region = self
+	add_child(sleep_sync)
 	var bond := preload("res://scripts/ui/slime_bond_hud.gd").new()
 	bond.source = _closest_slime
 	$HUD/Interface.add_child(bond)
@@ -194,24 +197,43 @@ func _on_time_for_autosave(day: int, hour: int, _minute: int) -> void:
 ## casa estiver nesta região), com metade da energia. Dormir na cama evita.
 func _on_time_for_faint(_day: int, hour: int, _minute: int) -> void:
 	if hour < FAINT_HOUR or hour >= 6 or not is_inside_tree(): return
+	var net := get_node_or_null("NetSleep")
+	if net != null and bool(net.get("sleeping")): return  # já dormindo, esperando o parceiro
 	faint()
 
 
 ## Exaustão (relatório de playtest ID 35): insistiu em ações sem energia → dorme onde está,
 ## acorda às 06:00 do dia seguinte com metade da energia. Não pede energia para dormir.
-## shortcut: no multijogador avança o relógio como o desmaio; falta o "dormir no lugar
-## enquanto o parceiro joga e o dia vira quando os dois dormirem".
+## No multijogador dorme no lugar enquanto o parceiro joga; o dia vira quando os dois
+## dormirem (scripts/net/net_sleep.gd).
 func _check_exhaustion() -> void:
 	if not is_inside_tree() or not preload("res://scripts/systems/energy_state.gd").exhausted(get_tree()): return
 	exhausted_sleep()
 
 
 func exhausted_sleep() -> void:
+	if _net_sleep_waits(true): return
 	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
 	var until := 360.0 - minutes if minutes < 360.0 else (1440.0 - minutes) + 360.0  # próximas 06:00
 	GameClock.advance_minutes(until)
-	preload("res://scripts/systems/energy_state.gd").wake_from_forced_sleep(get_tree())
-	_notify("Sem forças, você dormiu ali mesmo e acordou com metade da energia.")
+	wake_up(true)
+
+
+## Multijogador: entrega o pedido ao NetSleep (espera os outros). false = modo solo.
+func _net_sleep_waits(forced: bool) -> bool:
+	var net := get_node_or_null("NetSleep")
+	return net != null and bool(net.call("request", forced))
+
+
+## Acordou: na cama, energia cheia e salva; exausto, metade da energia.
+func wake_up(forced: bool) -> void:
+	if forced:
+		preload("res://scripts/systems/energy_state.gd").wake_from_forced_sleep(get_tree())
+		_notify("Sem forças, você dormiu ali mesmo e acordou com metade da energia.")
+		return
+	preload("res://scripts/systems/energy_state.gd").restore(get_tree())
+	var saved: bool = preload("res://scripts/systems/save_game.gd").save(get_tree(), GameClock, scene_file_path)
+	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  Jogo salvo." if saved else ""))
 
 
 func faint() -> void:
@@ -344,12 +366,12 @@ func handle_player_house(builder: Node2D) -> bool:
 
 
 ## Dorme até 06:00 do dia seguinte: o dia vira, a energia volta cheia e o jogo salva.
+## No multijogador espera todos dormirem; [F] de novo levanta (scripts/net/net_sleep.gd).
 func sleep_until_morning() -> void:
+	if _net_sleep_waits(false): return
 	var minutes := GameClock.get_hour() * 60.0 + GameClock.get_minute()
 	GameClock.advance_minutes((1440.0 - minutes) + 360.0)
-	preload("res://scripts/systems/energy_state.gd").restore(get_tree())
-	var saved: bool = preload("res://scripts/systems/save_game.gd").save(get_tree(), GameClock, scene_file_path)
-	_notify("Bom dia! Dia %d." % GameClock.day_number + ("  Jogo salvo." if saved else ""))
+	wake_up(false)
 
 
 ## Plantio livre (FAZENDA.md): com a enxada, ara qualquer chão livre da região (sem
