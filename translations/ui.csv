@@ -109,3 +109,50 @@ Cordas %d/3,Cordas %d/3,Ropes %d/3
 Gravetos %d/6,Gravetos %d/6,Twigs %d/6
 Pedrinhas %d/4,Pedrinhas %d/4,Pebbles %d/4
 Cordas %d/2,Cordas %d/2,Ropes %d/2
+Bancada de trabalho,Bancada de trabalho,Workbench
+Baú,Baú,Chest
+Beterraba,Beterraba,Beet
+Cenoura assada,Cenoura assada,Roasted carrot
+Cenoura,Cenoura,Carrot
+Corda,Corda,Rope
+Enxada,Enxada,Hoe
+Fibra vegetal,Fibra vegetal,Plant fiber
+Foice rudimentar,Foice rudimentar,Crude sickle
+Folhas frescas,Folhas frescas,Fresh leaves
+Graveto,Graveto,Twig
+Machado de pedra polida,Machado de pedra polida,Polished stone axe
+Machado rudimentar,Machado rudimentar,Crude axe
+Madeira,Madeira,Wood
+Pedra pequena,Pedra pequena,Small stone
+Pedra polida,Pedra polida,Polished stone
+Picareta de pedra polida,Picareta de pedra polida,Polished stone pickaxe
+Picareta rudimentar,Picareta rudimentar,Crude pickaxe
+Porção de folhas,Porção de folhas,Leaf portion
+Pá,Pá,Shovel
+Regador,Regador,Watering can
+Repolho,Repolho,Cabbage
+Sementes de beterraba,Sementes de beterraba,Beet seeds
+Sementes de cenoura,Sementes de cenoura,Carrot seeds
+Sementes de repolho,Sementes de repolho,Cabbage seeds
+Sementes silvestres,Sementes silvestres,Wild seeds
+Sopa de legumes,Sopa de legumes,Vegetable soup
+Ferramenta,Ferramenta,Tool
+Semente,Semente,Seed
+Colheita,Colheita,Crop
+Comida,Comida,Food
+Material,Material,Material
+Estação de trabalho,Estação de trabalho,Workstation
+Item,Item,Item
+Comer: +%d de energia,Comer: +%d de energia,Eat: +%d energy
+Plante em terra arada,Plante em terra arada,Plant in tilled soil
+Dia %02d,Dia %02d,Day %02d
+Madrugada,Madrugada,Late night
+Manhã,Manhã,Morning
+Dia,Dia,Day
+Tarde,Tarde,Afternoon
+Anoitecendo,Anoitecendo,Dusk
+Noite,Noite,Night
+Primavera,Primavera,Spring
+Verão,Verão,Summer
+Outono,Outono,Autumn
+Inverno,Inverno,Winter

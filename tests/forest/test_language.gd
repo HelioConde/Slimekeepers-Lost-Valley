@@ -33,3 +33,13 @@ func test_selector_lists_both_and_marks_current() -> void:
 	var button: OptionButton = auto_free(Language.selector())
 	assert_int(button.item_count).is_equal(2)
 	assert_int(button.selected).is_equal(1)
+
+
+func test_item_names_and_clock_follow_the_language() -> void:
+	var items := preload("res://scripts/systems/item_catalog.gd")
+	TranslationServer.set_locale("en")
+	assert_str(str(items.info("graveto").name)).is_equal("Twig")
+	assert_str(items.describe("cenoura")).contains("Crop")
+	assert_str(tr("Manhã") + " · " + tr("Primavera")).is_equal("Morning · Spring")
+	TranslationServer.set_locale("pt_BR")
+	assert_str(str(items.info("graveto").name)).is_equal("Graveto")

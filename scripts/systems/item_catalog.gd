@@ -59,7 +59,11 @@ static var _icon_cache: Dictionary = {}
 
 
 static func info(item_id: String) -> Dictionary:
-	return ITEMS.get(item_id, {"name": item_id.capitalize(), "kind": "other"})
+	var data: Dictionary = ITEMS.get(item_id, {"name": item_id.capitalize(), "kind": "other"})
+	if TranslationServer.get_locale().begins_with("pt"): return data
+	data = data.duplicate()  # nome no idioma escolhido (ID 15); o catálogo fica intacto
+	data.name = TranslationServer.translate(str(data.name))
+	return data
 
 
 static func max_stack(item_id: String) -> int:
@@ -88,11 +92,11 @@ static func energy(item_id: String) -> int:
 
 ## Texto da dica do item (tipo, energia, plantio).
 static func describe(item_id: String) -> String:
-	var lines: PackedStringArray = [str(KIND_NAMES.get(kind(item_id), "Item"))]
+	var lines: PackedStringArray = [TranslationServer.translate(str(KIND_NAMES.get(kind(item_id), "Item")))]
 	if energy(item_id) > 0:
-		lines.append("Comer: +%d de energia" % energy(item_id))
+		lines.append(TranslationServer.translate("Comer: +%d de energia") % energy(item_id))
 	if info(item_id).has("crop"):
-		lines.append("Plante em terra arada")
+		lines.append(TranslationServer.translate("Plante em terra arada"))
 	return "
 ".join(lines)
 
