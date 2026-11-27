@@ -55,6 +55,7 @@ func run() -> void:
 	for i in 4:
 		check(buttons[i].is_visible_in_tree() and buttons[i].text == labels[i], "botão '%s' visível" % labels[i])
 	check(overlay.continue_button.has_focus(), "Continuar começa com o foco do teclado")
+	check(overlay.friend_button.is_visible_in_tree(), "solo: \"Abrir para amigo\" aparece no menu do Esc")
 
 	# Opções: abre, grava no presentation.cfg, aplica e volta ao menu.
 	overlay.options_button.pressed.emit()

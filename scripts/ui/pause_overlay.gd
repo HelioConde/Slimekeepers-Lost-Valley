@@ -25,6 +25,8 @@ var continue_button: Button
 var options_button: Button
 var tutorial_button: Button
 var main_menu_button: Button
+var friend_button: Button  ## Continuar em dupla: abre a sala com o jogo em andamento
+var friend_status: Label
 var volume_slider: HSlider
 var music_slider: HSlider  ## volume da música, separado do ambiente (playtest ID 15)
 var mute_check: CheckButton
@@ -132,6 +134,7 @@ func _show_page(page: String) -> void:
 	match page:
 		"menu":
 			title_label.text = "Menu — a partida continua" if _mp else "Jogo pausado"
+			friend_button.visible = not _mp  # já em dupla: não abre outra sala
 			_hint.text = "Esc para voltar ao jogo"
 			(_opener if is_instance_valid(_opener) else continue_button).grab_focus()
 		"options":
@@ -142,6 +145,11 @@ func _show_page(page: String) -> void:
 			music_slider.set_value_no_signal(float(audio.music) * 100.0)
 			mute_check.set_pressed_no_signal(bool(audio.muted))
 			volume_slider.grab_focus()
+		"friend":
+			title_label.text = "Abrir para amigo"
+			_hint.text = "Esc para voltar ao menu"
+			friend_status.text = "O amigo entra com o outro protagonista. A bolsa dele fica guardada neste save."
+			(_pages["friend"] as Control).get_node("FriendSteam").grab_focus()
 		"tutorial":
 			title_label.text = "Primeiros passos"
 			_hint.text = "Esc para voltar ao menu"
@@ -151,6 +159,20 @@ func _show_page(page: String) -> void:
 			_hint.text = "Esc para cancelar"
 			save_label.text = _save_text()
 			cancel_button.grab_focus()
+
+
+## Abre a sala com este save (Continuar em dupla); a partida segue e o amigo entra.
+func open_for_friend(kind: String) -> String:
+	var net := get_node_or_null("/root/NetSession")
+	if net == null: return "Multijogador indisponível."
+	var problem: String = net.call("open_in_world", kind, preload("res://scripts/systems/protagonist.gd").current(get_tree()))
+	if not problem.is_empty():
+		friend_status.text = problem
+		return problem
+	close()
+	var region := get_parent()
+	if region and region.has_method("_notify"): region.call("_notify", str(net.get("status")))
+	return ""
 
 
 func _go(page: String, opener: Button) -> void:
@@ -273,7 +295,18 @@ func _build() -> void:
 	continue_button = _button(menu, "ContinueButton", "Continuar", close)
 	options_button = _button(menu, "OptionsButton", "Opções", func() -> void: _go("options", options_button))
 	tutorial_button = _button(menu, "TutorialButton", "Tutorial", func() -> void: _go("tutorial", tutorial_button))
+	friend_button = _button(menu, "FriendButton", "Abrir para amigo", func() -> void: _go("friend", friend_button))
 	main_menu_button = _button(menu, "MainMenuButton", "Voltar ao menu principal", func() -> void: _go("confirm", main_menu_button))
+
+	var friend := _page_box(column, "friend")
+	friend_status = _label("", 14, "#402f39")
+	friend_status.name = "FriendStatus"
+	friend_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	friend_status.custom_minimum_size = Vector2(380, 0)
+	friend.add_child(friend_status)
+	_button(friend, "FriendSteam", "Abrir pela Steam", func() -> void: open_for_friend("steam"))
+	_button(friend, "FriendLan", "Abrir na rede local", func() -> void: open_for_friend("enet"))
+	_button(friend, "FriendBack", "Voltar", func() -> void: _show_page("menu"))
 
 	var options := _page_box(column, "options")
 	options.add_child(_label("Volume do ambiente", 15, "#402f39", HORIZONTAL_ALIGNMENT_LEFT))

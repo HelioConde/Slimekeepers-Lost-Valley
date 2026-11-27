@@ -37,7 +37,8 @@ const SESSION_META_KEYS: PackedStringArray = [
 	"farm_helpers_done",
 	"build_mode",
 	"slime_fed_day",
-	"first_slime_visit",  # Brotinho visitante da clareira (forest_region)
+	"first_slime_visit",
+	"mp_guest_bags",  # Continuar em dupla: bolsa do convidado guardada no save do anfitrião  # Brotinho visitante da clareira (forest_region)
 	"valley_cooking_ledger",
 	"slime_food_offers",
 	"session_progress_flags",

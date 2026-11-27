@@ -162,7 +162,7 @@ func _build_buttons() -> void:
 			"Continuar":
 				# Ativo quando algum espaço tem save (gravado ao amanhecer e ao dormir).
 				if not SaveGame.used_slots().is_empty():
-					button.pressed.connect(_continue_game)
+					button.pressed.connect(_solo_continue)
 				else:
 					button.disabled = true
 					button.tooltip_text = "O jogo salva sozinho a cada amanhecer."
@@ -273,6 +273,17 @@ func _host_new_game(kind: String) -> void:
 	_close_options()
 	get_node("/root/NetSession").pending_host = kind
 	_start_game()
+
+## Continuar em dupla: escolhe o save (ou abre o único) e a região abre a sala ao carregar.
+func _continue_hosting(kind: String) -> void:
+	_close_options()
+	get_node("/root/NetSession").pending_host = kind
+	_continue_game()
+
+## Continuar solo: descarta um "hospedar" que ficou pendente.
+func _solo_continue() -> void:
+	get_node("/root/NetSession").pending_host = ""
+	_continue_game()
 
 ## Novo Jogo solo: descarta um "hospedar" que ficou pendente ao voltar da escolha de espaço.
 func _solo_new_game() -> void:
@@ -431,6 +442,21 @@ func _show_multiplayer() -> void:
 	host_lan.pressed.connect(func() -> void:
 		_host_new_game("enet"))
 	stack.add_child(host_lan)
+	# Continuar em dupla (pedido do usuário, 2026-11-27): abre um save salvo e a sala.
+	if not SaveGame.used_slots().is_empty():
+		for entry: Array in [["ContinueSteam", "Continuar partida pela Steam", "steam"], ["ContinueLan", "Continuar partida na rede local", "enet"]]:
+			var resume := Button.new()
+			resume.name = str(entry[0])
+			resume.text = str(entry[1])
+			var kind := str(entry[2])
+			resume.pressed.connect(func() -> void:
+				if kind == "steam":
+					var problem: String = net.steam_init()
+					if not problem.is_empty():
+						status.text = problem
+						return
+				_continue_hosting(kind))
+			stack.add_child(resume)
 	var row := HBoxContainer.new()
 	stack.add_child(row)
 	var address := LineEdit.new()

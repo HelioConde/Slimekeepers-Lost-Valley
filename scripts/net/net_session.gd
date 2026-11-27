@@ -244,7 +244,8 @@ func _receive(bytes: PackedByteArray) -> void:
 			remote_protagonist = other_of(local_protagonist)
 			var here: String = get_tree().current_scene.scene_file_path if get_tree().current_scene else ""
 			send({"t": "welcome", "you": remote_protagonist, "host": local_protagonist, "scene": here,
-				"day": GameClock.day_number, "hour": GameClock.get_hour(), "minute": GameClock.get_minute()})
+				"day": GameClock.day_number, "hour": GameClock.get_hour(), "minute": GameClock.get_minute(),
+				"bag": guest_bag(get_tree(), remote_protagonist)})
 			_set_status("%s entrou no jogo." % PROTAGONIST.ALL[remote_protagonist].name)
 			peer_joined.emit(remote_protagonist)
 		"welcome":
@@ -275,6 +276,9 @@ func _receive(bytes: PackedByteArray) -> void:
 			if mode == "guest" and not remote_protagonist.is_empty() and remote_protagonist == local_protagonist:
 				lobby_update("", false)
 			message.emit(data)
+		"guest_bag":  # Continuar em dupla: a bolsa do convidado fica no save do anfitrião
+			if mode == "host" and not remote_protagonist.is_empty():
+				store_guest_bag(get_tree(), remote_protagonist, data.get("bag", {}))
 		"bye":
 			_on_peer_gone()
 		_:
@@ -296,6 +300,7 @@ func _enter_host_world(data: Dictionary) -> void:
 	preload("res://scripts/systems/session_state.gd").clear_session(tree)
 	PROTAGONIST.choose(tree, local_protagonist)
 	start_guest_tutorial(tree)
+	apply_bag(tree, data.get("bag", {}))  # volta com a bolsa da última vez nesse save
 	GameClock.set_time(int(data.get("hour", 7)), int(data.get("minute", 0)))
 	var scene := str(data.get("scene", "res://scenes/regions/FlorestaDoDespertarV2.tscn"))
 	if not scene.begins_with("res://scenes/regions/"): scene = "res://scenes/regions/FlorestaDoDespertarV2.tscn"
@@ -322,6 +327,71 @@ func open_pending_host(protagonist: String = "") -> String:
 	return problem
 
 
+# --- Continuar em dupla (pedido do usuário, 2026-11-27) -------------------------
+## O anfitrião abre um save já em andamento (Continuar partida ou "Abrir para amigo" no
+## Esc): a sala abre sem a tela de escolha e o amigo entra com o outro protagonista.
+## A bolsa do amigo fica no save do anfitrião (GUEST_BAGS_KEY) e volta quando ele entra.
+const GUEST_BAGS_KEY := "mp_guest_bags"
+const BAG_KEYS := ["forest_bag_items", "bag_layout", "tool_wear", "hotbar_selected"]
+## Confere a bolsa a cada segundo e manda só quando mudou: fechar a conexão descarta o
+## que ainda está na fila, então a última mudança não pode esperar o "tchau".
+const BAG_SYNC_SECONDS := 1.0
+var _bag_timer := 0.0
+var _bag_sent := ""
+
+
+## Abre a sala com o jogo já carregado. "" = abriu; senão o motivo.
+func open_in_world(kind: String, protagonist: String) -> String:
+	var problem := host_steam(protagonist) if kind == "steam" else host_enet(protagonist, pending_port)
+	in_lobby = false
+	return problem
+
+
+## Sala pedida no menu (Continuar partida): a região chama ao carregar o save.
+func open_pending_in_world(protagonist: String) -> String:
+	if pending_host.is_empty(): return ""
+	var kind := pending_host
+	pending_host = ""
+	return open_in_world(kind, protagonist)
+
+
+static func bag_snapshot(tree: SceneTree) -> Dictionary:
+	var out := {}
+	for key: String in BAG_KEYS:
+		if tree.has_meta(key): out[key] = tree.get_meta(key)
+	return out
+
+
+static func apply_bag(tree: SceneTree, bag: Variant) -> void:
+	if typeof(bag) != TYPE_DICTIONARY: return
+	for key: String in BAG_KEYS:
+		if (bag as Dictionary).has(key): tree.set_meta(key, bag[key])
+
+
+static func guest_bag(tree: SceneTree, protagonist: String) -> Dictionary:
+	return (tree.get_meta(GUEST_BAGS_KEY, {}) as Dictionary).get(protagonist, {})
+
+
+static func store_guest_bag(tree: SceneTree, protagonist: String, bag: Variant) -> void:
+	if typeof(bag) != TYPE_DICTIONARY: return
+	var bags: Dictionary = (tree.get_meta(GUEST_BAGS_KEY, {}) as Dictionary).duplicate(true)
+	bags[protagonist] = (bag as Dictionary).duplicate(true)
+	tree.set_meta(GUEST_BAGS_KEY, bags)
+
+
+## Convidado em jogo manda a bolsa de tempos em tempos (e ao sair, em leave()).
+func _sync_guest_bag(delta: float) -> void:
+	if mode != "guest" or not connected or in_lobby: return
+	_bag_timer -= delta
+	if _bag_timer > 0.0: return
+	_bag_timer = BAG_SYNC_SECONDS
+	var bag := bag_snapshot(get_tree())
+	var stamp := var_to_str(bag)
+	if stamp == _bag_sent: return
+	_bag_sent = stamp
+	send({"t": "guest_bag", "bag": bag})
+
+
 func _on_peer_gone() -> void:
 	if OS.has_environment("SK_NET_DEBUG"): print("NETGONE ", mode, " t=", Time.get_ticks_msec())
 	if not connected and mode == "": return
@@ -340,11 +410,14 @@ func _end_previous() -> void:
 
 
 func leave() -> void:
+	if connected and mode == "guest" and not in_lobby: send({"t": "guest_bag", "bag": bag_snapshot(get_tree())})
 	if connected: send({"t": "bye"})
 	if transport == "steam" and _steam_ready and lobby_id != 0:
 		if _remote_steam_id != 0: _steam.call("closeSessionWithUser", _remote_steam_id)
 		_steam.call("leaveLobby", lobby_id)
 	if is_instance_valid(_enet):
+		multiplayer.poll()  # a bolsa e o tchau saem antes de fechar
+		if _enet.host: _enet.host.flush()
 		_enet.close()
 		multiplayer.multiplayer_peer = null
 	mode = ""
@@ -363,6 +436,7 @@ func _set_status(text: String) -> void:
 
 
 func _process(_delta: float) -> void:
+	_sync_guest_bag(_delta)
 	if not _steam_ready: return
 	_steam.call("run_callbacks")
 	if transport != "steam": return

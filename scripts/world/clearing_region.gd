@@ -9,6 +9,7 @@ func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	y_sort_enabled = true
 	add_child(PauseOverlay.new())
+	_open_pending_room.call_deferred()  # Continuar em dupla: a sala pedida no menu abre aqui
 	player = $Player
 	player.position = $SpawnPoints/PlayerSpawn.position
 	player.world_bounds = Rect2(Vector2(24, 44), Layout.WORLD_SIZE - Vector2(48, 68))
@@ -613,3 +614,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	click_point = at
 	Input.action_press("interact")
 	get_viewport().set_input_as_handled()
+
+
+## Continuar partida em dupla (menu Multijogador): com o save carregado, abre a sala.
+func _open_pending_room() -> void:
+	var net := get_node_or_null("/root/NetSession")
+	if net == null or str(net.get("pending_host")).is_empty(): return
+	var problem: String = net.call("open_pending_in_world", preload("res://scripts/systems/protagonist.gd").current(get_tree()))
+	_notify(problem if not problem.is_empty() else "Sala aberta! Seu amigo já pode entrar.")
