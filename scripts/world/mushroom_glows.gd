@@ -48,6 +48,17 @@ static func radial(width: int, height: int, stops: PackedFloat32Array, alphas: P
 ## Só parte das flores é mágica: escolha estável pela posição.
 ## Fração de flores mágicas: 1 em 4 por padrão; regiões noturnas especiais
 ## (Vale, ref. V11) podem subir via `magic_ratio` do nó.
+## Playtest 25: luzes aditivas sobrepostas estouravam em branco. Cada vizinho a menos
+## de CROWD_RADIUS divide o brilho por √(1+n): o grupo ainda se destaca, sem saturar.
+## `lit` inclui o próprio ponto.
+const CROWD_RADIUS := 64.0
+static func crowd_factor(at: Vector2, lit: Array[Vector2]) -> float:
+	var n := 0
+	for other in lit:
+		if at.distance_squared_to(other) < CROWD_RADIUS * CROWD_RADIUS: n += 1
+	return 1.0 / sqrt(maxf(1.0, n))
+
+
 var magic_ratio := 4
 static func magic_flower(at: Vector2, ratio: int = 4) -> bool:
 	return posmod(hash(Vector2i(at.round())), ratio) == 0
@@ -132,6 +143,8 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 	if _anchor == Vector2.INF or _anchor.distance_to(center) > 96.0:
 		_anchor = center
 		var near := nearest(center)
+		var lit: Array[Vector2] = []
+		for entry in near: lit.append(entry[1])
 		for i in POOL_SIZE:
 			var on := i < near.size()
 			pools[i].visible = on
@@ -143,6 +156,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 				caps[i].position = (at + Vector2(0, -6)).round()
 				pools[i].set_meta("warm", warm)
 				pools[i].set_meta("kind", near[i][2])
+				pools[i].set_meta("crowd", crowd_factor(at, lit))
 				pools[i].scale = Vector2(0.6, 0.6) if warm or near[i][2] in ["lilac", "pink", "reed"] else Vector2(cyan_pool_scale, cyan_pool_scale)  # ciano: poça larga (ref. V9)
 	var night: float = preload("res://scripts/world/ambient_lights.gd").night_factor(minutes)
 	# O quente já acende ao entardecer (referência das 18h); o ciano é da noite.
@@ -150,7 +164,7 @@ func apply_time(minutes: float, center: Vector2, delta: float) -> void:
 	for i in POOL_SIZE:
 		if not pools[i].visible: continue
 		var warm: bool = pools[i].get_meta("warm", false)
-		var on := maxf(night, dusk * 0.6) if warm else night
+		var on := (maxf(night, dusk * 0.6) if warm else night) * float(pools[i].get_meta("crowd", 1.0))
 		var pulse := 0.88 + 0.12 * sin(_time * 1.1 + i * 1.7)
 		var kind: String = pools[i].get_meta("kind", "")
 		var lilac := kind == "lilac" or kind == "pink"

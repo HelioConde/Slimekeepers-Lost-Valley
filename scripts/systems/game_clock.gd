@@ -20,8 +20,9 @@ const LIGHTING_STOPS = [
 	# Noite azul-petróleo mais clara (referências V9): legível sem perder o mistério.
 	[0, Color(0.33, 0.52, 0.80)],
 	[180, Color(0.36, 0.48, 0.70)],
-	[270, Color(0.46, 0.48, 0.66)],
-	[300, Color(0.62, 0.58, 0.72)],
+	# Amanhecer espalhado das 05:00 às 07:00 (playtest 27); antes clareava quase todo em 30 min.
+	[300, Color(0.44, 0.49, 0.68)],
+	[360, Color(0.68, 0.62, 0.74)],
 	[420, Color(1.0, 0.93, 0.83)],
 	[540, Color(1.0, 1.0, 1.0)],
 	[900, Color(1.0, 1.0, 1.0)],

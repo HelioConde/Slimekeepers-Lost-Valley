@@ -45,8 +45,9 @@ const GLOW_TEXTURE_SUFFIX := "mushroom_glow.png"
 const CAMPFIRE_NAME := "CookingStation"
 const DUSK_START := 16.5 * 60.0
 const DUSK_END := 19.5 * 60.0
-const DAWN_START := 4.5 * 60.0
-const DAWN_END := 6.5 * 60.0
+# Amanhecer das 05:00 às 07:00 (playtest 27): a noite se desfaz aos poucos.
+const DAWN_START := 5.0 * 60.0
+const DAWN_END := 7.0 * 60.0
 const CAMPFIRE_COLOR := Color(1.0, 0.55, 0.25)
 ## Raio (px do mundo) da luz da fogueira: só o entorno, sem disco gigante no caminho.
 const CAMPFIRE_RADIUS := 160.0  # alcança vegetação e pedras do acampamento
@@ -235,6 +236,15 @@ static func campfire_light_texture() -> GradientTexture2D:
 	texture.height = 256
 	return texture
 func glow_lights() -> Array[PointLight2D]: return _glows
+func glow_halos() -> Array[Sprite2D]: return _halos
+
+
+## Divisor de brilho de um cogumelo luminoso pelos vizinhos acesos (luz e halo são filhos dele).
+func _glow_crowd(node: Node2D) -> float:
+	var others: Array[Vector2] = []
+	for light in _glows:
+		if is_instance_valid(light): others.append((light.get_parent() as Node2D).global_position)
+	return preload("res://scripts/world/mushroom_glows.gd").crowd_factor((node.get_parent() as Node2D).global_position, others)
 func glow_spores() -> Array[CPUParticles2D]: return _spores
 func player_light() -> PointLight2D: return _player_light
 func fireflies() -> CPUParticles2D: return _fireflies
@@ -294,7 +304,8 @@ static func mote_color(minutes: float) -> Color:
 	var afternoon := Color(1.0, 0.78, 0.45, 0.85)
 	var dusk := Color(1.0, 0.62, 0.9, 0.9)
 	if m < 12 * 60.0:
-		return morning
+		# Madrugada continua rosa-violeta e vira dourado ao amanhecer (sem troca à meia-noite).
+		return dusk.lerp(morning, smoothstep(DAWN_START, DAWN_END, m))
 	if m < 16.5 * 60.0:
 		return morning.lerp(afternoon, smoothstep(12 * 60.0, 16.5 * 60.0, m))
 	return afternoon.lerp(dusk, smoothstep(16.5 * 60.0, 19.0 * 60.0, m))
@@ -336,13 +347,14 @@ func apply_time(minutes: float, delta: float) -> void:
 	for embers in _embers:
 		if is_instance_valid(embers):
 			embers.emitting = night > 0.15
+	# Playtest 25: só à noite, e cogumelos agrupados dividem o brilho (sem mancha estourada).
 	for light in _glows:
 		if is_instance_valid(light):
-			light.energy = 0.05 + 0.45 * night  # ilumina o chão em volta; o brilho ciano vem do halo
+			light.energy = 0.45 * night * _glow_crowd(light)  # ilumina o chão em volta; o brilho ciano vem do halo
 	for halo in _halos:
 		if is_instance_valid(halo):
-			# Aura ciano aditiva (a luz sobre a grama verde sairia verde): leve de dia, viva à noite.
-			halo.modulate.a = 0.12 + 0.55 * night * (0.9 + 0.1 * sin(_time * 1.3 + halo.get_instance_id() % 7))
+			# Aura ciano aditiva (a luz sobre a grama verde sairia verde): apagada de dia, viva à noite.
+			halo.modulate.a = 0.55 * night * _glow_crowd(halo) * (0.9 + 0.1 * sin(_time * 1.3 + halo.get_instance_id() % 7))
 	for spores in _spores:
 		if is_instance_valid(spores):
 			spores.emitting = night > 0.35
@@ -884,7 +896,10 @@ static func foliage_profile(minutes: float) -> Dictionary:
 	var toward_sun := (-sun.normalized() * 0.8 + Vector2(0, -0.7)).normalized() if sun.length() > 0.01 else Vector2(0, -1)
 	var m := fposmod(minutes, 1440.0)
 	# Dourado das referências V9: sol baixo pinta o topo das copas de ouro.
-	var golden := smoothstep(16.5 * 60.0, 18.2 * 60.0, m) * (1.0 - smoothstep(18.6 * 60.0, 19.2 * 60.0, m)) + (1.0 - smoothstep(6.0 * 60.0, 8.5 * 60.0, m)) * smoothstep(5.0 * 60.0, 6.0 * 60.0, m)
+	var dusk_gold := smoothstep(16.5 * 60.0, 18.2 * 60.0, m) * (1.0 - smoothstep(18.6 * 60.0, 19.2 * 60.0, m))
+	# Manhã: o dourado acompanha a própria saída da noite (uma rampa só, sem degrau às 05:45).
+	var dawn_gold := (1.0 - smoothstep(6.5 * 60.0, 8.5 * 60.0, m)) if m < 12 * 60.0 else 0.0
+	var golden := dusk_gold + dawn_gold
 	var sun_color := Color(1.0, 0.94, 0.66).lerp(Color(1.0, 0.8, 0.4), golden)
 	var moon := Color(0.6, 0.84, 1.0)
 	var color := sun_color.lerp(moon, smoothstep(0.5, 1.0, night))  # dourado dura o crepúsculo
@@ -896,7 +911,7 @@ static func foliage_profile(minutes: float) -> Dictionary:
 		"light_strength": day * (0.32 + 0.2 * low_sun + 0.55 * golden) + night * 0.16,
 		"shade_strength": day * 0.45 + night * 0.4,
 		"glint_strength": day * (0.25 + 0.3 * golden),
-		"golden": golden * (1.0 - smoothstep(0.45, 0.85, night)),
+		"golden": dusk_gold * (1.0 - smoothstep(0.3, 1.0, night)) + dawn_gold * day,
 	}
 
 
