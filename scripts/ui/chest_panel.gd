@@ -82,6 +82,18 @@ func close() -> void:
 	_freeze(false)
 
 
+## Playtest ID 46: o conteúdo chega pela rede (NetWorld) com o baú aberto; redesenha ao mudar.
+var _seen := 0
+
+
+func _process(_delta: float) -> void:
+	if not visible: return
+	var now := hash([CHEST.items(get_tree(), chest_id), BAG.inventory_snapshot(get_tree())])
+	if now != _seen:
+		_seen = now
+		refresh()
+
+
 func _freeze(on: bool) -> void:
 	if is_instance_valid(player):
 		player.set_physics_process(not on)

@@ -23,7 +23,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 12 | Menu MP trava / troca P2P↔Local | P0 | Pendente | |
 | 24 | Construir a mesma planta em dupla | P0 | Pendente | |
 | 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Pendente | |
-| 46 | Baú sincronizado em tempo real no MP | Crítica | Pendente | |
+| 46 | Baú sincronizado em tempo real no MP | Crítica | Feito (com teste) | chest_panel redesenha quando o conteúdo muda (NetWorld já sincroniza) · tools/test_chest_live.gd. Pendência: dois tirando o mesmo item ao mesmo tempo (última escrita vence) |
 | 47 | Cama na progressão da casa | Crítica | Feito (com teste) | 98415b60 (aviso, sessão Luz V4) + entrada Cama na aba Construção (crafting_panel) · tools/test_craft_select.gd |
 | 01 | Recursos básicos perto da estrada | P1 | Feito (com teste) | 214eae2a (sessão Luz V4): gravetos e pedrinhas à beira das trilhas perto do início · test_forest_foraging |
 | 06 | Pedras no início | P1 | Feito (com teste) | 214eae2a (sessão Luz V4) + 54 (sem bloqueio por nível) · test_rocks, test_crafting_flow |
