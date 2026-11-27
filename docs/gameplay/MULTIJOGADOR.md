@@ -1,17 +1,37 @@
 # Multijogador P2P (2026-11-23)
 
-Decisão do usuário: **P2P pela Steam**, dois jogadores. Quem hospeda escolhe Aren ou Moni e
-quem entra joga com o outro.
+Decisão do usuário: **P2P pela Steam**, dois jogadores. A partida começa na tela de escolha
+de Aren e Moni (playtest ID 17, 2026-11-27).
 
 ## Como jogar
 
 1. **Menu → Multijogador**.
-2. **Hospedar pela Steam**: escolha o protagonista. Uma sala só de amigos (2 vagas) é criada e
-   o convite de amigos da Steam abre.
-3. O amigo aceita o convite na Steam com o jogo aberto. Ele entra com o outro protagonista,
-   no mapa do anfitrião e no mesmo horário, sem a introdução.
-4. **Rede local** (sem Steam): "Hospedar na rede local" num computador; no outro, digite o IP
-   e clique em **Entrar** (porta 24680).
+2. **Hospedar pela Steam** ou **Hospedar na rede local** → escolha o espaço. A sala abre ao
+   chegar na tela de escolha (Steam: sala só de amigos com 2 vagas e o convite abre; rede
+   local: porta 24680).
+3. O amigo aceita o convite na Steam com o jogo aberto (ou digita o IP / ID da sala e clica
+   em **Entrar**) e vai para a mesma tela de escolha.
+4. Cada um escolhe um protagonista diferente. Nas duas telas aparece **Jogador 1**
+   (anfitrião) e **Jogador 2** acima do personagem de cada um; o do outro fica bloqueado
+   (se os dois clicarem no mesmo ao mesmo tempo, vale o do anfitrião).
+5. **Pronto** trava a escolha (**Cancelar pronto** destrava). Quando os dois estão prontos o
+   anfitrião começa e os dois carregam a Floresta. O anfitrião passa pelo despertar; o
+   convidado chega sem ele.
+6. **Voltar** sai da sala. Se o convidado sai, o anfitrião segue esperando com a vaga livre;
+   se o anfitrião sai, o convidado volta ao menu com o aviso "O Jogador 1 fechou a sala.".
+7. Quem entra com a partida já em andamento fica com o outro protagonista e cai direto no
+   mapa do anfitrião, no mesmo horário.
+
+## Tutorial em dupla (playtest ID 18)
+
+Cada jogo tem o próprio tutorial: o balão aparece na tela de cada um, sobre o próprio
+personagem; o passo (`tutorial_step`) não é sincronizado, [Tab] pula só a dica de quem
+apertou e as condições olham a mochila de quem joga. O convidado começa o tutorial ao
+chegar (não tem despertar); o anfitrião, ao fim do despertar. Objetivo compartilhado:
+a bancada é uma só (`placed_stations`), então planta, depósito e obra valem para os dois e
+a dica avisa ("Em dupla a bancada é uma só..."). Em dupla a bancada paga não pula mais a
+coleta (gravetos, pedrinhas, fibras, cordas) de quem não coletou. Reconectar começa o
+tutorial de novo (a mochila do convidado também recomeça).
 
 ## Como funciona
 
@@ -31,6 +51,9 @@ quem entra joga com o outro.
 0 falhas.
 
 - Quem entra fica com a Moni e cai no mapa do anfitrião.
+- `tools/test_mp_lobby.gd` (+ `tools/net/mp_lobby_guest.gd`), dois jogos: sala na tela de
+  escolha, Jogador 1/2 no personagem certo nas duas telas, bloqueio do já escolhido, Voltar
+  e entrar de novo, início só com os dois prontos, tutorial de cada um independente.
 - Cada um vê o outro protagonista com a arte certa.
 - Os movimentos chegam dos dois lados.
 - Steam num PC só (`tools/test_steam_smoke.gd`, cliente Steam aberto): o GodotSteam inicia

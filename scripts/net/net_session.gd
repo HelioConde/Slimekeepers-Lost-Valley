@@ -1,7 +1,10 @@
 extends Node
 ## Multijogador P2P (decisão do usuário, 2026-11-23: pela Steam). Autoload "NetSession".
-## Dois jogadores: quem hospeda escolhe o protagonista; quem entra fica com o outro
-## (Aren e Moni). Mesmo protocolo em dois transportes:
+## Dois jogadores (Aren e Moni). Playtest ID 17: o anfitrião abre a sala ao entrar na
+## tela de escolha; quem entra vai para a mesma tela, cada um escolhe um protagonista
+## diferente, fica pronto e o anfitrião começa quando os dois estão prontos ("lobby",
+## "lobby_start"). Quem entra com a partida já em andamento fica com o outro
+## protagonista e cai direto no mapa. Mesmo protocolo em dois transportes:
 ## - "steam": lobby de amigos + Steam Networking Messages (GodotSteam, addons/godotsteam);
 ## - "enet": rede local (IP/porta) para testes sem a Steam e jogos na mesma rede.
 ## Mensagens: Dictionary serializado com var_to_bytes (sem objetos).
@@ -12,6 +15,8 @@ signal peer_left()
 signal message(data: Dictionary)
 
 const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
+const TUTORIAL_KEY := "tutorial_step"  # scripts/ui/tutorial_hud.gd KEY
+const SELECT := "res://scenes/protagonist_select.tscn"
 const STEAM_APP_ID := 480  # Spacewar (teste da Valve) até o jogo ter App ID próprio
 const ENET_PORT := 24680
 const CHANNEL := 0
@@ -24,6 +29,13 @@ var connected := false
 var local_protagonist := ""
 var remote_protagonist := ""
 var status := ""
+## Sala na tela de escolha (antes de começar): escolha atual de cada lado em
+## local/remote_protagonist ("" = ainda não escolheu) e quem está pronto.
+var in_lobby := false
+var local_ready := false
+var remote_ready := false
+## Aviso para o menu principal mostrar ao voltar (ex.: a sala fechou).
+var menu_notice := ""
 
 var _steam: Object = null
 var _steam_ready := false
@@ -180,6 +192,30 @@ func _begin(new_mode: String, new_transport: String, protagonist: String) -> voi
 	connected = false
 	local_protagonist = protagonist
 	remote_protagonist = ""
+	in_lobby = false
+	local_ready = false
+	remote_ready = false
+
+
+## Sala: avisa o outro da escolha e da prontidão deste lado.
+func lobby_update(pick: String, is_ready: bool) -> void:
+	local_protagonist = pick
+	local_ready = is_ready and not pick.is_empty()
+	send({"t": "lobby", "pick": pick, "ready": local_ready})
+
+
+## A sala vira partida; o aviso que aparece ao chegar no mapa diz quem joga com quem.
+func lobby_begin() -> void:
+	in_lobby = false
+	if PROTAGONIST.ALL.has(local_protagonist):
+		_set_status("Partida em dupla: você joga com %s." % PROTAGONIST.ALL[local_protagonist].name)
+
+
+## Anfitrião: os dois conectados, prontos e com protagonistas diferentes.
+func lobby_can_start() -> bool:
+	return mode == "host" and connected and in_lobby and local_ready and remote_ready \
+		and PROTAGONIST.ALL.has(local_protagonist) and PROTAGONIST.ALL.has(remote_protagonist) \
+		and local_protagonist != remote_protagonist
 
 
 func send(data: Dictionary) -> void:
@@ -198,6 +234,13 @@ func _receive(bytes: PackedByteArray) -> void:
 		"hello":
 			if mode != "host": return
 			connected = true
+			if in_lobby:  # ainda na tela de escolha: o convidado vai para ela e escolhe
+				remote_protagonist = ""
+				remote_ready = false
+				send({"t": "welcome", "lobby": true, "host": local_protagonist, "ready": local_ready})
+				_set_status("Jogador 2 entrou na sala.")
+				peer_joined.emit("")
+				return
 			remote_protagonist = other_of(local_protagonist)
 			var here: String = get_tree().current_scene.scene_file_path if get_tree().current_scene else ""
 			send({"t": "welcome", "you": remote_protagonist, "host": local_protagonist, "scene": here,
@@ -207,12 +250,31 @@ func _receive(bytes: PackedByteArray) -> void:
 		"welcome":
 			if mode != "guest": return
 			connected = true
+			if bool(data.get("lobby", false)):
+				in_lobby = true
+				local_protagonist = ""
+				local_ready = false
+				remote_protagonist = str(data.get("host", ""))
+				remote_ready = bool(data.get("ready", false))
+				_set_status("Conectado! Escolha seu protagonista.")
+				peer_joined.emit(remote_protagonist)
+				message.emit(data)
+				if auto_enter: get_tree().change_scene_to_file(SELECT)
+				return
 			local_protagonist = str(data.get("you", "moni"))
 			remote_protagonist = str(data.get("host", "aren"))
 			_set_status("Conectado! Você joga com %s." % PROTAGONIST.ALL[local_protagonist].name)
 			peer_joined.emit(remote_protagonist)
 			message.emit(data)
 			if auto_enter: _enter_host_world(data)
+		"lobby":
+			if not in_lobby: return
+			remote_protagonist = str(data.get("pick", ""))
+			remote_ready = bool(data.get("ready", false))
+			# Os dois pegaram o mesmo ao mesmo tempo: fica com o anfitrião (Jogador 1).
+			if mode == "guest" and not remote_protagonist.is_empty() and remote_protagonist == local_protagonist:
+				lobby_update("", false)
+			message.emit(data)
 		"bye":
 			_on_peer_gone()
 		_:
@@ -225,6 +287,7 @@ var auto_enter := true
 ## Anfitrião: transporte escolhido no menu ("steam" ou "enet"); a sala abre quando o
 ## protagonista é confirmado na tela de escolha.
 var pending_host := ""
+var pending_port := ENET_PORT  ## porta da sala na rede local (os testes usam outra)
 
 
 func _enter_host_world(data: Dictionary) -> void:
@@ -232,7 +295,7 @@ func _enter_host_world(data: Dictionary) -> void:
 	GameClock.reset_new_game()
 	preload("res://scripts/systems/session_state.gd").clear_session(tree)
 	PROTAGONIST.choose(tree, local_protagonist)
-	PROTAGONIST.finish_intro(tree)
+	start_guest_tutorial(tree)
 	GameClock.set_time(int(data.get("hour", 7)), int(data.get("minute", 0)))
 	var scene := str(data.get("scene", "res://scenes/regions/FlorestaDoDespertarV2.tscn"))
 	if not scene.begins_with("res://scenes/regions/"): scene = "res://scenes/regions/FlorestaDoDespertarV2.tscn"
@@ -240,19 +303,32 @@ func _enter_host_world(data: Dictionary) -> void:
 	tree.change_scene_to_file(scene)
 
 
-## Abre a sala pendente (chamado pela tela de escolha ao confirmar o protagonista).
-func open_pending_host(protagonist: String) -> String:
+## Playtest ID 18: o convidado não passa pelo despertar (que liga o tutorial no fim);
+## o tutorial dele começa ao chegar, com o passo só deste jogo (não sincronizado).
+static func start_guest_tutorial(tree: SceneTree) -> void:
+	PROTAGONIST.finish_intro(tree)
+	tree.set_meta(TUTORIAL_KEY, 0)
+
+
+## Abre a sala pendente (chamado pela tela de escolha ao abrir): a sala fica na tela
+## de escolha até os dois estarem prontos.
+func open_pending_host(protagonist: String = "") -> String:
 	var kind := pending_host
 	pending_host = ""
-	if kind == "steam": return host_steam(protagonist)
-	if kind == "enet": return host_enet(protagonist)
-	return ""
+	var problem := "Escolha Steam ou rede local no menu."
+	if kind == "steam": problem = host_steam(protagonist)
+	elif kind == "enet": problem = host_enet(protagonist, pending_port)
+	in_lobby = problem.is_empty()
+	return problem
 
 
 func _on_peer_gone() -> void:
 	if OS.has_environment("SK_NET_DEBUG"): print("NETGONE ", mode, " t=", Time.get_ticks_msec())
 	if not connected and mode == "": return
 	connected = false
+	if in_lobby:  # a vaga da sala fica livre para entrar de novo
+		remote_protagonist = ""
+		remote_ready = false
 	_set_status("O outro jogador saiu.")
 	peer_left.emit()
 
@@ -274,6 +350,9 @@ func leave() -> void:
 	mode = ""
 	transport = ""
 	connected = false
+	in_lobby = false
+	local_ready = false
+	remote_ready = false
 	lobby_id = 0
 	_remote_steam_id = 0
 

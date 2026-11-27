@@ -4,8 +4,13 @@ extends Control
 ## personagem olha por cima do ombro (uma vez por entrada). Clique fixa a escolha
 ## e mostra Confirmar/Voltar. Teclado/controle: ←/→ escolhem, Enter confirma,
 ## Esc volta. Simbólica (Bíblia): no mundo, quem foi escolhido desperta sozinho.
+## Multijogador (playtest ID 17): a tela vira a sala. "Jogador 1" (anfitrião) e
+## "Jogador 2" aparecem acima do protagonista de cada um, nas duas telas; o que o outro
+## escolheu fica bloqueado; Confirmar vira Pronto e o anfitrião começa quando os dois
+## estão prontos. Voltar sai da sala; se o anfitrião sair, o convidado volta ao menu.
 
 const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
+const NET := preload("res://scripts/net/net_session.gd")
 const SessionState = preload("res://scripts/systems/session_state.gd")
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
 const ART := "res://assets/menu/select/"
@@ -30,6 +35,11 @@ var _fade: ColorRect
 var _loading := false
 var _loading_label: Label
 var _loading_started := 0.0
+var _net: Node  ## NetSession (autoload)
+var _mp := false  ## sala do multijogador nesta tela
+var _tags := {}  ## id -> Label "Jogador N" acima do personagem
+var _status: Label
+var _problem := ""  ## a sala não abriu (porta ocupada, Steam fechada)
 
 
 func _ready() -> void:
@@ -75,10 +85,43 @@ func _ready() -> void:
 	_fade.color = Color(0, 0, 0, 0)
 	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_fade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_setup_net()
 	add_child(_fade)
 	resized.connect(_layout)
 	_layout()
 	_refresh()
+
+
+## Sala: o anfitrião abre ao chegar aqui; o convidado chega já conectado.
+func _setup_net() -> void:
+	_net = get_node_or_null("/root/NetSession")
+	if _net == null: return
+	if not str(_net.pending_host).is_empty():
+		_problem = _net.open_pending_host()
+		_mp = true
+	elif str(_net.mode) == "guest" and bool(_net.in_lobby):
+		_mp = true
+	if not _mp: return
+	for id in ORDER:
+		var tag := _label("", 22)
+		tag.name = "Tag" + id.capitalize()
+		tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		tag.custom_minimum_size = Vector2(260, 0)
+		add_child(tag)
+		_tags[id] = tag
+	_status = _label("", 18)
+	_status.name = "LobbyStatus"
+	_status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_status.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_status.offset_top = 86
+	_status.offset_left = -360
+	_status.offset_right = 360
+	add_child(_status)
+	_net.message.connect(_on_net_message)
+	_net.peer_joined.connect(_on_peer_joined)
+	_net.peer_left.connect(_on_peer_left)
+	_net.status_changed.connect(_on_net_status)
 
 
 func _layout() -> void:
@@ -102,6 +145,19 @@ func _layout() -> void:
 		p.size = Vector2(280, 0)
 		p.reset_size()
 		p.position = Vector2(size.x * 0.05 if id == "aren" else size.x * 0.95 - p.size.x, size.y * 0.34).round()
+	_place_tags()
+
+
+## "Jogador N" centrado acima da cabeça (a altura muda com a linha "Pronto!").
+func _place_tags() -> void:
+	for id: String in _tags:
+		var f: TextureRect = figures[id]
+		var used: Rect2 = (f.texture as Texture2D).get_image().get_used_rect()
+		var x := used.get_center().x * CARD_SCALE
+		if f.flip_h: x = f.size.x - x
+		var tag: Label = _tags[id]
+		tag.reset_size()
+		tag.position = Vector2(f.position.x + x - tag.size.x * 0.5, f.position.y + used.position.y * CARD_SCALE - tag.size.y - 6).round()
 
 
 func _process(delta: float) -> void:
@@ -169,6 +225,36 @@ func _refresh() -> void:
 		# Olha por cima do ombro só enquanto está em foco (troca uma vez, sem repetir).
 		f.texture = _textures[id][1] if id == focus else _textures[id][0]
 	_confirm.disabled = selected.is_empty()
+	if _mp: _refresh_lobby()
+
+
+## Sala: quem escolheu quem (nas duas telas), prontidão e o que falta para começar.
+func _refresh_lobby() -> void:
+	var me := 2 if str(_net.mode) == "guest" else 1
+	var theirs := str(_net.remote_protagonist) if bool(_net.connected) else ""
+	for id: String in ORDER:
+		var lines: PackedStringArray = []
+		if id == selected: lines.append(_tag_text(me, true, bool(_net.local_ready)))
+		if id == theirs: lines.append(_tag_text(3 - me, false, bool(_net.remote_ready)))
+		(_tags[id] as Label).text = "\n".join(lines)
+	_place_tags()
+	_confirm.text = "Cancelar pronto" if bool(_net.local_ready) else "Pronto"
+	_confirm.disabled = selected.is_empty() or selected == theirs
+	var other := 3 - me
+	if not bool(_net.connected):
+		_status.text = _problem if not _problem.is_empty() else str(_net.status)
+	elif theirs.is_empty():
+		_status.text = "Jogador %d na sala. Esperando a escolha dele..." % other
+	elif not bool(_net.local_ready):
+		_status.text = "Escolha seu protagonista e aperte Pronto."
+	elif not bool(_net.remote_ready):
+		_status.text = "Esperando o Jogador %d ficar pronto..." % other
+	else:
+		_status.text = "Os dois prontos! Começando..." if me == 1 else "Os dois prontos! Esperando o anfitrião começar..."
+
+
+static func _tag_text(n: int, me: bool, is_ready: bool) -> String:
+	return "Jogador %d%s%s" % [n, " (você)" if me else "", "\nPronto!" if is_ready else ""]
 
 
 func _on_hover(id: String) -> void:
@@ -185,7 +271,10 @@ func _on_unhover(id: String) -> void:
 
 func select(id: String) -> void:
 	if _leaving or not PROTAGONIST.ALL.has(id): return
+	# Sala: pronto trava a escolha; o protagonista do outro não pode ser escolhido.
+	if _mp and (bool(_net.local_ready) or (bool(_net.connected) and id == str(_net.remote_protagonist))): return
 	selected = id
+	if _mp: _net.lobby_update(id, false)
 	var f: TextureRect = figures[id]
 	var t := f.create_tween()  # pequena reação: pulinho
 	t.tween_property(f, "position:y", f.position.y - 10.0, 0.1)
@@ -196,13 +285,66 @@ func select(id: String) -> void:
 
 func _on_confirm() -> void:
 	if selected.is_empty() or _leaving: return
+	if _mp:  # Pronto / Cancelar pronto
+		_net.lobby_update(selected, not bool(_net.local_ready))
+		_refresh()
+		_try_start()
+		return
+	_start(false)
+
+
+## Anfitrião: os dois prontos com protagonistas diferentes -> os dois carregam o mapa.
+func _try_start() -> void:
+	if not _mp or _leaving or not _net.lobby_can_start(): return
+	_net.send({"t": "lobby_start"})
+	_net.lobby_begin()
+	_start(false)
+
+
+func _on_net_message(data: Dictionary) -> void:
+	if _leaving: return
+	match str(data.get("t", "")):
+		"lobby":
+			selected = str(_net.local_protagonist)  # empate na escolha: vale a do anfitrião
+			_refresh()
+			_try_start()
+		"lobby_start":
+			if str(_net.mode) != "guest": return
+			if selected.is_empty(): selected = NET.other_of(str(_net.remote_protagonist))
+			_net.local_protagonist = selected
+			_net.lobby_begin()
+			_start(true)
+
+
+func _on_peer_joined(_who: String) -> void:
+	if not _leaving: _refresh()
+
+
+func _on_net_status(_text: String) -> void:
+	if not _leaving: _refresh()
+
+
+## O outro saiu: o anfitrião segue esperando; o convidado volta ao menu (a sala fechou).
+func _on_peer_left() -> void:
+	if _leaving: return
+	if str(_net.mode) != "guest":
+		_refresh()
+		return
+	_leaving = true
+	_net.menu_notice = "O Jogador 1 fechou a sala."
+	# Fora do aviso de desconexão: fechar o ENet dentro do próprio poll dele dá erro.
+	(func() -> void:
+		_net.leave()
+		get_tree().change_scene_to_file(MENU)).call_deferred()
+
+
+## Começa a partida nova; o convidado pula o despertar e já começa o tutorial dele.
+func _start(guest: bool) -> void:
 	_leaving = true
 	GameClock.reset_new_game()
 	SessionState.clear_session(get_tree())
 	PROTAGONIST.choose(get_tree(), selected)
-	# Multijogador: o anfitrião abre a sala com o protagonista escolhido.
-	var net := get_node_or_null("/root/NetSession")
-	if net != null and not str(net.pending_host).is_empty(): net.call("open_pending_host", selected)
+	if guest: NET.start_guest_tutorial(get_tree())
 	# Carrega o mapa em segundo plano atrás de uma tela de carregamento (nada de
 	# tela preta parada): escurece, mostra o nome e um pontinho pulsando.
 	ResourceLoader.load_threaded_request(FOREST)
@@ -232,6 +374,9 @@ func _poll_loading() -> void:
 
 func _on_back() -> void:
 	if _leaving: return
+	if _mp:  # sai da sala (o outro é avisado)
+		_leaving = true
+		_net.leave()
 	get_tree().change_scene_to_file(MENU)
 
 

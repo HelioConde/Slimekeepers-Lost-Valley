@@ -4,6 +4,10 @@ extends PanelContainer
 ## as teclas desenhadas, rabinho apontando para ele) que segue o personagem. Cada dica
 ## passa sozinha quando o jogador faz o que ela pede; [Tab] pula. O passo fica na
 ## sessão (KEY) e vai no save.
+## Multijogador (playtest ID 18): cada jogo tem o próprio passo (KEY não sincroniza,
+## scripts/net/net_world.gd) e as condições olham a mochila deste jogador. Só a
+## bancada é da dupla (placed_stations): planta/depósito/obra valem para os dois, e a
+## dica diz isso.
 
 const KEY := "tutorial_step"
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -31,6 +35,8 @@ const STEPS := [
 	["Cortando árvores", "Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]", "swing"],
 	["Pronto!", "Na bancada você fabrica as ferramentas; no [B], construções. Bom começo!", "read"],
 ]
+const SHARED := ["plan", "deposit", "build"]  ## passos com a bancada da dupla
+const SHARED_NOTE := "Em dupla a bancada é uma só: o que um fizer nela vale para os dois."
 const READ_SECONDS := 9.0
 const WIDTH := 330.0
 ## Topo da cabeça em relação aos pés do jogador (sprite 128 px, escala 0,65 em y -34).
@@ -201,7 +207,9 @@ func _show() -> void:
 	var data: Array = STEPS[step()]
 	_label.text = str(data[0])
 	for child in _body.get_children(): child.queue_free()
-	for word in str(data[1]).split(" "):
+	var text := str(data[1])
+	if _together() and str(data[2]) in SHARED: text += " " + SHARED_NOTE
+	for word in text.split(" "):
 		var close := word.find("]")
 		if word.begins_with("[") and close > 0:
 			var token := word.substr(1, close - 1)
@@ -270,14 +278,14 @@ func _done(kind: String, delta: float) -> bool:
 			if player is CharacterBody2D and (player as CharacterBody2D).velocity.length() > 10.0: _walked += delta
 			return _walked > 1.5
 		"pick":
-			return _paid() or _has(tree, ["bancada", "machado"]) or (BAG.count_item(tree, "graveto") >= 8 and BAG.count_item(tree, "pedra_pequena") >= 6)
+			return _paid_solo() or _has(tree, ["bancada", "machado"]) or (BAG.count_item(tree, "graveto") >= 8 and BAG.count_item(tree, "pedra_pequena") >= 6)
 		"fiber":
-			return BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3 >= 9 or _paid() or _has(tree, ["bancada", "machado"])
+			return BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3 >= 9 or _paid_solo() or _has(tree, ["bancada", "machado"])
 		"bag":
 			_bag_seen = _bag_seen or _open("inventory_panel")
 			return _bag_seen and not _open("inventory_panel")
 		"rope":
-			return BAG.count_item(tree, "corda") >= 3 or _paid() or _has(tree, ["bancada", "machado"])
+			return BAG.count_item(tree, "corda") >= 3 or _paid_solo() or _has(tree, ["bancada", "machado"])
 		"axe":
 			return _has(tree, ["machado"])
 		"plan":  # a bancada já fabricada (save antigo) também vale
@@ -365,6 +373,17 @@ func _placed() -> bool:
 func _paid() -> bool:
 	return (get_tree().get_meta("placed_stations", []) as Array).any(func(e: Dictionary) -> bool:
 		return str(e.get("kind", "bancada")) == "bancada" and BUILD.stage(e) != "plan")
+
+
+## Bancada paga pula a coleta só no solo (save antigo que já gastou o material); em
+## dupla quem pagou pode ter sido o outro, e a coleta de cada um é dele.
+func _paid_solo() -> bool:
+	return _paid() and not _together()
+
+
+func _together() -> bool:
+	var net := get_node_or_null("/root/NetSession")
+	return net != null and bool(net.get("connected"))
 
 
 static func _has(tree: SceneTree, items: Array) -> bool:

@@ -44,6 +44,11 @@ func _ready() -> void:
 	resized.connect(_layout)
 	_layout()
 	buttons.get_child(0).grab_focus()
+	# A sala do multijogador fechou na tela de escolha (playtest ID 17): explica a volta.
+	var net := get_node_or_null("/root/NetSession")
+	if net != null and not str(net.menu_notice).is_empty():
+		_show_notice.call_deferred("Multijogador", [str(net.menu_notice)])
+		net.menu_notice = ""
 	if not reduce_motion:
 		logo.modulate.a = 0
 		buttons.modulate.a = 0
@@ -366,8 +371,9 @@ func _show_notice(heading: String, lines: Array) -> void:
 	_layout()
 	close.grab_focus()
 
-## Multijogador P2P (decisão do usuário: pela Steam). Dois jogadores: quem hospeda
-## escolhe Aren ou Moni; quem entra joga com o outro. Rede local para testar sem Steam.
+## Multijogador P2P (decisão do usuário: pela Steam). Dois jogadores: quem hospeda abre
+## a sala na tela de escolha; quem entra vai para ela e cada um escolhe Aren ou Moni
+## (playtest ID 17). Rede local para testar sem Steam.
 func _show_multiplayer() -> void:
 	if is_instance_valid(options_layer): return
 	_opener = get_viewport().gui_get_focus_owner()
@@ -394,7 +400,7 @@ func _show_multiplayer() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stack.add_child(title)
 	var info := Label.new()
-	info.text = "Quem hospeda escolhe Aren ou Moni; quem entra joga com o outro."
+	info.text = "Quem hospeda abre a sala; os dois escolhem Aren ou Moni e ficam prontos para começar."
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
