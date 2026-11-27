@@ -8,6 +8,7 @@ signal swapped(from: int, to: int)
 
 const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const SIZE := Vector2(48, 48)  # igual à barra rápida
+const WEAR_BAR := preload("res://scripts/ui/wear_bar.gd")
 
 var info_title := ""
 ## Índice do espaço na bolsa (0-19) para arrastar; -1 = não arrasta (fabricação).
@@ -16,6 +17,8 @@ var info_body := ""
 var _icon: TextureRect
 var _count: Label
 var _ring: Panel
+## Barrinha de durabilidade (playtest ID 43); quem monta o espaço chama `wear.show_for`.
+var wear: WEAR_BAR
 
 
 func _init() -> void:
@@ -39,6 +42,9 @@ func _init() -> void:
 	_count.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_count)
+	wear = WEAR_BAR.new()
+	wear.name = "Wear"
+	add_child(wear)
 	_ring = Panel.new()
 	var ring := StyleBoxFlat.new()
 	ring.draw_center = false

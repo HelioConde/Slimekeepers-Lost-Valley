@@ -5,6 +5,7 @@ extends SceneTree
 
 const TUTORIAL := preload("res://scripts/ui/tutorial_hud.gd")
 const SFX := preload("res://scripts/systems/sfx.gd")
+const SAVE := preload("res://scripts/systems/save_game.gd")
 const PREFS := "user://presentation.cfg"
 var failures := 0
 
@@ -137,6 +138,12 @@ func run() -> void:
 	check(player.global_position.is_equal_approx(start), "MP: jogador local não anda com o menu aberto")
 	await key(KEY_B)
 	check(not region.crafting_panel.visible, "MP: B não abre a fabricação por cima do menu")
+	# Voltar ao menu salva: no MP, só o anfitrião (o convidado não grava nada).
+	SAVE.prefix = "user://test_pause_slots_%d_" % Time.get_ticks_usec()
+	SAVE.use_slot(2)
+	net.set("mode", "client")
+	check(not overlay.save_before_leaving() and not FileAccess.file_exists(SAVE.current()), "MP convidado: voltar ao menu não grava")
+	net.set("mode", "host")
 	overlay.main_menu_button.pressed.emit()
 	await frames()
 	check(overlay.save_label.text.contains("anfitrião"), "MP: confirmação avisa o anfitrião")
@@ -154,6 +161,22 @@ func run() -> void:
 	region.crafting_panel.call("close")
 	net.set("mode", old_mode)
 	if stub: net.queue_free()
+	await frames()
+
+	# Solo: confirmar "Voltar ao menu principal" grava o arquivo do espaço atual.
+	check(not FileAccess.file_exists(SAVE.current()), "espaço 2 de teste começa sem save")
+	await key(KEY_ESCAPE)
+	overlay.main_menu_button.pressed.emit()
+	await frames()
+	check(overlay.save_label.text.contains("salva agora"), "confirmação avisa que vai salvar")
+	overlay.confirm_button.pressed.emit()
+	await frames()
+	var saved := SAVE.read()
+	check(FileAccess.file_exists(SAVE.slot_path(2)) and str(saved.get("region", "")) == region.scene_file_path, "voltar ao menu grava o save do espaço 2")
+	for suffix in ["", ".bak", ".tmp"]:
+		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE.slot_path(2) + suffix))
+	SAVE.prefix = SAVE.DEFAULT_PREFIX
+	SAVE.use_slot(1)
 
 	# Restaura o arquivo de opções do jogador.
 	if had_prefs:

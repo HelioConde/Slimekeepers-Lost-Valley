@@ -8,6 +8,7 @@ const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (
 const SKIN := preload("res://scripts/ui/hud_skin.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const WINDOWS := preload("res://scripts/ui/inventory_panel.gd").WINDOWS
+const WEAR_BAR := preload("res://scripts/ui/wear_bar.gd")
 const SLOT := 48
 const REFRESH_SECONDS := 0.25
 
@@ -15,6 +16,7 @@ var _slots: Array[PanelContainer] = []
 var _icons: Array[TextureRect] = []
 var _counts: Array[Label] = []
 var _rings: Array[Panel] = []
+var _wears: Array[WEAR_BAR] = []
 var _name_label: Label
 var _elapsed := 0.0
 ## Label de dica da região: quando traz uma ação ("[F] ..."), aparece no título.
@@ -86,6 +88,10 @@ func _ready() -> void:
 		count.add_theme_constant_override("outline_size", 3)
 		count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(count)
+		var wear := WEAR_BAR.new()
+		wear.name = "Wear"
+		slot.add_child(wear)
+		_wears.append(wear)
 		# Número do espaço numa plaquinha clara no canto (como no exemplo).
 		var badge := Label.new()
 		badge.text = str((index + 1) % 10)  # 1–9 e 0, como as teclas (playtest ID 38)
@@ -173,6 +179,7 @@ func refresh() -> void:
 		_icons[index].texture = ITEMS.icon(item) if not item.is_empty() else null
 		var amount := HOTBAR.count(tree, item)
 		_counts[index].text = str(amount) if amount > 0 else ""
+		_wears[index].show_for(tree, item)
 	_update_title()
 
 
