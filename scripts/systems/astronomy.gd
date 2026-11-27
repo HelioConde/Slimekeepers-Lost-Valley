@@ -61,19 +61,21 @@ static func sky(day: int, minutes: float) -> Dictionary:
 	var moon_local := absolute_minutes(day, minutes) - phase * 1440.0
 	var moon := arc(moon_local)
 	var fraction := illuminated_fraction(phase)
-	var daylight := smoothstep(-0.08, 0.2, float(sun.altitude))
+	# Faixa larga (~05:00–07:00 e ~18:00–20:00): o dia clareia e escurece aos poucos (playtest 27).
+	var daylight := smoothstep(-0.15, 0.35, float(sun.altitude))
 	var moon_up := smoothstep(0.0, 0.25, float(moon.altitude))  # rampa suave no horizonte
 	# Luar físico: fase × altura; durante o dia o céu claro o apaga quase todo.
 	var moonlight := fraction * moon_up
 	var moon_visible := moon_up > 0.0 and fraction > 0.04
-	var sun_strength := smoothstep(0.0, 0.1, float(sun.altitude))
+	var sun_strength := smoothstep(0.0, 0.3, float(sun.altitude))  # ~1h20 de rampa no nascer/pôr
 	var low_sun := 1.0 - smoothstep(0.15, 0.6, float(sun.altitude))
-	var morning := float(sun.azimuth) > 0.0
-	var sun_color := Color(1.0, 0.97, 0.82).lerp(Color(1.0, 0.82, 0.45) if morning else Color(1.0, 0.56, 0.28), low_sun)
+	# Peso manhã→tarde contínuo (antes virava de uma vez ao meio-dia e à meia-noite).
+	var morning := smoothstep(-0.25, 0.25, float(sun.azimuth))
+	var sun_color := Color(1.0, 0.97, 0.82).lerp(Color(1.0, 0.56, 0.28).lerp(Color(1.0, 0.82, 0.45), morning), low_sun)
 	return {
 		"day": day, "minutes": minutes,
 		"sun_altitude": sun.altitude, "sun_azimuth": sun.azimuth, "daylight": daylight,
-		"sun_reflection": sun_strength * (0.45 + 0.55 * float(sun.altitude)) * (1.0 if not morning else 0.85),
+		"sun_reflection": sun_strength * (0.45 + 0.55 * float(sun.altitude)) * lerpf(1.0, 0.85, morning),
 		"sun_color": sun_color,
 		"moon_altitude": moon.altitude, "moon_azimuth": moon.azimuth,
 		"moon_phase": phase, "moon_phase_index": phase_index(phase), "moon_phase_name": PHASE_NAMES[phase_index(phase)],
