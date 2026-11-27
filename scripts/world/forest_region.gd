@@ -310,6 +310,7 @@ func set_environment_conditions(period: String, rain: float=0.0, wind: float=1.0
 func _process(delta: float) -> void:
 	if is_instance_valid(_spawn_light): _spawn_light.apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), delta)
 	# The base world manages interaction/friendship; skip legacy map exit coordinates.
+	if ecosystem == null: return  # _process pode rodar antes do _ready criar o ecossistema
 	var water_time: float = ecosystem.shared_wind_material.get_shader_parameter("wind_time")
 	if water_time != _last_water_time:
 		_last_water_time = water_time
