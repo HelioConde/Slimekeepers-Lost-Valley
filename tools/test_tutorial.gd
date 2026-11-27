@@ -70,15 +70,16 @@ func run() -> void:
 	for n in 3: craft.call("_craft", "corda")
 	for i in 3: await process_frame
 	check(int(get_meta(TUT.KEY)) == 5, "3 cordas passam para a bancada")
-	craft.call("_craft", "bancada")
+	# Obra em etapas (ID 40): a planta sem material passa para depositar.
+	set_meta("placed_stations", [preload("res://scripts/systems/build_site.gd").new_station("floresta", Vector2.ZERO, "bancada")])
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 6 and hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_esq")), "fazer a bancada (sem madeira) passa para colocar; ícone do clique")
+	check(int(get_meta(TUT.KEY)) == 6 and hud._body.get_children().any(func(c: Node) -> bool: return c.name.begins_with("Mouse_esq")), "colocar a planta (sem material) passa para depositar; ícone do clique")
 	await key(KEY_E)
 	check(not craft.visible and region.get("inventory_panel").visible, "[E] na fabricação troca para a mochila")
 	await key(KEY_E)
 	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0, "built": false}])
 	for i in 3: await process_frame
-	check(int(get_meta(TUT.KEY)) == 7, "colocar passa para construir")
+	check(int(get_meta(TUT.KEY)) == 7, "material completo passa para construir")
 	set_meta("placed_stations", [{"region": "floresta", "x": 0, "y": 0, "built": true}])
 	for i in 3: await process_frame
 	check(int(get_meta(TUT.KEY)) == 8, "construir passa para usar")

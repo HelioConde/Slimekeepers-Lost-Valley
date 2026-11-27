@@ -140,6 +140,7 @@ func _ready() -> void:
 	placer.blocked = func(at: Vector2) -> bool: return at.distance_to(pond) < 150.0
 	placer.setup(scene_file_path)
 	house = add_player_house("floresta")
+	placer.attach_house(house)  # a planta da casa é obra como as outras (playtest ID 40)
 	farm = add_free_farm("floresta", house)
 	var helpers: Node2D = preload("res://scripts/world/farm_helpers.gd").new()
 	helpers.farm = farm
@@ -332,16 +333,10 @@ func _process(delta: float) -> void:
 		return
 	if is_instance_valid(placer) and not tool_target_near():
 		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
-		if station_hint in ["built", "built_bau_campo"]:
-			_notify("Bancada pronta! Use [F] nela para fabricar." if station_hint == "built" else "Baú pronto! Use [F] para guardar; o Carreguim também traz coisas para cá.")
-			return
-		if station_hint == "placed_bau_campo":
+		if not str(placer.notice).is_empty():  # planta colocada, depósito, cancelada, obra pronta
 			bag_hud.call("refresh")
-			_notify("Planta do baú no chão! Vá até ela e aperte [F] para construir (5 s).")
-			return
-		if station_hint == "placed":
-			bag_hud.call("refresh")
-			_notify("Planta da bancada no chão! Vá até ela e aperte [F] para construir (10 s).")
+			_notify(placer.notice)
+			placer.notice = ""
 			return
 		if not station_hint.is_empty():
 			hud_hint.text = station_hint

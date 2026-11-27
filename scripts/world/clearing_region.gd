@@ -153,7 +153,9 @@ func add_player_house(region_id: String) -> Node2D:
 	add_child(builder)
 	_player_house = builder
 	var panel: Variant = get("crafting_panel")
-	if panel is Node and is_instance_valid(panel): panel.set("builder", builder)
+	if panel is Node and is_instance_valid(panel):
+		panel.set("builder", builder)
+		panel.set("placer", get("placer"))  # bancada/baú: a fabricação abre a prévia da planta
 	if not GameClock.time_changed.is_connected(_on_time_for_faint):
 		GameClock.time_changed.connect(_on_time_for_faint)
 	if not GameClock.time_changed.is_connected(_on_time_for_autosave):

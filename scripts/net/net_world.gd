@@ -10,6 +10,9 @@ extends Node
 
 const KEYS := ["farm_cells", "forage_taken", "rocks_broken", "chopped_trees",
 	"placed_stations", "chest_items", "player_house", "placed_chest_items"]
+## Plantas/obras: o convidado nunca escreve placed_stations nem os depósitos/progresso da
+## casa; manda pedidos ao anfitrião (build_site.gd), que grava e sincroniza a chave.
+const BUILD := preload("res://scripts/systems/build_site.gd")
 const CHECK_EVERY := 0.5
 const CLOCK_EVERY := 5.0
 const CLOCK_SLACK := 2.0  ## minutos de jogo de diferença tolerados
@@ -52,6 +55,11 @@ func _process(delta: float) -> void:
 func _on_message(data: Dictionary) -> void:
 	if str(data.get("t", "")) == "clock":
 		follow_clock(get_node("/root/GameClock"), int(data.get("day", 1)), float(data.get("minutes", 0)))
+		return
+	# Obras (playtest IDs 24/40): o convidado pede, o anfitrião aplica na sessão (build_site.gd).
+	if BUILD.handle(get_tree(), data, _session, region.get("item_drops") if is_instance_valid(region) else null):
+		var placer: Node = region.get("placer") if is_instance_valid(region) else null
+		if is_instance_valid(placer): placer.reload()
 		return
 	if str(data.get("t", "")) != "world": return
 	var key := str(data.get("key", ""))

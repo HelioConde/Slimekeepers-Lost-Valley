@@ -95,8 +95,48 @@ static func drag_rect(a: Vector2i, b: Vector2i) -> Rect2i:
 
 ## Por que não dá para construir aqui ("" = pode). blocked(cell): ocupado pelo mapa.
 static func build_problem(tree: SceneTree, rect: Rect2i, blocked: Callable = Callable(), player_cell: Variant = null) -> String:
+	var problem := place_problem(tree, rect, blocked, player_cell)
+	return problem if not problem.is_empty() else missing(tree, rect_cost(rect))
+
+
+## Planta da casa (playtest ID 40): tem região e retângulo, mas built = false e ainda sem
+## piso/paredes; o material vai sendo depositado (build_site.gd).
+static func planned(tree: SceneTree) -> bool:
+	return not bool(data(tree).get("built", true))
+
+
+## A planta como a região a vê ({} se não há planta aqui).
+static func plan_of(tree: SceneTree, region: String) -> Dictionary:
+	return data(tree) if planned(tree) and str(data(tree).region) == region else {}
+
+
+## Marca a planta da casa SEM custo. "" = marcou; senão o motivo.
+static func plan(tree: SceneTree, region: String, rect: Rect2i, blocked: Callable = Callable(), player_cell: Variant = null) -> String:
+	var problem := place_problem(tree, rect, blocked, player_cell)
+	if not problem.is_empty(): return problem
+	var house := empty()
+	house.region = region
+	house.rect = rect
+	house.merge({"built": false, "cost": rect_cost(rect), "deposited": {}, "progress": 0.0,
+		"time": 8.0 + 0.25 * rect.get_area()})
+	tree.set_meta(KEY, house)
+	return ""
+
+
+## Planta concluída: piso, paredes e porta (o material já foi depositado).
+static func complete(tree: SceneTree) -> void:
+	var house := data(tree)
+	_raise(house, house.rect)
+	house["built"] = true
+	tree.set_meta(KEY, house)
+
+
+## Lugar e tamanho, sem olhar o material ("" = pode marcar a planta).
+static func place_problem(tree: SceneTree, rect: Rect2i, blocked: Callable = Callable(), player_cell: Variant = null) -> String:
 	if exists(tree):
 		return "Você já tem uma casa (%s). Demolir: clique direito nela" % region_name(region_of(tree))
+	if planned(tree):
+		return "Já há uma planta de casa (%s). Cancelar: clique direito nela" % region_name(str(data(tree).region))
 	if rect.size.x < MIN_SIZE.x or rect.size.y < MIN_SIZE.y:
 		return "Pequena demais (mínimo %d×%d)" % [MIN_SIZE.x, MIN_SIZE.y]
 	if rect.size.x > MAX_SIZE.x or rect.size.y > MAX_SIZE.y:
@@ -107,17 +147,25 @@ static func build_problem(tree: SceneTree, rect: Rect2i, blocked: Callable = Cal
 		for y in range(rect.position.y, rect.end.y):
 			for x in range(rect.position.x, rect.end.x):
 				if blocked.call(Vector2i(x, y)): return "Lugar ocupado (árvore, pedra ou água)"
-	return missing(tree, rect_cost(rect))
+	return ""
 
 
-## Constrói a casa no retângulo: piso em tudo, paredes em volta, porta embaixo.
-## "" = construiu; senão o motivo.
+## Constrói a casa no retângulo na hora, pagando da bolsa (testes e saves; o jogo usa
+## plan() + depósitos). "" = construiu; senão o motivo.
 static func build(tree: SceneTree, region: String, rect: Rect2i, blocked: Callable = Callable(), player_cell: Variant = null) -> String:
 	var problem := build_problem(tree, rect, blocked, player_cell)
 	if not problem.is_empty(): return problem
 	var house := empty()
 	house.region = region
 	house.rect = rect
+	_raise(house, rect)
+	_pay(tree, rect_cost(rect))
+	tree.set_meta(KEY, house)
+	return ""
+
+
+## Piso em tudo, paredes em volta, porta no meio de baixo.
+static func _raise(house: Dictionary, rect: Rect2i) -> void:
 	var door := door_of(rect)
 	for y in range(rect.position.y, rect.end.y):
 		for x in range(rect.position.x, rect.end.x):
@@ -126,9 +174,6 @@ static func build(tree: SceneTree, region: String, rect: Rect2i, blocked: Callab
 			var edge := x == rect.position.x or x == rect.end.x - 1 or y == rect.position.y or y == rect.end.y - 1
 			if edge and cell != door:
 				house.wall[cell] = true
-	_pay(tree, rect_cost(rect))
-	tree.set_meta(KEY, house)
-	return ""
 
 
 ## Desfaz a casa inteira e devolve piso, paredes e móveis.

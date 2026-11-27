@@ -177,18 +177,24 @@ func run() -> void:
 					while region.get("item_drops").pending() > 0 and Time.get_ticks_msec() - wait < 5000: await process_frame
 					set_meta("player_energy", 100)  # o roteiro não para para dormir
 				for i in 3: await process_frame
-			"A bancada de trabalho":
-				await key(KEY_B)
-				region.get("crafting_panel").call("_craft", "bancada")
-				await create_timer(0.3).timeout
-				await key(KEY_B)
-			"Colocando a bancada":
+			"A planta da bancada":
+				# Obra em etapas (ID 40): a fabricação abre a prévia sem gastar nada.
 				Input.warp_mouse(Vector2.ZERO)  # prévia à frente do jogador
-				await key(KEY_1 + HOTBAR.slots(self).find("bancada"))
 				await go_to(player.global_position + Vector2(0, 80))
 				player.facing = "south"
+				await key(KEY_B)
+				var craft: Node = region.get("crafting_panel")
+				var sticks := BAG.count_item(self, "graveto")
+				craft.call("start_plan", "bancada")
+				for i in 3: await process_frame
 				await snap("colocar")
 				await key(KEY_F)
+				check(BAG.count_item(self, "graveto") == sticks, "a planta não gasta material")
+			"Levando os materiais":
+				var plan: Node2D = region.get("placer").get("_stations")[0]
+				await go_to(plan.global_position + Vector2(0, 20))
+				await key(KEY_F)
+				await snap("depositar")
 			"Construindo a bancada":
 				var plan: Node2D = region.get("placer").get("_stations")[0]
 				await go_to(plan.global_position + Vector2(0, 20))

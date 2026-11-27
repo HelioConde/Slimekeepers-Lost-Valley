@@ -4,11 +4,15 @@ extends Node2D
 ## das células vizinhas), coloca a mobília e a colisão, e oferece o modo construir.
 ##
 ## Modo construir [B]: [Q] troca entre Casa e Mobília. Casa: arrastar com o botão
-## esquerdo marca o retângulo (tamanho livre, custa mais quanto maior; só UMA casa no
-## jogo); clique direito nela demole e devolve tudo. Mobília: roda escolhe o móvel,
-## esquerdo coloca, direito tira. [B]/[Esc] fecha.
+## esquerdo marca a PLANTA (tamanho livre, custa mais quanto maior; só UMA casa no
+## jogo) sem gastar nada; o material é depositado nela depois e ela é construída como as
+## outras obras (station_placer.gd + build_site.gd, playtest ID 40). Clique direito na
+## planta a cancela (devolve o depositado); na casa pronta, demole e devolve tudo.
+## Mobília: roda escolhe o móvel, esquerdo coloca, direito tira. [B]/[Esc] fecha.
 
 const HOUSE := preload("res://scripts/systems/house_state.gd")
+const BUILD := preload("res://scripts/systems/build_site.gd")
+const PLACER := preload("res://scripts/world/station_placer.gd")
 ## A casa desta região mudou (construída/demolida): área em pixels, vazia se não há.
 signal footprint_changed(area: Rect2)
 const CELL := 32
@@ -35,7 +39,10 @@ var _roof_layer: Node2D
 var _wall_rows: Node2D
 var _furniture: Node2D
 var _cursor: Node2D
+var _plan_layer: Node2D
 var _body: StaticBody2D
+## station_placer.gd da região (attach_house): cancela a planta pela mesma autoridade.
+var placer: Node
 var _roof_alpha := 1.0
 
 
@@ -59,6 +66,7 @@ func _ready() -> void:
 	add_child(_furniture)
 	_roof_layer = _layer("Roof", 30, _draw_roof)
 	_cursor = _layer("BuildCursor", 40, _draw_cursor)
+	_plan_layer = _layer("HousePlan", -2, _draw_plan)
 	_body = StaticBody2D.new()
 	_body.name = "HouseCollision"
 	_body.collision_layer = 2
@@ -318,6 +326,33 @@ func _process(delta: float) -> void:
 	if building:
 		cursor_cell = Vector2i((get_global_mouse_position() / CELL).floor())
 		_cursor.queue_redraw()
+	_plan_layer.queue_redraw()  # depósitos e progresso mudam a cor/enchimento da planta
+
+
+## Planta da casa no chão: azul (falta material), verde (pronta), enche de amarelo de
+## baixo para cima construindo — as mesmas cores das plantas de bancada e baú.
+func _draw_plan() -> void:
+	var plan := HOUSE.plan_of(get_tree(), region_id)
+	if plan.is_empty(): return
+	var site_stage := BUILD.stage(plan)
+	var tint: Color = PLACER.BLUEPRINT if site_stage == "plan" else PLACER.READY
+	var rect: Rect2i = plan.rect
+	var area := Rect2(Vector2(rect.position * CELL), Vector2(rect.size * CELL))
+	_plan_layer.draw_rect(area, Color(tint, 0.22))
+	var done := clampf(float(plan.get("progress", 0.0)) / BUILD.time_of(plan), 0.0, 1.0)
+	if done > 0.0:
+		_plan_layer.draw_rect(Rect2(area.position + Vector2(0, area.size.y * (1.0 - done)), Vector2(area.size.x, area.size.y * done)), Color(1.0, 0.85, 0.25, 0.4))
+	for cell: Vector2i in _plan_walls(rect):  # onde as paredes vão ficar
+		_plan_layer.draw_rect(Rect2(Vector2(cell * CELL), Vector2(CELL, CELL)), Color(tint, 0.25))
+	_plan_layer.draw_rect(area, Color(tint, 0.95), false, 2.0)
+	var door := HOUSE.door_of(rect)
+	_plan_layer.draw_rect(Rect2(Vector2(door * CELL) + Vector2(4, 4), Vector2(CELL - 8, CELL - 8)), Color(1, 1, 1, 0.5), false, 1.0)
+
+
+static func _plan_walls(rect: Rect2i) -> Dictionary:
+	var house_cells := {"floor": {}, "wall": {}}
+	HOUSE._raise(house_cells, rect)
+	return house_cells.wall
 
 
 func near_bed(actor: Node2D) -> bool:
@@ -367,12 +402,12 @@ func drag_area() -> Rect2i:
 	return HOUSE.drag_rect(drag_start if drag_start != null else cursor_cell, cursor_cell)
 
 
-## Constrói a casa no retângulo arrastado. "" = construiu.
+## Marca a planta da casa no retângulo arrastado, sem gastar nada. "" = marcou.
 func build_rect(rect: Rect2i) -> String:
-	problem = HOUSE.build(get_tree(), region_id, rect, blocked_world, player_cell())
+	problem = HOUSE.plan(get_tree(), region_id, rect, blocked_world, player_cell())
 	if problem.is_empty():
-		message = "Casa construída! Coloque a cama para poder dormir."
-		rebuild()
+		message = "Planta da casa marcada, sem gastar nada! Leve %s até ela e aperte [F] para depositar." % HOUSE.cost_text(HOUSE.rect_cost(rect))
+		if is_instance_valid(placer): placer.call("reload")
 	return problem
 
 
@@ -397,6 +432,12 @@ func place_at(cell: Vector2i) -> bool:
 
 func erase_at(cell: Vector2i) -> bool:
 	if mode == "house":
+		var plan := HOUSE.plan_of(get_tree(), region_id)
+		if not plan.is_empty() and (plan.rect as Rect2i).has_point(cell) and is_instance_valid(placer):
+			placer.call("cancel_site", BUILD.HOUSE_ID)  # devolve o depositado
+			message = str(placer.get("notice"))
+			placer.set("notice", "")
+			return true
 		return house().floor.has(cell) and demolish()
 	if HOUSE.furniture_at(get_tree(), cell) == "bau" and not HOUSE.CHEST.is_empty(get_tree()):
 		problem = "Esvazie o baú antes de tirá-lo"
@@ -412,10 +453,10 @@ func build_hint() -> String:
 	var detail := ""
 	if mode == "house":
 		var rect := drag_area()
-		detail = ": arraste para marcar  %d×%d = %s" % [rect.size.x, rect.size.y, HOUSE.cost_text(HOUSE.rect_cost(rect))]
+		detail = ": arraste para marcar a planta  %d×%d = %s (deposite depois)" % [rect.size.x, rect.size.y, HOUSE.cost_text(HOUSE.rect_cost(rect))]
 		if rect.size.x < HOUSE.MIN_SIZE.x or rect.size.y < HOUSE.MIN_SIZE.y:
-			detail = ": %d×%d  %s" % [rect.size.x, rect.size.y, HOUSE.build_problem(get_tree(), rect)]
-		if HOUSE.exists(get_tree()): detail = ": " + HOUSE.build_problem(get_tree(), rect)
+			detail = ": %d×%d  %s" % [rect.size.x, rect.size.y, HOUSE.place_problem(get_tree(), rect)]
+		if HOUSE.exists(get_tree()) or HOUSE.planned(get_tree()): detail = ": " + HOUSE.place_problem(get_tree(), rect)
 	else:
 		var id: String = furniture_choice
 		detail = ": %s (roda) = %s" % [HOUSE.FURNITURE[id].name, HOUSE.cost_text(HOUSE.FURNITURE_COSTS.get(id, {}))]
@@ -462,7 +503,7 @@ func _draw_cursor() -> void:
 	var rect := Rect2(Vector2(cursor_cell * CELL), Vector2(CELL, CELL))
 	if mode == "house":
 		var area := drag_area()
-		var ok := HOUSE.build_problem(get_tree(), area, blocked_world, player_cell()).is_empty()
+		var ok := HOUSE.place_problem(get_tree(), area, blocked_world, player_cell()).is_empty()
 		var shown := Rect2(Vector2(area.position * CELL), Vector2(area.size * CELL))
 		_cursor.draw_rect(shown, Color(0.4, 1, 0.5, 0.18) if ok else Color(1, 0.35, 0.3, 0.18))
 		_cursor.draw_rect(shown, Color(0.5, 1, 0.6, 0.95) if ok else Color(1, 0.45, 0.4, 0.95), false, 2.0)

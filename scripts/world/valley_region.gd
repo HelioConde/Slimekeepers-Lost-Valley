@@ -130,6 +130,7 @@ func _setup_living_valley() -> void:
 	placer.blocked = func(_at: Vector2) -> bool: return false  # colisão (água, árvores) já bloqueia
 	placer.setup(scene_file_path)
 	house = add_player_house("vale")
+	placer.attach_house(house)  # a planta da casa é obra como as outras (playtest ID 40)
 	farm = add_free_farm("vale", house)
 	hide_forage_on_farm(farm, gathering.forage)
 	add_item_drops(farm, gathering)
@@ -236,16 +237,10 @@ func _spawn_valley_forage() -> void:
 func _handle_station() -> bool:
 	if not is_instance_valid(placer) or tool_target_near(): return false
 	var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
-	if station_hint in ["built", "built_bau_campo"]:
-		_notify("Bancada pronta! Use [F] nela para fabricar." if station_hint == "built" else "Baú pronto! Use [F] para guardar; o Carreguim também traz coisas para cá.")
-		return true
-	if station_hint == "placed_bau_campo":
+	if not str(placer.notice).is_empty():  # planta colocada, depósito, cancelada, obra pronta
 		bag_hud.call("refresh")
-		_notify("Planta do baú no chão! Vá até ela e aperte [F] para construir (5 s).")
-		return true
-	if station_hint == "placed":
-		bag_hud.call("refresh")
-		_notify("Planta da bancada no chão! Vá até ela e aperte [F] para construir (10 s).")
+		_notify(placer.notice)
+		placer.notice = ""
 		return true
 	if station_hint.is_empty(): return false
 	hud_hint.text = station_hint

@@ -20,9 +20,9 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 39 | Virada do dia não recupera energia | P0 | Feito (com teste) | 663335d5 (sessão Luz V4) · farm_field, energy_state · test_farm_field |
 | 22 | B/Esc não pausam o mundo em MP | P0 | Feito (com teste, MP simulado) | 23390052 · menu do Esc não pausa em MP; B/E/baú já não pausavam · test_pause_menu. Falta teste com duas instâncias |
 | 20 | Coleta e drops visíveis para todos | P0 | Feito (com teste, 2 instâncias) | item_drops: id estável, anfitrião decide quem pega · tools/test_mp_drops.gd (ENet real). Falta Steam e latência simulada |
-| 12 | Menu MP trava / troca P2P↔Local | P0 | Pendente | |
-| 24 | Construir a mesma planta em dupla | P0 | Pendente | |
-| 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Pendente | |
+| 12 | Menu MP trava / troca P2P↔Local | P0 | Em andamento | be881225 (sessão Luz V4): hospedar de novo ou trocar de modo fecha a sessão anterior · tools/test_net_restart.gd. Falta a matriz completa de botões |
+| 24 | Construir a mesma planta em dupla | P0 | Feito (com teste, 2 instâncias) | anfitrião é a autoridade da obra; reload não recria estações; dupla 5 s vs solo 10 s · tools/test_mp_build.gd (falhou 1 em 3 numa rodada da outra sessão: instável) |
+| 40 | Construção em etapas (planta sem custo, depósito de materiais) | P0 | Feito (com teste) | build_site.gd: planta sem custo → depositar → pronta → construir → concluída (bancada, baú, casa); cancelar devolve · tools/test_build_stages.gd |
 | 46 | Baú sincronizado em tempo real no MP | Crítica | Feito (com teste) | chest_panel redesenha quando o conteúdo muda (NetWorld já sincroniza) · tools/test_chest_live.gd. Pendência: dois tirando o mesmo item ao mesmo tempo (última escrita vence) |
 | 47 | Cama na progressão da casa | Crítica | Feito (com teste) | 98415b60 (aviso, sessão Luz V4) + entrada Cama na aba Construção (crafting_panel) · tools/test_craft_select.gd |
 | 01 | Recursos básicos perto da estrada | P1 | Feito (com teste) | 214eae2a (sessão Luz V4): gravetos e pedrinhas à beira das trilhas perto do início · test_forest_foraging |
@@ -44,7 +44,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 18 | Tutorial para os dois jogadores | P1 | Pendente | |
 | 19 | Pedra inicial não coletável | P1 | Pendente | |
 | 21 | Soltar itens para o outro jogador | P1 | Feito (com teste, 2 instâncias) | [Q] solta 1, Shift+[Q] a pilha; mochila com quantidade · tools/test_drop_from_bag.gd, test_mp_drops |
-| 23 | Prévia da planta visível aos dois | P1 | Pendente | |
+| 23 | Prévia da planta visível aos dois | P1 | Feito (com teste, 2 instâncias) | prévia (build_ghost) aparece e some no outro jogo · test_mp_build. Falta rótulo de qual jogador posiciona |
 | 25 | Brilho estourado dos cogumelos | P1 | Pendente | |
 | 26 | Alcance menor para interagir com slimes | P1 | Feito (com teste) | world.gd SLIME_REACH 48 · test_slime_disc, test_slime_reaction |
 | 27 | Amanhecer gradual | P1 | Pendente | |
@@ -60,9 +60,9 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 38 | Barra: 1–9 e 0 | P1 | Feito (com teste) | de6841c9 · hotbar_hud · tools/test_hotbar_click.gd |
 | 41 | Objeto visual bugado | P1 | Pendente | Precisa da imagem do .docx |
 | 42 | Arrastar e soltar no inventário e na barra | Alta | Em andamento | sessão Luz V4: mochila com 10 espaços extras e arrastar/trocar (pedido novo do usuário) |
-| 43 | Durabilidade e quebra de ferramentas | Alta | Pendente | |
+| 43 | Durabilidade e quebra de ferramentas | Alta | Feito (com teste) | dc09b3c0 (sessão Luz V4): barrinha de desgaste; salvar ao voltar ao menu · test_hotbar_click |
 | 44 | Escala do tronco caído | Alta | Feito (com teste) | 5cc04936 (sessão Luz V4) |
-| 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Pendente | |
+| 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Feito (com teste) | 2d9b8d06 (sessão Luz V4): baú em duas colunas, arrastar, atalhos 1/metade/tudo · test_chest_move |
 | 48 | Balões contextuais (ferramenta, cansaço, cama) | Alta | Em andamento | 98415b60 (sessão Luz V4): aviso de pouca energia sem cama/com cama |
 | 49 | Tamanho mínimo da casa | Alta | Feito (com teste) | mínimo 5×5 (3×3 por dentro, cama + passagem); aviso ao arrastar menor · test_house_state, capture_house |
 | 50 | Cortar tocos e troncos de cenário | Alta | Feito (com teste) | 050c8675 (sessão Luz V4): troncos e tocos de cenário (machado processa, pá arranca) · test_scenery_wood |

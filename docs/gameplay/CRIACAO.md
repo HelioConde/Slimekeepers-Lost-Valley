@@ -65,6 +65,25 @@ Opção recomendada para "ferramentas melhores" (pedra polida agora, metal depoi
 - Golpe: o mesmo movimento aprovado do machado e da picareta, com a cabeça de pedra pintada no azul-acinzentado polido dos ícones (`assets/<arte>/tools/{axe,pickaxe}_polished/`, gerado por `tools/pixellab/polish_tool_frames.py`; cinzas do próprio personagem não mudam).
 - Teste: `tools/test_rocks.gd` (pedra grande com a picareta polida, árvore grande com o machado polido).
 
+## Obra em etapas: bancada, baú do chão e casa (playtest IDs 23, 24 e 40, 2026-11-27)
+
+Todas as estruturas seguem a mesma máquina de estados (`scripts/systems/build_site.gd`), guardada no próprio registro da obra (`placed_stations` ou `player_house`, então vai no save e na rede):
+
+1. **Prévia** (só na tela): bancada/baú pelo botão "Colocar planta" da fabricação; casa pelo arraste no modo construir. Clique direito ou [Esc] desiste.
+2. **Planta** (`plan`): confirmada **sem custo**; guarda `cost` (receita ou `rect_cost` da casa) e `deposited`. Azul; o texto junto da obra mostra item depositado/necessário.
+3. **[F] na planta deposita** o que a bolsa tem do que falta (parcial, nunca mais que o custo, nunca cobra duas vezes).
+4. **Pronta** (`ready`): material completo, a planta fica **verde** e o texto diz "Materiais completos! [F] construir". Antes disso não há progresso.
+5. **Construindo** (`building`): [F] constrói; jogadores e o Construlim **somam** segundos (bancada 10 s, baú 5 s, casa 8 s + 0,25 s por célula: 5×5 ≈ 14 s, 16×12 ≈ 56 s sozinho). Andar pausa só a obra de quem andou; enche de amarelo.
+6. **Concluída** (`done`): uma vez só; arte normal e sólida (casa: piso, paredes, porta).
+
+Decisões:
+- Cancelar: clique direito na planta (casa: clique direito nela no modo construir) tira a planta e devolve **todo** o depositado a quem cancelou (o que não cabe vai ao chão). A obra pronta não se cancela (a casa continua demolível).
+- O item "bancada"/"bau_campo" já fabricado (saves antigos) ainda se coloca pela barra: a planta nasce paga (pronta para construir). Registro antigo sem `cost` = pago.
+- A casa só aceita construção de fora da área dela (quem está dentro não fica preso quando as paredes sobem). Bancada/baú não entram na área da planta da casa; só uma planta de casa por vez.
+- Multijogador: o **anfitrião** é a autoridade da colocação, dos depósitos, do progresso e do cancelamento. O convidado manda `build_place`, `build_dep` (os itens já saíram da bolsa dele; o anfitrião devolve a sobra em `build_back`), `build_work` (segundos juntados a cada 0,2 s, no máximo 1 s por mensagem) e `build_cancel`; o resultado volta pela chave sincronizada. A obra de cada um é guardada por **id**, não pelo nó: a sincronização redesenha as plantas sem cancelar ninguém. O Construlim só trabalha no anfitrião (não conta dobrado).
+- Prévia compartilhada (ID 23): a prévia de bancada/baú e o arraste da casa aparecem translúcidos na tela do outro jogador e somem quando ele confirma ou desiste.
+- Testes: `tools/test_build_stages.gd` (um jogador) e `tools/test_mp_build.gd` + `tools/net/mp_build_guest.gd` (dois jogos reais por ENet).
+
 ## Decisões
 
 - O machado é exigido na bolsa para fabricar na bancada e não é gasto. Não há durabilidade por enquanto: não faz falta para o design atual.

@@ -30,7 +30,7 @@ const TABS := {"maos": ["producao"],
 ## Entradas que não são receitas: abrem o modo construir da casa (house_builder.gd).
 const SPECIALS := [
 	{"id": "casa", "category": "construcao", "tier": 1, "name": "Casa", "mode": "house",
-		"text": "Paredes, piso e porta: arraste no chão para erguer a casa. A cama salva o jogo."},
+		"text": "Paredes, piso e porta: arraste no chão para marcar a planta (sem gastar); deposite o material nela e construa. A cama salva o jogo."},
 	{"id": "moveis", "category": "construcao", "tier": 1, "name": "Móveis da casa", "mode": "furniture",
 		"text": "Cama, baú, fogão, mesa e outros móveis dentro da casa."},
 	# Playtest IDs 47/48: a cama à vista na aba Construção; dormir nela recupera a energia e salva.
@@ -47,6 +47,9 @@ var player: Node
 var selected := 0
 var category := "producao"
 var builder: Node2D  ## casa da região (clearing_region.add_player_house)
+## Plantas da região (station_placer.gd): bancada e baú viram planta sem custo (playtest
+## ID 40); o material é depositado nela depois. Sem ela, fabrica o item como antes.
+var placer: Node2D
 var _title: Label
 var _tabs: HBoxContainer
 var _tiers: VBoxContainer  ## linhas por nível da aba atual
@@ -170,7 +173,13 @@ func why_not(r: Dictionary) -> String:
 	if r.has("mode"): return "" if is_instance_valid(builder) else "Sem lugar para construir aqui."
 	var where := str(r.get("station", "maos"))
 	if not ALLOWED.get(station, ["maos"]).has(where): return str(WHERE.get(where, "Faça na estação certa."))
+	if _is_plan(r): return ""  # planta não exige o material agora
 	return CRAFTING.missing(get_tree(), str(r.id))
+
+
+## Bancada/baú com a região pronta para receber a planta.
+func _is_plan(r: Dictionary) -> bool:
+	return is_instance_valid(placer) and not r.has("mode") and PLACER.KINDS.has(_output_id(r))
 
 
 func refresh() -> void:
@@ -278,9 +287,10 @@ func _show_detail(r: Dictionary) -> void:
 		_detail_mats.add_child(build)
 	var why := why_not(r)
 	_action.visible = true
-	_action.text = "Construir" if r.has("mode") else "Fabricar"
+	_action.text = "Construir" if r.has("mode") else ("Colocar planta" if _is_plan(r) else "Fabricar")
 	_action.disabled = not why.is_empty()
 	_status.text = _detail_name.text + ": " + ("pronto para fazer." if why.is_empty() else why)
+	if _is_plan(r) and why.is_empty(): _status.text = _detail_name.text + ": coloque a planta no chão; o material você deposita nela depois."
 
 
 func _activate(index: int) -> void:
@@ -293,7 +303,17 @@ func _activate(index: int) -> void:
 	if not why_not(r).is_empty():
 		refresh()
 		return
+	if _is_plan(r):
+		start_plan(_output_id(r))
+		return
 	_craft(str(r.id))
+
+
+## Fecha a janela e começa a prévia da planta (bancada ou baú), sem gastar nada.
+func start_plan(kind: String) -> void:
+	if not is_instance_valid(placer): return
+	close()
+	placer.call("begin_plan", kind)
 
 
 func _craft(recipe_id: String) -> void:

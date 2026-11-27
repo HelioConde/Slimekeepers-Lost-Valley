@@ -22,9 +22,10 @@ const STEPS := [
 	["Arrancando mato", "Aperte [F] perto de um tufo de mato e espere arrancar. Junte 9 fibras.", "fiber"],
 	["Sua mochila", "Aperte [E] para ver a mochila. [E] de novo fecha.", "bag"],
 	["Fabricando corda", "Aperte [B] e clique [esq] na corda até ter 3 cordas (3 fibras cada).", "rope"],
-	["A bancada de trabalho", "No [B], faça a bancada com 6 gravetos, 4 pedrinhas e 2 cordas.", "bench"],
-	["Colocando a bancada", "Escolha a bancada na barra e clique [esq] no chão onde quer colocar.", "place"],
-	["Construindo a bancada", "Vá até a planta da bancada e aperte [F] ou [esq]. Leva 10 segundos (andar cancela).", "build"],
+	# Obra em etapas (playtest ID 40): planta sem custo -> depositar -> construir.
+	["A planta da bancada", "No [B], escolha a bancada e clique no chão para colocar a planta. Ela não gasta nada.", "plan"],
+	["Levando os materiais", "Leve 6 gravetos, 4 pedrinhas e 2 cordas até a planta e aperte [F] ou [esq] nela para depositar.", "deposit"],
+	["Construindo a bancada", "Com tudo depositado a planta fica verde: aperte [F] ou [esq] nela. Leva 10 segundos (andar pausa; em dupla vai mais rápido).", "build"],
 	["Usando a bancada", "Chegue perto da bancada e aperte [F] ou [esq] para abrir", "use"],
 	["Seu primeiro machado", "Na bancada, aba Ferramentas: faça o machado (2 gravetos, 2 pedrinhas e 1 corda).", "axe"],
 	["Cortando árvores", "Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]", "swing"],
@@ -269,20 +270,20 @@ func _done(kind: String, delta: float) -> bool:
 			if player is CharacterBody2D and (player as CharacterBody2D).velocity.length() > 10.0: _walked += delta
 			return _walked > 1.5
 		"pick":
-			return _placed() or _has(tree, ["bancada", "machado"]) or (BAG.count_item(tree, "graveto") >= 8 and BAG.count_item(tree, "pedra_pequena") >= 6)
+			return _paid() or _has(tree, ["bancada", "machado"]) or (BAG.count_item(tree, "graveto") >= 8 and BAG.count_item(tree, "pedra_pequena") >= 6)
 		"fiber":
-			return BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3 >= 9 or _placed() or _has(tree, ["bancada", "machado"])
+			return BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3 >= 9 or _paid() or _has(tree, ["bancada", "machado"])
 		"bag":
 			_bag_seen = _bag_seen or _open("inventory_panel")
 			return _bag_seen and not _open("inventory_panel")
 		"rope":
-			return BAG.count_item(tree, "corda") >= 3 or _placed() or _has(tree, ["bancada", "machado"])
+			return BAG.count_item(tree, "corda") >= 3 or _paid() or _has(tree, ["bancada", "machado"])
 		"axe":
 			return _has(tree, ["machado"])
-		"bench":
+		"plan":  # a bancada já fabricada (save antigo) também vale
 			return _has(tree, ["bancada"]) or _placed()
-		"place":
-			return _placed()
+		"deposit":
+			return _paid()
 		"build":
 			return (get_tree().get_meta("placed_stations", []) as Array).any(func(e: Dictionary) -> bool: return str(e.get("kind", "bancada")) == "bancada" and bool(e.get("built", true)))
 		"use":
@@ -305,8 +306,8 @@ func _targets(kind: String) -> Array:
 	var from := player.global_position
 	var found: Array = []
 	var items := {"pick": ["graveto", "pedra_pequena"], "fiber": ["fibra"]}
-	if kind in ["bench", "axe"]:  # destaca o que ainda falta (mato vira corda, gravetos, pedrinhas)
-		var need := {"bench": [6, 4, 2], "axe": [2, 2, 1]}[kind] as Array
+	if kind in ["deposit", "axe"]:  # destaca o que ainda falta (mato vira corda, gravetos, pedrinhas)
+		var need := {"deposit": [6, 4, 2], "axe": [2, 2, 1]}[kind] as Array
 		var want: Array = []
 		if BAG.count_item(get_tree(), "graveto") < int(need[0]): want.append("graveto")
 		if BAG.count_item(get_tree(), "pedra_pequena") < int(need[1]): want.append("pedra_pequena")
@@ -329,7 +330,7 @@ func _targets(kind: String) -> Array:
 				if cut.has(key):  # tronco caído ainda não processado também vale madeira
 					if not bool(cut[key].get("processed", false)): found.append([chop.log_position(key), 20.0])
 				else: found.append([tree.global_position, 24.0])
-	elif kind in ["use", "build"]:
+	if kind in ["use", "build", "deposit"]:
 		var placer: Node = region.get("placer")
 		if is_instance_valid(placer):
 			for station: Node2D in placer.get("_stations"): found.append([station.global_position, 30.0])
@@ -349,7 +350,7 @@ func _progress(kind: String) -> String:
 			parts.append("Fibras %d/9" % mini(9, BAG.count_item(tree, "fibra") + BAG.count_item(tree, "corda") * 3))
 		"rope":
 			parts.append("Cordas %d/3" % mini(3, BAG.count_item(tree, "corda")))
-		"bench":
+		"deposit":
 			parts.append("Gravetos %d/6" % mini(6, BAG.count_item(tree, "graveto")))
 			parts.append("Pedrinhas %d/4" % mini(4, BAG.count_item(tree, "pedra_pequena")))
 			parts.append("Cordas %d/2" % mini(2, BAG.count_item(tree, "corda")))
@@ -358,6 +359,12 @@ func _progress(kind: String) -> String:
 
 func _placed() -> bool:
 	return not (get_tree().get_meta("placed_stations", []) as Array).is_empty()
+
+
+## Alguma bancada com o material todo depositado (pronta, construindo ou feita).
+func _paid() -> bool:
+	return (get_tree().get_meta("placed_stations", []) as Array).any(func(e: Dictionary) -> bool:
+		return str(e.get("kind", "bancada")) == "bancada" and BUILD.stage(e) != "plan")
 
 
 static func _has(tree: SceneTree, items: Array) -> bool:

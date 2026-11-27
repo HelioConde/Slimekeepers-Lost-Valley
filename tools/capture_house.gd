@@ -44,7 +44,7 @@ func run() -> void:
 	var origin := Vector2i((player.global_position / 32.0).floor()) + Vector2i(3, -2)
 	var rect := Rect2i(origin, Vector2i(7, 5))
 	for tries in 40:
-		if House.build_problem(self, rect, house.blocked_world, house.player_cell()).begins_with("Falta"): break
+		if House.place_problem(self, rect, house.blocked_world, house.player_cell()).is_empty(): break
 		rect.position += Vector2i(1, 1) if tries % 2 == 0 else Vector2i(-2, 1)
 	house.toggle_build()
 	house.mode = "house"
@@ -58,12 +58,20 @@ func run() -> void:
 	check(house.build_rect(house.drag_area()).contains("Pequena demais") and not House.exists(self), "Casa menor que o mínimo é recusada")
 	await shot(out + "/casa_pequena_demais.png")
 	house.cursor_cell = rect.end - Vector2i.ONE
-	check(house.build_rect(rect).begins_with("Falta"), "Sem material não constrói")
+	# Obra em etapas (ID 40): o arraste marca a planta sem material; deposita e constrói.
+	check(house.build_rect(rect) == "" and House.planned(self) and not House.exists(self), "Sem material o arraste marca a planta")
+	check(house.get_node("HouseCollision").get_child_count() == 0, "Planta ainda sem paredes")
+	await shot(out + "/casa_planta.png")
 	var cost := House.rect_cost(rect)
 	for item in cost: Bag.add_item(self, item, int(cost[item]))
 	for item in House.FURNITURE_COSTS.cama: Bag.add_item(self, item, int(House.FURNITURE_COSTS.cama[item]))
 	for item in House.FURNITURE_COSTS.mesa: Bag.add_item(self, item, int(House.FURNITURE_COSTS.mesa[item]))
-	check(house.build_rect(rect) == "", "Arraste constrói a casa %s (%s)" % [str(rect), House.cost_text(cost)])
+	var Build := preload("res://scripts/systems/build_site.gd")
+	Build.deposit(self, Build.HOUSE_ID, cost)
+	for item in cost: Bag.spend_item(self, item, int(cost[item]))
+	await shot(out + "/casa_planta_pronta.png")
+	check(Build.work(self, Build.HOUSE_ID, Build.time_of(House.data(self))) and House.exists(self), "Material depositado e obra concluída: casa %s (%s)" % [str(rect), House.cost_text(cost)])
+	house.rebuild()
 	house.drag_start = null
 	check(house.get_node("HouseCollision").get_child_count() > 10, "Paredes sólidas")
 	house.mode = "furniture"
