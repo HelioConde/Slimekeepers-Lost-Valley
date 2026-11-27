@@ -205,7 +205,6 @@ func _panel(id: String) -> PanelContainer:
 	p.mouse_exited.connect(_on_unhover.bind(id))
 	p.gui_input.connect(func(e: InputEvent) -> void:
 		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT: select(id))
-	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var column := VBoxContainer.new()
 	p.add_child(column)
 	var data: Dictionary = PROTAGONIST.ALL[id]

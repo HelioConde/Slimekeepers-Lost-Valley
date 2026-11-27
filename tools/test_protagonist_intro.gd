@@ -60,6 +60,7 @@ func run() -> void:
 	var click := InputEventMouseButton.new()
 	click.button_index = MOUSE_BUTTON_LEFT
 	click.pressed = true
+	check((sel.panels[who] as Control).mouse_filter == Control.MOUSE_FILTER_STOP, "cartão recebe o clique do mouse")
 	(sel.panels[who] as Control).gui_input.emit(click)
 	await frames(10)
 	check(sel.selected == who and not sel._confirm.disabled, "clique fixa a escolha e libera Confirmar")
