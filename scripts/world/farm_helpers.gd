@@ -76,6 +76,61 @@ static func _spend(tree: SceneTree, species: String, day: int) -> void:
 	tree.set_meta(KEY, book)
 
 
+## Por que o ajudante está parado (benchmark e pesquisa Palworld, 2026-11-27): o jogador não
+## deve adivinhar. Chaves: night, off, tired, no_seed, no_work; "" = trabalhando.
+## shortcut: os ajudantes andam em linha reta (sem caminho bloqueado); quando houver
+## pathfinding, somar a chave "no_path".
+const REASON_ICON := {"night": "Zz", "tired": "Zz", "off": "...", "no_seed": "?", "no_work": "?"}
+const REASON_NEAR := 72.0  ## jogador a esta distância vê o texto inteiro
+const IDLE_TEXT := {"brotinho": "Nada para plantar: are a terra.", "bolhinha": "Todas as plantas já beberam.",
+	"musguinho": "Nada para adubar agora.", "colhita": "Nada maduro para colher."}
+
+
+static func idle_reason(tree: SceneTree, species: String, day: int, daytime: bool) -> String:
+	if not daytime: return "night"
+	if bool((tree.get_meta("slime_work_off", {}) as Dictionary).get(species, false)): return "off"
+	if not can_work(tree, species, day): return "tired"
+	if species == "brotinho" and _seed_crop(tree).is_empty(): return "no_seed"
+	return "no_work"
+
+
+static func reason_text(reason: String, species: String) -> String:
+	match reason:
+		"night": return "Dormindo. Trabalho das 6h às 19h."
+		"off": return "De folga. No disco [F]: voltar a trabalhar."
+		"tired": return "Sem energia. Amanhã volto cheio!"
+		"no_seed": return "Sem sementes na bolsa para plantar."
+		"no_work": return str(IDLE_TEXT.get(species, "Sem trabalho por perto."))
+	return ""
+
+
+## Ícone fixo sobre o ajudante parado; perto do jogador vira o texto do motivo.
+func _show_reason(h: Dictionary, species: String, reason: String) -> void:
+	var sprite: AnimatedSprite2D = h.sprite
+	var label: Label = sprite.get_node_or_null("Reason")
+	if reason.is_empty():
+		if label: label.hide()
+		return
+	if label == null:
+		label = Label.new()
+		label.name = "Reason"
+		label.add_theme_font_override("font", preload("res://assets/fonts/ui_font.tres"))
+		label.add_theme_font_size_override("font_size", 10)
+		label.add_theme_color_override("font_color", Color("#fff6dc"))
+		label.add_theme_color_override("font_outline_color", Color("#3d2a1e"))
+		label.add_theme_constant_override("outline_size", 4)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.z_index = 20
+		sprite.add_child(label)
+	var player: Node2D = farm.get("player") if is_instance_valid(farm) else null
+	var near := is_instance_valid(player) and player.global_position.distance_to(sprite.global_position) < REASON_NEAR
+	label.text = reason_text(reason, species) if near else str(REASON_ICON.get(reason, "?"))
+	label.reset_size()
+	label.position = Vector2(-label.size.x * 0.5, -40.0 / maxf(sprite.scale.y, 0.01) - label.size.y)
+	label.scale = Vector2.ONE / sprite.scale
+	label.show()
+
+
 static func _seed_crop(tree: SceneTree) -> String:
 	for id in CROPS.CROPS:
 		if BAG.count_item(tree, str(CROPS.CROPS[id].seed)) > 0: return str(id)
@@ -154,7 +209,9 @@ func _process(delta: float) -> void:
 				h.cell = job(tree, farm.field_id, species, _taken())
 			if h.cell == NONE:
 				_play(sprite, "idle")
+				_show_reason(h, species, idle_reason(tree, species, day, daytime))
 				continue
+		_show_reason(h, species, "")
 		var goal := Vector2(h.cell * 32) + Vector2(16, 22)
 		var pace: float = VARIANTS.WORK_SPEED[VARIANTS.best_friend(tree, species, FRIEND_KEYS)]  # raro: 1,5x
 		if sprite.position.distance_to(goal) > 2.0:

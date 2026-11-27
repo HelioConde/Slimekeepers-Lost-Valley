@@ -2,6 +2,11 @@ extends "res://scripts/world/clearing_region.gd"
 ## Runtime for expanded map; legacy clearing remains untouched.
 const Forest = preload("res://scripts/world/forest_layout.gd")
 const Living = preload("res://scripts/world/living_region.gd")
+## Primeiro slime cedo (benchmark e pesquisa, 2026-11-27): em 17 min de jogo novo nenhum
+## slime aparecia (habitats a mais de 960 px do início). Ao terminar a dica da coleta, um
+## Brotinho visita a beira da clareira e o Aren chama a atenção para ele.
+const FIRST_VISIT_KEY := "first_slime_visit"
+const FIRST_VISIT_STEP := 2  ## dica 3 (arrancar mato) em diante = coleta concluída
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
@@ -99,6 +104,7 @@ func _ready() -> void:
 	add_child(habitat_manager)
 	habitat_manager.slime_spawned.connect(_on_forest_slime)
 	var habitats := Forest.habitats()
+	habitats.append(first_visit_habitat())  # Brotinho visitante (benchmark 2026-11-27)
 	for h in habitats:
 		h.flower_points = [h.center+Vector2(-60,-45),h.center+Vector2(60,30)]
 		h.shade_points = [h.center+Vector2(-45,-35)]
@@ -307,7 +313,29 @@ func _setup_ecosystem() -> void:
 func set_environment_conditions(period: String, rain: float=0.0, wind: float=1.0, fog: float=0.0) -> void:
 	Living.conditions(self,period,rain,wind,fog)
 
+static func first_visit_habitat() -> Dictionary:
+	return {"id": "H00", "name": "Beira da Clareira", "center": Forest.SPAWN + Vector2(150, 10), "radius": 60.0,
+		"species_slots": ["brotinho"], "near_spawn": true, "requires_meta": FIRST_VISIT_KEY}
+
+
+## Libera o visitante quando a coleta da dica termina (uma vez por partida).
+var _visit_pending := false  ## o visitante chegou agora e o Aren ainda não avisou
+
+
+func _check_first_visit() -> void:
+	var tree := get_tree()
+	if not bool(tree.get_meta(FIRST_VISIT_KEY, false)):
+		if int(tree.get_meta("tutorial_step", 0)) < FIRST_VISIT_STEP: return
+		tree.set_meta(FIRST_VISIT_KEY, true)
+		_visit_pending = true
+		if is_instance_valid(habitat_manager): habitat_manager.populate()
+	# Outro balão na tela: tenta de novo no próximo quadro (o balão não empilha).
+	if _visit_pending and is_instance_valid(speech) and speech.say("first_slime", "Olha! Um Brotinho na beira da clareira. Vou chegar perto e apertar F."):
+		_visit_pending = false
+
+
 func _process(delta: float) -> void:
+	_check_first_visit()
 	if is_instance_valid(_spawn_light): _spawn_light.apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), delta)
 	# The base world manages interaction/friendship; skip legacy map exit coordinates.
 	if ecosystem == null: return  # _process pode rodar antes do _ready criar o ecossistema
