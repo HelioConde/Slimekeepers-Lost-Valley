@@ -4,7 +4,7 @@ extends Node2D
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player.tscn")
 const SLIME_SCENE: PackedScene = preload("res://scenes/slime.tscn")
 const TERRAIN_SCRIPT: Script = preload("res://scripts/terrain.gd")
-const FONT: FontFile = preload("res://assets/fonts/PixelifySans.ttf")
+const FONT: Font = preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const DAY_LIGHT_SCRIPT: Script = preload("res://scripts/world/day_night_lighting.gd")
 const CLOCK_WIDGET: PackedScene = preload("res://scenes/ui/day_clock.tscn")
 

@@ -3,7 +3,7 @@ extends RefCounted
 ## cogumelos nos cantos (PixelLab, assets/ui/hud/leafy_panel.png), texto marrom
 ## escuro, espaços escuros na barra com número e seleção dourada.
 
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const PANEL := "res://assets/ui/hud/leafy_panel.png"
 const INK := Color("#3d2a1e")
 const CREAM := Color("#f2dcae")

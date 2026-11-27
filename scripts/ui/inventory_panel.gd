@@ -8,7 +8,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const SLOT := preload("res://scripts/ui/item_slot.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const COLUMNS := 5
 const CLOSE_BUTTON := preload("res://scripts/ui/close_button.gd")
 ## Janelas que travam o jogador (só uma aberta por vez).

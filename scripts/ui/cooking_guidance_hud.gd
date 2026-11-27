@@ -2,7 +2,7 @@ extends PanelContainer
 ## Mostra o próximo passo do ciclo de culinária abaixo do relógio; some ao concluir.
 ## Atualiza por amostragem para não depender de cada ponto que altera a sessão.
 const GUIDANCE := preload("res://scripts/systems/cooking_guidance.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const REFRESH_SECONDS := 0.5
 
 var label: Label

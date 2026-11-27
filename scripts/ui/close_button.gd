@@ -3,7 +3,7 @@ extends RefCounted
 ## Fica como filho top_level do painel: o Container não o redimensiona e ele acompanha o
 ## painel (posição/tamanho). MOUSE_FILTER_STOP: o clique não chega ao mundo.
 
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const SIZE := Vector2(22, 22)
 const INSET := 8.0
 

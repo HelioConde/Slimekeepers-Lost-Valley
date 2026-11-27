@@ -8,7 +8,8 @@ extends PanelContainer
 const KEY := "tutorial_step"
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const BUILD := preload("res://scripts/systems/build_site.gd")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const INK := Color("#3d2a1e")
 const PAPER := Color("#f6ead0")
 const EDGE := Color("#6b4a32")

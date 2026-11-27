@@ -53,7 +53,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 30 | Pá para remover tocos | P1 | Feito (com teste) | 86c60701 (sessão Luz V4): pá na bancada, arranca o toco no contato · test_shovel. Pendência de arte: golpe próprio da Moni com a pá (PixelLab suspenso) |
 | 31 | Foice do Aren | P1 | Pendente | Ver 08 |
 | 32 | Tremor e impacto do machado no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
-| 33 | Números legíveis (2/5/8) | P1 | Pendente | adiado até a mochila (42) ser commitada: fonte de dígitos feita à mão (2/5/8 iguais na Pixelify) |
+| 33 | Números legíveis (2/5/8) | P1 | Feito (com teste) | fonte de dígitos 5x7 feita à mão (tools/build_digit_font.py) + ui_font.tres com a Pixelify para o resto; 2/5/8 distintos · tools/capture_digits.gd |
 | 34 | Respawn diário por tipo (pedras limitadas) | P1 | Feito (com teste) | 64aefa6e (sessão Luz V4): reposição por tipo (mato 1 dia, graveto 2, pedrinha 4) |
 | 36 | Tremor da árvore no J2 | P1 | Pendente | |
 | 37 | Barra rápida alarga no modo construção | P1 | Feito (com teste) | c0317d49 · hotbar_hud · tools/test_hotbar_click.gd |

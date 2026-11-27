@@ -5,7 +5,7 @@ extends CanvasLayer
 ## sozinhos: este menu não abre por cima deles.
 ## Solo: pausa o SceneTree. Multijogador (NetSession.mode != ""): NÃO pausa; só congela o
 ## jogador local (como os painéis), o mundo, o relógio e a rede seguem.
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const SAVE := preload("res://scripts/systems/save_game.gd")
 const SFX := preload("res://scripts/systems/sfx.gd")
 const PREFS_PATH := "user://presentation.cfg"

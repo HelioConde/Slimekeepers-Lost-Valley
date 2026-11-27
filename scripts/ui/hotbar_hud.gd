@@ -4,7 +4,7 @@ extends PanelContainer
 
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const SKIN := preload("res://scripts/ui/hud_skin.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const WINDOWS := preload("res://scripts/ui/inventory_panel.gd").WINDOWS

@@ -1,0 +1,17 @@
+[remap]
+
+importer="font_data_bmfont"
+type="FontFile"
+uid="uid://jan87hqepgw6"
+path="res://.godot/imported/slime_digits.fnt-9752c0f88c9733b6dd57b20e677aefaa.fontdata"
+
+[deps]
+
+source_file="res://assets/fonts/slime_digits.fnt"
+dest_files=["res://.godot/imported/slime_digits.fnt-9752c0f88c9733b6dd57b20e677aefaa.fontdata"]
+
+[params]
+
+fallbacks=[]
+compress=true
+scaling_mode=2

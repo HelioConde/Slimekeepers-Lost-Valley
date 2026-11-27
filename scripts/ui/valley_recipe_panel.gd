@@ -1,7 +1,7 @@
 extends PanelContainer
 ## Lista contextual de receitas no Vale, sem criar receitas canonicas ou menus globais.
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 var details: Label
 
 func _ready() -> void:

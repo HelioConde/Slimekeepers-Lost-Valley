@@ -6,7 +6,7 @@ signal clicked
 ## Arrastar um espaço sobre outro (mochila e barra, item 42): de -> para.
 signal swapped(from: int, to: int)
 
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const SIZE := Vector2(48, 48)  # igual à barra rápida
 
 var info_title := ""

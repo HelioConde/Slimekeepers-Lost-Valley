@@ -6,7 +6,7 @@ extends PanelContainer
 const CHEST := preload("res://scripts/systems/chest_storage.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const CLOSE_BUTTON := preload("res://scripts/ui/close_button.gd")
 
 signal changed

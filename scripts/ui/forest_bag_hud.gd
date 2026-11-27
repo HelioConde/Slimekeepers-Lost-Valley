@@ -2,7 +2,7 @@ extends PanelContainer
 ## Exibe somente o inventario simples de sessao, em ambas as regioes.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
-const FONT := preload("res://assets/fonts/PixelifySans.ttf")
+const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const TOTAL_PATCHES := 3
 var _counter: Label
 
