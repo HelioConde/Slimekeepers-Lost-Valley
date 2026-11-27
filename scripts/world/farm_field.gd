@@ -11,6 +11,7 @@ const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const ENERGY := preload("res://scripts/systems/energy_state.gd")
+const WEAR := preload("res://scripts/systems/tool_wear.gd")
 const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
 const CELL := 32
 ## Alcance do [F]: célula à frente do jogador.
@@ -193,6 +194,8 @@ func interact(actor: Node2D) -> String:
 				return last_action
 			if FARM.water(tree, cell, field_id):
 				FARM.use_can(tree)
+				var note: String = WEAR.use(tree, "regador")  # desgaste (playtest ID 43)
+				if not note.is_empty(): last_action = note
 				message = "Terra regada (água %d/%d)." % [FARM.can_water(tree), FARM.CAN_MAX]
 			if actor.has_method("play_tool"): actor.play_tool("water")
 		"plant":
@@ -222,7 +225,8 @@ func _till_now(cell: Vector2i) -> String:
 	if not FARM.till(tree, cell, field_id): return ""
 	_clear_cell_decor(cell)
 	refresh()
-	return "Terra arada."
+	var note: String = WEAR.use(tree, "enxada")  # desgaste (playtest ID 43)
+	return note if not note.is_empty() else "Terra arada."
 
 
 func _on_day_changed(day: int) -> void:

@@ -90,12 +90,24 @@ func _at_impact(animated: bool, effect: Callable) -> void:
 	_pending = effect
 
 
+## Desgaste (playtest ID 43): cada golpe que acerta gasta um uso; alvo grande com a
+## ferramenta rudimentar gasta dois (playtest ID 54).
+func _wear(tool: String, amount: int = 1) -> void:
+	var note: String = preload("res://scripts/systems/tool_wear.gd").use(get_tree(), tool, amount)
+	if not note.is_empty():
+		region._notify(note)
+		region.bag_hud.call("refresh")
+
+
 func _rock_hit(r: Dictionary, power: int) -> void:
+	_wear(_best(ITEMS.PICKS), 2 if str(r.kind) == "large" and power < 2 else 1)
 	if rocks.strike(r, GameClock.day_number, power) == "broken":
 		region._notify("A pedra quebrou!")
 
 
 func _chop_hit(t: Dictionary, power: int) -> void:
+	var big: bool = t.kind == "tree" and choppable.trees.has(t.key) and not choppable.is_small(t.key)
+	_wear(_best(ITEMS.AXES), 2 if big and power < 2 else 1)
 	match choppable.strike(t, GameClock.day_number, power, region.player.global_position):
 		"felled": region._notify("A árvore caiu! Processe o tronco com o machado.")
 		"processed":
@@ -126,6 +138,7 @@ func _stump_interaction() -> bool:
 	if anim <= 0.0: anim = player.play_tool("hoe")  # Moni ainda sem arte de pá
 	_at_impact(anim > 0.0, func() -> void:
 		choppable.remove_stump(key)
+		_wear("pa")
 		if forage.drop.is_valid(): forage.drop.call("madeira", 1, at)
 		else: BAG.add_item(get_tree(), "madeira", 1)
 		region._notify("O toco saiu. O lugar ficou livre."))
@@ -222,6 +235,7 @@ func sickle_targets(center: Vector2) -> Array:
 
 
 func _sickle_hit(center: Vector2) -> void:
+	if not sickle_targets(center).is_empty(): _wear("foice")
 	for sp: Dictionary in sickle_targets(center):
 		var problem: String = forage.take(sp, GameClock.day_number)
 		if not problem.is_empty():
@@ -243,6 +257,7 @@ func _pick_pebbles(spot: Dictionary) -> void:
 	player.facing = player._get_direction_name(spot.at - player.global_position)
 	var anim: float = player.play_tool("pickaxe")
 	_at_impact(anim > 0.0, func() -> void:
+		_wear(_best(ITEMS.PICKS))
 		var problem: String = forage.take(spot, GameClock.day_number)
 		region.bag_hud.call("refresh")
 		if not problem.is_empty(): region._notify(problem))
