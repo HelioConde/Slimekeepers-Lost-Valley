@@ -111,6 +111,7 @@ func refresh() -> void:
 			var body := ITEMS.describe(item) + ("" if amount <= 1 else "
 Quantidade: %d" % amount)
 			slot.setup(ITEMS.icon(item), amount, i == _picked, str(ITEMS.info(item).name), body)
+			slot.wear.show_for(get_tree(), item)
 		slot.clicked.connect(_pick.bind(i))
 		slot.swapped.connect(_swap)
 		(_bar_grid if i < HOTBAR.SLOTS else _grid).add_child(slot)

@@ -43,5 +43,28 @@ func run() -> void:
 	check(absf(bar.size.x - width) < 1.0, "dica longa não alarga a barra (%.0f → %.0f)" % [width, bar.size.x])
 	var badges: Array = bar.find_children("*", "Label", true, false).map(func(l: Label) -> String: return l.text)
 	check("0" in badges and not "10" in badges, "décimo espaço numerado 0 (ID 38)")
+	# Playtest ID 43: barrinha de durabilidade sob o ícone (barra rápida e mochila).
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var wear := preload("res://scripts/systems/tool_wear.gd")
+	var wear_bar := preload("res://scripts/ui/wear_bar.gd")
+	if bag.count_item(self, "machado") <= 0: bag.add_item(self, "machado")
+	var at_slot := HOTBAR.slots(self).find("machado")
+	check(at_slot >= 0, "machado na barra rápida (%d)" % at_slot)
+	var bar_wear: Control = bar.find_children("Wear", "", true, false)[maxi(at_slot, 0)]
+	set_meta(wear.KEY, {})
+	bar.call("refresh")
+	check(not bar_wear.visible, "ferramenta nova: sem barrinha")
+	set_meta(wear.KEY, {"machado": 20})  # 20/80 = 0,25
+	bar.call("refresh")
+	check(bar_wear.visible and is_equal_approx(bar_wear.ratio, 0.25), "gasta: barrinha aparece com 25%")
+	check(wear_bar.color_for(0.9) == wear_bar.GREEN and wear_bar.color_for(0.4) == wear_bar.YELLOW \
+		and wear_bar.color_for(0.25) == wear_bar.RED, "verde, depois amarelo, depois vermelho")
+	var slot: Control = preload("res://scripts/ui/item_slot.gd").new()
+	slot.wear.show_for(self, "machado")
+	check(slot.wear.visible, "mochila: espaço da ferramenta gasta mostra a barrinha")
+	slot.wear.show_for(self, "graveto")
+	check(not slot.wear.visible, "mochila: item sem desgaste não mostra barrinha")
+	slot.free()
+	set_meta(wear.KEY, {})
 	print("HOTBAR_CLICK: %d failures" % failures)
 	quit(1 if failures else 0)

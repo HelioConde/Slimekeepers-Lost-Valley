@@ -199,7 +199,8 @@ func _save_text() -> String:
 			var d := Time.get_datetime_dict_from_unix_time(int(info.saved_at) + bias)
 			text += ", %02d/%02d às %02d:%02d" % [d.day, d.month, d.hour, d.minute]
 		text += " (espaço %d)." % SAVE.slot
-	text += " O jogo salva sozinho a cada amanhecer; o que você fez depois disso será perdido."
+	text += " Ao voltar ao menu, o jogo salva agora." if _can_save() \
+		else " Só o anfitrião salva a partida."
 	if _mp:
 		var mode := str(get_node("/root/NetSession").get("mode"))
 		text += "\n\n" + ("Você é o anfitrião: a sessão será encerrada para o outro jogador." if mode == "host" else "Você sai da partida do anfitrião.")
@@ -208,10 +209,30 @@ func _save_text() -> String:
 
 func _leave_to_menu() -> void:
 	var net := get_node_or_null("/root/NetSession")
+	save_before_leaving()
 	if _mp and net:
 		net.call("leave")
 	close()
 	get_tree().change_scene_to_file(MENU_SCENE)
+
+
+## Voltar ao menu salva antes, pelo mesmo caminho do autosave das 06:00. No multijogador,
+## só o anfitrião grava (o convidado não tem o mundo).
+func save_before_leaving() -> bool:
+	if not _can_save(): return false
+	var region := get_parent()
+	var ok := SAVE.save(get_tree(), GameClock, region.scene_file_path)
+	if ok and region.has_method("_notify"):
+		region.call("_notify", "Jogo salvo (dia %d)." % GameClock.day_number)
+	return ok
+
+
+func _can_save() -> bool:
+	var region := get_parent()
+	if region == null or region.scene_file_path.is_empty(): return false
+	var net := get_node_or_null("/root/NetSession")
+	var mode := str(net.get("mode")) if net else ""
+	return mode == "" or mode == "host"
 
 
 func _build() -> void:
