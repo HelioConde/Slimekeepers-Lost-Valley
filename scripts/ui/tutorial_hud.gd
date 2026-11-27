@@ -39,8 +39,9 @@ const SHARED := ["plan", "deposit", "build"]  ## passos com a bancada da dupla
 const SHARED_NOTE := "Em dupla a bancada é uma só: o que um fizer nela vale para os dois."
 const READ_SECONDS := 9.0
 const WIDTH := 330.0
-## Topo da cabeça em relação aos pés do jogador (sprite 128 px, escala 0,65 em y -34).
-const HEAD := Vector2(0, -60)
+## Topo da cabeça em relação aos pés do jogador (sprite 128 px, escala 0,48 em y -25;
+## playtest ID 52: personagem menor para caber na casa, escolha do usuário 2026-11-27).
+const HEAD := Vector2(0, -44)
 const TAIL := 10.0
 
 var region: Node  ## clearing_region: player, inventory_panel, crafting_panel
