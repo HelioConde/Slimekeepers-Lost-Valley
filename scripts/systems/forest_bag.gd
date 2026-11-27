@@ -9,9 +9,47 @@ const LEAVES_ID := "folhas_frescas"
 const INVENTORY_KEY := "forest_bag_items"
 const PATCHES_KEY := "forest_seed_patches_collected"
 const FRIENDS_KEY := "forest_slime_friends"
-## Mochila com 10 espaços (pedido do usuário, 2026-11-22): cada item diferente
-## ocupa um espaço (pilha até max_stack), ferramentas inclusive.
-const SLOTS := 10
+## Mochila (pedido do usuário, 2026-11-22 e 2026-11-27): cada item diferente ocupa um
+## espaço (pilha até max_stack), ferramentas inclusive. São 20 espaços: os 10 primeiros
+## são a barra rápida (na mão), os 10 seguintes a mochila do [E].
+const SLOTS := 20
+const BAR := 10
+## Posição de cada item nos 20 espaços ("" = vazio); item novo vai para a barra e, cheia,
+## para a mochila. Arrastar troca posições (swap_slots).
+const LAYOUT_KEY := "bag_layout"
+
+
+## Espaços na ordem do jogador, sempre conciliados com o que há na bolsa.
+static func layout(tree: SceneTree) -> Array[String]:
+	var items := inventory_snapshot(tree)
+	var raw: Variant = tree.get_meta(LAYOUT_KEY, [])
+	var slots: Array[String] = []
+	for i in SLOTS:
+		var id := str(raw[i]) if raw is Array and i < (raw as Array).size() else ""
+		slots.append(id if items.has(id) and not slots.has(id) else "")
+	var missing: Array = []
+	for tool in ITEMS.TOOLS:  # saves antigos: ferramentas primeiro, como era a barra
+		if items.has(tool) and not slots.has(tool): missing.append(tool)
+	for id in ITEMS.ORDER:
+		if items.has(id) and not slots.has(id) and not missing.has(id): missing.append(id)
+	for id in items:
+		if not slots.has(id) and not missing.has(id): missing.append(id)
+	for id in missing:
+		var free := slots.find("")
+		if free < 0: break
+		slots[free] = id
+	if not (raw is Array) or Array(raw) != Array(slots): tree.set_meta(LAYOUT_KEY, slots)
+	return slots
+
+
+## Troca dois espaços (arrastar e soltar, item 42 do relatório de playtest).
+static func swap_slots(tree: SceneTree, a: int, b: int) -> void:
+	var slots := layout(tree)
+	if a < 0 or b < 0 or a >= SLOTS or b >= SLOTS or a == b: return
+	var keep := slots[a]
+	slots[a] = slots[b]
+	slots[b] = keep
+	tree.set_meta(LAYOUT_KEY, slots)
 
 static func _load_inventory(tree: SceneTree) -> Variant:
 	var raw: Variant = tree.get_meta(INVENTORY_KEY, {})
@@ -73,6 +111,7 @@ static func add_item(tree: SceneTree, item_id: String, quantity: int = 1) -> boo
 	if inventory == null or not inventory.add(item_id, quantity):
 		return false
 	tree.set_meta(INVENTORY_KEY, inventory.serialize())
+	layout(tree)  # item novo ganha lugar (barra primeiro)
 	return true
 
 ## Troca atomica: nenhuma folha desaparece caso o alimento de destino estoure o saldo.

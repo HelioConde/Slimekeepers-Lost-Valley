@@ -9,19 +9,9 @@ const SELECTED_KEY := "hotbar_selected"
 
 
 ## Lista de ids nos 10 espaços ("" = vazio).
+## Os 10 primeiros espaços da bolsa (forest_bag.layout); o resto é a mochila do [E].
 static func slots(tree: SceneTree) -> Array[String]:
-	var result: Array[String] = []
-	for tool in ITEMS.TOOLS:  # só as ferramentas que o jogador já fabricou
-		if BAG.count_item(tree, tool) > 0:
-			result.append(tool)
-	for item in ITEMS.ORDER:
-		if result.size() >= SLOTS:
-			break
-		if BAG.count_item(tree, item) > 0:
-			result.append(item)
-	while result.size() < SLOTS:
-		result.append("")
-	return result
+	return BAG.layout(tree).slice(0, SLOTS)
 
 
 static func selected_index(tree: SceneTree) -> int:

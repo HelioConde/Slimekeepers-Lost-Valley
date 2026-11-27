@@ -3,11 +3,15 @@ extends PanelContainer
 ## que aparece ao passar o mouse (nome + detalhes). Clique esquerdo = `clicked`.
 
 signal clicked
+## Arrastar um espaço sobre outro (mochila e barra, item 42): de -> para.
+signal swapped(from: int, to: int)
 
 const FONT := preload("res://assets/fonts/PixelifySans.ttf")
 const SIZE := Vector2(48, 48)  # igual à barra rápida
 
 var info_title := ""
+## Índice do espaço na bolsa (0-19) para arrastar; -1 = não arrasta (fabricação).
+var slot_index := -1
 var info_body := ""
 var _icon: TextureRect
 var _count: Label
@@ -67,6 +71,24 @@ func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		clicked.emit()
 		accept_event()
+
+
+func _get_drag_data(_at: Vector2) -> Variant:
+	if slot_index < 0 or _icon.texture == null: return null
+	var preview := TextureRect.new()
+	preview.texture = _icon.texture
+	preview.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	preview.modulate.a = 0.85
+	set_drag_preview(preview)
+	return {"bag_slot": slot_index}
+
+
+func _can_drop_data(_at: Vector2, data: Variant) -> bool:
+	return slot_index >= 0 and data is Dictionary and (data as Dictionary).has("bag_slot")
+
+
+func _drop_data(_at: Vector2, data: Variant) -> void:
+	swapped.emit(int(data.bag_slot), slot_index)
 
 
 func _make_custom_tooltip(_for_text: String) -> Object:

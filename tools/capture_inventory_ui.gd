@@ -5,6 +5,8 @@ extends SceneTree
 ## - fabricação em grade, dica com ingredientes ao passar o mouse.
 ## Uso: godot --path . --rendering-driver opengl3 --script res://tools/capture_inventory_ui.gd -- <pasta>
 
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
+const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const CRAFTING := preload("res://scripts/systems/crafting.gd")
 var failures := 0
@@ -48,18 +50,27 @@ func run() -> void:
 	set_meta(BAG.INVENTORY_KEY, {})  # sem o kit de sementes inicial
 	var interact: Array = InputMap.action_get_events("interact")
 	check(not interact.is_empty() and (interact[0] as InputEventKey).physical_keycode == KEY_F, "[F] é a tecla de interagir")
-	for item in ["machado", "madeira", "fibra", "graveto", "pedra_pequena", "corda", "cenoura", "beterraba", "repolho"]:
-		BAG.add_item(self, item, 1 if item == "machado" else 5)
-	check(BAG.add_item(self, "folhas_frescas", 2) and BAG.used_slots(self) == 10, "10 itens diferentes enchem a mochila")
-	check(not BAG.add_item(self, "sementes_silvestres", 1), "11º item diferente não cabe")
+	# 20 espaços: 10 da barra + 10 da mochila (pedido do usuário, 2026-11-27).
+	var fill := ["machado", "madeira", "fibra", "graveto", "pedra_pequena", "corda", "cenoura", "beterraba", "repolho",
+		"semente_cenoura", "semente_beterraba", "semente_repolho", "cenoura_assada", "sopa_legumes", "pedra_polida",
+		"enxada", "regador", "foice", "picareta"]
+	for item in fill:
+		BAG.add_item(self, item, 1 if ITEMS.kind(item) == "tool" else 5)
+	check(BAG.add_item(self, "folhas_frescas", 2) and BAG.used_slots(self) == BAG.SLOTS, "%d itens diferentes enchem barra e mochila" % BAG.SLOTS)
+	check(not BAG.add_item(self, "sementes_silvestres", 1), "item diferente a mais não cabe")
+	check(BAG.layout(self)[BAG.BAR] != "", "com a barra cheia, os seguintes vão para a mochila")
 	check(BAG.add_item(self, "madeira", 3), "pilha que já existe ainda cresce")
 	var panel: Control = region.get("inventory_panel")
 	await key(KEY_E)
 	check(is_instance_valid(panel) and panel.visible, "[E] abre a mochila")
 	await process_frame
 	if out != "": await shot(out + "/mochila.png")
+	var from_pack: String = BAG.layout(self)[BAG.BAR]
+	panel.call("_swap", BAG.BAR, 0)  # o mesmo que arrastar da mochila para o 1º espaço da barra
+	check(HOTBAR.slots(self)[0] == from_pack, "arrastar da mochila para a barra troca os itens (%s)" % from_pack)
 	await key(KEY_E)
 	check(not panel.visible, "[E] fecha a mochila")
+	check(panel.find_children("Slot*", "", true, false).size() == BAG.SLOTS, "janela mostra mochila e barra (%d espaços)" % panel.find_children("Slot*", "", true, false).size())
 	BAG.spend_item(self, "folhas_frescas", 2)
 	BAG.add_item(self, "fibra", 10)
 	var craft: Control = region.get("crafting_panel")
@@ -73,7 +84,7 @@ func run() -> void:
 	if out != "":
 		await process_frame
 		await shot(out + "/fabricacao.png")
-	BAG.add_item(self, "folhas_frescas", 1)  # 10/10 de novo
+	BAG.add_item(self, "folhas_frescas", 1)  # cheio de novo
 	check(CRAFTING.missing(self, "bancada").begins_with("Falta") or CRAFTING.missing(self, "corda").is_empty(), "corda com pilha existente não precisa de espaço")
 	await key(KEY_B)
 	print("INVENTORY_UI: %d failures" % failures)

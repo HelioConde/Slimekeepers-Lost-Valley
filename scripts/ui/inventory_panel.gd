@@ -1,7 +1,8 @@
 extends PanelContainer
-## Mochila (pedido do usuário, 2026-11-22): [E] abre/fecha. 10 espaços em grade
-## (mesma ordem da barra rápida); passar o mouse mostra nome e detalhes do item;
-## clicar num espaço o escolhe na barra. Esc também fecha.
+## Mochila (pedido do usuário, 2026-11-22 e 2026-11-27): só [E] abre/fecha. Em cima, os
+## 10 espaços da mochila; embaixo, os 10 da barra rápida. Passar o mouse mostra nome e
+## detalhes; clicar escolhe (na barra, também seleciona na mão); arrastar troca de lugar
+## (playtest ID 42). Esc também fecha.
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
@@ -16,7 +17,9 @@ const WINDOWS := ["InventoryPanel", "CraftingPanel", "ChestPanel"]
 signal changed
 
 var player: Node
-var _grid: GridContainer
+var _grid: GridContainer  ## mochila (espaços 11-20)
+var _bar_grid: GridContainer  ## barra rápida (espaços 1-10)
+var _picked := -1  ## espaço escolhido na janela (0-19)
 var _status: Label
 var _amount: SpinBox
 var _drop_button: Button
@@ -31,11 +34,11 @@ func _ready() -> void:
 	column.add_theme_constant_override("separation", 6)
 	add_child(column)
 	column.add_child(_label("Mochila", 16, Color("#3d2a1e"), true))
-	_grid = GridContainer.new()
-	_grid.columns = COLUMNS
-	_grid.add_theme_constant_override("h_separation", 4)
-	_grid.add_theme_constant_override("v_separation", 4)
+	_grid = _new_grid(COLUMNS)
 	column.add_child(_grid)
+	column.add_child(_label("Barra rápida", 13, Color("#3d2a1e"), true))
+	_bar_grid = _new_grid(HOTBAR.SLOTS)
+	column.add_child(_bar_grid)
 	# Soltar no chão o item escolhido, na quantidade escolhida (playtest ID 21).
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -62,7 +65,17 @@ static func panel_style() -> StyleBox:
 	return preload("res://scripts/ui/hud_skin.gd").panel(30, 22)
 
 
+func _new_grid(columns: int) -> GridContainer:
+	var grid := GridContainer.new()
+	grid.columns = columns
+	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	grid.add_theme_constant_override("h_separation", 4)
+	grid.add_theme_constant_override("v_separation", 4)
+	return grid
+
+
 func open() -> void:
+	_picked = HOTBAR.selected_index(get_tree())
 	visible = true
 	_freeze(true)
 	refresh()
@@ -80,30 +93,44 @@ func _freeze(on: bool) -> void:
 
 
 func refresh() -> void:
-	for child in _grid.get_children(): child.queue_free()
-	var slots := HOTBAR.slots(get_tree())
-	var current := HOTBAR.selected_index(get_tree())
+	for grid in [_grid, _bar_grid]:
+		for child in grid.get_children():
+			grid.remove_child(child)
+			child.queue_free()
+	var slots := BAG.layout(get_tree())
+	if _picked < 0: _picked = HOTBAR.selected_index(get_tree())
 	for i in slots.size():
 		var item: String = slots[i]
 		var slot := SLOT.new()
+		slot.name = "Slot%d" % i
+		slot.slot_index = i
 		if item.is_empty():
-			slot.setup(null, 0, i == current, "Espaço vazio", "")
+			slot.setup(null, 0, i == _picked, "Espaço vazio", "")
 		else:
 			var amount := BAG.count_item(get_tree(), item)
-			var body := ITEMS.describe(item) + ("" if amount <= 1 else "\nQuantidade: %d" % amount)
-			slot.setup(ITEMS.icon(item), amount, i == current, str(ITEMS.info(item).name), body)
+			var body := ITEMS.describe(item) + ("" if amount <= 1 else "
+Quantidade: %d" % amount)
+			slot.setup(ITEMS.icon(item), amount, i == _picked, str(ITEMS.info(item).name), body)
 		slot.clicked.connect(_pick.bind(i))
-		_grid.add_child(slot)
-	var have := BAG.count_item(get_tree(), HOTBAR.selected_item(get_tree()))
+		slot.swapped.connect(_swap)
+		(_bar_grid if i < HOTBAR.SLOTS else _grid).add_child(slot)
+	var have := BAG.count_item(get_tree(), picked_item())
 	_amount.max_value = maxi(1, have)
 	_amount.editable = have > 1
 	_drop_button.disabled = have <= 0
-	_status.text = "Espaços: %d/%d   ·   Q soltar   ·   E / Esc fechar" % [BAG.used_slots(get_tree()), BAG.SLOTS]
+	_status.text = "Espaços: %d/%d   ·   arraste para trocar   ·   Q soltar   ·   E / Esc fechar" % [BAG.used_slots(get_tree()), BAG.SLOTS]
 	_center.call_deferred()
 
 
+## Item do espaço escolhido na janela (mochila ou barra).
+func picked_item() -> String:
+	var slots := BAG.layout(get_tree())
+	return slots[_picked] if _picked >= 0 and _picked < slots.size() else ""
+
+
 func _pick(index: int) -> void:
-	HOTBAR.select(get_tree(), index)
+	_picked = index
+	if index < HOTBAR.SLOTS: HOTBAR.select(get_tree(), index)
 	_amount.value = 1
 	refresh()
 	changed.emit()
@@ -112,7 +139,7 @@ func _pick(index: int) -> void:
 ## Solta no chão (item_drops.drop_from_bag) a quantidade escolhida do item selecionado.
 func drop_selected() -> void:
 	var drops := get_tree().get_first_node_in_group("item_drops")
-	if drops and drops.call("drop_from_bag", HOTBAR.selected_item(get_tree()), int(_amount.value)):
+	if drops and drops.call("drop_from_bag", picked_item(), int(_amount.value)):
 		_amount.value = 1
 		refresh()
 		changed.emit()
@@ -130,6 +157,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif visible and event is InputEventKey and event.pressed and not event.is_echo() and (event as InputEventKey).physical_keycode == KEY_Q:
 		drop_selected()
 		get_viewport().set_input_as_handled()
+
+
+## Arrastar e soltar: troca os dois espaços; a escolha acompanha o item arrastado.
+func _swap(from: int, to: int) -> void:
+	BAG.swap_slots(get_tree(), from, to)
+	if _picked == from: _picked = to
+	elif _picked == to: _picked = from
+	if _picked < HOTBAR.SLOTS: HOTBAR.select(get_tree(), _picked)
+	refresh()
+	changed.emit()
 
 
 ## Não abre por cima de outra janela (fabricação, baú).

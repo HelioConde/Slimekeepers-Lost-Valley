@@ -158,7 +158,7 @@ func run() -> void:
 		await _swing_done()
 	check(chop.state(self).has(best_key), "árvore caiu após 3 golpes")
 	check(not (tree_node.get_node("Sprite") as CanvasItem).visible, "árvore some e fica o toco")
-	player.global_position = tree_node.global_position + chop.LOG_OFFSET + Vector2(0, 16)
+	player.global_position = chop.log_position(best_key) + Vector2(0, 16)  # o lado da queda varia (playtest ID 29)
 	await physics_frame
 	await process_frame
 	if out != "": (await _shot()).save_png(out + "/tree_felled.png")
