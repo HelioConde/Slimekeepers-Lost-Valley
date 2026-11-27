@@ -165,7 +165,7 @@ func _offer_prototype_food(slime: Node2D) -> void:
 					bag_hud.call("refresh")
 					return
 				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
-				_notify("%s comeu %s! Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), hearts, FEEDING.MAX_HEARTS])
+				_notify("%s comeu %s e %s. Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), FEEDING.reaction_text(FEEDING.preference(item, str(slime.get("slime_type")))), hearts, FEEDING.MAX_HEARTS])
 			"needs_friendship": _notify("Primeiro conheça este slime usando F.")
 			"already_fed": _notify(slime.display_name() + " já comeu hoje.")
 			_: _notify("Você não tem " + str(ITEMS.info(item).name).to_lower() + ".")

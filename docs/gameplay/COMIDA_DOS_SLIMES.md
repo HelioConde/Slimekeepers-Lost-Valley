@@ -37,6 +37,40 @@ Regra de jogo implementada (`scripts/systems/slime_feeding.gd`, `LIKES` e `gain`
 - As outras comidas dão os pontos normais.
 - Pratos cozidos continuam valendo mais que a colheita crua.
 
+## Preferência por ingrediente (playtest ID 59, 2026-11-27)
+
+Brotinho, Musguinho e Bolhinha têm gosto próprio por ingrediente (`PREFS` em
+`slime_feeding.gd`). Isso substitui, para essas três espécies, o dobro por grupo; o grupo
+de habitat continua só como dica no painel do slime ("gosta de vegetais"). As outras
+espécies (Colhita, Carreguim, Construlim) seguem a regra de `LIKES`.
+
+| Nível | Pontos de laço |
+|---|---|
+| Amado | ×2 |
+| Gostado | ×1,5 |
+| Neutro (o resto) | ×1 |
+
+| Espécie | Amado | Gostado |
+|---|---|---|
+| Brotinho | cenoura | folhas frescas, beterraba |
+| Musguinho | folhas frescas | repolho |
+| Bolhinha | repolho | beterraba |
+
+- **Pratos** herdam a média dos ingredientes da receita (`data/crafting/recipes.gd`):
+  amado = 2, gostado = 1, neutro = 0; média ≥ 1,5 é amado, ≥ 0,5 é gostado. Assim, cenoura
+  assada é amada pelo Brotinho e a sopa de legumes fica "gostado" para ele.
+- **Descoberta**: o disco não revela nada antes de provar. Comida ainda não oferecida
+  àquela espécie aparece como "(nova)"; depois de comer, mostra "★ favorita" ou "(gosta)".
+  O registro fica em `slime_food_known` (por espécie, salvo com a sessão).
+- Ao comer, a mensagem diz a reação: "amou! É o favorito", "gostou" ou "aceitou, sem
+  muita vontade".
+- A Bíblia não define preferências por espécie (só que "comidas específicas podem ser
+  relevantes"). Esta tabela é **provisória**, escolhida como a opção mais simples para o
+  playtest; os valores e as escolhas ainda precisam de balanceamento.
+- Não há reação "não gostou" (rejeição): o pedido pediu três níveis; um nível negativo
+  fica para decidir com o usuário.
+- Ainda não verificado: sincronização das descobertas no multijogador.
+
 ## Boss Slimes: batalha de time e habilidade
 
 Direção do usuário para a rota de combate:
