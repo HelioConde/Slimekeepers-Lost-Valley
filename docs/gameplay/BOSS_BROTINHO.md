@@ -21,15 +21,38 @@ Decisões do usuário em 2026-11-27. Este é um documento vivo: o combate vai se
 - **Arena:** o **Mirante Rochoso** (Floresta, centro 5110,1250), escolhido pelo usuário. O platô foi ampliado de 470×310 para 660×430 (`tools/combat/grow_lookout.gd`), com autorização para priorizar o combate. Arena em elipse de 300×190. Ao entrar com o boss liberado, um anel de raízes fecha a arena e a barra de vida do boss aparece no alto da tela.
 - **Cristal de energia (regra do usuário, 2026-11-27):** o boss aparece pela magia acumulada no ambiente, definida pelos cristais de energia. Onde o boss surge há pelo menos 1 cristal, e o boss sai dele. O cristal escuro feito no PixelLab (`magic_crystal_detailed_64x96_ae2e88e2`) fica na ponta do platô, na borda de trás. A `BIBLIA_NARRATIVA.md` deste repositório ainda não fala dos cristais; vale incluir quando você autorizar.
 - **Brotinho gigante:** cerca de 3× o tamanho normal, com 300 de vida. Golpes, todos avisados antes:
-  1. **Raízes:** três círculos marcados sob o jogador em sequência; as raízes sobem depois do aviso.
-  2. **Pancada:** pula até onde o jogador estava; a sombra no chão é o aviso; dano em área ao cair.
+  1. **Raízes:** três círculos marcados sob o jogador em sequência. O boss lança uma semente em arco, que cai **depois que a zona some**; aí as raízes sobem e dão dano.
+  2. **Pancada:** o boss salta alto até onde o jogador estava (ele mesmo é o projétil, com a zona marcando onde cai) e só dá dano ao pousar, depois que a zona some.
+  - Regra (teste do usuário, 2026-11-27): ataque em área sempre tem um projétil visível e só acerta depois que a zona vermelha desaparece (0,15 s depois). Avisos: raízes 1,2 s (fase 2: 0,85 s); pancada 1,5 s (fase 2: 1,1 s).
   3. **Chuva de sementes:** carrega e solta sementes em leque.
   - Com metade da vida: avisos mais curtos e combinações de golpes.
 - **Jogador:** vida 100 (a barra do HUD que já existe).
   - Espada: golpe largo em arco de 140° à frente, com alcance de 110 px até a borda do alvo, como no Stardew. Dá para acertar de longe e correr (pedido do usuário, 2026-11-27). Um rastro branco mostra o arco.
-  - Arco: flecha na direção em que o jogador olha; gasta 1 flecha.
+  - Arco: atira para onde o **mouse** aponta, com alcance de 380 px (a flecha cai no limite); gasta 1 flecha (teste do usuário, 2026-11-27).
   - Rolamento (Espaço): ~0,35 s sem tomar dano e tempo de recarga; rolar logo antes do impacto ("rolamento perfeito") abre o boss por ~2 s, com dano dobrado.
 - **Gatilho provisório:** alimentar 3 slimes diferentes libera o boss. Também há um comando de depuração para testes. Trocar pela tarefa definitiva quando ela existir.
+
+## Arte e animação futuras (PixelLab, quando você autorizar)
+
+Hoje tudo usa arte provisória: sprites atuais ampliados ou formas desenhadas por código. Cada item precisa de prévia em GIF antes de instalar. Slimes nunca têm braços nem pernas.
+
+| Item | O que existe hoje | O que precisa |
+|---|---|---|
+| Brotinho Gigante | Brotinho normal ampliado 3× | Sprite grande próprio, com idle, carga (achatar), salto, pouso, golpe recebido, zonzo e encolher na derrota |
+| Musguinho Gigante | Musguinho normal ampliado | O mesmo conjunto do Brotinho Gigante |
+| Golpe de espada do jogador | Animação do machado + meia-lua branca desenhada | Animação própria de espada nas 4 direções, no padrão de golpe aprovado (sobe, desce reto, impacto) e rastro do corte em pixel art |
+| Tiro com arco do jogador | Sem animação | Animação de puxar e soltar o arco nas 4 direções |
+| Rolamento do jogador | Sprite andando, só deslocado | Animação de rolar nas 4 direções |
+| Flecha | Linha desenhada por código | Sprite da flecha voando e caída no chão |
+| Semente das raízes (projétil) | Bolinha desenhada | Semente girando no ar e sombra |
+| Raízes subindo | Círculo marrom que some | Raízes saindo do chão (efeito curto) |
+| Chuva de sementes | Bolinhas desenhadas | Semente pequena em voo |
+| Aviso no chão | Círculo vermelho desenhado | Marca de aviso em pixel art (opcional) |
+| Impacto da pancada | Círculo e tremor da tela | Poeira e rachadura no chão |
+| Cristal de energia | Arte do PixelLab já instalada (`ae2e88e2`) | Brilho pulsando ou animação de energia (opcional) |
+| Anel de raízes da arena | Pontos desenhados | Cerca de raízes em volta da arena |
+| Orbe de energia | Ícone provisório gerado por script | Ícone e orbe no mundo, flutuando |
+| Ícones de espada, arco e flecha | Provisórios gerados por script | Ícones em pixel art no estilo do inventário |
 
 ## Em aberto (decidir nas revisões)
 

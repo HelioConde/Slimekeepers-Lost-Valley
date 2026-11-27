@@ -15,7 +15,10 @@ const SWORD_REACH := 110.0
 const SWORD_ARC := deg_to_rad(140.0)
 const ARROW_DAMAGE := 9
 const ARROW_SPEED := 560.0
-const ARROW_RANGE := 620.0
+## Arco (teste do usuário, 2026-11-27): atira para onde o mouse aponta, com alcance
+## limitado; a flecha cai no limite.
+const BOW_RANGE := 380.0
+const ARROW_RANGE := BOW_RANGE + 20.0
 const BOW_COOLDOWN := 0.45
 
 var player: CharacterBody2D
@@ -91,7 +94,8 @@ func _slash(forward: Vector2) -> void:
 	fade.tween_callback(trail.queue_free)
 
 
-func shoot() -> bool:
+## `at`: ponto no mundo para onde atirar (padrão: o mouse).
+func shoot(at: Variant = null) -> bool:
 	if _bow_cd > 0.0: return false
 	if BAG.count_item(get_tree(), "flecha") <= 0:
 		var region := player.get_parent()
@@ -100,10 +104,16 @@ func shoot() -> bool:
 	BAG.spend_item(get_tree(), "flecha", 1)
 	_bow_cd = BOW_COOLDOWN
 	var arrow := Arrow.new()
-	arrow.direction = player._facing_vector()
+	var aim: Vector2 = at if at != null else player.get_global_mouse_position()
+	arrow.direction = bow_aim(player.global_position + Vector2(0, -16), aim, player._facing_vector())
 	arrow.global_position = player.global_position + Vector2(0, -16) + arrow.direction * 18.0
 	player.get_parent().add_child(arrow)
 	return true
+
+
+## Direção do tiro até o ponto mirado; mouse em cima do jogador: para a frente.
+static func bow_aim(from: Vector2, at: Vector2, forward: Vector2) -> Vector2:
+	return forward if from.distance_to(at) < 8.0 else (at - from).normalized()
 
 
 ## Flecha simples (linha desenhada) que acerta o primeiro alvo de boss no caminho.

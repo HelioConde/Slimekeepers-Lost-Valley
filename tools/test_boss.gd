@@ -64,7 +64,7 @@ func run() -> void:
 	# Espada.
 	BAG.add_item(self, "espada", 1)
 	BAG.add_item(self, "arco", 1)
-	BAG.add_item(self, "flecha", 3)
+	BAG.add_item(self, "flecha", 3)  # 2 tiros no teste
 	HOTBAR.select(self, HOTBAR.slots(self).find("espada"))
 	var combat: Node = region.get_node("PlayerCombat")
 	player.global_position = boss.global_position + Vector2(-140, 10)  # de longe (golpe largo como no Stardew)
@@ -79,10 +79,30 @@ func run() -> void:
 	# Arco: gasta flecha e acerta.
 	hp = boss.hp
 	player.global_position = boss.global_position + Vector2(-200, 20)
-	player.facing = "east"
-	check(combat.shoot() and BAG.count_item(self, "flecha") == 2, "arco gasta 1 flecha")
+	player.facing = "north"  # olhando para outro lado: a flecha vai para onde o mouse aponta
+	check(combat.shoot(boss.global_position + Vector2(0, -20)) and BAG.count_item(self, "flecha") == 2, "arco gasta 1 flecha")
 	await create_timer(0.8).timeout
-	check(boss.hp < hp, "flecha acerta o boss (%d -> %d)" % [hp, boss.hp])
+	check(boss.hp < hp, "flecha vai para o mouse e acerta o boss (%d -> %d)" % [hp, boss.hp])
+	check(combat_script.bow_aim(Vector2.ZERO, Vector2(0, 50), Vector2.RIGHT) == Vector2.DOWN, "arco mira no ponto do mouse")
+	hp = boss.hp
+	player.global_position = boss.global_position + Vector2(-600, 20)
+	combat.set("_bow_cd", 0.0)
+	combat.shoot(boss.global_position + Vector2(0, -20))
+	await create_timer(1.4).timeout
+	check(boss.hp == hp, "flecha cai antes de chegar no boss a 600 px (alcance %d)" % combat_script.BOW_RANGE)
+	# Raízes: a zona some antes do dano; o dano vem com o projétil logo depois.
+	boss.set("_busy", true)
+	await create_timer(0.6).timeout
+	set_meta(HEALTH.KEY, 100)
+	player.global_position = boss.global_position + Vector2(-160, 40)
+	boss.call("_roots")
+	var warn_time: float = boss.call("_t", boss.ROOTS)
+	await create_timer(warn_time - 0.05).timeout
+	check(HEALTH.current(self) == 100 and not (boss.get("_lobs") as Array).is_empty(), "raízes: sem dano enquanto a zona aparece, projétil no ar")
+	await create_timer(0.05 + boss.LAND_DELAY + 0.1).timeout
+	check(HEALTH.current(self) < 100, "raízes: dano depois que a zona some (vida %d)" % HEALTH.current(self))
+	player.global_position += Vector2(-300, 0)  # sai das próximas raízes
+	await create_timer(4.0).timeout
 	# Golpe avisado: parado, toma dano; rolando na hora, perfeito e o boss fica zonzo.
 	set_meta(HEALTH.KEY, 100)
 	boss.call("_impact", player.global_position, 40.0, 14, Color.RED)

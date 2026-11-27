@@ -17,9 +17,11 @@ const BODY_RADIUS := 46.0
 const MOVE_SPEED := 46.0
 const STAGGER_TIME := 2.0
 const PERFECT_WINDOW := 0.26  ## s antes do impacto em que o rolamento conta como perfeito
-## [aviso fase 1, aviso fase 2, dano]
-const ROOTS := [0.85, 0.55, 14]
-const SLAM := [1.1, 0.8, 22]
+## [aviso fase 1, aviso fase 2, dano]. Teste do usuário (2026-11-27): avisos mais longos
+## e o dano só cai depois que a zona some (LAND_DELAY), trazido por um projétil.
+const ROOTS := [1.2, 0.85, 14]
+const SLAM := [1.5, 1.1, 22]
+const LAND_DELAY := 0.15  ## s entre a zona sumir e o projétil cair
 const SEEDS := [0.75, 0.5, 10]
 const ROOT_RADIUS := 36.0
 const SLAM_RADIUS := 78.0
@@ -39,6 +41,7 @@ var sprite: AnimatedSprite2D
 var _warnings: Array = []  # {at, radius, time, total, color}
 var _bursts: Array = []  # {at, radius, time}
 var _seeds: Array = []  # {at, vel, life}
+var _lobs: Array = []  # {from, to, time, total, height, color}: projéteis em arco
 var _busy := false
 var _dead := false
 var _rest := 1.4
@@ -127,7 +130,10 @@ func _roots() -> void:
 	for i in count:
 		if _dead: return
 		var at: Vector2 = player.global_position
+		_lob(at, _t(ROOTS) + LAND_DELAY, 90.0, Color("#7a5230"))  # semente que vira raiz
 		await _warn(at, ROOT_RADIUS, _t(ROOTS), Color(0.85, 0.3, 0.15))
+		await get_tree().create_timer(LAND_DELAY).timeout
+		if _dead: return
 		_impact(at, ROOT_RADIUS, int(ROOTS[2]), Color(0.45, 0.32, 0.18))
 		await get_tree().create_timer(0.15).timeout
 	_finish(1.1)
@@ -138,9 +144,15 @@ func _slam() -> void:
 	var target: Vector2 = player.global_position
 	await _squash(0.45)
 	if _dead: return
+	var flight := _t(SLAM) + LAND_DELAY  # o próprio boss é o projétil: salta e cai
 	var jump := create_tween()
-	jump.tween_property(self, "position", position + (target - global_position), _t(SLAM)).set_trans(Tween.TRANS_SINE)
+	jump.tween_property(self, "position", position + (target - global_position), flight)
+	var arc := create_tween()
+	arc.tween_property(sprite, "position:y", -20.0 - 150.0, flight * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	arc.tween_property(sprite, "position:y", -20.0, flight * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	await _warn(target, SLAM_RADIUS, _t(SLAM), Color(0.25, 0.2, 0.2))
+	await arc.finished
+	if _dead: return
 	_impact(target, SLAM_RADIUS, int(SLAM[2]), Color(0.55, 0.45, 0.3))
 	_shake(9.0)
 	_finish(1.3)
@@ -170,6 +182,11 @@ func _squash(seconds: float) -> void:
 	await tween.finished
 
 
+## Projétil em arco do boss até `to`, chegando em `seconds` (desenho; o dano é do golpe).
+func _lob(to: Vector2, seconds: float, height: float, color: Color) -> void:
+	_lobs.append({"from": global_position + Vector2(0, -40), "to": to, "time": seconds, "total": seconds, "height": height, "color": color})
+
+
 func _warn(at: Vector2, radius: float, seconds: float, color: Color) -> void:
 	_warnings.append({"at": at, "radius": radius, "time": seconds, "total": seconds, "color": color})
 	await get_tree().create_timer(seconds).timeout
@@ -179,7 +196,7 @@ func _warn(at: Vector2, radius: float, seconds: float, color: Color) -> void:
 ## antes do impacto é perfeito e deixa o boss zonzo.
 func _impact(at: Vector2, radius: float, damage: int, color: Color) -> void:
 	_bursts.append({"at": at, "radius": radius, "time": 0.3, "color": color})
-	if not is_instance_valid(player) or player.global_position.distance_to(at) > radius + 8.0: return
+	if not is_instance_valid(player) or player.global_position.distance_to(at) > radius: return
 	if player.is_rolling() and (Time.get_ticks_msec() - float(player.rolling_since)) / 1000.0 <= PERFECT_WINDOW:
 		staggered = STAGGER_TIME
 		_say("Perfeito! O %s ficou zonzo." % display_name)
@@ -190,6 +207,8 @@ func _impact(at: Vector2, radius: float, damage: int, color: Color) -> void:
 func _tick_effects(delta: float) -> void:
 	for w in _warnings: w.time -= delta
 	_warnings = _warnings.filter(func(w) -> bool: return w.time > 0.0)
+	for l in _lobs: l.time -= delta
+	_lobs = _lobs.filter(func(l) -> bool: return l.time > 0.0)
 	for b in _bursts: b.time -= delta
 	_bursts = _bursts.filter(func(b) -> bool: return b.time > 0.0)
 	for s in _seeds:
@@ -215,6 +234,15 @@ func _draw() -> void:
 		draw_set_transform(at2, 0.0, Vector2(1.0, 0.55))
 		draw_circle(Vector2.ZERO, b.radius * (1.2 - b.time), Color(b.color, b.time * 2.0))
 		draw_set_transform(Vector2.ZERO)
+	for l in _lobs:  # sombra no chão + projétil subindo e descendo
+		var k: float = 1.0 - l.time / l.total
+		var ground: Vector2 = to_local((l.from as Vector2).lerp(l.to, k))
+		draw_set_transform(ground, 0.0, Vector2(1.0, 0.5))
+		draw_circle(Vector2.ZERO, 5.0 + 4.0 * k, Color(0, 0, 0, 0.3))
+		draw_set_transform(Vector2.ZERO)
+		var air := ground + Vector2(0, -sin(k * PI) * float(l.height))
+		draw_circle(air, 7.0, l.color)
+		draw_circle(air + Vector2(-2, -2), 2.5, Color("#d8f5b0"))
 	for s in _seeds:
 		draw_circle(to_local(s.at), 6.0, Color("#6fbf4a") if species == "brotinho" else Color("#7d9a6a"))
 		draw_circle(to_local(s.at), 3.0, Color("#d8f5b0"))
@@ -224,6 +252,7 @@ func _die() -> void:
 	_dead = true
 	_warnings.clear()
 	_seeds.clear()
+	_lobs.clear()
 	var shrink := create_tween()  # a magia sai e ele volta ao tamanho normal
 	shrink.tween_property(sprite, "modulate", Color(1.6, 2.0, 1.6), 0.4)
 	shrink.tween_property(sprite, "scale", _base_scale / SIZE, 1.0).set_trans(Tween.TRANS_BACK)
