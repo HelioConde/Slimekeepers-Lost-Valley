@@ -32,7 +32,7 @@ func key(code: int) -> void:
 func run() -> void:
 	var out: String = OS.get_cmdline_user_args()[0] if OS.get_cmdline_user_args().size() > 0 else ""
 	DisplayServer.window_set_size(Vector2i(1280, 720))
-	for k in [BAG.INVENTORY_KEY, "slime_work_off", "slime_at_farm", "carreguim_chest"]:
+	for k in [BAG.INVENTORY_KEY, "slime_work_off", "slime_at_farm", "carreguim_chest", "slime_food_known", "slime_fed_day"]:
 		if has_meta(k): remove_meta(k)
 	var region: Node2D = load("res://scenes/regions/FlorestaDoDespertarV2.tscn").instantiate()
 	root.add_child(region)
@@ -59,9 +59,15 @@ func run() -> void:
 	disc.call("_choose")
 	var list: VBoxContainer = disc.get("_list")
 	check(list.visible and list.get_child_count() == 3, "dois tipos de comida abrem a lista (%d botões)" % list.get_child_count())
+	# Playtest ID 59: preferência não aparece antes de provar.
+	var first := (list.get_child(0) as Button).text
+	check(first.contains("(nova)") and (list.get_child(1) as Button).text.contains("(nova)"), "comida não provada aparece como nova (%s)" % first)
+	var eaten: String = "cenoura_assada" if first.begins_with("Cenoura assada") else "cenoura"
 	(list.get_child(0) as Button).emit_signal("pressed")
 	for i in 3: await process_frame
 	check(not disc.visible, "escolher a comida fecha o disco")
+	var FEEDING := preload("res://scripts/systems/slime_feeding.gd")
+	check(FEEDING.known_preference(self, eaten, str(slime.get("slime_type"))) == FEEDING.preference(eaten, str(slime.get("slime_type"))), "comer revela a preferência de %s" % eaten)
 	# Trabalho e seguir.
 	disc.call("open", slime)
 	disc.set("hovered", 2)

@@ -229,8 +229,15 @@ func food_choices() -> Array:
 	for item: String in BAG.inventory_snapshot(get_tree()):
 		if FEEDING.is_food(item) and BAG.count_item(get_tree(), item) > 0: out.append(item)
 	var species := str(slime.get("slime_type"))
-	out.sort_custom(func(a: String, b: String) -> bool: return int(FEEDING.is_favorite(a, species)) > int(FEEDING.is_favorite(b, species)))
+	# Só o que o jogador já descobriu conta (ID 59): o resto fica para experimentar.
+	var score := func(item: String) -> int: return int(FEEDING.LEVEL_SCORE.get(FEEDING.known_preference(get_tree(), item, species), 0))
+	out.sort_custom(func(a: String, b: String) -> bool: return score.call(a) > score.call(b))
 	return out
+
+
+## Sufixo do botão: reação já vista, ou "nova" se este slime ainda não provou.
+func food_tag(item: String) -> String:
+	return {"amado": "  ★ favorita", "gostado": "  (gosta)", "neutro": "", "": "  (nova)"}[FEEDING.known_preference(get_tree(), item, str(slime.get("slime_type")))]
 
 
 func _open_list(options: Array, action: String) -> void:
@@ -246,7 +253,7 @@ func _open_list(options: Array, action: String) -> void:
 		if action == "comida":
 			button.icon = ITEMS.icon(str(option))
 			button.expand_icon = false
-			button.text = "%s ×%d%s" % [str(ITEMS.info(str(option)).name), BAG.count_item(get_tree(), str(option)), "  ★ favorita" if FEEDING.is_favorite(str(option), str(slime.get("slime_type"))) else ""]
+			button.text = "%s ×%d%s" % [str(ITEMS.info(str(option)).name), BAG.count_item(get_tree(), str(option)), food_tag(str(option))]
 		else:
 			button.text = "Baú mais perto" if str(option).is_empty() else "Baú " + str(option).replace("_", " ")
 		var chosen: String = str(option)
