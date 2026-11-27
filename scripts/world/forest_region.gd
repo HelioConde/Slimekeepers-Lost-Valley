@@ -32,7 +32,7 @@ var placer: Node2D
 var intro: Node
 ## Pontos de coleta na Clareira (ajustável): o bastante para machado e bancada.
 ## A fibra vem de todo o mato do chão (forage_spots.add_mato).
-const FORAGE_PLAN := {"graveto": 6, "pedra_pequena": 8}
+const FORAGE_PLAN := {"graveto": 10, "pedra_pequena": 8}  # a dica 2 pede 8 gravetos: havia só 6 perto do início
 const WORLD_FORAGE := {"graveto": 60, "pedra_pequena": 60}
 ## Recursos do começo à beira das trilhas (playtest IDs 01 e 06).
 const TRAIL_FORAGE := {"graveto": 14, "pedra_pequena": 12}

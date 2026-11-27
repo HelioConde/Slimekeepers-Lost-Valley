@@ -7,6 +7,14 @@ extends Node2D
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FORAGE_KEY := "forage_taken"
 const REACH := 36.0
+## Benchmark 2026-11-27: todo tufo de mato é fibra, então [F] quase sempre arrancava o mato
+## e o graveto a dois passos ficava fora do alcance. Graveto e pedrinha alcançam mais longe
+## e ganham do mato a distâncias parecidas.
+const REACH_SMALL := 48.0
+const FIBER_PENALTY := 18.0
+## Brilho do ponto que o [F] vai pegar (o jogador vê o alvo antes de apertar).
+const LIT := Color(1.45, 1.4, 1.1)
+var _lit: CanvasItem
 ## Todo mato do chão (GroundDetail) dá fibra; arrancar exige segurar [F] (pedido do
 ## usuário, 2026-11-22: "não pode ser fácil pegar"; depois reduzido para 3 s).
 const MATO_KINDS := ["grass", "grass_tuft_sunlit"]
@@ -151,13 +159,25 @@ func refresh(day: int) -> void:
 ## Ponto disponível mais próximo ao alcance, ou {}.
 func nearest(at: Vector2, day: int) -> Dictionary:
 	var best: Dictionary = {}
-	var best_d := REACH
+	var best_d := INF
 	for spot in spots:
-		var d := (spot.at as Vector2).distance_to(at)
+		var real := (spot.at as Vector2).distance_to(at)
+		var fiber := str(spot.item) == "fibra"
+		if real >= (REACH if fiber else REACH_SMALL): continue
+		var d := real + (FIBER_PENALTY if fiber else 0.0)
 		if d < best_d and not excluded.has_point(spot.at) and not is_taken(get_tree(), spot.id, day)				 and not (hidden_at.is_valid() and hidden_at.call(spot.at)):
 			best = spot
 			best_d = d
 	return best
+
+
+## Acende o ponto que o [F] vai pegar e apaga o anterior ({} apaga tudo).
+func highlight(spot: Dictionary) -> void:
+	var sprite: CanvasItem = spot.get("sprite") as CanvasItem if not spot.is_empty() else null
+	if sprite == _lit: return
+	if is_instance_valid(_lit): _lit.self_modulate = Color.WHITE
+	_lit = sprite if is_instance_valid(sprite) else null
+	if _lit: _lit.self_modulate = LIT
 
 
 ## Coleta: entra na bolsa e some até amanhã. "" se ok; senão o motivo.

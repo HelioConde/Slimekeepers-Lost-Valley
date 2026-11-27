@@ -67,6 +67,7 @@ func update(delta: float) -> bool:
 		return true
 	if is_instance_valid(forage):
 		var spot: Dictionary = forage.nearest(_focus(), GameClock.day_number)
+		forage.highlight(spot)
 		if not spot.is_empty():
 			_forage_interaction(spot, delta)
 			return true
