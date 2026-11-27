@@ -3,8 +3,8 @@ extends Node
 ## usuário antes de entrar no jogo). Toca a faixa `TRACKS[track]` se o arquivo existir:
 ## a introdução uma vez e depois repete de loop_start a loop_end sem emenda (os pontos
 ## vêm do get_music da versão em loop). Sem arquivo, não faz nada.
-## Volume: o mesmo das opções de áudio do menu (presentation.cfg, audio/ambient_volume e
-## muted) vezes GAIN, para a música ficar por baixo do ambiente.
+## Volume: controle próprio da música (presentation.cfg, audio/music_volume; playtest ID 15),
+## que começa igual ao do ambiente para quem ainda não mexeu, vezes GAIN. "Silenciar" cala tudo.
 
 const TRACKS := {
 	"floresta_dia": {"path": "res://assets/audio/music/floresta_dia.mp3", "loop_start": 63.181, "loop_end": 167.221},  # versão 1, aprovada
@@ -45,7 +45,7 @@ func apply_settings() -> void:
 	var volume := 0.65
 	var muted := false
 	if prefs.load("user://presentation.cfg") == OK:
-		volume = clampf(float(prefs.get_value("audio", "ambient_volume", 0.65)), 0.0, 1.0)
+		volume = clampf(float(prefs.get_value("audio", "music_volume", prefs.get_value("audio", "ambient_volume", 0.65))), 0.0, 1.0)
 		muted = bool(prefs.get_value("audio", "muted", false))
 	if is_instance_valid(_fade): _fade.kill()
 	if muted or volume <= 0.0:
@@ -61,6 +61,9 @@ func apply_settings() -> void:
 	_player.volume_db = -40.0
 	add_child(_player)
 	_player.play()
+	if get_tree().paused:  # ligada no menu do Esc: a pausa congelaria o fade em -40 dB
+		_player.volume_db = _target_db
+		return
 	_fade = create_tween()
 	_fade.tween_property(_player, "volume_db", _target_db, FADE_IN)
 

@@ -71,6 +71,14 @@ func run() -> void:
 	overlay.mute_check.button_pressed = false
 	await frames()
 	check(is_equal_approx(SFX._settings_volume(), 0.35), "sem mudo, o volume escolhido vale na hora")
+	# Playtest ID 15: música com volume próprio, sem mexer no ambiente.
+	overlay.music_slider.value = 80
+	await frames()
+	cfg.load(PREFS)
+	check(is_equal_approx(float(cfg.get_value("audio", "music_volume", -1.0)), 0.8) and is_equal_approx(float(cfg.get_value("audio", "ambient_volume", -1.0)), 0.35), "música tem volume próprio (80%) e o ambiente fica em 35%")
+	var music := region.get_node_or_null("RegionMusic")
+	var song: AudioStreamPlayer = music.get_node_or_null("Music") if music else null
+	if song: check(absf(db_to_linear(song.volume_db) - 0.8 * music.GAIN) < 0.01, "a faixa tocando segue o volume da música (%.3f, esperado %.3f)" % [db_to_linear(song.volume_db), 0.8 * music.GAIN])
 	await key(KEY_ESCAPE)
 	check(overlay.is_open() and overlay.continue_button.is_visible_in_tree() and not overlay.volume_slider.is_visible_in_tree(), "Esc fecha Opções e volta ao menu do Esc")
 	check(overlay.options_button.has_focus(), "foco volta ao botão Opções")

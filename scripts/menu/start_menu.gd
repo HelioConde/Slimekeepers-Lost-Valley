@@ -516,9 +516,25 @@ func _show_options() -> void:
 		_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 	)
 	stack.add_child(volume)
+	# Música com volume próprio (playtest ID 15); começa igual ao ambiente.
+	var music_label := Label.new()
+	music_label.text = "Volume da música"
+	stack.add_child(music_label)
+	var music := HSlider.new()
+	music.name = "MusicVolume"
+	music.min_value = 0
+	music.max_value = 100
+	music.step = 5
+	music.value = float(_prefs.get_value("audio","music_volume",_prefs.get_value("audio","ambient_volume",0.65)))*100
+	music.custom_minimum_size.y = 22
+	music.value_changed.connect(func(value:float):
+		_prefs.set_value("audio","music_volume",value/100.0)
+		_prefs.save("user://presentation.cfg")
+	)
+	stack.add_child(music)
 	var mute := CheckButton.new()
 	mute.name = "MuteAmbient"
-	mute.text = "Silenciar ambiente"
+	mute.text = "Silenciar tudo"
 	mute.button_pressed = bool(_prefs.get_value("audio","muted",false))
 	mute.toggled.connect(func(enabled:bool):
 		_prefs.set_value("audio","muted",enabled)
@@ -541,7 +557,7 @@ func _show_options() -> void:
 	close.custom_minimum_size.y = 54
 	close.pressed.connect(_close_options)
 	stack.add_child(close)
-	var focusables := [motion,fullscreen,volume,mute,close]
+	var focusables := [motion,fullscreen,volume,music,mute,close]
 	for i in focusables.size():
 		focusables[i].focus_neighbor_top = focusables[i].get_path_to(focusables[(i+focusables.size()-1)%focusables.size()])
 		focusables[i].focus_neighbor_bottom = focusables[i].get_path_to(focusables[(i+1)%focusables.size()])

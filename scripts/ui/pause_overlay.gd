@@ -26,6 +26,7 @@ var options_button: Button
 var tutorial_button: Button
 var main_menu_button: Button
 var volume_slider: HSlider
+var music_slider: HSlider  ## volume da música, separado do ambiente (playtest ID 15)
 var mute_check: CheckButton
 var options_back: Button
 var tutorial_back: Button
@@ -138,6 +139,7 @@ func _show_page(page: String) -> void:
 			_hint.text = "Esc para voltar ao menu"
 			var audio := _read_audio()
 			volume_slider.set_value_no_signal(float(audio.volume) * 100.0)
+			music_slider.set_value_no_signal(float(audio.music) * 100.0)
 			mute_check.set_pressed_no_signal(bool(audio.muted))
 			volume_slider.grab_focus()
 		"tutorial":
@@ -158,9 +160,10 @@ func _go(page: String, opener: Button) -> void:
 
 func _read_audio() -> Dictionary:
 	var cfg := ConfigFile.new()
-	var out := {"volume": 0.65, "muted": false}
+	var out := {"volume": 0.65, "music": 0.65, "muted": false}
 	if cfg.load(PREFS_PATH) == OK:
 		out.volume = clampf(float(cfg.get_value("audio", "ambient_volume", 0.65)), 0.0, 1.0)
+		out.music = clampf(float(cfg.get_value("audio", "music_volume", out.volume)), 0.0, 1.0)
 		out.muted = bool(cfg.get_value("audio", "muted", false))
 	return out
 
@@ -171,6 +174,7 @@ func _save_audio(_value: Variant = null) -> void:
 	cfg.load(PREFS_PATH)  # mantém as outras seções
 	var volume := volume_slider.value / 100.0
 	cfg.set_value("audio", "ambient_volume", volume)
+	cfg.set_value("audio", "music_volume", music_slider.value / 100.0)
 	cfg.set_value("audio", "muted", mute_check.button_pressed)
 	cfg.save(PREFS_PATH)
 	SFX.reload_settings()
@@ -281,9 +285,18 @@ func _build() -> void:
 	volume_slider.custom_minimum_size = Vector2(260, 22)
 	volume_slider.value_changed.connect(_save_audio)
 	options.add_child(volume_slider)
+	options.add_child(_label("Volume da música", 15, "#402f39", HORIZONTAL_ALIGNMENT_LEFT))
+	music_slider = HSlider.new()
+	music_slider.name = "MusicVolume"
+	music_slider.min_value = 0
+	music_slider.max_value = 100
+	music_slider.step = 5
+	music_slider.custom_minimum_size = Vector2(260, 22)
+	music_slider.value_changed.connect(_save_audio)
+	options.add_child(music_slider)
 	mute_check = CheckButton.new()
 	mute_check.name = "MuteAmbient"
-	mute_check.text = "Silenciar ambiente"
+	mute_check.text = "Silenciar tudo"
 	mute_check.add_theme_font_override("font", FONT)
 	mute_check.add_theme_font_size_override("font_size", 15)
 	for state in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_hover_pressed_color"]:
