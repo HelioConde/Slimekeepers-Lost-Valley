@@ -49,6 +49,8 @@ const BREATH_FPS := 4.0
 
 @export var world_bounds: Rect2 = WORLD_BOUNDS
 var _tool_time := 0.0
+## Clipe de ferramenta/pose de pegar em andamento ("" = nenhum); ver is_using_tool().
+var _clip := ""
 var _idle_time := 0.0
 ## Tempo parado desde o último passo (as idles não zeram); medita depois de MEDITATE_AFTER.
 var _still_time := 0.0
@@ -72,7 +74,7 @@ func _ready() -> void:
 	_play_animation("idle_south")
 
 func _physics_process(_delta: float) -> void:
-	if _tool_time > 0.0:
+	if is_using_tool():
 		# Durante o golpe da ferramenta o personagem fica parado, virado para o alvo.
 		_tool_time -= _delta
 		_still_time = 0.0  # usando ferramenta/pegando: não está parado à toa
@@ -145,6 +147,7 @@ func play_tool(tool: String) -> float:
 	if not sprite.sprite_frames.has_animation(name):
 		return 0.0
 	current_animation = name
+	_clip = name
 	sprite.play(name)
 	var units := 0.0
 	for i in sprite.sprite_frames.get_frame_count(name):
@@ -161,6 +164,7 @@ func hold_pose(action: String, frame: int) -> void:
 	if current_animation != name:
 		current_animation = name
 		sprite.play(name)
+	_clip = name
 	if sprite.frame >= frame or not sprite.is_playing():
 		# Fazendo força (pedido do usuário, 2026-11-23): no chão, alterna entre o quadro
 		# das mãos no chão e o anterior (puxa e solta) e treme 1 px, sem ficar parado.
@@ -181,9 +185,13 @@ func release_pose() -> float:
 	sprite.offset.x = 0.0
 	_hold_time = 0.0
 	if not sprite.sprite_frames.has_animation(current_animation): return 0.0
+	# O quadro atual (mãos no chão ou o anterior, no puxão) recomeça ao tocar: entra na conta,
+	# senão o idle cortava o fim do levantar (playtest ID 02).
 	var units := 0.0
-	for i in range(sprite.frame + 1, sprite.sprite_frames.get_frame_count(current_animation)):
+	for i in range(sprite.frame, sprite.sprite_frames.get_frame_count(current_animation)):
 		units += sprite.sprite_frames.get_frame_duration(current_animation, i)
+	units -= sprite.frame_progress * sprite.sprite_frames.get_frame_duration(current_animation, sprite.frame)
+	_clip = current_animation
 	sprite.play()
 	_tool_time = units / sprite.sprite_frames.get_animation_speed(current_animation)
 	return _tool_time
@@ -205,8 +213,12 @@ func _on_frame_changed() -> void:
 	tool_impact.emit()
 
 
+## Ação em curso: o tempo calculado ainda não acabou OU o clipe da ferramenta/pose ainda não
+## terminou de tocar (a física e a animação contam o tempo em passos diferentes; sem o
+## segundo critério o idle entrava antes do último quadro). Parada de segurar não conta: lá
+## quem manda é hold_pose/release_pose.
 func is_using_tool() -> bool:
-	return _tool_time > 0.0
+	return _tool_time > 0.0 or (not _clip.is_empty() and current_animation == _clip and sprite.is_playing())
 
 func _play_animation(name: String) -> void:
 	sprite.offset.x = 0.0

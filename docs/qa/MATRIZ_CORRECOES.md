@@ -31,7 +31,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 05 | Árvores fantasmas | P1 | Feito (com teste) | 7c16705b (sessão Luz V4): árvores ocultas sem colisão nem alvo; árvores do início visíveis · tools/test_tree_collision.gd |
 | 03 | Botão X nos painéis | P1 | Feito (com teste) | close_button.gd · tools/test_close_buttons.gd (disco do slime e lista do Vale ficam sem X: não são janelas) |
 | 04 | Selecionar receita sem fabricar | P1 | Feito (com teste) | a4b187dc · crafting_panel · tools/test_craft_select.gd |
-| 02 | Idle prematuro da Moni | P1 | Pendente | |
+| 02 | Idle prematuro da Moni | P1 | Feito (com teste) | player.gd: release_pose contava um quadro a menos e o idle entrava antes do fim de pegar/arrancar; is_using_tool considera o clipe tocando · tools/test_action_hold.gd (49 falhas → 0) |
 | 08 | Animação da foice (Moni) | P1 | Pendente | Foice longa instalada em 2026-11-23 (e7a21fa6); revisar com o playtest |
 | 09 | Foice corta em área | P1 | Feito (com teste) | 471371b3 (sessão Luz V4): foice corta todo o mato do arco no contato · test_sickle |
 | 10 | Aragem no frame do impacto | P1 | Feito (com teste) | bd40f798 (sessão Luz V4): enxada ara no contato · test_free_farm |

@@ -224,6 +224,8 @@ func test_pick_actions_for_both_and_hold_on_ground() -> void:
 		assert_int(player.sprite.frame).is_between(player.PICK_BIG_GROUND - 1, player.PICK_BIG_GROUND)
 		assert_bool(player.sprite.is_playing()).is_false()
 		player.sprite.frame = player.PICK_BIG_GROUND
-		assert_float(player.release_pose()).is_equal_approx(3.4 / 10.0, 0.01)
+		# Levantar = quadro do chão (2,6) + 1,2 + 1,0 + 1,2: o quadro atual recomeça ao soltar
+		# e entra na conta (antes faltava, e o idle cortava o fim; playtest ID 02).
+		assert_float(player.release_pose()).is_equal_approx(6.0 / 10.0, 0.01)
 		assert_bool(player.sprite.is_playing()).is_true()
 	get_tree().remove_meta("protagonist")
