@@ -16,7 +16,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 56 | Continuar abre progresso antigo | P0 | Feito (com teste) | 5fbe3f24 · save_game (espaços, .bak), start_menu · test_save_game, test_menu |
 | 57 | Autosave a cada amanhecer | P0 | Feito (com teste) | 5fbe3f24 · clearing_region._on_time_for_autosave · tools/test_autosave.gd |
 | 58 | Slots independentes de save | P0 | Feito (com teste) | 5fbe3f24 · start_menu (escolha e confirmação) · test_save_game (espaços isolados) |
-| 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Feito (com teste) | b886a650 (sessão Luz V4) · energy_state, clearing_region · tools/test_exhaustion.gd. Pendência MP: o dia só deve virar quando os dois dormirem |
+| 35 | Energia zerada: exaustão e sono no local (50%) | P0 | Feito (com teste) | b886a650 (solo) + 5bb74260 (MP: o dia vira quando os dois dormem) · test_exhaustion, mp_sleep_chop |
 | 39 | Virada do dia não recupera energia | P0 | Feito (com teste) | 663335d5 (sessão Luz V4) · farm_field, energy_state · test_farm_field |
 | 22 | B/Esc não pausam o mundo em MP | P0 | Feito (com teste, MP simulado) | 23390052 · menu do Esc não pausa em MP; B/E/baú já não pausavam · test_pause_menu. Falta teste com duas instâncias |
 | 20 | Coleta e drops visíveis para todos | P0 | Feito (com teste, 2 instâncias) | item_drops: id estável, anfitrião decide quem pega · tools/test_mp_drops.gd (ENet real). Falta Steam e latência simulada |
@@ -45,9 +45,9 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 19 | Pedra inicial não coletável | P1 | Pendente | |
 | 21 | Soltar itens para o outro jogador | P1 | Feito (com teste, 2 instâncias) | [Q] solta 1, Shift+[Q] a pilha; mochila com quantidade · tools/test_drop_from_bag.gd, test_mp_drops |
 | 23 | Prévia da planta visível aos dois | P1 | Feito (com teste, 2 instâncias) | prévia (build_ghost) aparece e some no outro jogo · test_mp_build. Falta rótulo de qual jogador posiciona |
-| 25 | Brilho estourado dos cogumelos | P1 | Pendente | |
+| 25 | Brilho estourado dos cogumelos | P1 | Feito (com teste) | 21386fda (sessão Luz V4, merge de ce6ab356): brilho dos cogumelos limitado |
 | 26 | Alcance menor para interagir com slimes | P1 | Feito (com teste) | world.gd SLIME_REACH 48 · test_slime_disc, test_slime_reaction |
-| 27 | Amanhecer gradual | P1 | Pendente | |
+| 27 | Amanhecer gradual | P1 | Feito (com teste) | 21386fda (sessão Luz V4): amanhecer gradual |
 | 28 | Física de contato das árvores | P1 | Feito (com teste) | 7c16705b (sessão Luz V4) · tools/test_tree_collision.gd |
 | 29 | Queda da árvore para o lado do corte | P1 | Feito (com teste) | 0074c132 (sessão Luz V4) |
 | 30 | Pá para remover tocos | P1 | Feito (com teste) | 86c60701 (sessão Luz V4): pá na bancada, arranca o toco no contato · test_shovel. Pendência de arte: golpe próprio da Moni com a pá (PixelLab suspenso) |
@@ -55,7 +55,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 32 | Tremor e impacto do machado no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
 | 33 | Números legíveis (2/5/8) | P1 | Feito (com teste) | fonte de dígitos 5x7 feita à mão (tools/build_digit_font.py) + ui_font.tres com a Pixelify para o resto; 2/5/8 distintos · tools/capture_digits.gd |
 | 34 | Respawn diário por tipo (pedras limitadas) | P1 | Feito (com teste) | 64aefa6e (sessão Luz V4): reposição por tipo (mato 1 dia, graveto 2, pedrinha 4) |
-| 36 | Tremor da árvore no J2 | P1 | Pendente | |
+| 36 | Tremor da árvore no J2 | P1 | Feito (com teste, 2 instâncias) | 5bb74260 (sessão Luz V4): tremor da árvore replicado no J2 · mp_sleep_chop |
 | 37 | Barra rápida alarga no modo construção | P1 | Feito (com teste) | c0317d49 · hotbar_hud · tools/test_hotbar_click.gd |
 | 38 | Barra: 1–9 e 0 | P1 | Feito (com teste) | de6841c9 · hotbar_hud · tools/test_hotbar_click.gd |
 | 41 | Objeto visual bugado | P1 | Feito (com teste) | era o broto de sementes silvestres desenhado com retângulos (forest_seed_patch.gd); agora usa a arte das flores silvestres · test_valley_garden, tools/capture_seed_patch.gd |
@@ -71,7 +71,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 53 | Monte pequeno de pedras num toque | P1 | Feito (com teste) | be44a472 (sessão Luz V4) |
 | 54 | Sem bloqueio por nível: o nível muda eficiência e desgaste | P1 | Feito (com teste) | f416a25b (sessão Luz V4) |
 | 55 | Impacto da picareta no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
-| 59 | Alimentar com ingredientes e pratos; preferências por ingrediente | P1 | Pendente | |
+| 59 | Alimentar com ingredientes e pratos; preferências por ingrediente | P1 | Feito (com teste) | b8a003c4 (sessão Luz V4): ingredientes e pratos na lista; preferência revelada ao provar · test_slime_disc |
 | 60 | Disco do slime só com ações disponíveis | P1 | Feito (com teste) | slime_action_disc: só ações disponíveis (desconfiado = só comida) · test_slime_disc |
 | 61 | Menu de Esc centraliza a navegação; tirar o botão Menu do HUD | P1 | Feito (com teste) | 23390052 · pause_overlay, world.gd (sem botão Menu) · tools/test_pause_menu.gd, test_menu |
 | 62 | Playtest solo por observação visual | P1 | Pendente | Depois dos P0 |

@@ -93,7 +93,7 @@ func run():
   check(region.find_children("*","CanvasModulate",true,false).size()==1,"Exactly one ambient controller: "+path)
   var widget:Control=region.get_node("HUD/Interface/DayClock")
   check(widget.get_canvas()!=region.get_canvas(),"Clock uses independent HUD canvas")
-  check(widget.find_child("ClockText", true, false).get_theme_font("font").resource_path.ends_with("PixelifySans.ttf"),"HUD theme available")
+  check(widget.find_child("ClockText", true, false).get_theme_font("font").resource_path.ends_with("ui_font.tres"),"HUD theme available (fonte da UI com dígitos legíveis, ID 33)")
   clock.set_time(22)
   await settle()
   check(distance(region.get_node("DayNightLighting").color,clock.get_lighting_color())<.001,"Region applies current time without entry flash")
