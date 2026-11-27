@@ -58,8 +58,8 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 36 | Tremor da árvore no J2 | P1 | Pendente | |
 | 37 | Barra rápida alarga no modo construção | P1 | Feito (com teste) | c0317d49 · hotbar_hud · tools/test_hotbar_click.gd |
 | 38 | Barra: 1–9 e 0 | P1 | Feito (com teste) | de6841c9 · hotbar_hud · tools/test_hotbar_click.gd |
-| 41 | Objeto visual bugado | P1 | Pendente | Precisa da imagem do .docx |
-| 42 | Arrastar e soltar no inventário e na barra | Alta | Em andamento | sessão Luz V4: mochila com 10 espaços extras e arrastar/trocar (pedido novo do usuário) |
+| 41 | Objeto visual bugado | P1 | Feito (com teste) | era o broto de sementes silvestres desenhado com retângulos (forest_seed_patch.gd); agora usa a arte das flores silvestres · test_valley_garden, tools/capture_seed_patch.gd |
+| 42 | Arrastar e soltar no inventário e na barra | Alta | Feito (com teste) | 3bc09fb6 (sessão Luz V4): 20 espaços (10 barra + 10 mochila), arrastar troca, item novo vai para a barra |
 | 43 | Durabilidade e quebra de ferramentas | Alta | Feito (com teste) | dc09b3c0 (sessão Luz V4): barrinha de desgaste; salvar ao voltar ao menu · test_hotbar_click |
 | 44 | Escala do tronco caído | Alta | Feito (com teste) | 5cc04936 (sessão Luz V4) |
 | 45 | Baú em duas colunas, arrastar, 1/metade/tudo | Alta | Feito (com teste) | 2d9b8d06 (sessão Luz V4): baú em duas colunas, arrastar, atalhos 1/metade/tudo · test_chest_move |
