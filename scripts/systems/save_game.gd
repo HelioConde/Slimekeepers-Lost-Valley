@@ -25,8 +25,21 @@ static var path := DEFAULT_PATH
 static var slot := 1
 
 
+## Rodando por script (--script: testes e capturas), o prefixo do jogador vira este:
+## abrir a Floresta dispara o autosave e sobrescrevia o espaço 1 do jogador (2026-11-27).
+const SCRIPTED_PREFIX := "user://test_run_slot_"
+
+
 static func slot_path(n: int) -> String:
-	return "%s%d.txt" % [prefix, n]
+	var p := prefix
+	if p == DEFAULT_PREFIX and scripted_run(): p = SCRIPTED_PREFIX
+	return "%s%d.txt" % [p, n]
+
+
+## O jogo normal roda num SceneTree sem script; testes e ferramentas usam um com script.
+static func scripted_run() -> bool:
+	var loop := Engine.get_main_loop()
+	return loop != null and loop.get_script() != null
 
 
 ## Arquivo em uso: `path` quando um teste fixou um, senão o do espaço atual.
