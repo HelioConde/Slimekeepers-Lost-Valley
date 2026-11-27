@@ -38,7 +38,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 11 | Animação e duração do plantio | P2 | Pendente | Arte nova bloqueada pelo PixelLab; usar pose existente |
 | 13 | Agente de playtest sem conhecimento privilegiado | P1 | Pendente | |
 | 14 | "Multijogador" sem "(MP)" | P2 | Feito (com teste) | start_menu · tools/test_menu.gd (rótulo) |
-| 15 | Idioma e volume de música separado | P1 | Em andamento | volume do ambiente e silenciar no menu do Esc (23390052); falta idioma e volume de música separado |
+| 15 | Idioma e volume de música separado | P1 | Feito (com teste) | 2a302011 (volume da música separado) + 163d0d10/7774fee0 (português e inglês: menus, Esc, dicas, itens, relógio) · test_language, test_pause_menu. Frases de avisos e balões ainda só em português |
 | 16 | Tutorial explicativo no menu | P1 | Feito (com teste) | botão Como jogar no menu principal + Tutorial no menu do Esc (23390052) · test_menu, test_pause_menu |
 | 17 | MP começa na seleção de protagonista | P1 | Feito (com teste, 2 instâncias) | sala na tela de escolha: Jogador 1/2, bloqueio, Pronto; início só com os dois prontos · tools/test_mp_lobby.gd. Steam real não testado |
 | 18 | Tutorial para os dois jogadores | P1 | Feito (com teste, 2 instâncias) | tutorial do convidado começa no passo 0; progresso local por jogador · test_mp_lobby |
@@ -67,7 +67,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 49 | Tamanho mínimo da casa | Alta | Feito (com teste) | mínimo 5×5 (3×3 por dentro, cama + passagem); aviso ao arrastar menor · test_house_state, capture_house |
 | 50 | Cortar tocos e troncos de cenário | Alta | Feito (com teste) | 050c8675 (sessão Luz V4): troncos e tocos de cenário (machado processa, pá arranca) · test_scenery_wood |
 | 51 | Porta e piso da casa | Alta | Feito (com teste) | house_builder._draw_floor: piso interno na célula da porta e soleira · capture_house. Pendência: tufos de capim da região ainda por cima do piso |
-| 52 | Escala personagem × casa | Alta | Pendente | |
+| 52 | Escala personagem × casa | Alta | Feito (com teste) | f06987ae: personagem 0,48 (escolha do usuário numa prévia) · capture_house |
 | 53 | Monte pequeno de pedras num toque | P1 | Feito (com teste) | be44a472 (sessão Luz V4) |
 | 54 | Sem bloqueio por nível: o nível muda eficiência e desgaste | P1 | Feito (com teste) | f416a25b (sessão Luz V4) |
 | 55 | Impacto da picareta no contato | P1 | Feito (com teste) | 5d7cf5c7 (sessão Luz V4) |
