@@ -4,7 +4,7 @@ extends Node
 ## sai no quadro de contato. Arco: gasta 1 flecha e atira para onde o jogador olha.
 ## Alvos: nós no grupo "combat_target" (boss e slimes não amigos da Floresta) com
 ## take_hit(dano, origem) e hurt_rect() ou hit_radius().
-## shortcut: a espada usa a animação do machado e o arco nenhuma, até a arte nova.
+## Espada com animação própria (tools/sword); o arco ainda sem animação.
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
@@ -99,7 +99,7 @@ func _process(delta: float) -> void:
 
 
 func swing() -> void:
-	var anim: float = player.play_tool("axe")
+	var anim: float = player.play_tool("sword")  # arte própria (2026-11-28): luz já vem no desenho
 	var forward: Vector2 = player._facing_vector()
 	if _aim != Vector2.INF and _aim.distance_to(player.global_position) > 4.0:
 		forward = (_aim - player.global_position).normalized()  # corta para onde o mouse mirou
@@ -109,7 +109,6 @@ func swing() -> void:
 	for target: Node2D in get_tree().get_nodes_in_group("combat_target"):
 		if in_sword_arc(player.global_position, forward, hurt_rect_of(target)): locked.append(target)
 	var hit := func() -> void:
-		_slash(forward)
 		for target: Node2D in get_tree().get_nodes_in_group("combat_target"):
 			if target in locked or in_sword_arc(player.global_position, forward, hurt_rect_of(target)):
 				target.call("take_hit", SWORD_DAMAGE, player.global_position)
@@ -132,25 +131,6 @@ static func in_sword_arc(from: Vector2, forward: Vector2, rect: Rect2) -> bool:
 	if from.distance_to(closest) > SWORD_REACH: return false
 	var half := SWORD_ARC * 0.5
 	return absf(forward.angle_to(closest - from)) <= half or absf(forward.angle_to(rect.get_center() - from)) <= half
-
-
-## Rastro do golpe (provisório, até a arte nova): meia-lua branca que some rápido.
-func _slash(forward: Vector2) -> void:
-	var trail := Polygon2D.new()
-	var points := PackedVector2Array()
-	for i in 13:
-		points.append(Vector2.from_angle(forward.angle() - SWORD_ARC * 0.5 + SWORD_ARC * i / 12.0) * SWORD_REACH * 0.9)
-	for i in range(12, -1, -1):
-		points.append(Vector2.from_angle(forward.angle() - SWORD_ARC * 0.5 + SWORD_ARC * i / 12.0) * SWORD_REACH * 0.55)
-	trail.polygon = points
-	trail.color = Color(1, 1, 1, 0.55)
-	trail.scale = Vector2(1.0, 0.75)  # chão em perspectiva
-	trail.global_position = player.global_position + Vector2(0, -14)
-	trail.z_index = 6
-	player.get_parent().add_child(trail)
-	var fade := trail.create_tween()
-	fade.tween_property(trail, "modulate:a", 0.0, 0.18)
-	fade.tween_callback(trail.queue_free)
 
 
 ## `at`: ponto no mundo para onde atirar (padrão: o mouse).

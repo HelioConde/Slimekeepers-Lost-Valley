@@ -10,7 +10,7 @@ const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
 ## Ferramentas (<arte>/tools/<nome>/<dir>/, quadros contados no disco): velocidade.
 ## A ferramenta na mão é a mesma do ícone da barra (enxada, regador, machado).
 const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0, "pickaxe": 14.0, "sickle": 14.0,
-	"axe_polished": 14.0, "pickaxe_polished": 14.0, "shovel": 14.0}  # pá: arte do Aren já exportada (install_shovel.py)  # pedra polida: mesmo golpe, cabeça azulada (polish_tool_frames.py)
+	"axe_polished": 14.0, "pickaxe_polished": 14.0, "shovel": 14.0, "sword": 14.0}  # pá: arte do Aren já exportada (install_shovel.py)  # pedra polida: mesmo golpe, cabeça azulada (polish_tool_frames.py)
 ## Golpe aprovado (9 quadros: descanso, ergue, alto x3, rastro x2, impacto x2):
 ## pausa no alto, descida rápida, pausa longa no impacto. Duração = valor / 10 s.
 const SWING_FPS := 10.0
@@ -20,6 +20,10 @@ const SWING_SIDE_TIMING := [1.5, 1.2, 2.5, 0.6, 0.6, 2.0, 1.4, 1.4]
 ## Foice (2026-11-23): corte de lado, varrendo rente ao mato (9 quadros em todas as
 ## direções): prepara, varre rápido, volta.
 const SICKLE_TIMING := [1.2, 1.0, 0.9, 0.5, 0.5, 0.5, 0.9, 1.0, 1.2]
+## Espada (2026-11-28, aprovada): varrida na frente com rastro de luz (8 quadros: ergue,
+## alto x2, corte com luz x4, volta). Impacto no quadro 4 (luz cheia).
+const SWORD_TIMING := [1.3, 1.0, 1.0, 0.7, 0.5, 0.5, 0.8, 1.2]
+const SWORD_IMPACT := 4
 ## Regar aprovado (8 quadros; frente, lado e costas): ergue, inclina, jato, poça; mais tempo no jato.
 const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## Ações de pegar no chão (<arte>/actions/<nome>/<dir>/; sul, leste, oeste, norte):
@@ -129,7 +133,7 @@ func start_roll(direction: Vector2) -> bool:
 	if _roll_cd > 0.0: return false
 	# Depois do impacto, rolar cancela o fim do golpe (dá para desviar logo após acertar).
 	if is_using_tool():
-		if not _impact_done or _clip.is_empty() or not (_clip.begins_with("axe_") or _clip.begins_with("pickaxe_") or _clip.begins_with("sickle_")): return false
+		if not _impact_done or _clip.is_empty() or not (_clip.begins_with("axe_") or _clip.begins_with("pickaxe_") or _clip.begins_with("sickle_") or _clip.begins_with("sword_")): return false
 		_tool_time = 0.0
 		_clip = ""
 	_roll_dir = direction.normalized() if direction.length_squared() > 0.01 else _facing_vector()
@@ -275,10 +279,11 @@ signal tool_impact
 
 
 func _on_frame_changed() -> void:
-	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else ("corte" if current_animation.begins_with("sickle_") else ""))
+	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else ("corte" if current_animation.begins_with("sickle_") or current_animation.begins_with("sword_") else ""))
 	if sound.is_empty() and not (current_animation.begins_with("hoe_") or current_animation.begins_with("shovel_")): return  # enxada e pá: impacto sem som próprio
 	var impact := 7 if sprite.sprite_frames.get_frame_count(current_animation) == SWING_TIMING.size() else 5
 	if sound == "corte": impact = 4  # meio da varrida
+	if current_animation.begins_with("sword_"): impact = SWORD_IMPACT
 	if sprite.frame != impact: return
 	if visible and not sound.is_empty(): preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
 	_impact_done = true
@@ -364,6 +369,8 @@ func _build_frames() -> SpriteFrames:
 				timing = WATER_TIMING if direction in ["south", "east", "west", "north"] else []
 			elif tool == "sickle":
 				timing = SICKLE_TIMING
+			elif tool == "sword":
+				timing = SWORD_TIMING
 			elif textures.size() == SWING_SIDE_TIMING.size():
 				timing = SWING_SIDE_TIMING  # lado e costas: 8 quadros
 			var timed: bool = not timing.is_empty() and textures.size() == timing.size()
