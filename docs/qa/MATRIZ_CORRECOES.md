@@ -35,7 +35,7 @@ Estados possíveis: Pendente · Em andamento · Feito (com teste) · Bloqueado (
 | 08 | Animação da foice (Moni) | P1 | Pendente | Foice longa instalada em 2026-11-23 (e7a21fa6); revisar com o playtest |
 | 09 | Foice corta em área | P1 | Feito (com teste) | 471371b3 (sessão Luz V4): foice corta todo o mato do arco no contato · test_sickle |
 | 10 | Aragem no frame do impacto | P1 | Feito (com teste) | bd40f798 (sessão Luz V4): enxada ara no contato · test_free_farm |
-| 11 | Animação e duração do plantio | P2 | Pendente | Arte nova bloqueada pelo PixelLab; usar pose existente |
+| 11 | Animação e duração do plantio | P2 | Feito | 2026-11-28: plantar usa a pose ajoelhada aprovada (pick_small); a semente entra quando a mão toca a terra (0,32 s), uma por plantio, [F] repetido não duplica · tools/test_planting.gd |
 | 13 | Agente de playtest sem conhecimento privilegiado | P1 | Pendente | |
 | 14 | "Multijogador" sem "(MP)" | P2 | Feito (com teste) | start_menu · tools/test_menu.gd (rótulo) |
 | 15 | Idioma e volume de música separado | P1 | Feito (com teste) | 2a302011 (volume da música separado) + 163d0d10/7774fee0 (português e inglês: menus, Esc, dicas, itens, relógio) · test_language, test_pause_menu. Frases de avisos e balões ainda só em português |

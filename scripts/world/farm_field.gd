@@ -199,13 +199,37 @@ func interact(actor: Node2D) -> String:
 				message = "Terra regada (água %d/%d)." % [FARM.can_water(tree), FARM.CAN_MAX]
 			if actor.has_method("play_tool"): actor.play_tool("water")
 		"plant":
+			# Playtest ID 11: plantar tem animação e duração (ajoelha, mão na terra, levanta);
+			# a semente só entra quando a mão toca o chão, conferindo de novo nesse instante.
 			var crop_id := str(ITEMS.info(item).crop)
-			if FARM.plant(tree, cell, crop_id, field_id):
-				message = "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
-				PROGRESS.mark_event(tree, PROGRESS.GARDEN_PLANTED)
+			var anim: float = actor.play_tool("pick_small") if actor.has_method("play_tool") else 0.0
+			if anim <= 0.0:
+				message = _plant_now(cell, crop_id)
+			else:
+				message = "Plantando..."
+				get_tree().create_timer(PLANT_DELAY).timeout.connect(func() -> void:
+					if not is_inside_tree(): return
+					last_action = _plant_now(cell, crop_id)
+					if last_action.is_empty(): return
+					var region := get_parent()
+					if region and region.has_method("_notify"): region.call("_notify", last_action)
+					refresh())
 	last_action = message
 	refresh()
 	return message
+
+
+## Do início da pose de plantar até a mão tocar a terra (quadros 0-2 de pick_small, ~0,32 s).
+const PLANT_DELAY := 0.32
+
+
+## Planta se ainda der (terra arada e vazia, semente na bolsa): uma semente por plantio.
+func _plant_now(cell: Vector2i, crop_id: String) -> String:
+	var tree := get_tree()
+	if not FARM.is_tilled(tree, cell, field_id) or not FARM.crop(tree, cell, field_id).is_empty(): return ""
+	if not FARM.plant(tree, cell, crop_id, field_id): return ""
+	PROGRESS.mark_event(tree, PROGRESS.GARDEN_PLANTED)
+	return "%s plantada. Regue todo dia para crescer." % CROPS.get_crop(crop_id).name
 
 
 const NO_CELL := Vector2i(-999999, -999999)
