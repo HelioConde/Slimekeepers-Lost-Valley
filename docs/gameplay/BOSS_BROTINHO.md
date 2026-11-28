@@ -56,7 +56,11 @@ Implementação (2026-11-27): `scripts/combat/forest_threat.gd` (pontos, dificul
 - **Vida infinita para testar:** o atalho `tools/play_boss.gd` já liga; no jogo, o comando de admin `imortal` ([F1]) liga e desliga. Não vai para o save.
 - **Gatilho provisório:** ver "Liberar o boss" acima (20 pontos). Também há um comando de depuração para testes.
 
-## Arte e animação futuras (PixelLab, quando você autorizar)
+## Arte instalada (PixelLab, aprovada em 2026-11-28)
+
+Espada (varrida com rastro de luz), arco (puxa, segura, solta), esquiva rápida (no lugar do rolamento), Brotinho e Musguinho Gigantes (parado, carga, pouso, golpe recebido, zonzo), raízes e poeira da pancada (VFX Creator), flecha, semente do boss e os ícones de espada, arco, flecha, orbe e gosmas. Instaladores em `tools/pixellab/install_sword.py`, `install_bow_dash.py` e `install_boss.py`. Prévias em `docs/gameplay/previa_*`. A foice (itens 08 e 31 do relatório) continua com a arte de 23/11, esperando o playtest.
+
+## Arte e animação futuras (lista original)
 
 Hoje tudo usa arte provisória: sprites atuais ampliados ou formas desenhadas por código. Cada item precisa de prévia em GIF antes de instalar. Slimes nunca têm braços nem pernas.
 

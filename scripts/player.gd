@@ -10,7 +10,7 @@ const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
 ## Ferramentas (<arte>/tools/<nome>/<dir>/, quadros contados no disco): velocidade.
 ## A ferramenta na mão é a mesma do ícone da barra (enxada, regador, machado).
 const TOOL_ANIMATIONS := {"hoe": 14.0, "water": 12.0, "axe": 14.0, "pickaxe": 14.0, "sickle": 14.0,
-	"axe_polished": 14.0, "pickaxe_polished": 14.0, "shovel": 14.0, "sword": 14.0}  # pá: arte do Aren já exportada (install_shovel.py)  # pedra polida: mesmo golpe, cabeça azulada (polish_tool_frames.py)
+	"axe_polished": 14.0, "pickaxe_polished": 14.0, "shovel": 14.0, "sword": 14.0, "bow": 14.0}  # pá: arte do Aren já exportada (install_shovel.py)  # pedra polida: mesmo golpe, cabeça azulada (polish_tool_frames.py)
 ## Golpe aprovado (9 quadros: descanso, ergue, alto x3, rastro x2, impacto x2):
 ## pausa no alto, descida rápida, pausa longa no impacto. Duração = valor / 10 s.
 const SWING_FPS := 10.0
@@ -24,6 +24,9 @@ const SICKLE_TIMING := [1.2, 1.0, 0.9, 0.5, 0.5, 0.5, 0.9, 1.0, 1.2]
 ## alto x2, corte com luz x4, volta). Impacto no quadro 4 (luz cheia).
 const SWORD_TIMING := [1.3, 1.0, 1.0, 0.7, 0.5, 0.5, 0.8, 1.2]
 const SWORD_IMPACT := 4
+## Arco (2026-11-28, aprovado): puxa, segura, solta (quadro 4: a flecha sai), volta.
+const BOW_TIMING := [0.6, 0.6, 0.7, 0.8, 0.4, 0.5, 0.6, 0.7]
+const BOW_IMPACT := 4
 ## Regar aprovado (8 quadros; frente, lado e costas): ergue, inclina, jato, poça; mais tempo no jato.
 const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## Ações de pegar no chão (<arte>/actions/<nome>/<dir>/; sul, leste, oeste, norte):
@@ -31,7 +34,8 @@ const WATER_TIMING := [1.5, 1.2, 1.0, 1.5, 1.8, 1.5, 1.3, 1.5]
 ## (mato, plantação, itens grandes). Tempos por quadro (/ SWING_FPS); o maior é o
 ## quadro com a mão no chão.
 const ACTION_TIMING := {"pick_small": [0.9, 1.1, 1.2, 2.4, 1.1, 0.9],
-	"pick_big": [1.2, 1.0, 1.0, 1.2, 2.6, 1.2, 1.0, 1.2]}
+	"pick_big": [1.2, 1.0, 1.0, 1.2, 2.6, 1.2, 1.0, 1.2],
+	"dash": [0.5, 0.5, 0.6, 0.6, 0.6, 0.5]}  # esquiva rápida (2026-11-28): ~0,33 s, o tempo do rolamento
 ## Quadro de pick_big com as mãos no chão: fica parado nele enquanto arranca o mato.
 const PICK_BIG_GROUND := 4
 ## Quadro de pick_small com a mão no chão (graveto, pedra).
@@ -133,7 +137,7 @@ func start_roll(direction: Vector2) -> bool:
 	if _roll_cd > 0.0: return false
 	# Depois do impacto, rolar cancela o fim do golpe (dá para desviar logo após acertar).
 	if is_using_tool():
-		if not _impact_done or _clip.is_empty() or not (_clip.begins_with("axe_") or _clip.begins_with("pickaxe_") or _clip.begins_with("sickle_") or _clip.begins_with("sword_")): return false
+		if not _impact_done or _clip.is_empty() or not (_clip.begins_with("axe_") or _clip.begins_with("pickaxe_") or _clip.begins_with("sickle_") or _clip.begins_with("sword_") or _clip.begins_with("bow_")): return false
 		_tool_time = 0.0
 		_clip = ""
 	_roll_dir = direction.normalized() if direction.length_squared() > 0.01 else _facing_vector()
@@ -143,7 +147,7 @@ func start_roll(direction: Vector2) -> bool:
 	invulnerable = true
 	rolling_since = Time.get_ticks_msec()
 	sprite.modulate.a = 0.55
-	_play_animation("run_" + facing)
+	_play_animation(("dash_" if sprite.sprite_frames.has_animation("dash_" + facing) else "run_") + facing)
 	rolled.emit()
 	return true
 
@@ -154,6 +158,7 @@ func is_rolling() -> bool:
 
 func _roll_step(delta: float) -> void:
 	_roll_time -= delta
+	queue_redraw()  # riscos de vento da esquiva
 	velocity = _roll_dir * ROLL_SPEED
 	move_and_slide()
 	global_position = global_position.clamp(world_bounds.position, world_bounds.end)
@@ -280,10 +285,11 @@ signal tool_impact
 
 func _on_frame_changed() -> void:
 	var sound := "golpe_machado" if current_animation.begins_with("axe_") else ("golpe_picareta" if current_animation.begins_with("pickaxe_") else ("corte" if current_animation.begins_with("sickle_") or current_animation.begins_with("sword_") else ""))
-	if sound.is_empty() and not (current_animation.begins_with("hoe_") or current_animation.begins_with("shovel_")): return  # enxada e pá: impacto sem som próprio
+	if sound.is_empty() and not (current_animation.begins_with("hoe_") or current_animation.begins_with("shovel_") or current_animation.begins_with("bow_")): return  # enxada, pá e arco: impacto sem som próprio
 	var impact := 7 if sprite.sprite_frames.get_frame_count(current_animation) == SWING_TIMING.size() else 5
 	if sound == "corte": impact = 4  # meio da varrida
 	if current_animation.begins_with("sword_"): impact = SWORD_IMPACT
+	if current_animation.begins_with("bow_"): impact = BOW_IMPACT
 	if sprite.frame != impact: return
 	if visible and not sound.is_empty(): preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
 	_impact_done = true
@@ -296,6 +302,17 @@ func _on_frame_changed() -> void:
 ## quem manda é hold_pose/release_pose.
 func is_using_tool() -> bool:
 	return _tool_time > 0.0 or (not _clip.is_empty() and current_animation == _clip and sprite.is_playing())
+
+## Riscos de vento atrás do personagem durante a esquiva (some ao terminar).
+func _draw() -> void:
+	if _roll_time <= 0.0: return
+	var back := -_roll_dir
+	var side := Vector2(-_roll_dir.y, _roll_dir.x)
+	var k := _roll_time / ROLL_TIME
+	for i in 3:
+		var start := Vector2(0, -18) + side * (i - 1) * 9.0 + back * 10.0
+		draw_line(start, start + back * (18.0 + 10.0 * k), Color(1, 1, 1, 0.55 * k), 2.0)
+
 
 func _play_animation(name: String) -> void:
 	sprite.offset.x = 0.0
@@ -371,6 +388,8 @@ func _build_frames() -> SpriteFrames:
 				timing = SICKLE_TIMING
 			elif tool == "sword":
 				timing = SWORD_TIMING
+			elif tool == "bow":
+				timing = BOW_TIMING
 			elif textures.size() == SWING_SIDE_TIMING.size():
 				timing = SWING_SIDE_TIMING  # lado e costas: 8 quadros
 			var timed: bool = not timing.is_empty() and textures.size() == timing.size()

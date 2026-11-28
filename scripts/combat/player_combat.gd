@@ -4,7 +4,7 @@ extends Node
 ## sai no quadro de contato. Arco: gasta 1 flecha e atira para onde o jogador olha.
 ## Alvos: nós no grupo "combat_target" (boss e slimes não amigos da Floresta) com
 ## take_hit(dano, origem) e hurt_rect() ou hit_radius().
-## Espada com animação própria (tools/sword); o arco ainda sem animação.
+## Espada e arco com animação própria (tools/sword, tools/bow).
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
@@ -142,14 +142,19 @@ func shoot(at: Variant = null) -> bool:
 		return false
 	BAG.spend_item(get_tree(), "flecha", 1)
 	_bow_cd = BOW_COOLDOWN
-	var arrow := Arrow.new()
-	arrow.rect_of = hurt_rect_of
-	arrow.origin = player.global_position + Vector2(0, -16)
 	var aim: Vector2 = at if at != null else (_aim if _aim != Vector2.INF else mouse_world())
 	if aim.distance_to(player.global_position) > 4.0: player.facing = player._get_direction_name(aim - player.global_position)
-	arrow.direction = bow_aim(player.global_position + Vector2(0, -16), aim, player._facing_vector())
-	arrow.global_position = player.global_position + Vector2(0, -16) + arrow.direction * 18.0
-	player.get_parent().add_child(arrow)
+	# A flecha sai no quadro em que a corda é solta (arte do arco, 2026-11-28).
+	var release := func() -> void:
+		var arrow := Arrow.new()
+		arrow.rect_of = hurt_rect_of
+		arrow.origin = player.global_position + Vector2(0, -16)
+		arrow.direction = bow_aim(player.global_position + Vector2(0, -16), aim, player._facing_vector())
+		arrow.global_position = player.global_position + Vector2(0, -16) + arrow.direction * 18.0
+		player.get_parent().add_child(arrow)
+	var anim: float = player.play_tool("bow")
+	if anim > 0.0: player.tool_impact.connect(release, CONNECT_ONE_SHOT)
+	else: release.call()
 	return true
 
 
@@ -189,8 +194,7 @@ class Arrow extends Node2D:
 			if rect.has_point(a.lerp(b, float(i) / steps)): return true
 		return false
 
-	func _draw() -> void:
-		draw_line(Vector2(-14, 0), Vector2(8, 0), Color("#8a5a32"), 2.0)
-		draw_colored_polygon(PackedVector2Array([Vector2(12, 0), Vector2(6, -3), Vector2(6, 3)]), Color("#c8ccd4"))
-		draw_line(Vector2(-14, 0), Vector2(-18, -3), Color.WHITE, 1.0)
-		draw_line(Vector2(-14, 0), Vector2(-18, 3), Color.WHITE, 1.0)
+	func _draw() -> void:  # arte aprovada (2026-11-28): flecha voando para a direita
+		var art: Texture2D = load("res://assets/combat/flecha_voo.png")
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2(0.75, 0.75))
+		draw_texture(art, -Vector2(art.get_size()) * 0.5)

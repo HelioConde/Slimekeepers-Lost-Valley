@@ -9,6 +9,11 @@ signal defeated
 signal hp_changed(hp: int, max_hp: int)
 
 const SPECIES := preload("res://scripts/world/slime_species.gd")
+const FX := preload("res://scripts/combat/sheet_effect.gd")
+## Arte aprovada (2026-11-28, PixelLab): raízes e poeira do VFX Creator, semente.
+const ROOTS_FX := preload("res://assets/combat/raizes.png")
+const SLAM_FX := preload("res://assets/combat/pancada.png")
+const SEED_ART := preload("res://assets/combat/semente_boss.png")
 const COMBAT := preload("res://scripts/combat/player_combat.gd")
 const SIZE := 3.0
 const MAX_HP := 300
@@ -80,9 +85,10 @@ func _ready() -> void:
 	add_child(_air)
 	var info: Dictionary = SPECIES.definition(species)
 	sprite = AnimatedSprite2D.new()
-	sprite.sprite_frames = load(str(info.frames))
+	var giant := giant_frames(species)
+	sprite.sprite_frames = giant if giant else load(str(info.frames))
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_base_scale = Vector2.ONE * float(info.get("scale", 1.0)) * SIZE
+	_base_scale = Vector2.ONE if giant else Vector2.ONE * float(info.get("scale", 1.0)) * SIZE  # arte gigante já vem grande
 	sprite.scale = _base_scale * 0.2
 	sprite.position = Vector2(0, -20)
 	add_child(sprite)
@@ -107,6 +113,28 @@ func slow(seconds: float) -> void:
 	get_tree().create_timer(seconds).timeout.connect(func() -> void: if is_instance_valid(sprite) and slowed <= 0.05: sprite.modulate = Color.WHITE)
 
 
+## Arte gigante aprovada (2026-11-28, PixelLab): assets/combat/boss/<espécie>/<animação>/.
+## null quando a espécie ainda não tem (cai no slime normal ampliado).
+static func giant_frames(boss_species: String) -> SpriteFrames:
+	var base := "res://assets/combat/boss/%s/" % boss_species
+	if not ResourceLoader.exists(base + "idle/frame_000.png"): return null
+	var frames := SpriteFrames.new()
+	frames.remove_animation("default")
+	for anim: Array in [["idle", 8.0, true], ["charge", 12.0, false], ["slam", 10.0, false], ["hurt", 12.0, false], ["dazed", 9.0, true]]:
+		frames.add_animation(anim[0])
+		frames.set_animation_speed(anim[0], anim[1])
+		frames.set_animation_loop(anim[0], anim[2])
+		var i := 0
+		while ResourceLoader.exists(base + "%s/frame_%03d.png" % [anim[0], i]):
+			frames.add_frame(anim[0], load(base + "%s/frame_%03d.png" % [anim[0], i]))
+			i += 1
+	return frames
+
+
+func _play(anim: String) -> void:
+	if sprite.sprite_frames.has_animation(anim) and sprite.animation != anim: sprite.play(anim)
+
+
 func hit_radius() -> float:
 	return BODY_RADIUS
 
@@ -127,6 +155,9 @@ func take_hit(amount: int, from: Vector2) -> void:
 	_damage_number(dealt, staggered > 0.0)
 	sprite.modulate = Color(1.8, 1.8, 1.8)
 	get_tree().create_timer(0.08).timeout.connect(func() -> void: if is_instance_valid(sprite): sprite.modulate = Color.WHITE)
+	if not _busy and staggered <= 0.0 and sprite.sprite_frames.has_animation("hurt"):
+		_play("hurt")
+		get_tree().create_timer(0.35).timeout.connect(func() -> void: if is_instance_valid(sprite) and sprite.animation == "hurt" and not _dead: _play("idle"))
 	position += (global_position - from).normalized() * (6.0 if staggered > 0.0 else 2.0)  # tranco
 	if phase == 1 and hp <= max_hp / 2:
 		phase = 2
@@ -161,8 +192,11 @@ func _process(delta: float) -> void:
 	if _dead or not is_instance_valid(player): return
 	if staggered > 0.0:
 		staggered -= delta
-		sprite.rotation = sin(Time.get_ticks_msec() * 0.03) * 0.12  # zonzo
-		if staggered <= 0.0: sprite.rotation = 0.0
+		if sprite.sprite_frames.has_animation("dazed"): _play("dazed")
+		else: sprite.rotation = sin(Time.get_ticks_msec() * 0.03) * 0.12  # zonzo
+		if staggered <= 0.0:
+			sprite.rotation = 0.0
+			_play("idle")
 		return
 	if _busy: return
 	_rest -= delta
@@ -196,6 +230,9 @@ func _roots() -> void:
 		await get_tree().create_timer(LAND_DELAY).timeout
 		if _dead: return
 		_impact(at, ROOT_RADIUS, int(ROOTS[2]), Color(0.45, 0.32, 0.18))
+		var roots := FX.make(ROOTS_FX, Vector2i(103, 65), 18, 5, 16.0, Vector2(51, 47))
+		roots.global_position = at
+		get_parent().add_child(roots)  # no y-sort com o jogador
 		await get_tree().create_timer(0.15).timeout
 	_finish(1.1)
 
@@ -216,6 +253,13 @@ func _slam() -> void:
 	if _dead: return
 	_impact(target, SLAM_RADIUS, int(SLAM[2]), Color(0.55, 0.45, 0.3))
 	_shake(9.0)
+	if sprite.sprite_frames.has_animation("slam"):
+		_play("slam")
+		get_tree().create_timer(0.35).timeout.connect(func() -> void: if is_instance_valid(sprite) and sprite.animation == "slam" and not _dead: _play("idle"))
+	if is_instance_valid(_ground):
+		var dust := FX.make(SLAM_FX, Vector2i(112, 64), 8, 3, 14.0, Vector2(56, 40))
+		_ground.add_child(dust)  # no chão, sob o jogador
+		dust.global_position = target
 	_finish(1.3)
 
 
@@ -237,6 +281,11 @@ func _finish(rest: float) -> void:
 
 
 func _squash(seconds: float) -> void:
+	if sprite.sprite_frames.has_animation("charge"):  # arte gigante: a própria carga
+		_play("charge")
+		await get_tree().create_timer(seconds).timeout
+		if not _dead: _play("idle")
+		return
 	var tween := create_tween()
 	tween.tween_property(sprite, "scale", _base_scale * Vector2(1.18, 0.82), seconds * 0.8)
 	tween.tween_property(sprite, "scale", _base_scale, seconds * 0.2)
@@ -314,11 +363,11 @@ func _draw_air() -> void:
 	for l in _lobs:
 		var k: float = 1.0 - l.time / l.total
 		var air: Vector2 = _air.to_local((l.from as Vector2).lerp(l.to, k)) + Vector2(0, -sin(k * PI) * float(l.height))
-		_air.draw_circle(air, 7.0, l.color)
-		_air.draw_circle(air + Vector2(-2, -2), 2.5, Color("#d8f5b0"))
+		_air.draw_texture(SEED_ART, air - Vector2(SEED_ART.get_size()) * 0.5)
 	for s in _seeds:
-		_air.draw_circle(_air.to_local(s.at), 6.0, Color("#6fbf4a") if species == "brotinho" else Color("#7d9a6a"))
-		_air.draw_circle(_air.to_local(s.at), 3.0, Color("#d8f5b0"))
+		_air.draw_set_transform(_air.to_local(s.at), 0.0, Vector2(0.6, 0.6))
+		_air.draw_texture(SEED_ART, -Vector2(SEED_ART.get_size()) * 0.5)
+		_air.draw_set_transform(Vector2.ZERO)
 
 
 func _die() -> void:

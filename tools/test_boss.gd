@@ -87,9 +87,16 @@ func run() -> void:
 	# Alcance: atira para longe do boss (sem sair da arena) e mede até onde a flecha vai.
 	await create_timer(0.5).timeout
 	combat.set("_bow_cd", 0.0)
-	var before_children := region.get_child_count()
+	var spawned: Array[Node] = []
+	var grab := func(n: Node) -> void: if n.get("rect_of") != null: spawned.append(n)
+	region.child_entered_tree.connect(grab)
 	combat.shoot(player.global_position + Vector2(0, 600))
-	var arrow: Node = region.get_child(region.get_child_count() - 1) if region.get_child_count() > before_children else null
+	var arrow_wait := 0.0
+	while spawned.is_empty() and arrow_wait < 1.5:  # a flecha sai no quadro em que a corda é solta
+		await process_frame
+		arrow_wait += get_root().get_process_delta_time()
+	region.child_entered_tree.disconnect(grab)
+	var arrow: Node = spawned[0] if not spawned.is_empty() else null
 	var travel := 0.0
 	while is_instance_valid(arrow):
 		travel = float(arrow.get("_travel"))
