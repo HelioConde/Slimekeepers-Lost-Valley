@@ -93,7 +93,7 @@ static func used_slots() -> Array:
 static func snapshot(tree: SceneTree, clock: Node, region_path: String) -> Dictionary:
 	var metas := {}
 	for key in SESSION.SESSION_META_KEYS:
-		if key != "region_arrival" and tree.has_meta(key):
+		if key not in ["region_arrival", "debug_infinite_health"] and tree.has_meta(key):  # vida infinita de teste não vai para o save
 			metas[key] = tree.get_meta(key)
 	var net := tree.root.get_node_or_null("NetSession")
 	var mode := "mp" if net != null and str(net.get("mode")) != "" else "solo"
@@ -152,7 +152,7 @@ static func restore(tree: SceneTree, clock: Node) -> String:
 		return ""
 	SESSION.clear_session(tree)
 	for key in data.metas:
-		if key in SESSION.SESSION_META_KEYS:
+		if key in SESSION.SESSION_META_KEYS and key != "debug_infinite_health":
 			tree.set_meta(key, data.metas[key])
 	if not data.has("crafting"):  # save antigo: enxada e regador eram de graça
 		for tool: String in ITEMS.LEGACY_TOOLS:

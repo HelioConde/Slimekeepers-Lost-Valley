@@ -46,6 +46,13 @@ var _busy := false
 var _dead := false
 var _rest := 1.4
 var _base_scale := Vector2.ONE
+var _art_rect := Rect2(-16, -16, 32, 32)
+## Ordem de desenho (teste do usuário, 2026-11-27: o jogador perto ficava atrás do boss):
+## o boss entra no y-sort da região com a origem no pé; o chão (avisos) vai para uma
+## camada de chão e o que voa (projéteis) para uma camada acima de tudo.
+var _sprite_y := -20.0
+var _ground: Node2D
+var _air: Node2D  # parte desenhada do quadro, em pixels, a partir do centro
 
 
 func configure(target: Node2D, center: Vector2, radius: float, boss_species: String, duo: bool) -> void:
@@ -60,7 +67,13 @@ func configure(target: Node2D, center: Vector2, radius: float, boss_species: Str
 
 func _ready() -> void:
 	add_to_group("boss_target")
-	z_index = 2
+	_ground = preload("res://scripts/combat/ground_layer.gd").new()
+	_ground.painter = _draw_ground
+	get_parent().add_child.call_deferred(_ground)
+	_air = Node2D.new()
+	_air.z_index = 10
+	_air.draw.connect(_draw_air)
+	add_child(_air)
 	var info: Dictionary = SPECIES.definition(species)
 	sprite = AnimatedSprite2D.new()
 	sprite.sprite_frames = load(str(info.frames))
@@ -69,6 +82,12 @@ func _ready() -> void:
 	sprite.scale = _base_scale * 0.2
 	sprite.position = Vector2(0, -20)
 	add_child(sprite)
+	var frame := sprite.sprite_frames.get_frame_texture(sprite.sprite_frames.get_animation_names()[0], 0)
+	if frame:
+		var used := frame.get_image().get_used_rect()
+		_art_rect = Rect2(Vector2(used.position) - frame.get_size() / 2.0, used.size)
+	_sprite_y = -_art_rect.end.y * _base_scale.y  # base do desenho no pé (origem)
+	sprite.position = Vector2(0, _sprite_y)
 	sprite.play("idle" if sprite.sprite_frames.has_animation("idle") else sprite.sprite_frames.get_animation_names()[0])
 	_busy = true  # entrada: cresce com um tremor antes de começar
 	var grow := create_tween()
@@ -81,11 +100,20 @@ func hit_radius() -> float:
 	return BODY_RADIUS
 
 
+## Área de acerto = o desenho do boss na tela (folha e bordas contam), não só o centro.
+## Teste do usuário (2026-11-27): clicar em partes do boss não acertava.
+func hurt_rect() -> Rect2:
+	var size := _art_rect.size * sprite.scale.abs()
+	var offset := _art_rect.position * sprite.scale.abs()
+	return Rect2(sprite.global_position + offset, size)
+
+
 func take_hit(amount: int, from: Vector2) -> void:
 	if _dead: return
 	var dealt := amount * (2 if staggered > 0.0 else 1)
 	hp = maxi(0, hp - dealt)
 	hp_changed.emit(hp, max_hp)
+	_damage_number(dealt, staggered > 0.0)
 	sprite.modulate = Color(1.8, 1.8, 1.8)
 	get_tree().create_timer(0.08).timeout.connect(func() -> void: if is_instance_valid(sprite): sprite.modulate = Color.WHITE)
 	position += (global_position - from).normalized() * (6.0 if staggered > 0.0 else 2.0)  # tranco
@@ -95,9 +123,30 @@ func take_hit(amount: int, from: Vector2) -> void:
 	if hp == 0: _die()
 
 
+## Número de dano que sobe e some (como no Stardew): todo acerto se vê na hora.
+func _damage_number(amount: int, critical: bool) -> void:
+	var label := Label.new()
+	label.text = str(amount)
+	label.add_theme_font_override("font", preload("res://assets/fonts/ui_font.tres"))
+	label.add_theme_font_size_override("font_size", 22 if critical else 16)
+	label.add_theme_color_override("font_color", Color("#ffd23f") if critical else Color.WHITE)
+	label.add_theme_color_override("font_outline_color", Color("#2a1a14"))
+	label.add_theme_constant_override("outline_size", 5)
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.z_index = 20
+	var rect := hurt_rect()
+	label.position = to_local(Vector2(rect.get_center().x + randf_range(-18, 18), rect.position.y)) - Vector2(12, 10)
+	add_child(label)
+	var rise := label.create_tween()
+	rise.set_parallel()
+	rise.tween_property(label, "position:y", label.position.y - 34.0, 0.6).set_ease(Tween.EASE_OUT)
+	rise.tween_property(label, "modulate:a", 0.0, 0.25).set_delay(0.4)
+	rise.chain().tween_callback(label.queue_free)
+
+
 func _process(delta: float) -> void:
 	_tick_effects(delta)
-	queue_redraw()
+	_air.queue_redraw()
 	if _dead or not is_instance_valid(player): return
 	if staggered > 0.0:
 		staggered -= delta
@@ -148,8 +197,8 @@ func _slam() -> void:
 	var jump := create_tween()
 	jump.tween_property(self, "position", position + (target - global_position), flight)
 	var arc := create_tween()
-	arc.tween_property(sprite, "position:y", -20.0 - 150.0, flight * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	arc.tween_property(sprite, "position:y", -20.0, flight * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	arc.tween_property(sprite, "position:y", _sprite_y - 150.0, flight * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	arc.tween_property(sprite, "position:y", _sprite_y, flight * 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	await _warn(target, SLAM_RADIUS, _t(SLAM), Color(0.25, 0.2, 0.2))
 	await arc.finished
 	if _dead: return
@@ -184,7 +233,7 @@ func _squash(seconds: float) -> void:
 
 ## Projétil em arco do boss até `to`, chegando em `seconds` (desenho; o dano é do golpe).
 func _lob(to: Vector2, seconds: float, height: float, color: Color) -> void:
-	_lobs.append({"from": global_position + Vector2(0, -40), "to": to, "time": seconds, "total": seconds, "height": height, "color": color})
+	_lobs.append({"from": global_position, "to": to, "time": seconds, "total": seconds, "height": height, "color": color})
 
 
 func _warn(at: Vector2, radius: float, seconds: float, color: Color) -> void:
@@ -220,32 +269,38 @@ func _tick_effects(delta: float) -> void:
 	_seeds = _seeds.filter(func(s) -> bool: return s.life > 0.0)
 
 
-func _draw() -> void:
+## Chão: avisos, impactos e sombras dos projéteis (camada de chão, sob o jogador).
+func _draw_ground(layer: Node2D) -> void:
 	for w in _warnings:  # aviso: círculo que enche até o impacto
-		var at: Vector2 = to_local(w.at)
 		var fill: float = 1.0 - w.time / w.total
-		draw_set_transform(at, 0.0, Vector2(1.0, 0.55))
-		draw_circle(Vector2.ZERO, w.radius, Color(w.color, 0.18))
-		draw_circle(Vector2.ZERO, w.radius * fill, Color(w.color, 0.32))
-		draw_arc(Vector2.ZERO, w.radius, 0.0, TAU, 40, Color(w.color, 0.9), 2.0)
-		draw_set_transform(Vector2.ZERO)
+		layer.draw_set_transform(layer.to_local(w.at), 0.0, Vector2(1.0, 0.55))
+		layer.draw_circle(Vector2.ZERO, w.radius, Color(w.color, 0.18))
+		layer.draw_circle(Vector2.ZERO, w.radius * fill, Color(w.color, 0.32))
+		layer.draw_arc(Vector2.ZERO, w.radius, 0.0, TAU, 40, Color(w.color, 0.9), 2.0)
 	for b in _bursts:
-		var at2: Vector2 = to_local(b.at)
-		draw_set_transform(at2, 0.0, Vector2(1.0, 0.55))
-		draw_circle(Vector2.ZERO, b.radius * (1.2 - b.time), Color(b.color, b.time * 2.0))
-		draw_set_transform(Vector2.ZERO)
-	for l in _lobs:  # sombra no chão + projétil subindo e descendo
+		layer.draw_set_transform(layer.to_local(b.at), 0.0, Vector2(1.0, 0.55))
+		layer.draw_circle(Vector2.ZERO, b.radius * (1.2 - b.time), Color(b.color, b.time * 2.0))
+	for l in _lobs:
 		var k: float = 1.0 - l.time / l.total
-		var ground: Vector2 = to_local((l.from as Vector2).lerp(l.to, k))
-		draw_set_transform(ground, 0.0, Vector2(1.0, 0.5))
-		draw_circle(Vector2.ZERO, 5.0 + 4.0 * k, Color(0, 0, 0, 0.3))
-		draw_set_transform(Vector2.ZERO)
-		var air := ground + Vector2(0, -sin(k * PI) * float(l.height))
-		draw_circle(air, 7.0, l.color)
-		draw_circle(air + Vector2(-2, -2), 2.5, Color("#d8f5b0"))
+		layer.draw_set_transform(layer.to_local((l.from as Vector2).lerp(l.to, k)), 0.0, Vector2(1.0, 0.5))
+		layer.draw_circle(Vector2.ZERO, 5.0 + 4.0 * k, Color(0, 0, 0, 0.3))
+	if is_instance_valid(sprite) and not _dead:  # sombra do boss (some ao saltar)
+		var lift := clampf((_sprite_y - sprite.position.y) / 150.0, 0.0, 1.0)
+		layer.draw_set_transform(layer.to_local(global_position), 0.0, Vector2(1.0, 0.4))
+		layer.draw_circle(Vector2.ZERO, _art_rect.size.x * _base_scale.x * 0.45 * (1.0 - lift * 0.4), Color(0, 0, 0, 0.25 - lift * 0.1))
+	layer.draw_set_transform(Vector2.ZERO)
+
+
+## Ar: projéteis em voo (acima de tudo).
+func _draw_air() -> void:
+	for l in _lobs:
+		var k: float = 1.0 - l.time / l.total
+		var air: Vector2 = _air.to_local((l.from as Vector2).lerp(l.to, k)) + Vector2(0, -sin(k * PI) * float(l.height))
+		_air.draw_circle(air, 7.0, l.color)
+		_air.draw_circle(air + Vector2(-2, -2), 2.5, Color("#d8f5b0"))
 	for s in _seeds:
-		draw_circle(to_local(s.at), 6.0, Color("#6fbf4a") if species == "brotinho" else Color("#7d9a6a"))
-		draw_circle(to_local(s.at), 3.0, Color("#d8f5b0"))
+		_air.draw_circle(_air.to_local(s.at), 6.0, Color("#6fbf4a") if species == "brotinho" else Color("#7d9a6a"))
+		_air.draw_circle(_air.to_local(s.at), 3.0, Color("#d8f5b0"))
 
 
 func _die() -> void:
@@ -253,6 +308,7 @@ func _die() -> void:
 	_warnings.clear()
 	_seeds.clear()
 	_lobs.clear()
+	if is_instance_valid(_ground): _ground.queue_free()
 	var shrink := create_tween()  # a magia sai e ele volta ao tamanho normal
 	shrink.tween_property(sprite, "modulate", Color(1.6, 2.0, 1.6), 0.4)
 	shrink.tween_property(sprite, "scale", _base_scale / SIZE, 1.0).set_trans(Tween.TRANS_BACK)

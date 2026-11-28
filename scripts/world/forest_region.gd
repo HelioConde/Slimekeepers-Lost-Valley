@@ -376,6 +376,10 @@ func _process(delta: float) -> void:
 		return
 	if handle_player_house(house):
 		return
+	# Arma na mão: [F]/clique só ataca (sem abrir disco de slime nem bancada no meio da luta).
+	if preload("res://scripts/combat/player_combat.gd").is_weapon(HOTBAR.selected_item(get_tree())):
+		hud_hint.text = ""
+		return
 	if is_instance_valid(placer) and not tool_target_near():
 		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
 		if not str(placer.notice).is_empty():  # planta colocada, depósito, cancelada, obra pronta

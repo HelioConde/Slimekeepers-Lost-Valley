@@ -1,6 +1,6 @@
 extends SceneTree
 ## Atalho de teste do primeiro boss: abre a Floresta já no pé da arena do Mirante
-## Rochoso, com o boss liberado, espada, arco e 30 flechas. Por ser rodado por script,
+## Rochoso, com o boss liberado, espada, arco, 30 flechas e vida infinita. Por ser rodado por script,
 ## salva em user://test_run_slot_* e não mexe no save do jogador.
 ## Uso: godot --path . --script res://tools/play_boss.gd
 
@@ -11,6 +11,7 @@ func _initialize() -> void:
 
 func run() -> void:
 	set_meta("tutorial_step", 99)
+	set_meta(preload("res://scripts/combat/player_combat.gd").GOD_KEY, true)  # vida infinita no teste
 	var region: Node2D = load("res://scenes/regions/FlorestaDoDespertarV2.tscn").instantiate()
 	root.add_child(region)
 	current_scene = region

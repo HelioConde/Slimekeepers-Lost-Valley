@@ -30,6 +30,17 @@ Decisões do usuário em 2026-11-27. Este é um documento vivo: o combate vai se
   - Espada: golpe largo em arco de 140° à frente, com alcance de 110 px até a borda do alvo, como no Stardew. Dá para acertar de longe e correr (pedido do usuário, 2026-11-27). Um rastro branco mostra o arco.
   - Arco: atira para onde o **mouse** aponta, com alcance de 380 px (a flecha cai no limite); gasta 1 flecha (teste do usuário, 2026-11-27).
   - Rolamento (Espaço): ~0,35 s sem tomar dano e tempo de recarga; rolar logo antes do impacto ("rolamento perfeito") abre o boss por ~2 s, com dano dobrado.
+- **Ataques do jogador nunca falham (teste do usuário, 2026-11-27):**
+  - Com espada ou arco na mão, o clique ataca em qualquer ponto da tela (antes só valia a até 96 px do jogador, alcance de coleta).
+  - A espada corta para onde o mouse mirou; o arco atira para o mouse; [F] usa o mouse também.
+  - A área de acerto do boss é o próprio desenho dele (folha e bordas contam), não só um círculo no centro.
+  - Clique feito no meio de um golpe ou rolamento entra na fila e sai assim que der.
+  - A barra de vida do boss não pega mais o clique (antes, clicar no boss perto do topo da tela não atacava).
+  - Com arma na mão, [F]/clique não abre o disco do slime nem a bancada.
+  - Cada acerto mostra o número de dano subindo (amarelo e maior quando o boss está zonzo).
+- **Ordem de desenho:** o boss e o cristal são ordenados pela altura na tela junto com o jogador, com o pé como referência: abaixo do pé do boss o jogador fica na frente, acima fica atrás. Avisos no chão, impactos, sombras e o anel de raízes ficam numa camada de chão, sempre sob o jogador; projéteis no ar ficam por cima de tudo.
+- **Testes:** `tools/test_boss.gd` (regras), `tools/test_boss_input.gd` (mouse e teclado de verdade: 8 lados × 5 partes do boss × espada e arco, [F], fila e 8 s com o boss atacando, vida infinita) e `tools/test_boss_zorder.gd` (captura da tela: frente, atrás, aviso sob o jogador, cristal).
+- **Vida infinita para testar:** o atalho `tools/play_boss.gd` já liga; no jogo, o comando de admin `imortal` ([F1]) liga e desliga. Não vai para o save.
 - **Gatilho provisório:** alimentar 3 slimes diferentes libera o boss. Também há um comando de depuração para testes. Trocar pela tarefa definitiva quando ela existir.
 
 ## Arte e animação futuras (PixelLab, quando você autorizar)

@@ -606,8 +606,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if bool(get_tree().get_meta("build_mode", false)) or not is_instance_valid(player) or window_open(): return
 	var at: Vector2 = get_viewport().get_canvas_transform().affine_inverse() * mouse.position  # ponto do mundo clicado
-	if player.global_position.distance_to(at) > CLICK_REACH: return
-	if player.has_method("is_using_tool") and player.is_using_tool(): return
+	# Com espada ou arco, o clique ataca em qualquer ponto (boss longe; teste 2026-11-27).
+	var weapon: bool = preload("res://scripts/combat/player_combat.gd").is_weapon(preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree()))
+	if not weapon and player.global_position.distance_to(at) > CLICK_REACH: return
+	if not weapon and player.has_method("is_using_tool") and player.is_using_tool(): return  # arma: o clique entra na fila (player_combat)
 	if at.distance_to(player.global_position) > 4.0:
 		player.facing = player._get_direction_name(at - player.global_position)
 	_click_holding = true

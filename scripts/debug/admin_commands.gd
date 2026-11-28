@@ -80,7 +80,7 @@ func run(line: String) -> String:
 	var tree := get_tree()
 	match args[0]:
 		"ajuda":
-			return "kit · item <id> [qtd] · energia · vida · hora <h> · dia · tutorial <n|fim> · amigos · slimes · ir floresta|vale"
+			return "kit · item <id> [qtd] · energia · vida · imortal · boss · hora <h> · dia · tutorial <n|fim> · amigos · slimes · ir floresta|vale"
 		"kit":
 			for id: String in KIT: BAG.add_item(tree, id, int(KIT[id]))
 			_refresh()
@@ -104,6 +104,10 @@ func run(line: String) -> String:
 			bag.add_item(tree, "flecha", 30)
 			_refresh()
 			return "Boss liberado no Mirante Rochoso; espada, arco e 30 flechas na bolsa."
+		"imortal":  # vida infinita para testar combate (liga/desliga)
+			var key: String = preload("res://scripts/combat/player_combat.gd").GOD_KEY
+			tree.set_meta(key, not bool(tree.get_meta(key, false)))
+			return "Vida infinita: %s." % ("ligada" if tree.get_meta(key) else "desligada")
 		"hora":
 			if args.size() < 2: return "Uso: hora <h> [min]"
 			tree.root.get_node("GameClock").set_time(int(args[1]), int(args[2]) if args.size() > 2 else 0)

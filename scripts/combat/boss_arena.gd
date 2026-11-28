@@ -42,7 +42,10 @@ var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	name = "BossArena"
-	z_index = 1
+	y_sort_enabled = true  # cristal ordenado com o jogador; o anel vai na camada de chão
+	var ground := preload("res://scripts/combat/ground_layer.gd").new()
+	ground.painter = _draw_ring
+	get_parent().add_child.call_deferred(ground)
 	rng.randomize()
 	_place_crystal()
 
@@ -209,18 +212,20 @@ func _build_ui() -> void:
 	_bar.add_theme_stylebox_override("fill", fill)
 	_bar.add_theme_stylebox_override("background", back)
 	box.add_child(_bar)
+	for control: Control in [box, _name, _bar]:  # a barra não pode comer o clique no boss
+		control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
 func _close_ui() -> void:
 	if is_instance_valid(_ui): _ui.queue_free()
 
 
-func _draw() -> void:
+func _draw_ring(layer: Node2D) -> void:
 	if not fighting: return
-	# Anel de raízes fechando a clareira (provisório, sem arte).
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, radii.y / radii.x))
+	# Anel de raízes fechando a clareira (provisório, sem arte), no chão.
+	layer.draw_set_transform(layer.to_local(global_position), 0.0, Vector2(1.0, radii.y / radii.x))
 	for i in 56:
 		var angle := TAU * i / 56.0
-		draw_circle(Vector2.from_angle(angle) * radii.x, 7.0 + 2.0 * sin(i * 1.7), Color("#5a3d24"))
-	draw_arc(Vector2.ZERO, radii.x, 0.0, TAU, 112, Color("#7a5634"), 3.0)
-	draw_set_transform(Vector2.ZERO)
+		layer.draw_circle(Vector2.from_angle(angle) * radii.x, 7.0 + 2.0 * sin(i * 1.7), Color("#5a3d24"))
+	layer.draw_arc(Vector2.ZERO, radii.x, 0.0, TAU, 112, Color("#7a5634"), 3.0)
+	layer.draw_set_transform(Vector2.ZERO)

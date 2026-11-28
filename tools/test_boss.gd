@@ -74,8 +74,8 @@ func run() -> void:
 	await create_timer(1.2).timeout
 	check(boss.hp < hp, "espada acerta de longe, a 140 px (%d -> %d)" % [hp, boss.hp])
 	var combat_script := load("res://scripts/combat/player_combat.gd")
-	check(not combat_script.in_sword_arc(Vector2.ZERO, Vector2.RIGHT, Vector2(-120, 0), 40.0), "espada não acerta atrás do jogador")
-	check(not combat_script.in_sword_arc(Vector2.ZERO, Vector2.RIGHT, Vector2(200, 0), 40.0), "espada não acerta além do alcance")
+	check(not combat_script.in_sword_arc(Vector2.ZERO, Vector2.RIGHT, Rect2(-160, -40, 80, 80)), "espada não acerta atrás do jogador")
+	check(not combat_script.in_sword_arc(Vector2.ZERO, Vector2.RIGHT, Rect2(140, -40, 80, 80)), "espada não acerta além do alcance")
 	# Arco: gasta flecha e acerta.
 	hp = boss.hp
 	player.global_position = boss.global_position + Vector2(-200, 20)
@@ -84,22 +84,31 @@ func run() -> void:
 	await create_timer(0.8).timeout
 	check(boss.hp < hp, "flecha vai para o mouse e acerta o boss (%d -> %d)" % [hp, boss.hp])
 	check(combat_script.bow_aim(Vector2.ZERO, Vector2(0, 50), Vector2.RIGHT) == Vector2.DOWN, "arco mira no ponto do mouse")
-	hp = boss.hp
-	player.global_position = boss.global_position + Vector2(-600, 20)
+	# Alcance: atira para longe do boss (sem sair da arena) e mede até onde a flecha vai.
+	await create_timer(0.5).timeout
 	combat.set("_bow_cd", 0.0)
-	combat.shoot(boss.global_position + Vector2(0, -20))
-	await create_timer(1.4).timeout
-	check(boss.hp == hp, "flecha cai antes de chegar no boss a 600 px (alcance %d)" % combat_script.BOW_RANGE)
+	var before_children := region.get_child_count()
+	combat.shoot(player.global_position + Vector2(0, 600))
+	var arrow: Node = region.get_child(region.get_child_count() - 1) if region.get_child_count() > before_children else null
+	var travel := 0.0
+	while is_instance_valid(arrow):
+		travel = float(arrow.get("_travel"))
+		await process_frame
+	check(travel > 300.0 and travel <= combat_script.ARROW_RANGE + 12.0, "flecha cai no limite do alcance (%.0f px, alcance %d)" % [travel, combat_script.BOW_RANGE])
 	# Raízes: a zona some antes do dano; o dano vem com o projétil logo depois.
 	boss.set("_busy", true)
 	await create_timer(0.6).timeout
 	set_meta(HEALTH.KEY, 100)
-	player.global_position = boss.global_position + Vector2(-160, 40)
+	player.global_position = arena.global_position + Vector2(-120, 40)  # chão livre (sem colisão empurrando)
+	await frames(3)
 	boss.call("_roots")
 	var warn_time: float = boss.call("_t", boss.ROOTS)
 	await create_timer(warn_time - 0.05).timeout
 	check(HEALTH.current(self) == 100 and not (boss.get("_lobs") as Array).is_empty(), "raízes: sem dano enquanto a zona aparece, projétil no ar")
-	await create_timer(0.05 + boss.LAND_DELAY + 0.1).timeout
+	var waited := 0.0
+	while HEALTH.current(self) == 100 and waited < 1.0:  # o atraso é encadeado: espera o projétil cair
+		await process_frame
+		waited += get_root().get_process_delta_time()
 	check(HEALTH.current(self) < 100, "raízes: dano depois que a zona some (vida %d)" % HEALTH.current(self))
 	player.global_position += Vector2(-300, 0)  # sai das próximas raízes
 	await create_timer(4.0).timeout
