@@ -12,6 +12,7 @@ extends Control
 const ITEMS := preload("res://scripts/systems/item_catalog.gd")
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
+const THREAT := preload("res://scripts/combat/forest_threat.gd")
 const SKIN := preload("res://scripts/ui/hud_skin.gd")
 const FONT := preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const OUTER := 92.0
@@ -69,6 +70,11 @@ func open(target: Node2D) -> void:
 		{"id": "trabalho", "name": ("Escolher baú" if species == "carreguim" else ("Parar de trabalhar" if working else "Voltar a trabalhar")), "icon": ITEMS.icon("bau_campo" if species == "carreguim" else ("bancada" if species == "construlim" else "enxada")), "enabled": friend},
 		{"id": "seguir", "name": "Ficar em casa" if at_farm else "Ir para a fazenda", "icon": _steps_icon(), "enabled": friend},
 	]
+	# Pet da Floresta (forest_threat.gd): o amigo segue o jogador e ajuda contra o boss.
+	var pet_id := str(slime.get("persistent_id"))
+	if friend and not pet_id.is_empty() and slime.get("_session_key") == THREAT.FRIENDS_KEY:
+		var is_pet := THREAT.pet_id(get_tree()) == pet_id
+		actions.append({"id": "pet", "name": "Deixar aqui" if is_pet else "Levar comigo", "icon": ITEMS.icon("espada"), "enabled": is_pet or not THREAT.pet_resting(get_tree(), pet_id)})
 	# Playtest ID 60: só as ações disponíveis agora (o slime ainda desconfiado só aceita comida).
 	actions = actions.filter(func(a: Dictionary) -> bool: return bool(a.enabled))
 	for icon in _icons: icon.queue_free()

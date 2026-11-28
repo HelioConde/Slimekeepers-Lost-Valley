@@ -2,7 +2,8 @@ extends Node
 ## Ataques do jogador no combate com boss (docs/gameplay/BOSS_BROTINHO.md): com a espada
 ## ou o arco escolhidos na barra, [F]/clique ataca. Espada: golpe largo em arco à frente, o dano
 ## sai no quadro de contato. Arco: gasta 1 flecha e atira para onde o jogador olha.
-## Alvos: nós no grupo "boss_target" com take_hit(dano, origem) e hit_radius().
+## Alvos: nós no grupo "combat_target" (boss e slimes não amigos da Floresta) com
+## take_hit(dano, origem) e hurt_rect() ou hit_radius().
 ## shortcut: a espada usa a animação do machado e o arco nenhuma, até a arte nova.
 
 const BAG := preload("res://scripts/systems/forest_bag.gd")
@@ -25,7 +26,12 @@ const BOW_COOLDOWN := 0.45
 var player: CharacterBody2D
 var _bow_cd := 0.0
 ## Ataque pedido no meio de outro golpe ou rolamento: sai assim que der (nada se perde).
-const QUEUE_TIME := 1.2  ## maior que um golpe inteiro, para o clique seguinte nunca se perder
+## Fila curta (teste do usuário, 2026-11-27: um clique virava dois golpes e não dava para
+## desviar). O mouse manda um 2º clique colado no 1º (clique duplo no mesmo quadro em
+## que solta). Clique no meio do golpe só vale nos últimos QUEUE_WINDOW s dele; antes
+## disso é ignorado, como no Stardew. Rolar cancela o que estava na fila.
+const QUEUE_TIME := 0.3
+const QUEUE_WINDOW := 0.15
 var _queued := 0.0
 var _aim := Vector2.INF  ## ponto mirado no último clique/[F] (mouse); INF = para a frente
 var _mouse_screen := Vector2.INF  ## última posição do mouse na tela (eventos de movimento)
@@ -33,6 +39,8 @@ var _mouse_screen := Vector2.INF  ## última posição do mouse na tela (eventos
 
 func _ready() -> void:
 	name = "PlayerCombat"
+	if is_instance_valid(player) and player.has_signal("rolled"):
+		player.rolled.connect(func() -> void: _queued = 0.0)  # rolar cancela o ataque na fila
 
 
 func _input(event: InputEvent) -> void:
@@ -43,6 +51,14 @@ func _input(event: InputEvent) -> void:
 func mouse_world() -> Vector2:
 	if _mouse_screen == Vector2.INF: return Vector2.INF
 	return get_viewport().get_canvas_transform().affine_inverse() * _mouse_screen
+
+
+## Clique aceito agora? Livre, ou já no fim do golpe/recarga (fica na fila).
+func _accepts_click(item: String) -> bool:
+	if player.is_rolling(): return false
+	if item == "arco" and _bow_cd > QUEUE_WINDOW: return false
+	if player.is_using_tool() and float(player.get("_tool_time")) > QUEUE_WINDOW: return false
+	return true
 
 
 static func is_weapon(item: String) -> bool:
@@ -68,7 +84,8 @@ func _process(delta: float) -> void:
 	if not is_weapon(item):
 		_queued = 0.0
 		return
-	if Input.is_action_just_pressed("interact"):
+	if Input.is_action_just_pressed("roll"): _queued = 0.0  # quer desviar: nada de ataque na fila
+	if Input.is_action_just_pressed("interact") and _accepts_click(item):
 		_queued = QUEUE_TIME
 		var clicked: Variant = player.get_parent().get("click_point")
 		_aim = clicked if clicked is Vector2 and clicked != Vector2.INF else mouse_world()
@@ -89,11 +106,11 @@ func swing() -> void:
 	# O que estava ao alcance no clique conta também: o boss que se move durante a
 	# preparação do golpe (salto) não escapa de um clique certo (teste 2026-11-27).
 	var locked: Array[Node2D] = []
-	for target: Node2D in get_tree().get_nodes_in_group("boss_target"):
+	for target: Node2D in get_tree().get_nodes_in_group("combat_target"):
 		if in_sword_arc(player.global_position, forward, hurt_rect_of(target)): locked.append(target)
 	var hit := func() -> void:
 		_slash(forward)
-		for target: Node2D in get_tree().get_nodes_in_group("boss_target"):
+		for target: Node2D in get_tree().get_nodes_in_group("combat_target"):
 			if target in locked or in_sword_arc(player.global_position, forward, hurt_rect_of(target)):
 				target.call("take_hit", SWORD_DAMAGE, player.global_position)
 	if anim > 0.0: player.tool_impact.connect(hit, CONNECT_ONE_SHOT)
@@ -178,7 +195,7 @@ class Arrow extends Node2D:
 		var step := ARROW_SPEED * delta
 		global_position += direction * step
 		_travel += step
-		for target: Node2D in get_tree().get_nodes_in_group("boss_target"):
+		for target: Node2D in get_tree().get_nodes_in_group("combat_target"):
 			if _crosses((rect_of.call(target) as Rect2).grow(6.0), from, global_position):
 				target.call("take_hit", ARROW_DAMAGE, global_position - direction * 40.0)
 				queue_free()

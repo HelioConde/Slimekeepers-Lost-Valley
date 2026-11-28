@@ -16,6 +16,19 @@ Decisões do usuário em 2026-11-27. Este é um documento vivo: o combate vai se
 | Arte | **Protótipo com a arte atual** (Brotinho ampliado, golpes simples). A arte nova entra quando o PixelLab for autorizado e a jogabilidade estiver aprovada; prévia em GIF antes de instalar. Slimes nunca têm braços nem pernas. |
 | Vitória | A magia sai como **orbe de energia** (para a máquina do final) e os slimes da área ficam **mais pacíficos**. Em dupla, o boss tem mais vida e os dois ganham. |
 
+## Liberar o boss, slimes agressivos e pet (decisões do usuário, 2026-11-27)
+
+| Tema | Decisão |
+|---|---|
+| Regra provisória para o boss aparecer | Pontos dos slimes **definidos no mapa** (Floresta): matar vale 1 e domar vale 5; com **20 pontos** o boss aparece. Rotas de exemplo: matar 20, domar 4, ou matar 10 e domar 2. |
+| Domar | É a amizade que já existe (dar comida até virar amigo). Amigos que o jogador já tem contam desde já. |
+| Dificuldade | Sai da mistura: só domar = fácil, mistura = médio, só matar = difícil. Muda a **vida do boss** (fácil 70%, médio 100%, difícil 130%). |
+| Matar slime | Espada e flecha acertam slimes normais. Morto, ele some, solta **gosma da espécie** e o spawn o traz de volta depois de **2 dias**. Slimes amigos são protegidos (golpes passam sem acertar). |
+| Slimes agressivos | Antes de vencer o boss, slimes não amigos atacam quem chega perto (pulo avisado), mas **não perseguem** se o jogador corre. Com comida na mão eles não atacam, para dar para fazer amizade. O slime do tutorial perto da casa nunca ataca. A **Bolhinha** (água) não ataca: foge do jogador. Dano: **6** de vida na área inicial. Depois do boss vencido, a área fica pacífica. |
+| Pet | No disco de um slime amigo, "Levar comigo": ele segue o jogador (um por vez); "Deixar aqui" devolve ao habitat. Na luta: **Brotinho** atira projéteis no boss, **Bolhinha** cura o jogador, **Musguinho** deixa o boss lento por alguns segundos. O pet toma dano dos golpes do boss, é mais resistente que o jogador e, se desmaiar, volta para casa até o dia seguinte. |
+
+Implementação (2026-11-27): `scripts/combat/forest_threat.gd` (pontos, dificuldade, mortos, pet), `scripts/world/forest_slime.gd` (vida 30, ataque avisado de 0,45 s com pulo de até 40 px, recarga 1,6 s; Bolhinha foge a 120 px), `scripts/combat/slime_pet.gd` (pet: vida 150; Brotinho atira a cada 2,2 s com dano 4; Bolhinha cura 10 a cada 6 s; Musguinho deixa o boss lento por 3 s a cada 10 s; preso atrás de obstáculo por 1 s, reaparece ao lado). Hoje a Floresta só tem Brotinho e Musguinho nos habitats (sem Bolhinha). Gosmas com ícone provisório. Teste: `tools/test_forest_threat.gd`. Comando de admin `pet`: faz amizade com o slime mais perto e o leva junto.
+
 ## Protótipo (primeira versão jogável)
 
 - **Arena:** o **Mirante Rochoso** (Floresta, centro 5110,1250), escolhido pelo usuário. O platô foi ampliado de 470×310 para 660×430 (`tools/combat/grow_lookout.gd`), com autorização para priorizar o combate. Arena em elipse de 300×190. Ao entrar com o boss liberado, um anel de raízes fecha a arena e a barra de vida do boss aparece no alto da tela.
@@ -41,7 +54,7 @@ Decisões do usuário em 2026-11-27. Este é um documento vivo: o combate vai se
 - **Ordem de desenho:** o boss e o cristal são ordenados pela altura na tela junto com o jogador, com o pé como referência: abaixo do pé do boss o jogador fica na frente, acima fica atrás. Avisos no chão, impactos, sombras e o anel de raízes ficam numa camada de chão, sempre sob o jogador; projéteis no ar ficam por cima de tudo.
 - **Testes:** `tools/test_boss.gd` (regras), `tools/test_boss_input.gd` (mouse e teclado de verdade: 8 lados × 5 partes do boss × espada e arco, [F], fila e 8 s com o boss atacando, vida infinita) e `tools/test_boss_zorder.gd` (captura da tela: frente, atrás, aviso sob o jogador, cristal).
 - **Vida infinita para testar:** o atalho `tools/play_boss.gd` já liga; no jogo, o comando de admin `imortal` ([F1]) liga e desliga. Não vai para o save.
-- **Gatilho provisório:** alimentar 3 slimes diferentes libera o boss. Também há um comando de depuração para testes. Trocar pela tarefa definitiva quando ela existir.
+- **Gatilho provisório:** ver "Liberar o boss" acima (20 pontos). Também há um comando de depuração para testes.
 
 ## Arte e animação futuras (PixelLab, quando você autorizar)
 

@@ -41,3 +41,17 @@ def orbe(d):
 for name, fn in [("espada", espada), ("arco", arco), ("flecha", flecha), ("orbe_energia", orbe)]:
     save(name, fn)
 print("ok")
+
+
+def gosma(color, shine):
+    def draw(d):
+        d.ellipse([5, 12, 27, 27], fill=color, outline=OUTLINE)  # poça de gosma
+        d.ellipse([11, 7, 21, 17], fill=color, outline=OUTLINE)
+        d.ellipse([13, 9, 16, 12], fill=shine)
+    return draw
+
+
+if __name__ == "__main__" and "gosma" in __import__("sys").argv:
+    save("gosma_brotinho", gosma((111, 191, 74, 255), (216, 245, 176, 255)))
+    save("gosma_bolhinha", gosma((90, 170, 220, 255), (210, 240, 255, 255)))
+    save("gosma_musguinho", gosma((125, 154, 106, 255), (210, 230, 190, 255)))

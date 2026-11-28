@@ -34,6 +34,22 @@ var _moving := false
 var _social_partner: Node2D
 var _session_key := "forest_slime_friends"
 var swimming := false
+## Combate antes do boss (forest_threat.gd, decisões do usuário 2026-11-27): slime não
+## amigo toma golpes, morre soltando gosma e volta em 2 dias; agressivo, ataca quem chega
+## perto com um pulo avisado (sem perseguir); a Bolhinha foge. Amigo é protegido.
+const THREAT := preload("res://scripts/combat/forest_threat.gd")
+const COMBAT := preload("res://scripts/combat/player_combat.gd")
+const SLIME_HP := 30
+const ATTACK_RANGE := 52.0  ## começa o pulo quando o jogador chega a esta distância
+const LUNGE := 40.0  ## o pulo avança no máximo isto (não persegue)
+const WINDUP := 0.45  ## aviso antes do pulo
+const ATTACK_COOLDOWN := 1.6
+const FLEE_RANGE := 120.0  ## Bolhinha foge de quem chega a esta distância
+var hp := SLIME_HP
+var is_pet := false  ## amigo que segue o jogador (slime_pet.gd move e cuida dele)
+var _dead := false
+var _attack_cd := 0.0
+var _attacking := false
 var _water_material: ShaderMaterial
 var _swim_path := PackedVector2Array()
 
@@ -78,6 +94,7 @@ func _ready() -> void:
 		sprite.material = _water_material
 	var friends: Dictionary = get_tree().get_meta(_session_key, {})
 	befriended = bool(friends.get(persistent_id, false))
+	if not befriended and _session_key == THREAT.FRIENDS_KEY: add_to_group("combat_target")
 	_play_animation("idle")
 	if variant != VARIANTS.COMMON: _add_variant_glow()
 
@@ -254,6 +271,7 @@ func make_friend() -> bool:
 	if befriended:
 		return false
 	befriended = true
+	remove_from_group("combat_target")  # amigo: golpes passam sem acertar
 	var friends: Dictionary = get_tree().get_meta(_session_key, {})
 	friends[persistent_id] = true
 	get_tree().set_meta(_session_key, friends)
@@ -268,6 +286,10 @@ func make_friend() -> bool:
 
 func _physics_process(delta: float) -> void:
 	_update_swimming()
+	if is_pet or _dead: return  # slime_pet.gd move o pet; morto só some
+	_attack_cd = maxf(0.0, _attack_cd - delta)
+	if _attacking: return
+	if is_instance_valid(player) and _threat_step(): return
 	_happy_time = maxf(0.0, _happy_time - delta)
 	if _happy_time <= 0.0: reaction = ""
 	if not is_instance_valid(player) or not is_instance_valid(manager):
@@ -305,6 +327,101 @@ func _physics_process(delta: float) -> void:
 			_rest(_rng.randf_range(2.0, 4.0))
 	else:
 		_idle_animation()
+
+# --- Combate (antes do boss) -------------------------------------------------------
+
+## Agressivo agora? Não amigo, Floresta sem boss vencido, fora do tutorial perto da casa
+## e o jogador sem comida na mão.
+func aggressive() -> bool:
+	if befriended or _session_key != THREAT.FRIENDS_KEY or habitat.get("near_spawn", false): return false
+	if THREAT.pacified(get_tree()): return false
+	var held: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
+	return not preload("res://scripts/systems/slime_feeding.gd").is_food(held)
+
+
+## Um passo do comportamento agressivo; true = cuidou do quadro.
+func _threat_step() -> bool:
+	if not aggressive(): return false
+	var distance := global_position.distance_to(player.global_position)
+	if slime_type == "bolhinha":
+		if distance < FLEE_RANGE and behavior != "flee":
+			var away := global_position + player.global_position.direction_to(global_position) * 90.0
+			if manager.is_position_allowed(away, habitat, self): _begin_visit("flee", away, 2.5)
+		return false
+	if distance > ATTACK_RANGE or _attack_cd > 0.0: return false
+	_attack(player.global_position)
+	return true
+
+
+## Pulo avisado: encolhe vermelho, salta até LUNGE na direção de onde o jogador estava e
+## machuca se ele ainda estiver lá (rolar ou correr desvia).
+func _attack(at: Vector2) -> void:
+	_attacking = true
+	_moving = false
+	velocity = Vector2.ZERO
+	sprite.flip_h = at.x < global_position.x
+	var base_scale := sprite.scale
+	var windup := create_tween()
+	windup.tween_property(sprite, "scale", base_scale * Vector2(1.25, 0.75), WINDUP)
+	windup.parallel().tween_property(sprite, "modulate", Color(1.4, 0.7, 0.7), WINDUP)
+	await windup.finished
+	if _dead or not is_instance_valid(player):
+		_attacking = false
+		return
+	var landing := global_position + (at - global_position).limit_length(LUNGE)
+	var jump := create_tween()
+	jump.tween_property(sprite, "scale", base_scale * Vector2(0.85, 1.2), 0.08)
+	jump.parallel().tween_property(self, "global_position", landing, 0.18).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	jump.tween_property(sprite, "scale", base_scale, 0.1)
+	jump.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.1)
+	await get_tree().create_timer(0.18).timeout
+	if not _dead and is_instance_valid(player) and player.global_position.distance_to(global_position) < 30.0:
+		COMBAT.hurt_player(player, THREAT.SLIME_DAMAGE)
+	_attack_cd = ATTACK_COOLDOWN
+	_attacking = false
+	_rest(0.8)
+
+
+## Área de acerto = o desenho do slime.
+func hurt_rect() -> Rect2:
+	var size := Vector2(30, 28) * float(personality.get("scale", 1.0)) * 1.2
+	return Rect2(sprite.global_position - size / 2.0, size)
+
+
+func hit_radius() -> float:
+	return 16.0
+
+
+func take_hit(amount: int, from: Vector2) -> void:
+	if befriended or _dead: return  # amigos são protegidos
+	hp -= amount
+	sprite.modulate = Color(1.8, 1.8, 1.8)
+	get_tree().create_timer(0.08).timeout.connect(func() -> void: if is_instance_valid(sprite) and not _attacking: sprite.modulate = Color.WHITE)
+	var push := (global_position - from).normalized() * 14.0
+	if manager.is_position_allowed(global_position + push, habitat, self): global_position += push
+	_rest(0.6)
+	if hp <= 0: _die()
+
+
+## Morre: conta o ponto, solta a gosma da espécie e some (o spawn o traz em 2 dias).
+func _die() -> void:
+	_dead = true
+	remove_from_group("combat_target")
+	THREAT.record_kill(get_tree(), persistent_id)
+	var region: Node = manager.get("region")
+	var drops: Node = region.get("item_drops") if region else null
+	var item := "gosma_" + slime_type
+	if preload("res://scripts/systems/item_catalog.gd").ITEMS.has(item):
+		if drops: drops.call("spawn", item, 1, global_position)
+		else: preload("res://scripts/systems/forest_bag.gd").add_item(get_tree(), item, 1)
+	if region and region.has_method("_notify"):
+		var points := THREAT.points(get_tree())
+		region.call("_notify", "%s derrotado. Magia no Mirante: %d/%d." % [display_name(), mini(points, THREAT.UNLOCK_POINTS), THREAT.UNLOCK_POINTS] if points < THREAT.UNLOCK_POINTS + THREAT.KILL_POINTS else "%s derrotado." % display_name())
+	var fade := create_tween()
+	fade.tween_property(sprite, "scale", sprite.scale * Vector2(1.4, 0.2), 0.25)
+	fade.parallel().tween_property(sprite, "modulate:a", 0.0, 0.3)
+	fade.tween_callback(queue_free)
+
 
 func _try_retreat() -> bool:
 	var player_velocity := Vector2.ZERO

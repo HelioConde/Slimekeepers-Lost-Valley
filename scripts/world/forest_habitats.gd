@@ -105,6 +105,8 @@ func populate() -> void:
 			var persistent_id := "%s/%s/%d" % [species, habitat_id, index]
 			if is_instance_valid(_slots.get(persistent_id)):
 				continue
+			if session_key == "forest_slime_friends" and preload("res://scripts/combat/forest_threat.gd").is_dead(region.get_tree(), persistent_id):
+				continue  # morto: volta depois de 2 dias
 			var full: bool = spawned.size() >= max_population and not habitat.get("near_spawn", false)  # o visitante não espera vaga
 			if full or _elapsed < float(_retry_at.get(persistent_id, -1.0)):
 				continue

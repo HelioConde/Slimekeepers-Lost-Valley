@@ -518,6 +518,13 @@ func slime_action(slime: Node2D, action: String, arg: String) -> void:
 			off[species] = not bool(off.get(species, false))
 			tree.set_meta("slime_work_off", off)
 			_notify("%s %s." % [slime.call("display_name"), "parou de trabalhar" if off[species] else "voltou a trabalhar"])
+		"pet":
+			var THREAT := preload("res://scripts/combat/forest_threat.gd")
+			var id := str(slime.get("persistent_id"))
+			var leaving := THREAT.pet_id(tree) == id
+			THREAT.set_pet(tree, "" if leaving else id)
+			if has_method("sync_pet"): call("sync_pet")
+			_notify("%s %s." % [slime.call("display_name"), "ficou aqui" if leaving else "vai com você e ajuda contra o boss"])
 		"seguir":
 			var farm_map: Dictionary = (tree.get_meta("slime_at_farm", {}) as Dictionary).duplicate()
 			farm_map[species] = not bool(farm_map.get(species, true))

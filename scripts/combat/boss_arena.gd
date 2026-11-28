@@ -17,9 +17,7 @@ const FONT := preload("res://assets/fonts/ui_font.tres")
 const UNLOCK_KEY := "boss_floresta_unlocked"  ## liberado (gatilho provisório ou depuração)
 const DEFEATED_KEY := "bosses_defeated"  ## {região: true}
 const PACIFIED_KEY := "pacified_areas"  ## {habitat: true}: slimes mais pacíficos
-## Gatilho provisório: alimentar FRIENDS_TO_UNLOCK slimes diferentes (amizade feita com
-## comida). Trocar pela tarefa definitiva (EM ABERTO no doc).
-const FRIENDS_TO_UNLOCK := 3
+const THREAT := preload("res://scripts/combat/forest_threat.gd")  ## pontos e dificuldade
 const MUSGUINHO_CHANCE := 0.1
 const REGION_ID := "floresta"
 const AREA := "floresta"  ## área que fica pacífica com a vitória (Mapa 1)
@@ -75,8 +73,7 @@ func _k(point: Vector2) -> float:
 
 static func unlocked(tree: SceneTree) -> bool:
 	if bool(tree.get_meta(UNLOCK_KEY, false)): return true
-	var friends: Dictionary = tree.get_meta("forest_slime_friends", {})
-	return friends.values().filter(func(v) -> bool: return bool(v)).size() >= FRIENDS_TO_UNLOCK
+	return THREAT.points(tree) >= THREAT.UNLOCK_POINTS  # regra provisória: matar 1, domar 5, total 20
 
 
 static func defeated_here(tree: SceneTree) -> bool:
@@ -104,7 +101,7 @@ func start(player: Node2D) -> void:
 	var net := get_node_or_null("/root/NetSession")
 	var duo := net != null and bool(net.get("connected"))
 	boss = BOSS.new()
-	boss.configure(player, global_position, radius, "musguinho" if rng.randf() < MUSGUINHO_CHANCE else "brotinho", duo)
+	boss.configure(player, global_position, radius, "musguinho" if rng.randf() < MUSGUINHO_CHANCE else "brotinho", duo, float(THREAT.BOSS_HP[THREAT.difficulty(get_tree())]))
 	boss.position = global_position + CRYSTAL_OFFSET + Vector2(0, 40) - region.global_position  # sai do cristal
 	region.add_child(boss)
 	boss.hp_changed.connect(_on_hp)

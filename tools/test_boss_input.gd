@@ -2,7 +2,8 @@ extends SceneTree
 ## Combate com mouse e teclado de verdade (eventos de entrada, não chamadas diretas):
 ## nenhum ataque do jogador pode falhar (pedido do usuário, 2026-11-27). Vida infinita.
 ## Clica em várias partes do boss (centro, folha, bordas) a partir de 8 lados, com a
-## espada e com o arco; aperta [F] virado para o boss; clica no meio de um golpe (fila).
+## espada e com o arco; aperta [F] virado para o boss; clique duplo colado = um golpe;
+## clique no fim do golpe entra na fila; rolar cancela a fila.
 ## Uso: godot --path . --rendering-driver opengl3 --script res://tools/test_boss_input.gd
 
 const ARENA := preload("res://scripts/combat/boss_arena.gd")
@@ -42,8 +43,8 @@ func settle() -> void:
 
 
 ## Clique de mouse de verdade num ponto do mundo (passa pela janela e pela câmera).
-func click(world: Vector2) -> void:
-	await settle()
+func click(world: Vector2, wait_camera := true) -> void:
+	if wait_camera: await settle()
 	var at: Vector2 = root.get_final_transform() * (root.get_canvas_transform() * world)
 	await aim_mouse(world)
 	for pressed in [true, false]:
@@ -156,15 +157,95 @@ func run() -> void:
 			await create_timer(0.75).timeout
 			if boss.hp >= hp: key_misses.append("%s de %d°" % [weapon, int(rad_to_deg(angle))])
 	check(key_misses.is_empty(), "[F] virado para o boss acerta de 8 lados %s" % [key_misses])
-	# Fila: clicar no meio de um golpe não se perde.
+	# Clique no meio de um golpe é ignorado (só os últimos 0,15 s entram na fila).
 	await select("espada")
 	await stand(PI, 50.0)
 	var before: int = boss.hp
 	await click(boss.call("hurt_rect").get_center())
 	await create_timer(0.1).timeout
-	await click(boss.call("hurt_rect").get_center())  # ainda no meio do primeiro golpe
+	if float(player.get("_tool_time")) > COMBAT.QUEUE_WINDOW + 0.05:
+		await click(boss.call("hurt_rect").get_center())  # ainda no meio do primeiro golpe
 	await create_timer(1.6).timeout
-	check(before - boss.hp >= COMBAT.SWORD_DAMAGE * 2, "dois cliques seguidos = dois golpes (dano %d)" % (before - boss.hp))
+	check(before - boss.hp == COMBAT.SWORD_DAMAGE, "clique no meio do golpe não vira outro golpe (dano %d)" % (before - boss.hp))
+	# Clique duplo do mouse (2º clique colado no 1º, como o mouse do usuário manda):
+	# só um golpe. Teste do usuário (2026-11-27): um clique virava dois golpes.
+	await create_timer(1.0).timeout
+	before = boss.hp
+	var at: Vector2 = root.get_final_transform() * (root.get_canvas_transform() * boss.call("hurt_rect").get_center())
+	await settle()
+	for step in [[true, false], [false, false], [true, true], [false, false]]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = step[0]
+		event.double_click = step[1]
+		event.position = at
+		event.global_position = at
+		Input.parse_input_event(event)
+		await frames(1)
+	await create_timer(1.6).timeout
+	check(before - boss.hp == COMBAT.SWORD_DAMAGE, "clique duplo colado = um golpe só (dano %d)" % (before - boss.hp))
+	# Arco: clique duplo colado = uma flecha; dois cliques de verdade = duas flechas.
+	await select("arco")
+	var arrows := [0]
+	var count_arrow := func(n: Node) -> void: if n.get("rect_of") != null: arrows[0] += 1
+	region.child_entered_tree.connect(count_arrow)
+	await settle()
+	at = root.get_final_transform() * (root.get_canvas_transform() * boss.call("hurt_rect").get_center())
+	for step in [[true, false], [false, false], [true, true], [false, false]]:
+		var event := InputEventMouseButton.new()
+		event.button_index = MOUSE_BUTTON_LEFT
+		event.pressed = step[0]
+		event.double_click = step[1]
+		event.position = at
+		event.global_position = at
+		Input.parse_input_event(event)
+		await frames(1)
+	await create_timer(0.8).timeout
+	check(arrows[0] == 1, "arco: clique duplo colado = uma flecha (%d)" % arrows[0])
+	arrows[0] = 0
+	await click(boss.call("hurt_rect").get_center())
+	await create_timer(0.6).timeout
+	await click(boss.call("hurt_rect").get_center())
+	await create_timer(0.8).timeout
+	check(arrows[0] == 2, "arco: dois cliques = duas flechas (%d)" % arrows[0])
+	region.child_entered_tree.disconnect(count_arrow)
+	await select("espada")
+	# Clique no fim do golpe ainda entra na fila (não se perde).
+	await create_timer(0.5).timeout
+	before = boss.hp
+	await click(boss.call("hurt_rect").get_center())
+	var wait := 0.0
+	while float(player.get("_tool_time")) > 0.1 and wait < 2.0:
+		await process_frame
+		wait += get_root().get_process_delta_time()
+	await click(boss.call("hurt_rect").get_center(), false)  # já no fim do golpe: entra na fila
+	await create_timer(1.6).timeout
+	check(before - boss.hp == COMBAT.SWORD_DAMAGE * 2, "clique no fim do golpe sai em seguida (dano %d)" % (before - boss.hp))
+	# Rolar cancela o ataque na fila.
+	await create_timer(0.5).timeout
+	before = boss.hp
+	await click(boss.call("hurt_rect").get_center())
+	wait = 0.0
+	while float(player.get("_tool_time")) > 0.1 and wait < 2.0:
+		await process_frame
+		wait += get_root().get_process_delta_time()
+	await click(boss.call("hurt_rect").get_center(), false)  # já no fim do golpe: entra na fila
+	var roll_key := InputEventKey.new()  # Espaço de verdade, ainda no fim do golpe
+	roll_key.keycode = KEY_SPACE
+	roll_key.physical_keycode = KEY_SPACE
+	roll_key.pressed = true
+	Input.parse_input_event(roll_key)
+	await frames(2)
+	roll_key = roll_key.duplicate()
+	roll_key.pressed = false
+	Input.parse_input_event(roll_key)
+	var rolled := false
+	for i in 40:
+		await process_frame
+		if player.is_rolling(): rolled = true
+	await create_timer(1.2).timeout
+	check(before - boss.hp == COMBAT.SWORD_DAMAGE, "Espaço cancela o golpe que estava na fila (dano %d)" % (before - boss.hp))
+	check(rolled, "Espaço no fim do golpe: rola assim que o golpe termina")
 	# Parte 2: boss atacando de verdade; clicar sem parar por 8 s, vida infinita.
 	boss.set("_busy", false)
 	await select("espada")

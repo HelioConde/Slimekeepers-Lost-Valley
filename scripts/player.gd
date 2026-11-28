@@ -70,6 +70,11 @@ var rolling_since := -1.0  ## Time.get_ticks_msec() do início do rolamento (rol
 var _roll_time := 0.0
 var _roll_cd := 0.0
 var _roll_dir := Vector2.DOWN
+## Espaço apertado no meio de um golpe: o rolamento sai assim que o golpe termina
+## (teste do usuário, 2026-11-27: "impossibilitando eu desviar").
+const ROLL_BUFFER := 0.5
+var _roll_buffer := 0.0
+var _impact_done := false  ## o golpe já acertou: o resto da animação pode ser cancelado rolando
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 var facing: String = "south"
@@ -95,7 +100,10 @@ func _physics_process(_delta: float) -> void:
 	if _roll_time > 0.0:
 		_roll_step(_delta)
 		return
-	if Input.is_action_just_pressed("roll") and start_roll(Input.get_vector("move_left", "move_right", "move_up", "move_down")):
+	if Input.is_action_just_pressed("roll"): _roll_buffer = ROLL_BUFFER
+	if not is_using_tool(): _roll_buffer = maxf(0.0, _roll_buffer - _delta)  # no golpe, espera o impacto
+	if _roll_buffer > 0.0 and start_roll(Input.get_vector("move_left", "move_right", "move_up", "move_down")):
+		_roll_buffer = 0.0
 		return
 	if is_using_tool():
 		# Durante o golpe da ferramenta o personagem fica parado, virado para o alvo.
@@ -118,7 +126,12 @@ func _physics_process(_delta: float) -> void:
 
 ## Rola na direção dada (ou para onde olha). false = em recarga ou ocupado.
 func start_roll(direction: Vector2) -> bool:
-	if _roll_cd > 0.0 or is_using_tool(): return false
+	if _roll_cd > 0.0: return false
+	# Depois do impacto, rolar cancela o fim do golpe (dá para desviar logo após acertar).
+	if is_using_tool():
+		if not _impact_done or _clip.is_empty() or not (_clip.begins_with("axe_") or _clip.begins_with("pickaxe_") or _clip.begins_with("sickle_")): return false
+		_tool_time = 0.0
+		_clip = ""
 	_roll_dir = direction.normalized() if direction.length_squared() > 0.01 else _facing_vector()
 	facing = _get_direction_name(_roll_dir)
 	_roll_time = ROLL_TIME
@@ -205,6 +218,7 @@ func play_tool(tool: String) -> float:
 		return 0.0
 	current_animation = name
 	_clip = name
+	_impact_done = false
 	sprite.play(name)
 	var units := 0.0
 	for i in sprite.sprite_frames.get_frame_count(name):
@@ -267,6 +281,7 @@ func _on_frame_changed() -> void:
 	if sound == "corte": impact = 4  # meio da varrida
 	if sprite.frame != impact: return
 	if visible and not sound.is_empty(): preload("res://scripts/systems/sfx.gd").play(get_tree(), sound, global_position)
+	_impact_done = true
 	tool_impact.emit()
 
 

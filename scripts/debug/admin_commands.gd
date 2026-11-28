@@ -80,7 +80,7 @@ func run(line: String) -> String:
 	var tree := get_tree()
 	match args[0]:
 		"ajuda":
-			return "kit · item <id> [qtd] · energia · vida · imortal · boss · hora <h> · dia · tutorial <n|fim> · amigos · slimes · ir floresta|vale"
+			return "kit · item <id> [qtd] · energia · vida · imortal · boss · pet · hora <h> · dia · tutorial <n|fim> · amigos · slimes · ir floresta|vale"
 		"kit":
 			for id: String in KIT: BAG.add_item(tree, id, int(KIT[id]))
 			_refresh()
@@ -104,6 +104,18 @@ func run(line: String) -> String:
 			bag.add_item(tree, "flecha", 30)
 			_refresh()
 			return "Boss liberado no Mirante Rochoso; espada, arco e 30 flechas na bolsa."
+		"pet":  # amizade com o slime da Floresta mais perto e ele vira pet (teste do combate)
+			var THREAT := preload("res://scripts/combat/forest_threat.gd")
+			var me: Node2D = region.get("player") if region else null
+			var best: Node2D = null
+			for slime: Node2D in tree.get_nodes_in_group("living_slimes"):
+				if me == null or str(slime.get("persistent_id")).is_empty(): continue
+				if best == null or slime.global_position.distance_to(me.global_position) < best.global_position.distance_to(me.global_position): best = slime
+			if best == null: return "Nenhum slime da Floresta por perto."
+			best.call("make_friend")
+			THREAT.set_pet(tree, str(best.get("persistent_id")))
+			if region.has_method("sync_pet"): region.call("sync_pet")
+			return "%s agora é seu pet." % best.call("display_name")
 		"imortal":  # vida infinita para testar combate (liga/desliga)
 			var key: String = preload("res://scripts/combat/player_combat.gd").GOD_KEY
 			tree.set_meta(key, not bool(tree.get_meta(key, false)))

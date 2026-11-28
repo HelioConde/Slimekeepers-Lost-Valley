@@ -44,7 +44,8 @@ func run() -> void:
 	for i in 5: await physics_frame
 	await key(KEY_F)
 	var disc: Control = region.get("slime_disc")
-	check(disc.visible and disc.get("actions").size() == 4, "[F] no slime abre o disco com 4 ações")
+	var disc_ids: Array = (disc.get("actions") as Array).map(func(a: Dictionary) -> String: return str(a.id))
+	check(disc.visible and disc_ids.size() == 5 and "pet" in disc_ids, "[F] no slime abre o disco com 5 ações (com \"Levar comigo\" na Floresta) %s" % [disc_ids])
 	if out != "":
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png("%s/disco.png" % out)

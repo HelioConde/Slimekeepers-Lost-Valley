@@ -287,6 +287,19 @@ func _on_forest_slime(slime: Node2D) -> void:
 	ecosystem.register_reactor(slime)
 	slime.tree_exiting.connect(func(): slimes.erase(slime))
 	_update_hud()
+	sync_pet.call_deferred()
+
+
+## Pet (forest_threat.gd): o amigo escolhido no disco ganha o slime_pet.gd e segue o
+## jogador; os outros voltam ao habitat.
+func sync_pet() -> void:
+	var pet := preload("res://scripts/combat/forest_threat.gd").pet_id(get_tree())
+	for slime: Node2D in slimes:
+		if not is_instance_valid(slime): continue
+		var helper := slime.get_node_or_null("SlimePet")
+		var wanted := not pet.is_empty() and str(slime.get("persistent_id")) == pet
+		if wanted and helper == null: slime.add_child(preload("res://scripts/combat/slime_pet.gd").new())
+		elif not wanted and helper != null: helper.queue_free()
 
 ## V6: detalhe de chão por terreno em toda a Clareira (área vazia = Clareira inteira).
 func _add_ground_detail() -> void:

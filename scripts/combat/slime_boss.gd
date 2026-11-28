@@ -16,6 +16,7 @@ const DUO_HP := 1.6  ## em dupla, mais vida (decisão do usuário)
 const BODY_RADIUS := 46.0
 const MOVE_SPEED := 46.0
 const STAGGER_TIME := 2.0
+const SLOW_FACTOR := 0.4
 const PERFECT_WINDOW := 0.26  ## s antes do impacto em que o rolamento conta como perfeito
 ## [aviso fase 1, aviso fase 2, dano]. Teste do usuário (2026-11-27): avisos mais longos
 ## e o dano só cai depois que a zona some (LAND_DELAY), trazido por um projétil.
@@ -43,6 +44,7 @@ var _bursts: Array = []  # {at, radius, time}
 var _seeds: Array = []  # {at, vel, life}
 var _lobs: Array = []  # {from, to, time, total, height, color}: projéteis em arco
 var _busy := false
+var slowed := 0.0  ## s de lentidão (pet Musguinho): anda e salta mais devagar
 var _dead := false
 var _rest := 1.4
 var _base_scale := Vector2.ONE
@@ -55,18 +57,20 @@ var _ground: Node2D
 var _air: Node2D  # parte desenhada do quadro, em pixels, a partir do centro
 
 
-func configure(target: Node2D, center: Vector2, radius: float, boss_species: String, duo: bool) -> void:
+## hp_factor: dificuldade pela mistura de mortes e amizades (forest_threat.gd).
+func configure(target: Node2D, center: Vector2, radius: float, boss_species: String, duo: bool, hp_factor := 1.0) -> void:
 	player = target
 	arena_center = center
 	arena_radius = radius
 	species = boss_species
 	display_name = "Musguinho Gigante" if species == "musguinho" else "Brotinho Gigante"
-	max_hp = int(MAX_HP * (DUO_HP if duo else 1.0))
+	max_hp = int(MAX_HP * (DUO_HP if duo else 1.0) * hp_factor)
 	hp = max_hp
 
 
 func _ready() -> void:
 	add_to_group("boss_target")
+	add_to_group("combat_target")
 	_ground = preload("res://scripts/combat/ground_layer.gd").new()
 	_ground.painter = _draw_ground
 	get_parent().add_child.call_deferred(_ground)
@@ -94,6 +98,13 @@ func _ready() -> void:
 	grow.tween_property(sprite, "scale", _base_scale, 1.2).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	grow.tween_callback(func() -> void: _busy = false)
 	hp_changed.emit(hp, max_hp)
+
+
+## Lentidão do pet Musguinho: o boss anda mais devagar e os golpes demoram mais.
+func slow(seconds: float) -> void:
+	slowed = maxf(slowed, seconds)
+	sprite.modulate = Color(0.75, 0.9, 0.7)
+	get_tree().create_timer(seconds).timeout.connect(func() -> void: if is_instance_valid(sprite) and slowed <= 0.05: sprite.modulate = Color.WHITE)
 
 
 func hit_radius() -> float:
@@ -156,8 +167,9 @@ func _process(delta: float) -> void:
 	if _busy: return
 	_rest -= delta
 	var to_player: Vector2 = player.global_position - global_position
+	slowed = maxf(0.0, slowed - delta)
 	if to_player.length() > 90.0:
-		position += to_player.normalized() * MOVE_SPEED * delta
+		position += to_player.normalized() * MOVE_SPEED * (SLOW_FACTOR if slowed > 0.0 else 1.0) * delta
 		sprite.flip_h = to_player.x < 0.0
 	if _rest > 0.0: return
 	_busy = true
@@ -170,7 +182,7 @@ func _process(delta: float) -> void:
 
 
 func _t(table: Array) -> float:
-	return float(table[0] if phase == 1 else table[1])
+	return float(table[0] if phase == 1 else table[1]) * (1.0 / SLOW_FACTOR * 0.5 if slowed > 0.0 else 1.0)
 
 
 ## Raízes: três círculos sob o jogador, um depois do outro.
@@ -245,6 +257,8 @@ func _warn(at: Vector2, radius: float, seconds: float, color: Color) -> void:
 ## antes do impacto é perfeito e deixa o boss zonzo.
 func _impact(at: Vector2, radius: float, damage: int, color: Color) -> void:
 	_bursts.append({"at": at, "radius": radius, "time": 0.3, "color": color})
+	for pet: Node in get_tree().get_nodes_in_group("boss_pet"):  # o pet também apanha
+		if (pet.call("body") as Node2D).global_position.distance_to(at) <= radius: pet.call("take_boss_hit", damage)
 	if not is_instance_valid(player) or player.global_position.distance_to(at) > radius: return
 	if player.is_rolling() and (Time.get_ticks_msec() - float(player.rolling_since)) / 1000.0 <= PERFECT_WINDOW:
 		staggered = STAGGER_TIME
@@ -265,6 +279,10 @@ func _tick_effects(delta: float) -> void:
 		s.life -= delta
 		if is_instance_valid(player) and s.life > 0.0 and (s.at as Vector2).distance_to(player.global_position + Vector2(0, -12)) < SEED_RADIUS + 10.0:
 			if COMBAT.hurt_player(player, int(SEEDS[2])): s.life = 0.0
+		for pet: Node in get_tree().get_nodes_in_group("boss_pet"):
+			if s.life > 0.0 and (s.at as Vector2).distance_to((pet.call("body") as Node2D).global_position + Vector2(0, -12)) < SEED_RADIUS + 10.0:
+				pet.call("take_boss_hit", int(SEEDS[2]))
+				s.life = 0.0
 		if (s.at as Vector2).distance_to(arena_center) > arena_radius + 40.0: s.life = 0.0
 	_seeds = _seeds.filter(func(s) -> bool: return s.life > 0.0)
 
@@ -305,6 +323,7 @@ func _draw_air() -> void:
 
 func _die() -> void:
 	_dead = true
+	remove_from_group("combat_target")
 	_warnings.clear()
 	_seeds.clear()
 	_lobs.clear()

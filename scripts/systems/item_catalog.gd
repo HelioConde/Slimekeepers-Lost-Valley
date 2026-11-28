@@ -33,6 +33,10 @@ const ITEMS := {
 	"arco": {"name": "Arco simples", "kind": "tool", "icon": "arco"},
 	"flecha": {"name": "Flecha", "kind": "material", "icon": "flecha"},
 	"orbe_energia": {"name": "Orbe de energia", "kind": "material", "icon": "orbe_energia"},  # magia do boss (máquina do final)
+	# Slime morto antes do boss solta a gosma da espécie (forest_threat.gd); receitas depois.
+	"gosma_brotinho": {"name": "Gosma de Brotinho", "kind": "material", "icon": "gosma_brotinho"},
+	"gosma_bolhinha": {"name": "Gosma de Bolhinha", "kind": "material", "icon": "gosma_bolhinha"},
+	"gosma_musguinho": {"name": "Gosma de Musguinho", "kind": "material", "icon": "gosma_musguinho"},
 	"semente_cenoura": {"name": "Sementes de cenoura", "kind": "seed", "icon": "semente_cenoura", "crop": "cenoura"},
 	"semente_beterraba": {"name": "Sementes de beterraba", "kind": "seed", "icon": "semente_beterraba", "crop": "beterraba"},
 	"semente_repolho": {"name": "Sementes de repolho", "kind": "seed", "icon": "semente_repolho", "crop": "repolho"},
