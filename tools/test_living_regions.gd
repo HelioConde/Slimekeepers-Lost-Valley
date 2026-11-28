@@ -9,6 +9,9 @@ func check(ok: bool, message: String) -> void:
 		failures.append(message)
 		push_error(message)
 func settle() -> void:
+	# change_scene_to_file só troca a cena no fim do process frame; sem isto, os
+	# physics frames de recuperação (carga lenta) se esgotam antes do Vale povoar.
+	await process_frame
 	for i in 8: await physics_frame
 func run() -> void:
 	root.size = Vector2i(1280,720)
@@ -47,6 +50,7 @@ func run() -> void:
 	valley.player.position=target.position+Vector2(0,24)
 	await settle()
 	var discovered_before: int = valley.found_zones.size()
+	await _hold_food()
 	Input.action_press("interact")
 	await process_frame
 	await process_frame
@@ -78,3 +82,12 @@ func run() -> void:
 	check(get_nodes_in_group("living_slimes").is_empty(),"Region teardown frees all creatures")
 	print("LIVING_REGIONS: ",checks," checks; ",failures.size()," failures")
 	quit(0 if failures.is_empty() else 1)
+
+
+## Amizade é pela comida (2026-11-23): segura uma folha fresca na barra antes do [F].
+func _hold_food() -> void:
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var bar := preload("res://scripts/systems/hotbar_state.gd")
+	bag.add_item(self, "folhas_frescas", 1)
+	bar.select(self, bar.slots(self).find("folhas_frescas"))
+	await process_frame

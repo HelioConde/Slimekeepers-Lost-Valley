@@ -10,8 +10,14 @@ func configure(id: String, at: Vector2) -> void:
 	name = "GardenBed_" + id
 
 func _ready() -> void:
+	# Caixa de terra baixa: o DayShadows desenha a sombra dela (projetada + contato).
+	add_to_group("shadow_boxes")
 	GameClock.time_advanced.connect(_on_time_advanced)
 	refresh()
+
+## Pegada sólida (local) e altura em px para a sombra.
+func shadow_footprint() -> Rect2: return Rect2(-27, -16, 54, 32)
+func shadow_height() -> float: return 8.0
 
 func phase() -> String:
 	return GARDEN.phase(get_tree(), GameClock, bed_id)

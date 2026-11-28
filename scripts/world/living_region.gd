@@ -5,6 +5,7 @@ const STATE = preload("res://scripts/world/environment_state.gd")
 static func connect_environment(region: Node2D, life: Node2D, tree_groups: Array, plant_groups: Array, water: Array[Vector2], bounds: Rect2, zone: Callable) -> Node2D:
 	var leaves: Array[Vector2] = []
 	var wildlife: Array[Vector2] = []
+	var canopy: Array[Sprite2D] = []
 	for group: Node in tree_groups:
 		for prop in group.get_children():
 			var sprite := prop.get_node_or_null("Sprite") as Sprite2D
@@ -13,6 +14,7 @@ static func connect_environment(region: Node2D, life: Node2D, tree_groups: Array
 			# Rocks and logs in ExpandedForest stay still; only foliage receives wind.
 			if not ("oak" in path or "pine" in path or "tree" in path): continue
 			sprite.material = life.get_wind_material("pine" if "pine" in path else "oak")
+			canopy.append(sprite)
 			leaves.append(prop.global_position+Vector2(0,-70))
 			wildlife.append(prop.global_position+Vector2(28,12))
 	for group: Node in plant_groups:
@@ -22,6 +24,7 @@ static func connect_environment(region: Node2D, life: Node2D, tree_groups: Array
 			var path := sprite.texture.resource_path.to_lower() if sprite.texture else ""
 			if "flower" in path or "fern" in path or "shrub" in path or "grass" in path or "bush" in path or "reeds" in path:
 				sprite.material = life.get_wind_material("plant")
+	shade_sheltered_trees(canopy)
 	life.configure_leaf_sources(leaves)
 	var shape := CircleShape2D.new()
 	shape.radius = 7
@@ -54,6 +57,9 @@ static func connect_environment(region: Node2D, life: Node2D, tree_groups: Array
 	audio.configure(region.player,water,zone)
 	audio.set_environment_state(state)
 	region.add_child(audio)
+	var music := preload("res://scripts/world/region_music.gd").new()  # só toca se a faixa aprovada existir
+	music.name = "RegionMusic"
+	region.add_child(music)
 	return audio
 
 static func conditions(region: Node2D, period: String, rain: float, wind: float, fog: float) -> void:
@@ -63,3 +69,28 @@ static func conditions(region: Node2D, period: String, rain: float, wind: float,
 	region.environmental_audio.set_environment_state(state)
 	region.habitat_manager.set_environment_state(state.snapshot())
 	region.get_tree().set_meta("environment_conditions",state.snapshot())
+
+
+## Árvore protegida (muitas vizinhas) fica mais escura e fria; árvore exposta, na
+## borda de clareira ou isolada, mantém a luz do sol. Multiplica o modulate atual.
+const SHELTER_RADIUS := 120.0
+static func shelter_factor(neighbors: int) -> float:
+	return clampf((neighbors - 2) / 6.0, 0.0, 1.0)
+
+static func shade_sheltered_trees(sprites: Array[Sprite2D]) -> void:
+	var buckets := {}
+	for sprite in sprites:
+		var key := Vector2i((sprite.get_parent() as Node2D).global_position / SHELTER_RADIUS)
+		if not buckets.has(key): buckets[key] = []
+		buckets[key].append((sprite.get_parent() as Node2D).global_position)
+	for sprite in sprites:
+		var at := (sprite.get_parent() as Node2D).global_position
+		var key := Vector2i(at / SHELTER_RADIUS)
+		var count := 0
+		for dy in range(-1, 2):
+			for dx in range(-1, 2):
+				for other: Vector2 in buckets.get(key + Vector2i(dx, dy), []):
+					if other != at and other.distance_to(at) < SHELTER_RADIUS: count += 1
+		var shelter := shelter_factor(count)
+		sprite.set_meta("shelter", shelter)
+		sprite.modulate *= Color(1.0, 1.0, 1.0).lerp(Color(0.88, 0.94, 0.96), shelter)

@@ -1,0 +1,10 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/farm_region.gd" id="1_farm"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+
+[node name="Fazenda" type="Node2D"]
+script = ExtResource("1_farm")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(520, 380)

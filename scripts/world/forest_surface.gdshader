@@ -3,6 +3,9 @@ shader_type canvas_item;
 uniform sampler2D terrain_atlas : filter_nearest, repeat_disable;
 uniform vec2 atlas_origin = vec2(0.0);
 uniform float texture_strength = 0.5;
+// Terra V8 (ground_art.gd): textura nova de terra com pedrinhas, em mundo.
+uniform sampler2D dirt_texture : filter_nearest, repeat_enable;
+uniform float use_dirt_texture = 0.0;
 varying vec2 ground_pixel;
 float hash(vec2 p) { return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
 float noise(vec2 p) {
@@ -16,8 +19,14 @@ void fragment() {
 	if (mod(tile.x+tile.y*3.0,2.0)>0.5) { pixel.x=31.0-pixel.x; }
 	vec3 texel=texture(terrain_atlas,(atlas_origin+pixel+vec2(0.5))/vec2(textureSize(terrain_atlas,0))).rgb;
 	vec3 base=mix(COLOR.rgb,texel,texture_strength);
+	if (use_dirt_texture > 0.5) {
+		vec2 q = mod(p, 32.0);
+		if (mod(tile.x * 5.0 + tile.y * 3.0, 4.0) > 1.5) { q.y = 31.0 - q.y; }
+		base = texture(dirt_texture, (q + vec2(0.5)) / 32.0).rgb;
+	}
 	float patches=noise(floor(p/2.0)*2.0/58.0);
-	base*=mix(0.88,1.09,patches);
+	// Variação suave: manchas escuras de -12% liam como sombras sem origem.
+	base*=mix(vec3(0.95,0.98,0.95),vec3(1.04,1.04,1.01),patches);
 	// Single-pixel gravel and broken leaf litter preserve the original pixel scale.
 	float fleck=hash(p);
 	if (atlas_origin.x>0.0 && fleck>0.993) { base*=0.82; }

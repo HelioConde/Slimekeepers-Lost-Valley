@@ -3,18 +3,26 @@ extends Control
 const MenuTheme = preload("res://scripts/menu/menu_theme.gd")
 const BoardDetails = preload("res://scripts/menu/board_details.gd")
 const LogoPlaque = preload("res://scripts/menu/logo_plaque.gd")
-const ValleySky = preload("res://scripts/menu/valley_sky.gd")
-const Farm = preload("res://scripts/menu/farm_foreground.gd")
+const Ruins = preload("res://scripts/menu/ruins_backdrop.gd")
+## Ações do menu (rótulo, nome do nó, ícone em assets/menu/ruins/icons/).
+const ACTIONS := [["Novo Jogo","NovoJogo","novo_jogo"],["Continuar","Continuar","continuar"],
+	["Multijogador","Multijogador","multijogador"],["Como jogar","ComoJogar","como_jogar"],["Configurações","Configuracoes","configuracoes"],
+	["Créditos","Creditos","creditos"],["Sair","Sair","sair"]]
+const SessionState = preload("res://scripts/systems/session_state.gd")
+const SaveGame = preload("res://scripts/systems/save_game.gd")
 var panorama: Node2D
 var logo: Panel
 var buttons: VBoxContainer
-var quote: PanelContainer
+var frame: PanelContainer
+var mascot: AnimatedSprite2D
+var _mascot_wait := 3.0
 var options_layer: Control
 var reduce_motion := false
 var _crest: AnimatedSprite2D
 var _prefs := ConfigFile.new()
 
 func _ready() -> void:
+	preload("res://scripts/systems/language.gd").apply_saved()  # idioma salvo (ID 15)
 	GameClock.stop()
 	# Menu uses physical pixels; the gameplay's 960x540 canvas is restored on entry.
 	get_window().content_scale_size = Vector2i.ZERO
@@ -26,20 +34,22 @@ func _ready() -> void:
 	panorama.name = "Panorama"
 	panorama.z_index = -10
 	add_child(panorama)
-	var sky := ValleySky.new()
-	sky.name = "Valley"
-	sky.reduce_motion = reduce_motion
-	panorama.add_child(sky)
-	var farm := Farm.new()
-	farm.name = "Farm"
-	farm.reduce_motion = reduce_motion
-	panorama.add_child(farm)
+	var ruins := Ruins.new()
+	ruins.name = "Ruins"
+	panorama.add_child(ruins)
+	ruins.reduce_motion = reduce_motion
+	SaveGame.migrate_legacy()  # save de arquivo único vira o espaço 1 (sem apagar)
 	_build_logo()
 	_build_buttons()
-	_build_quote()
+	_build_mascot()
 	resized.connect(_layout)
 	_layout()
 	buttons.get_child(0).grab_focus()
+	# A sala do multijogador fechou na tela de escolha (playtest ID 17): explica a volta.
+	var net := get_node_or_null("/root/NetSession")
+	if net != null and not str(net.menu_notice).is_empty():
+		_show_notice.call_deferred("Multijogador", [str(net.menu_notice)])
+		net.menu_notice = ""
 	if not reduce_motion:
 		logo.modulate.a = 0
 		buttons.modulate.a = 0
@@ -98,16 +108,31 @@ func _build_logo() -> void:
 	_crest.speed_scale = 0 if reduce_motion else 1
 
 func _build_buttons() -> void:
+	frame = PanelContainer.new()
+	frame.name = "ActionsFrame"
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var stone := MenuTheme.panel(10)
+	stone.bg_color = Color(0.17,0.19,0.2,0.86)
+	stone.border_color = Color("#6f7d52")
+	stone.set_border_width_all(3)
+	stone.shadow_color = Color(0,0,0,0.35)
+	stone.shadow_size = 6
+	frame.add_theme_stylebox_override("panel",stone)
+	add_child(frame)
 	buttons = VBoxContainer.new()
 	buttons.name = "Actions"
-	buttons.add_theme_constant_override("separation",14)
+	buttons.add_theme_constant_override("separation",10)
 	add_child(buttons)
-	for caption in ["Novo Jogo","Continuar","Opções","Sair"]:
+	for action in ACTIONS:
+		var caption: String = action[0]
 		var button := Button.new()
-		button.name = caption.replace(" ","")
+		button.name = action[1]
 		button.text = caption
-		button.custom_minimum_size = Vector2(0,64)
-		button.add_theme_font_size_override("font_size",30)
+		button.icon = load("res://assets/menu/ruins/icons/%s.png" % action[2])
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_constant_override("h_separation",14)
+		button.custom_minimum_size = Vector2(0,52)
+		button.add_theme_font_size_override("font_size",24)
 		button.add_theme_font_override("font",MenuTheme.font(true))
 		if caption == "Novo Jogo":
 			var primary := MenuTheme.button(&"normal")
@@ -133,77 +158,342 @@ func _build_buttons() -> void:
 		button.focus_entered.connect(_highlight.bind(button,true))
 		button.focus_exited.connect(_highlight.bind(button,false))
 		match caption:
-			"Novo Jogo": button.pressed.connect(_start_game)
+			"Novo Jogo": button.pressed.connect(_solo_new_game)
 			"Continuar":
-				button.disabled = true
-				button.tooltip_text = "Salvamento indisponível nesta versão."
-				button.focus_mode = Control.FOCUS_NONE
-			"Opções": button.pressed.connect(_show_options)
+				# Ativo quando algum espaço tem save (gravado ao amanhecer e ao dormir).
+				if not SaveGame.used_slots().is_empty():
+					button.pressed.connect(_solo_continue)
+				else:
+					button.disabled = true
+					button.tooltip_text = "O jogo salva sozinho a cada amanhecer."
+					button.focus_mode = Control.FOCUS_NONE
+			"Multijogador": button.pressed.connect(_show_multiplayer)
+			# Guia de primeiros passos (playtest ID 16): o mesmo texto do Tutorial do menu do Esc.
+			"Como jogar": button.pressed.connect(_show_notice.bind("Primeiros passos",
+				Array(str(preload("res://scripts/ui/pause_overlay.gd").HELP).split("
+
+"))))
+			"Configurações": button.pressed.connect(_show_options)
+			"Créditos": button.pressed.connect(_show_notice.bind("Créditos",
+				["Slimekeepers: Lost Valley","Criação e direção: Helio Conde","Motor: Godot Engine 4.7",
+				"Arte em pixel: PixelLab, com ajustes do projeto","Fonte: Pixelify Sans"]))
 			"Sair": button.pressed.connect(func(): get_tree().quit())
-	var active := [buttons.get_child(0),buttons.get_child(2),buttons.get_child(3)]
+	var active := buttons.get_children().filter(func(b): return not (b as Button).disabled)
 	for i in range(active.size()):
 		var button := active[i] as Button
-		button.focus_neighbor_top = button.get_path_to(active[(i+2)%3])
-		button.focus_neighbor_bottom = button.get_path_to(active[(i+1)%3])
+		button.focus_neighbor_top = button.get_path_to(active[(i+active.size()-1)%active.size()])
+		button.focus_neighbor_bottom = button.get_path_to(active[(i+1)%active.size()])
 		button.focus_next = button.focus_neighbor_bottom
 		button.focus_previous = button.focus_neighbor_top
 
+## Slime azul ao lado do menu: respira, pisca e às vezes reage (frames da Bolhinha).
+func _build_mascot() -> void:
+	mascot = AnimatedSprite2D.new()
+	mascot.name = "Mascot"
+	mascot.sprite_frames = load("res://assets/slimes/living_v3/bolhinha/frames.tres")
+	mascot.play("idle")
+	mascot.animation_finished.connect(func(): mascot.play("idle"))
+	add_child(mascot)
+	mascot.speed_scale = 0 if reduce_motion else 1
+
+func _process(delta: float) -> void:
+	if reduce_motion or not is_instance_valid(mascot): return
+	var base: float = mascot.get_meta("base_scale", 1.0)
+	var breath := sin(Time.get_ticks_msec() / 1000.0 * 2.2)
+	mascot.scale = Vector2(base * (1.0 + breath * 0.025), base * (1.0 - breath * 0.025))
+	_mascot_wait -= delta
+	if _mascot_wait <= 0.0 and mascot.animation == &"idle":
+		_mascot_wait = randf_range(3.5, 7.0)
+		mascot.play([&"blink", &"blink", &"curious", &"happy"].pick_random())
+
 func _highlight(button: Button, focused: bool) -> void:
+	if focused and is_instance_valid(mascot) and not reduce_motion and randf() < 0.25:
+		mascot.play(&"happy")
 	var target := Color("#fff0c7") if focused else Color.WHITE
 	if reduce_motion:
 		button.modulate = target
 	else:
 		create_tween().tween_property(button,"modulate",target,0.12)
 
-func _build_quote() -> void:
-	quote = PanelContainer.new()
-	quote.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := MenuTheme.panel(10)
-	style.bg_color = Color("#533b49")
-	style.border_color = Color("#caa270")
-	style.set_border_width_all(2)
-	quote.add_theme_stylebox_override("panel",style)
-	add_child(quote)
-	var line := Label.new()
-	line.text = "Uma nova aventura está prestes a florescer..."
-	line.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	line.add_theme_font_size_override("font_size",22)
-	line.add_theme_color_override("font_color",MenuTheme.CREAM)
-	quote.add_child(line)
-
 func _layout() -> void:
 	if not is_instance_valid(logo): return
-	var scenery_scale := maxf(1.0,ceil(maxf(size.x/1600.0,size.y/800.0)*2.0)/2.0)
+	# Cenário 480×270 em escala inteira cobrindo a tela; o corte sobra à esquerda/topo
+	# para manter a cachoeira (direita) e o caminho (embaixo) à vista.
+	var scenery_scale := ceilf(maxf(size.x/Ruins.SIZE.x,size.y/Ruins.SIZE.y))
 	panorama.scale = Vector2.ONE * scenery_scale
-	panorama.position = Vector2(round((size.x-1280*scenery_scale)/2.0),round(size.y-720*scenery_scale))
+	panorama.position = Vector2(round((size.x-Ruins.SIZE.x*scenery_scale)*0.8),round(size.y-Ruins.SIZE.y*scenery_scale))
 	var ui_scale := maxf(1.0,floor(minf(size.x/1280.0,size.y/720.0)*2.0)/2.0)
-	for control in [logo,buttons,quote]:
-		control.scale = Vector2.ONE * ui_scale
-	logo.size = Vector2(600,140)
-	logo.position = Vector2(round(size.x * 0.5 - 300*ui_scale),(54 if size.y < 600 else 64)*ui_scale)
-	_crest.position = Vector2(300,-15)
 	var compact := size.y < 600
-	buttons.add_theme_constant_override("separation",8 if compact else 14)
+	for control in [logo,buttons,frame]:
+		control.scale = Vector2.ONE * ui_scale
+	var left := roundf(clampf(size.x*0.06,24,140))
+	logo.size = Vector2(600,140)
+	logo.position = Vector2(left-40*ui_scale,(30 if compact else 44)*ui_scale).round()
+	_crest.position = Vector2(300,-15)
+	buttons.add_theme_constant_override("separation",6 if compact else 10)
 	for button in buttons.get_children():
-		button.custom_minimum_size.y = 48 if compact else 64
-	buttons.size = Vector2(270 if size.x<1000 else 300,216 if compact else 298)
-	buttons.position = Vector2(size.x-(buttons.size.x+24)*ui_scale,224 if compact else clampf(size.y-406*ui_scale,236,360*ui_scale)).round()
-	quote.size = Vector2(minf(620,size.x-48),44)
-	quote.position = Vector2(round((size.x-quote.size.x*ui_scale)/2),size.y-50*ui_scale)
+		button.custom_minimum_size.y = 36 if compact else 52
+	buttons.size = Vector2(360,0)
+	buttons.reset_size()
+	buttons.position = Vector2(left+18*ui_scale,logo.position.y+(150 if compact else 176)*ui_scale).round()
+	frame.size = buttons.size + Vector2(36,36)
+	frame.position = buttons.position - Vector2(18,18)*ui_scale
+	var base := 2.0*ui_scale
+	mascot.set_meta("base_scale",base)
+	mascot.scale = Vector2.ONE*base
+	mascot.position = frame.position + Vector2(frame.size.x*ui_scale+20*ui_scale,frame.size.y*ui_scale-30*ui_scale)
 	if is_instance_valid(options_layer):
 		var panel := options_layer.get_node("Card") as PanelContainer
 		panel.scale = Vector2.ONE * ui_scale
 		panel.position = ((size - panel.size*ui_scale)/2).round()
 
-func _start_game() -> void:
-	GameClock.reset_new_game()
-	for key in ["clearing_friends", "forest_slime_friends", "valley_slime_friends", "environment_conditions", "forest_places", "region_arrival", "valley_discoveries", "forest_bag_items", "forest_seed_patches_collected", "valley_starter_garden", "valley_starter_garden_harvests", "valley_cooking_ledger", "slime_food_offers", "session_progress_flags"]:
-		if get_tree().has_meta(key): get_tree().remove_meta(key)
+## Continuar (relatório de playtest IDs 56 e 58): com um só espaço salvo, abre direto;
+## com mais de um, mostra a lista para escolher a partida.
+func _continue_game() -> void:
+	var used := SaveGame.used_slots()
+	if used.size() == 1: _load_slot(int(used[0]))
+	elif used.size() > 1: _show_slots(false)
+
+func _load_slot(n: int) -> void:
+	SaveGame.use_slot(n)
+	var region := SaveGame.restore(get_tree(), GameClock)
+	if region.is_empty():
+		return
 	get_window().content_scale_size = Vector2i(960,540)
-	get_tree().change_scene_to_file("res://scenes/regions/FlorestaDoDespertarV2.tscn")
+	get_tree().change_scene_to_file(region)
+
+## Novo Jogo escolhe o espaço; espaço ocupado pede confirmação antes de ser substituído.
+## A seleção de protagonista reinicia a partida ao confirmar.
+func _start_game() -> void:
+	_show_slots(true)
+
+## Hospedar: fecha a janela do Multijogador antes de abrir a escolha de espaço
+## (_show_dialog não abre por cima de outra janela, e o botão ficava sem efeito).
+func _host_new_game(kind: String) -> void:
+	_close_options()
+	get_node("/root/NetSession").pending_host = kind
+	_start_game()
+
+## Continuar em dupla: escolhe o save (ou abre o único) e a região abre a sala ao carregar.
+func _continue_hosting(kind: String) -> void:
+	_close_options()
+	get_node("/root/NetSession").pending_host = kind
+	_continue_game()
+
+## Continuar solo: descarta um "hospedar" que ficou pendente.
+func _solo_continue() -> void:
+	get_node("/root/NetSession").pending_host = ""
+	_continue_game()
+
+## Novo Jogo solo: descarta um "hospedar" que ficou pendente ao voltar da escolha de espaço.
+func _solo_new_game() -> void:
+	get_node("/root/NetSession").pending_host = ""
+	_start_game()
+
+func _new_in_slot(n: int) -> void:
+	SaveGame.use_slot(n)
+	get_tree().change_scene_to_file("res://scenes/protagonist_select.tscn")
+
+static func slot_label(n: int) -> String:
+	var i := SaveGame.info(n)
+	if i.is_empty(): return "Espaço %d · vazio" % n
+	var who: String = {"aren": "Aren", "moni": "Moni"}.get(str(i.protagonist), "?")
+	var when: Dictionary = Time.get_datetime_dict_from_unix_time(int(i.saved_at) + int(Time.get_time_zone_from_system().bias) * 60)  # bias em minutos
+	return "Espaço %d · Dia %d · %s%s · salvo %02d/%02d %02d:%02d" % [n, int(i.day), who,
+		" · multijogador" if str(i.mode) == "mp" else "", when.day, when.month, when.hour, when.minute]
+
+func _show_slots(new_game: bool) -> void:
+	var actions: Array = []
+	for n in range(1, SaveGame.SLOTS + 1):
+		var empty := SaveGame.info(n).is_empty()
+		if not new_game and empty: continue
+		var pick: Callable = (func() -> void: _new_in_slot(n)) if new_game and empty else 			((func() -> void: _confirm_overwrite(n)) if new_game else (func() -> void: _load_slot(n)))
+		actions.append([slot_label(n), pick])
+	actions.append(["Voltar", _close_options])
+	_show_dialog("Novo jogo" if new_game else "Continuar", ["Escolha o espaço da partida."], actions)
+
+func _confirm_overwrite(n: int) -> void:
+	_close_options()
+	_show_dialog("Substituir?", [slot_label(n), "A partida deste espaço será substituída pela nova quando o jogo salvar. As outras não mudam."],
+		[["Substituir e começar", func() -> void: _new_in_slot(n)], ["Voltar", func() -> void:
+			_close_options()
+			_show_slots(true)]])
+
+## Janela com título, textos e botões [[texto, callable], ...] no estilo das demais.
+func _show_dialog(heading: String, lines: Array, actions: Array) -> void:
+	if is_instance_valid(options_layer): return
+	_show_notice(heading, lines)
+	var stack := options_layer.get_node("Card").get_child(0) as VBoxContainer
+	var close := stack.get_node("Close") as Button
+	var first: Button = null
+	for a: Array in actions:
+		var b := Button.new()
+		b.text = str(a[0])
+		b.custom_minimum_size.y = 46
+		b.pressed.connect(a[1])
+		stack.add_child(b)
+		if first == null: first = b
+	stack.remove_child(close)
+	close.queue_free()
+	(options_layer.get_node("Card") as Control).reset_size()
+	_layout()
+	if first: first.grab_focus()
+
+var _opener: Control
+
+## Janela simples (Multijogador em desenvolvimento, Créditos) no estilo das configurações.
+func _show_notice(heading: String, lines: Array) -> void:
+	if is_instance_valid(options_layer): return
+	_opener = get_viewport().gui_get_focus_owner()
+	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
+	options_layer = Control.new()
+	options_layer.name = "Notice"
+	add_child(options_layer)
+	options_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var shade := ColorRect.new()
+	shade.color = Color(0.08,0.09,0.13,0.72)
+	options_layer.add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.custom_minimum_size = Vector2(460,0)
+	options_layer.add_child(card)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation",14)
+	card.add_child(stack)
+	var title := Label.new()
+	title.text = heading
+	title.add_theme_font_size_override("font_size",34)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(title)
+	for line in lines:
+		var text := Label.new()
+		text.text = str(line)
+		text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		text.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
+		stack.add_child(text)
+	var close := Button.new()
+	close.name = "Close"
+	close.text = "Voltar"
+	close.custom_minimum_size.y = 54
+	close.pressed.connect(_close_options)
+	stack.add_child(close)
+	card.reset_size()
+	_layout()
+	close.grab_focus()
+
+## Multijogador P2P (decisão do usuário: pela Steam). Dois jogadores: quem hospeda abre
+## a sala na tela de escolha; quem entra vai para ela e cada um escolhe Aren ou Moni
+## (playtest ID 17). Rede local para testar sem Steam.
+func _show_multiplayer() -> void:
+	if is_instance_valid(options_layer): return
+	_opener = get_viewport().gui_get_focus_owner()
+	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
+	var net := get_node("/root/NetSession")
+	options_layer = Control.new()
+	options_layer.name = "Multiplayer"
+	add_child(options_layer)
+	options_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var shade := ColorRect.new()
+	shade.color = Color(0.08,0.09,0.13,0.72)
+	options_layer.add_child(shade)
+	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.custom_minimum_size = Vector2(480,0)
+	options_layer.add_child(card)
+	var stack := VBoxContainer.new()
+	stack.add_theme_constant_override("separation",10)
+	card.add_child(stack)
+	var title := Label.new()
+	title.text = "Multijogador"
+	title.add_theme_font_size_override("font_size",34)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(title)
+	var info := Label.new()
+	info.text = "Quem hospeda abre a sala; os dois escolhem Aren ou Moni e ficam prontos para começar."
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stack.add_child(info)
+	var status := Label.new()
+	status.name = "Status"
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
+	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	status.text = str(net.status)
+	stack.add_child(status)
+	net.status_changed.connect(func(text: String) -> void:
+		if is_instance_valid(status): status.text = text)
+	var host_steam := Button.new()
+	host_steam.name = "HostSteam"
+	host_steam.text = "Hospedar pela Steam"
+	host_steam.pressed.connect(func() -> void:
+		var problem: String = net.steam_init()
+		if not problem.is_empty():
+			status.text = problem
+			return
+		_host_new_game("steam"))
+	stack.add_child(host_steam)
+	var host_lan := Button.new()
+	host_lan.name = "HostLan"
+	host_lan.text = "Hospedar na rede local"
+	host_lan.pressed.connect(func() -> void:
+		_host_new_game("enet"))
+	stack.add_child(host_lan)
+	# Continuar em dupla (pedido do usuário, 2026-11-27): abre um save salvo e a sala.
+	if not SaveGame.used_slots().is_empty():
+		for entry: Array in [["ContinueSteam", "Continuar partida pela Steam", "steam"], ["ContinueLan", "Continuar partida na rede local", "enet"]]:
+			var resume := Button.new()
+			resume.name = str(entry[0])
+			resume.text = str(entry[1])
+			var kind := str(entry[2])
+			resume.pressed.connect(func() -> void:
+				if kind == "steam":
+					var problem: String = net.steam_init()
+					if not problem.is_empty():
+						status.text = problem
+						return
+				_continue_hosting(kind))
+			stack.add_child(resume)
+	var row := HBoxContainer.new()
+	stack.add_child(row)
+	var address := LineEdit.new()
+	address.name = "Address"
+	address.text = "127.0.0.1"
+	address.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(address)
+	var join_lan := Button.new()
+	join_lan.name = "JoinLan"
+	join_lan.text = "Entrar"
+	join_lan.pressed.connect(func() -> void:
+		var target := address.text.strip_edges()
+		# Número grande = ID de sala da Steam; senão, IP da rede local.
+		var problem: String = net.join_steam(int(target)) if target.is_valid_int() and target.length() > 10 else net.join_enet(target)
+		if not problem.is_empty(): status.text = problem)
+	row.add_child(join_lan)
+	var steam_hint := Label.new()
+	steam_hint.text = "Pela Steam: aceite o convite do amigo com esta janela aberta, ou digite o ID da sala acima e clique em Entrar."
+	steam_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	steam_hint.custom_minimum_size.x = 440  # largura para quebrar a linha (sem isso a janela estica)
+	steam_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	steam_hint.add_theme_font_size_override("font_size",14)
+	stack.add_child(steam_hint)
+	var close := Button.new()
+	close.name = "Close"
+	close.text = "Voltar"
+	close.custom_minimum_size.y = 48
+	close.pressed.connect(_close_options)
+	stack.add_child(close)
+	net.steam_init()  # liga a Steam (se aberta) para receber convites
+	card.reset_size()
+	_layout()
+	host_steam.grab_focus()
 
 func _show_options() -> void:
 	if is_instance_valid(options_layer): return
+	_opener = get_viewport().gui_get_focus_owner()
 	for button in buttons.get_children(): button.focus_mode = Control.FOCUS_NONE
 	options_layer = Control.new()
 	options_layer.name = "Options"
@@ -221,7 +511,7 @@ func _show_options() -> void:
 	stack.add_theme_constant_override("separation",18)
 	card.add_child(stack)
 	var title := Label.new()
-	title.text = "Opções"
+	title.text = "Configurações"
 	title.add_theme_font_size_override("font_size",34)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stack.add_child(title)
@@ -250,25 +540,57 @@ func _show_options() -> void:
 	volume.custom_minimum_size.y = 22
 	volume.value_changed.connect(func(value:float):
 		_prefs.set_value("audio","ambient_volume",value/100.0)
-		_prefs.save("user://presentation.cfg")
+		_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 	)
 	stack.add_child(volume)
+	# Música com volume próprio (playtest ID 15); começa igual ao ambiente.
+	var music_label := Label.new()
+	music_label.text = "Volume da música"
+	stack.add_child(music_label)
+	var music := HSlider.new()
+	music.name = "MusicVolume"
+	music.min_value = 0
+	music.max_value = 100
+	music.step = 5
+	music.value = float(_prefs.get_value("audio","music_volume",_prefs.get_value("audio","ambient_volume",0.65)))*100
+	music.custom_minimum_size.y = 22
+	music.value_changed.connect(func(value:float):
+		_prefs.set_value("audio","music_volume",value/100.0)
+		_prefs.save("user://presentation.cfg")
+	)
+	stack.add_child(music)
 	var mute := CheckButton.new()
 	mute.name = "MuteAmbient"
-	mute.text = "Silenciar ambiente"
+	mute.text = "Silenciar tudo"
 	mute.button_pressed = bool(_prefs.get_value("audio","muted",false))
 	mute.toggled.connect(func(enabled:bool):
 		_prefs.set_value("audio","muted",enabled)
-		_prefs.save("user://presentation.cfg")
+		_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 	)
 	stack.add_child(mute)
+	# Disco de ações do slime: clique (padrão) ou segurar [F] e soltar (slime_action_disc.gd).
+	var disc_hold := CheckButton.new()
+	disc_hold.name = "SlimeDiscHold"
+	disc_hold.text = "Disco do slime: segurar F e soltar"
+	disc_hold.button_pressed = str(_prefs.get_value("controls", "slime_disc", "clique")) == "segurar"
+	disc_hold.toggled.connect(func(enabled: bool):
+		_prefs.set_value("controls", "slime_disc", "segurar" if enabled else "clique")
+		_prefs.save("user://presentation.cfg")
+	)
+	stack.add_child(disc_hold)
+	# Idioma (playtest ID 15): português ou inglês; troca na hora.
+	var language_label := Label.new()
+	language_label.text = "Idioma"
+	stack.add_child(language_label)
+	var language := preload("res://scripts/systems/language.gd").selector()
+	stack.add_child(language)
 	var close := Button.new()
 	close.name = "Close"
 	close.text = "Voltar"
 	close.custom_minimum_size.y = 54
 	close.pressed.connect(_close_options)
 	stack.add_child(close)
-	var focusables := [motion,fullscreen,volume,mute,close]
+	var focusables := [motion,fullscreen,volume,music,mute,language,close]
 	for i in focusables.size():
 		focusables[i].focus_neighbor_top = focusables[i].get_path_to(focusables[(i+focusables.size()-1)%focusables.size()])
 		focusables[i].focus_neighbor_bottom = focusables[i].get_path_to(focusables[(i+1)%focusables.size()])
@@ -281,24 +603,20 @@ func _show_options() -> void:
 func _set_reduced_motion(enabled: bool) -> void:
 	_apply_reduced_motion(enabled)
 	_prefs.set_value("accessibility","reduce_motion",enabled)
-	_prefs.save("user://presentation.cfg")
+	_prefs.save("user://presentation.cfg"); preload("res://scripts/systems/sfx.gd").reload_settings()
 
 func _apply_reduced_motion(enabled: bool) -> void:
 	reduce_motion = enabled
-	panorama.get_node("Farm").reduce_motion = enabled
-	var sky := panorama.get_node("Valley")
-	sky.reduce_motion = enabled
-	for child in sky.get_children():
-		if child is not Sprite2D:
-			child.reduce_motion = enabled
-			child.set_process(not enabled)
+	panorama.get_node("Ruins").reduce_motion = enabled
+	if is_instance_valid(mascot): mascot.speed_scale = 0 if enabled else 1
 	_crest.speed_scale = 0 if enabled else 1
 
 func _close_options() -> void:
 	options_layer.queue_free()
 	options_layer = null
-	for i in [0,2,3]: buttons.get_child(i).focus_mode = Control.FOCUS_ALL
-	buttons.get_child(2).grab_focus()
+	for button in buttons.get_children():
+		if not (button as Button).disabled: button.focus_mode = Control.FOCUS_ALL
+	if is_instance_valid(_opener): _opener.grab_focus()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and is_instance_valid(options_layer):

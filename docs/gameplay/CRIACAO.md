@@ -1,0 +1,100 @@
+# Sobrevivência, coleta e fabricação
+
+Pedido do usuário (2026-11-22): o início deve ser difícil de propósito, para que domesticar slimes valha a pena. Progressão pretendida:
+
+trabalho manual → fabricação → agricultura → culinária → amizade com slimes → ajuda nas tarefas.
+
+## Cadeia inicial
+
+| Etapa | O quê | Onde |
+|---|---|---|
+| 1 | Coletar fibra (mato), graveto e pedra pequena com as mãos | Floresta, perto da Clareira |
+| 2 | Corda = 3 fibras · Machado rudimentar = 2 gravetos + 2 pedras + 1 corda | Mãos (sem bancada) |
+| 3 | Cortar árvore comum com o machado → tronco caído → processar em madeira | Floresta |
+| 4 | Bancada = 6 madeiras + 3 cordas + 4 pedras; posicionar no mundo | Mãos, depois colocar |
+| 5 | Enxada e regador (e futuras ferramentas), exigindo o machado na bolsa | Bancada |
+
+As quantidades ficam em `data/crafting/recipes.gd` (só dados). A lógica está em `scripts/systems/crafting.gd`: as receitas são filtradas por estação (`maos`/`bancada`), os itens de `requires` precisam estar na bolsa mas não são gastos, e a transação é atômica: ou gasta tudo e entrega o resultado, ou não muda nada.
+
+## Inventário
+
+- Itens novos em `scripts/systems/item_catalog.gd`: `fibra`, `graveto`, `pedra_pequena`, `corda`, `madeira` (material), `machado` (ferramenta) e `bancada` (estação).
+- Capacidade: até 99 unidades de cada material; ferramentas e estações, 1. O limite é aplicado em `forest_bag.add_item`.
+- A barra rápida só mostra as ferramentas que o jogador tem.
+
+## Estado (verificável)
+
+| Parte | Estado |
+|---|---|
+| Itens, ícones, receitas, fabricação, capacidade | Feito, `tests/forest/test_crafting.gd` |
+| Sprites da bancada (de frente) e do baú (de frente) | Feito |
+| Coleta manual no mundo | Feito: **todo o mato dá fibra** — Floresta (cerca de 4.360 tufos: tiles da `VegetationLow`, mato do detalhe de chão e de `WoodlandDetails`) e Vale das Nascentes (264 tufos de `LowVegetation`). Para arrancar, é preciso **segurar [E] por 3 s** (pedido do usuário: "não pode ser fácil"; era 4 s, reduzido em 2026-11-22); soltar ou se afastar recomeça, e o personagem fica parado enquanto arranca. Dá 1 fibra por tufo. Graveto (6) e pedra (8) continuam como pontos na Clareira, pegos com um toque em [E]. Tudo volta no dia seguinte (`scripts/world/forage_spots.gd`, estado salvo em `forage_taken`). Com o machado selecionado e uma árvore ao alcance, cortar tem prioridade sobre arrancar o mato. Animações: o mato usa `pick_big` (agachado, duas mãos; fica no quadro das mãos no chão enquanto [E] está segurado e levanta ao arrancar); graveto e pedra usam `pick_small` (ajoelhado, uma mão). O personagem vira para o item. Captura: `docs/gameplay/ferramentas/pegar_no_jogo.png` (`tools/capture_pick_anims.gd`) |
+| Interface de fabricação (mãos e bancada) | Feito: [B] abre (`scripts/ui/crafting_panel.gd`), ↑↓ escolhem, E fabrica, jogador parado enquanto aberta. Modo bancada pronto, falta a bancada no mundo |
+| Árvores cortáveis, toco, regeneração, processar tronco | Feito (`scripts/world/choppable_trees.gd`): machado selecionado + [E]; 3 golpes derrubam (3 de energia cada), fica toco e tronco; 2 golpes no tronco dão 4 madeiras (2 de energia); volta a crescer em 3 dias. **O machado rudimentar (de pedra) só derruba árvores pequenas** (até 120 px de altura visível; na Floresta são ~660, com escala 1); as grandes mostram "precisa de um machado melhor" e ficam para machados futuros (pedido do usuário, 2026-11-22). O Vale só tem árvores grandes. Toco e tronco caído são proporcionais à árvore (`STUMP_SCALE`/`LOG_SCALE` × escala da árvore). Floresta: 3.778 árvores comuns, protegidas as de habitats de slimes (+80 px) e pontos de interesse (160 px, inclui a Árvore Centenária). Vale das Nascentes: 197 árvores (sem habitats, pontos de interesse, chegada e cozinha). Vale também tem 5 gravetos e 6 pedras pequenas em volta da chegada. A lógica de [E] é compartilhada em `scripts/world/region_gathering.gd`; o estado salvo do Vale usa o prefixo `vale_`. Regressão: `tools/test_gathering_regions.gd` |
+| Posicionar a bancada no mundo, persistir | Feito (`scripts/world/station_placer.gd`): bancada selecionada mostra prévia à frente (verde/vermelha); só em chão livre, fora do lago e longe de outra bancada; [E] coloca e gasta o item; salva por região em `placed_stations`; [E] perto dela abre a fabricação da bancada. Floresta e Vale das Nascentes (a janela [B] também funciona nos dois) |
+| Começar sem enxada/regador | Feito: o jogo começa sem ferramentas. Saves de antes da fabricação (sem a marca `crafting` no save) recebem enxada e regador ao carregar, para a fazenda não travar (`save_game.restore`, `tests/forest/test_save_game.gd`) |
+
+## Itens no chão e clique do mouse (2026-11-22)
+
+- **Itens no chão** (`scripts/world/item_drops.gd`):
+  - O que se coleta (mato, graveto, pedra), a madeira do tronco e a colheita **caem no chão**.
+  - Dão 3 quicadas cada vez menores e ficam ali.
+  - Com o jogador a até **72 px** (ímã), o item voa até ele e entra na bolsa, com o aviso "+N item".
+  - Com a bolsa cheia, o item espera no chão.
+  - Ao sair da região, o que sobrou no chão vai para a bolsa, se couber.
+- **Clique esquerdo** = [E] no ponto clicado, dentro de 96 px:
+  - o personagem vira para o clique;
+  - coleta e corte miram o item ou a árvore clicada;
+  - segurar o botão = segurar [E] (arrancar mato).
+  - O modo construir e as janelas pegam o clique antes.
+- Teste: `tools/test_drops_and_click.gd`.
+
+## Ferramentas de pedra polida — nível 2 (2026-11-23)
+
+Opção recomendada para "ferramentas melhores" (pedra polida agora, metal depois):
+
+| Item | Receita (bancada) | Efeito |
+|---|---|---|
+| Pedra polida | 2 pedras pequenas | material |
+| Machado de pedra polida | 3 madeiras + 3 pedras polidas + 2 cordas (exige o machado rudimentar) | cada golpe vale 2; derruba a **árvore grande** (6 golpes = 3 batidas), que rende 8 madeiras |
+| Picareta de pedra polida | 3 madeiras + 4 pedras polidas + 2 cordas (exige a picareta rudimentar) | cada golpe vale 2; quebra a **pedra grande** (6 golpes = 3 batidas, 12 pedras pequenas) |
+
+- A troca é automática: com o alvo à frente, [F] escolhe a melhor ferramenta da família que estiver na bolsa (`region_gathering._best`; famílias e força em `item_catalog.AXES/PICKS/POWER`).
+- Relatório de playtest ID 54 (2026-11-26): nenhuma ferramenta é bloqueada por nível. O machado e a picareta rudimentares também derrubam a árvore e quebram a pedra grandes, só que com o dobro de golpes; a dica sugere a ferramenta melhor.
+- Ícones: `assets/ui/items/{pedra_polida,machado_polido,picareta_polida}.png` (PixelLab, a partir dos ícones atuais).
+- Golpe: o mesmo movimento aprovado do machado e da picareta, com a cabeça de pedra pintada no azul-acinzentado polido dos ícones (`assets/<arte>/tools/{axe,pickaxe}_polished/`, gerado por `tools/pixellab/polish_tool_frames.py`; cinzas do próprio personagem não mudam).
+- Teste: `tools/test_rocks.gd` (pedra grande com a picareta polida, árvore grande com o machado polido).
+
+## Obra em etapas: bancada, baú do chão e casa (playtest IDs 23, 24 e 40, 2026-11-27)
+
+Todas as estruturas seguem a mesma máquina de estados (`scripts/systems/build_site.gd`), guardada no próprio registro da obra (`placed_stations` ou `player_house`, então vai no save e na rede):
+
+1. **Prévia** (só na tela): bancada/baú pelo botão "Colocar planta" da fabricação; casa pelo arraste no modo construir. Clique direito ou [Esc] desiste.
+2. **Planta** (`plan`): confirmada **sem custo**; guarda `cost` (receita ou `rect_cost` da casa) e `deposited`. Azul; o texto junto da obra mostra item depositado/necessário.
+3. **[F] na planta deposita** o que a bolsa tem do que falta (parcial, nunca mais que o custo, nunca cobra duas vezes).
+4. **Pronta** (`ready`): material completo, a planta fica **verde** e o texto diz "Materiais completos! [F] construir". Antes disso não há progresso.
+5. **Construindo** (`building`): [F] constrói; jogadores e o Construlim **somam** segundos (bancada 10 s, baú 5 s, casa 8 s + 0,25 s por célula: 5×5 ≈ 14 s, 16×12 ≈ 56 s sozinho). Andar pausa só a obra de quem andou; enche de amarelo.
+6. **Concluída** (`done`): uma vez só; arte normal e sólida (casa: piso, paredes, porta).
+
+Decisões:
+- Cancelar: clique direito na planta (casa: clique direito nela no modo construir) tira a planta e devolve **todo** o depositado a quem cancelou (o que não cabe vai ao chão). A obra pronta não se cancela (a casa continua demolível).
+- O item "bancada"/"bau_campo" já fabricado (saves antigos) ainda se coloca pela barra: a planta nasce paga (pronta para construir). Registro antigo sem `cost` = pago.
+- A casa só aceita construção de fora da área dela (quem está dentro não fica preso quando as paredes sobem). Bancada/baú não entram na área da planta da casa; só uma planta de casa por vez.
+- Multijogador: o **anfitrião** é a autoridade da colocação, dos depósitos, do progresso e do cancelamento. O convidado manda `build_place`, `build_dep` (os itens já saíram da bolsa dele; o anfitrião devolve a sobra em `build_back`), `build_work` (segundos juntados a cada 0,2 s, no máximo 1 s por mensagem) e `build_cancel`; o resultado volta pela chave sincronizada. A obra de cada um é guardada por **id**, não pelo nó: a sincronização redesenha as plantas sem cancelar ninguém. O Construlim só trabalha no anfitrião (não conta dobrado).
+- Prévia compartilhada (ID 23): a prévia de bancada/baú e o arraste da casa aparecem translúcidos na tela do outro jogador e somem quando ele confirma ou desiste.
+- Testes: `tools/test_build_stages.gd` (um jogador) e `tools/test_mp_build.gd` + `tools/net/mp_build_guest.gd` (dois jogos reais por ENet).
+
+## Decisões
+
+- O machado é exigido na bolsa para fabricar na bancada e não é gasto. Não há durabilidade por enquanto: não faz falta para o design atual.
+- A picareta fica para quando existir mineração; fabricar uma ferramenta sem uso seria simular algo que não existe.
+- Os slimes não recebem habilidades novas aqui: a Bíblia diz só que slimes conquistados ajudam nas tarefas, e as habilidades por espécie continuam EM ABERTO.
+
+## Evidências
+
+- `tools/test_crafting_flow.gd` (jogo real, controle de verdade): coleta nos 26 pontos, [B] abre a janela, corda e machado fabricados, machado na barra, ponto coletado volta no dia seguinte. Resultado: 0 falhas.
+- `docs/gameplay/criacao/00_coleta_clareira.png`: pontos de coleta na Clareira.
+- `docs/gameplay/criacao/01_janela_fabricacao.png`: janela de fabricação.
+- O mesmo teste corta uma árvore comum (3 golpes), processa o tronco (+4 madeiras), confere que nenhuma árvore de habitat é cortável e que a árvore volta após 3 dias. `docs/gameplay/criacao/02_arvore_cortada.png`.
+- O teste segue até o fim: 4 árvores (16 madeiras), bancada fabricada, colocada e salva, [E] abre a bancada, enxada e regador fabricados. 21 verificações, 0 falhas. `docs/gameplay/criacao/03_bancada_colocada.png`, `04_janela_bancada.png`.
+- Floresta ao meio-dia na Clareira: 123 FPS (antes 117–121 nas mesmas capturas).

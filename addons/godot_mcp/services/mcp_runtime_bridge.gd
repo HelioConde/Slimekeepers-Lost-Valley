@@ -12,6 +12,11 @@ var _is_recording := false
 var _handling := false
 
 
+func _ready() -> void:
+	# Precisa responder ao MCP mesmo com o jogo pausado.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		return

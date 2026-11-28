@@ -93,6 +93,9 @@ func populate() -> void:
 		var habitat_id := str(habitat.get("id", ""))
 		if habitat_id.is_empty():
 			continue
+		# Habitat que só abre depois de um marco (ex.: visitante da clareira).
+		if habitat.has("requires_meta") and not bool(region.get_tree().get_meta(str(habitat.requires_meta), false)):
+			continue
 		var species_slots: Array = habitat.get("species_slots", [])
 		var population := species_slots.size() if not species_slots.is_empty() else int(habitat.get("population", 2))
 		for index in clampi(population, 0, max_population):
@@ -102,7 +105,12 @@ func populate() -> void:
 			var persistent_id := "%s/%s/%d" % [species, habitat_id, index]
 			if is_instance_valid(_slots.get(persistent_id)):
 				continue
-			if spawned.size() >= max_population or _elapsed < float(_retry_at.get(persistent_id, -1.0)):
+			var threat := preload("res://scripts/combat/forest_threat.gd")
+			var area := threat.area_of(session_key)
+			if not area.is_empty() and threat.is_dead(region.get_tree(), persistent_id, area):
+				continue  # morto: volta depois de 2 dias
+			var full: bool = spawned.size() >= max_population and not habitat.get("near_spawn", false)  # o visitante não espera vaga
+			if full or _elapsed < float(_retry_at.get(persistent_id, -1.0)):
 				continue
 			_retry_at[persistent_id] = _elapsed + RESPAWN_COOLDOWN
 			var rng := RandomNumberGenerator.new()
@@ -114,7 +122,7 @@ func populate() -> void:
 				var candidate := center + Vector2.from_angle(rng.randf_range(0.0, TAU)) * sqrt(rng.randf()) * radius
 				if not spawn_points.is_empty():
 					candidate = spawn_points[(index + attempt) % spawn_points.size()]
-				if not is_position_allowed(candidate, habitat) or _in_current_view(candidate):
+				if not is_position_allowed(candidate, habitat) or (_in_current_view(candidate) and not habitat.get("near_spawn", false)):
 					continue
 				var slime: Node2D = SLIME_SCRIPT.new()
 				slime.configure(self, player, habitat, persistent_id)
@@ -131,10 +139,11 @@ func _on_slime_exiting(persistent_id: String) -> void:
 	_retry_at[persistent_id] = _elapsed + RESPAWN_COOLDOWN
 
 func is_position_allowed(point: Vector2, habitat: Dictionary, ignore: Node2D = null) -> bool:
-	if not world_bounds.has_point(point) or point.distance_to(player_spawn) < exclusion_radius + BODY_RADIUS:
-		return false
-	if protect_initial_view and _initial_camera_rect.has_point(point):
-		return false
+	if not world_bounds.has_point(point): return false
+	# near_spawn: o visitante da clareira pode ficar perto do início (benchmark 2026-11-27).
+	if not habitat.get("near_spawn", false):
+		if point.distance_to(player_spawn) < exclusion_radius + BODY_RADIUS: return false
+		if protect_initial_view and _initial_camera_rect.has_point(point): return false
 	var center: Vector2 = habitat.get("center", Vector2.ZERO)
 	if point.distance_to(center) > maxf(0.0, float(habitat.get("radius", 200.0)) - BODY_RADIUS):
 		return false

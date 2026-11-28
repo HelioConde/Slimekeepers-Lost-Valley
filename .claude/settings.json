@@ -1,21 +1,31 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "extraKnownMarketplaces": {
-    "claude-community": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/claude-plugins-community"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "godot-prompter@claude-community": true
-  },
+  "model": "sonnet[1m]",
+  "effortLevel": "medium",
   "permissions": {
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
       "Read(./.claude/settings.local.json)"
     ]
+  },
+  "enabledPlugins": {
+    "godot-prompter@claude-community": true,
+    "model-router@model-router": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
+      }
+    },
+    "model-router": {
+      "source": {
+        "source": "github",
+        "repo": "nobodyohm-web/claude-code-model-router",
+        "ref": "351d04433a3cbd66ed18e60ee8d187002a396ebc"
+      }
+    }
   }
 }

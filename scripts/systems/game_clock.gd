@@ -17,20 +17,24 @@ const START_MINUTE: float = 7.0 * 60.0
 ## Color keyframes, interpolated smoothly for pixel-art friendly ambient light.
 ## The last keyframe repeats the first, avoiding flashes at midnight.
 const LIGHTING_STOPS = [
-	[0, Color(0.46, 0.54, 0.75)],
-	[180, Color(0.43, 0.50, 0.69)],
-	[270, Color(0.51, 0.56, 0.73)],
-	[300, Color(0.62, 0.58, 0.72)],
+	# Noite azul-petróleo mais clara (referências V9): legível sem perder o mistério.
+	[0, Color(0.33, 0.52, 0.80)],
+	[180, Color(0.36, 0.48, 0.70)],
+	# Amanhecer espalhado das 05:00 às 07:00 (playtest 27); antes clareava quase todo em 30 min.
+	[300, Color(0.44, 0.49, 0.68)],
+	[360, Color(0.68, 0.62, 0.74)],
 	[420, Color(1.0, 0.93, 0.83)],
 	[540, Color(1.0, 1.0, 1.0)],
 	[900, Color(1.0, 1.0, 1.0)],
-	[1020, Color(0.99, 0.84, 0.70)],
-	[1080, Color(0.88, 0.72, 0.75)],
-	[1170, Color(0.65, 0.62, 0.73)],
-	[1200, Color(0.57, 0.65, 0.87)],
-	[1320, Color(0.53, 0.61, 0.84)],
-	[1380, Color(0.49, 0.57, 0.79)],
-	[1440, Color(0.46, 0.54, 0.75)]
+	# Fim de tarde: verde preservado, dourado vem da luz (referências V9 17h30/18h).
+	[1020, Color(0.98, 0.98, 0.9)],
+	[1080, Color(1.0, 0.82, 0.74)],
+	[1140, Color(0.88, 0.70, 0.74)],
+	[1170, Color(0.68, 0.58, 0.78)],
+	[1200, Color(0.50, 0.53, 0.73)],
+	[1320, Color(0.35, 0.51, 0.78)],
+	[1380, Color(0.33, 0.52, 0.80)],
+	[1440, Color(0.33, 0.52, 0.80)]
 ]
 
 ## Editable: 24 real minutes = one in-game day; one real second = one in-game minute.

@@ -4,7 +4,13 @@ extends Node
 const QUEUE_FILE := "mcp_input_queue.json"
 
 
-func queue_events(events: Array) -> void:
+func _ready() -> void:
+	# Precisa entregar Esc mesmo com o jogo pausado.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
+## Estático: o editor não tem este autoload e grava a fila direto em user://.
+static func queue_events(events: Array) -> void:
 	var path := OS.get_user_data_dir().path_join(QUEUE_FILE)
 	var existing: Array = []
 	if FileAccess.file_exists(path):
@@ -30,13 +36,19 @@ func _process(_delta: float) -> void:
 		_apply(ev)
 
 
+## Ações do projeto podem usar keycode ou physical_keycode; preencher os dois.
+func _key_event(keycode: int, pressed: bool) -> InputEventKey:
+	var e := InputEventKey.new()
+	e.keycode = keycode
+	e.physical_keycode = keycode
+	e.pressed = pressed
+	return e
+
+
 func _apply(ev: Dictionary) -> void:
 	match ev.get("type", ""):
 		"key":
-			var e := InputEventKey.new()
-			e.keycode = int(ev.get("keycode", 0))
-			e.pressed = ev.get("pressed", true)
-			Input.parse_input_event(e)
+			Input.parse_input_event(_key_event(int(ev.get("keycode", 0)), ev.get("pressed", true)))
 		"mouse_click":
 			var e := InputEventMouseButton.new()
 			e.position = Vector2(ev.get("x", 0), ev.get("y", 0))

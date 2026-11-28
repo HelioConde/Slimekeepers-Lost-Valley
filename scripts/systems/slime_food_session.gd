@@ -19,7 +19,8 @@ static func first_food_for(tree: SceneTree, slime_id: String) -> String:
 
 ## Nao substitui amizade; só slimes ja conhecidos podem receber o teste.
 ## A copia do registro e preparada antes do debito. Falhas nao gastam porcoes.
-static func offer(tree: SceneTree, slime_id: String, is_friend: bool) -> String:
+## spend=false: só registra (a porção já foi gasta por slime_feeding.feed).
+static func offer(tree: SceneTree, slime_id: String, is_friend: bool, spend: bool = true) -> String:
 	if slime_id.strip_edges().is_empty() or not slime_id.contains("/"):
 		return "invalid_slime"
 	if not is_friend:
@@ -39,11 +40,11 @@ static func offer(tree: SceneTree, slime_id: String, is_friend: bool) -> String:
 		return "invalid_state"
 	if not bond.first_food_for(slime_id).is_empty():
 		return "already_offered"
-	if BAG.count_item(tree, COOKING.RECIPE_ID) <= 0:
+	if spend and BAG.count_item(tree, COOKING.RECIPE_ID) <= 0:
 		return "needs_portion"
 	if not bond.offer(slime_id, COOKING.RECIPE_ID):
 		return "invalid_state"
-	if not BAG.spend_item(tree, COOKING.RECIPE_ID, 1):
+	if spend and not BAG.spend_item(tree, COOKING.RECIPE_ID, 1):
 		return "needs_portion"
 	tree.set_meta(OFFERS_KEY, bond.save_state())
 	return "offered"

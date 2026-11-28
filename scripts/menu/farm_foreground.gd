@@ -8,6 +8,8 @@ var _actors: Array[Dictionary] = []
 var _time := 0.0
 var _butterflies: Array[Dictionary] = []
 var _props: Node2D
+var _window_lights: Array[Polygon2D] = []
+var _cozy_particles: Array[CPUParticles2D] = []
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -40,7 +42,7 @@ func _ready() -> void:
 	_pack_prop("flower_box",Vector2(150,570),1)
 	_pack_prop("pink_flowers",Vector2(396,557),1)
 	_pack_prop("sunflowers",Vector2(854,637),1)
-	_prop_texture(load("res://assets/player/rotations/south-east.png"), Vector2(448, 576), 1)
+	# Sem protagonista no menu: quem desperta é escolhido no Novo Jogo (Aren ou Moni).
 	_slime("gelito", Vector2(280, 633), 0.0)
 	_slime("brotinho", Vector2(680, 654), 2.3)
 	_slime("brasinha", Vector2(794, 608), 4.6)
@@ -59,6 +61,7 @@ func _ready() -> void:
 	_prop("oak_medium", Vector2(1236, 858), 3)
 	for foot in [Vector2(112,712), Vector2(182,742), Vector2(864,748), Vector2(1116,734)]:
 		_prop("flowers", foot, 2)
+	_cozy_touches()
 	var blooms := GardenFlowers.new()
 	add_child(blooms)
 	for at in [Vector2(193,552),Vector2(837,576)]:
@@ -68,6 +71,64 @@ func _ready() -> void:
 		butterfly.position = at
 		add_child(butterfly)
 		_butterflies.append({"sprite":butterfly,"origin":at,"phase":float(_butterflies.size())*2.8})
+
+## Aconchego: fumaça mansa na chaminé, janelas com luz quente e pólen dourado.
+func _cozy_touches() -> void:
+	var glow := CanvasItemMaterial.new()
+	glow.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	for window in [Rect2(220, 390, 24, 22), Rect2(170, 474, 26, 22), Rect2(310, 474, 26, 22)]:
+		var light := Polygon2D.new()
+		var r: Rect2 = window
+		light.polygon = PackedVector2Array([r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y)])
+		light.color = Color(1.0, 0.7, 0.3, 0.75)
+		light.material = glow
+		add_child(light)
+		_window_lights.append(light)
+	var smoke := CPUParticles2D.new()
+	smoke.name = "ChimneySmoke"
+	smoke.position = Vector2(320, 300)
+	smoke.amount = 16
+	smoke.lifetime = 5.0
+	smoke.preprocess = 5.0
+	smoke.direction = Vector2(0.25, -1)
+	smoke.spread = 8.0
+	smoke.gravity = Vector2(6, -4)
+	smoke.initial_velocity_min = 10.0
+	smoke.initial_velocity_max = 16.0
+	smoke.scale_amount_min = 9.0
+	smoke.scale_amount_max = 14.0
+	var fade := Gradient.new()
+	fade.offsets = PackedFloat32Array([0.0, 0.2, 1.0])
+	fade.colors = PackedColorArray([Color(1, 1, 1, 0), Color(0.97, 0.96, 0.93, 0.7), Color(0.95, 0.94, 0.9, 0)])
+	smoke.color_ramp = fade
+	var grow := Curve.new()
+	grow.add_point(Vector2(0, 0.6))
+	grow.add_point(Vector2(1, 1.6))
+	smoke.scale_amount_curve = grow
+	add_child(smoke)
+	_cozy_particles.append(smoke)
+	var pollen := CPUParticles2D.new()
+	pollen.name = "Pollen"
+	pollen.position = Vector2(640, 520)
+	pollen.amount = 45
+	pollen.lifetime = 9.0
+	pollen.preprocess = 9.0
+	pollen.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	pollen.emission_rect_extents = Vector2(660, 200)
+	pollen.gravity = Vector2(5, -2)
+	pollen.initial_velocity_min = 3.0
+	pollen.initial_velocity_max = 8.0
+	pollen.spread = 180.0
+	pollen.scale_amount_min = 3.0
+	pollen.scale_amount_max = 4.0
+	var twinkle := Gradient.new()
+	twinkle.offsets = PackedFloat32Array([0.0, 0.3, 0.7, 1.0])
+	twinkle.colors = PackedColorArray([Color(1, 0.9, 0.5, 0), Color(1, 0.92, 0.55, 0.85), Color(1, 0.85, 0.45, 0.5), Color(1, 0.85, 0.45, 0)])
+	pollen.color_ramp = twinkle
+	pollen.material = glow
+	add_child(pollen)
+	_cozy_particles.append(pollen)
+
 
 func _build_ground() -> void:
 	var terrace := PackedVector2Array([Vector2(-180,450),Vector2(80,458),Vector2(222,486),Vector2(388,482),Vector2(548,510),Vector2(710,530),Vector2(890,562),Vector2(1080,548),Vector2(1460,520),Vector2(1460,820),Vector2(-180,820)])
@@ -172,6 +233,10 @@ func _process(delta: float) -> void:
 	for butterfly in _butterflies:
 		var phase := _time * 0.8 + float(butterfly.phase)
 		butterfly.sprite.position = (butterfly.origin+Vector2(sin(phase)*12,sin(phase*1.7)*6)).round()
+	for particles in _cozy_particles:
+		particles.speed_scale = 0.0 if reduce_motion else 1.0
+	for i in _window_lights.size():
+		_window_lights[i].modulate.a = 0.85 + 0.15 * sin(_time * 1.7 + i * 2.1)  # brilho de lareira
 	for actor in _actors:
 		var sprite := actor.sprite as AnimatedSprite2D
 		sprite.speed_scale = 0.0 if reduce_motion else 1.0

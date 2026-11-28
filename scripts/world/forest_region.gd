@@ -2,8 +2,15 @@ extends "res://scripts/world/clearing_region.gd"
 ## Runtime for expanded map; legacy clearing remains untouched.
 const Forest = preload("res://scripts/world/forest_layout.gd")
 const Living = preload("res://scripts/world/living_region.gd")
+## Primeiro slime cedo (benchmark e pesquisa, 2026-11-27): em 17 min de jogo novo nenhum
+## slime aparecia (habitats a mais de 960 px do início). Ao terminar a dica da coleta, um
+## Brotinho visita a beira da clareira e o Aren chama a atenção para ele.
+const FIRST_VISIT_KEY := "first_slime_visit"
+const BOSS_ARENA := Vector2(5110, 1250)  ## centro do Mirante Rochoso (platô ampliado)
+const FIRST_VISIT_STEP := 2  ## dica 3 (arrancar mato) em diante = coleta concluída
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
+const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const SEED_PATCH := preload("res://scripts/world/forest_seed_patch.gd")
 const BAG_HUD := preload("res://scripts/ui/forest_bag_hud.gd")
 const SEED_SITES := [
@@ -11,6 +18,11 @@ const SEED_SITES := [
 	{"id": "bosque_cogumelos", "at": Vector2(2100, 2860)},
 	{"id": "campo_brotos", "at": Vector2(3350, 4580)}
 ]
+const FEEDING := preload("res://scripts/systems/slime_feeding.gd")
+const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
+const ITEMS := preload("res://scripts/systems/item_catalog.gd")
+const ENERGY := preload("res://scripts/systems/energy_state.gd")
+const PROTAGONIST := preload("res://scripts/systems/protagonist.gd")
 var found_places: Dictionary = {}
 var ecosystem: Node2D
 var habitat_manager: Node2D
@@ -19,12 +31,34 @@ var _last_zone := ""
 var _last_water_time := -1.0
 var seed_patches: Array[Node2D] = []
 var bag_hud: Node
+var forage: Node2D
+var crafting_panel: Control
+var choppable: Node
+var placer: Node2D
+var intro: Node
+## Pontos de coleta na Clareira (ajustável): o bastante para machado e bancada.
+## A fibra vem de todo o mato do chão (forage_spots.add_mato).
+const FORAGE_PLAN := {"graveto": 10, "pedra_pequena": 8}  # a dica 2 pede 8 gravetos: havia só 6 perto do início
+const WORLD_FORAGE := {"graveto": 60, "pedra_pequena": 60}
+## Recursos do começo à beira das trilhas (playtest IDs 01 e 06).
+const TRAIL_FORAGE := {"graveto": 14, "pedra_pequena": 12}
+const WORLD_ROCKS := {"medium": 40, "large": 14}
+var ground_detail: Node2D
+var gathering: Node  # region_gathering.gd: corte e coleta (compartilhado com o Vale)
+var house: Node2D  # casa do jogador ([B] construir; uma só no jogo)
+var farm: Node2D  # plantio livre: arar com a enxada em qualquer chão livre
+var _spawn_light: Node2D
 
 func _ready() -> void:
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	y_sort_enabled = true
+	add_child(PauseOverlay.new())
 	player = $Player
 	player.position = $SpawnPoints/PlayerSpawn.global_position
+	# Foco de luz sobre o início da aventura (Clareira do Despertar), preso ao mundo.
+	_spawn_light = preload("res://scripts/world/spawn_light.gd").new()
+	add_child(_spawn_light)
+	_spawn_light.setup($SpawnPoints/PlayerSpawn.global_position)
 	player.world_bounds = Rect2(Vector2(24,44),Forest.WORLD_SIZE-Vector2(48,68))
 	var camera: Camera2D = player.get_node("Camera2D")
 	camera.limit_left = 0
@@ -40,16 +74,38 @@ func _ready() -> void:
 	_compact_hud()
 	bag_hud = BAG_HUD.new()
 	$HUD/Interface.add_child(bag_hud)
+	crafting_panel = preload("res://scripts/ui/crafting_panel.gd").new()
+	crafting_panel.player = player
+	$HUD/Interface.add_child(crafting_panel)
+	crafting_panel.crafted.connect(func(_id: String) -> void: bag_hud.call("refresh"))
+	add_inventory_panel()
+	add_tutorial()
+	add_slime_disc()
+	# Novo Jogo confirmado: o protagonista escolhido desperta sentado no início.
+	if PROTAGONIST.intro_pending(get_tree()):
+		player.position = $SpawnPoints/PlayerSpawn.global_position
+		intro = preload("res://scripts/world/intro_wake.gd").new()
+		add_child(intro)
+		for panel: Control in [crafting_panel, inventory_panel]:
+			panel.set_process_unhandled_input(false)
+			intro.finished.connect(func() -> void: panel.set_process_unhandled_input(true))
+		intro.finished.connect(func() -> void: get_tree().set_meta(preload("res://scripts/ui/tutorial_hud.gd").KEY, 0))  # tutorial inicial
+		intro.start.call_deferred(player, [$HUD/Interface])
 	hud_title.text = "FLORESTA DO DESPERTAR"
 	_update_hud()
 	for area in $Exits.get_children(): area.body_entered.connect(_on_exit_entered.bind(area.name))
 	_setup_ecosystem()
+	_add_ground_detail()
+	preload("res://scripts/world/ground_art.gd").apply(self, [$VegetationHigh, $ExpandedForest], func(at: Vector2) -> bool: return Forest.open_area(at))
+	if $Ground.material is ShaderMaterial:
+		$Ground.material.set_shader_parameter("grass_soften", 1.0)  # grama mais leve e menos repetida (ref. V9)
 	$PointsOfInterest/leaves.set_meta("description",Forest.points_of_interest()[0].description)
 	habitat_manager = preload("res://scripts/world/forest_habitats.gd").new()
 	habitat_manager.name = "HabitatManager"
 	add_child(habitat_manager)
 	habitat_manager.slime_spawned.connect(_on_forest_slime)
 	var habitats := Forest.habitats()
+	habitats.append(first_visit_habitat())  # Brotinho visitante (benchmark 2026-11-27)
 	for h in habitats:
 		h.flower_points = [h.center+Vector2(-60,-45),h.center+Vector2(60,30)]
 		h.shade_points = [h.center+Vector2(-45,-35)]
@@ -63,10 +119,93 @@ func _ready() -> void:
 	_add_habitat_flora(habitats)
 	preload("res://scripts/world/visual_rules.gd").new().apply(self,Forest.trails())
 	_arrange_pond_banks()
+	var pond_magic := preload("res://scripts/world/pond_magic.gd").new()
+	pond_magic.setup($NaturalSpring, $Decorations)
+	$NaturalSpring.add_child(pond_magic)
 	var art := preload("res://scripts/world/map_art_enrichment.gd").new()
 	art.region_kind = "forest"
 	add_child(art)
 	_spawn_seed_patches()
+	_spawn_forage.call_deferred()
+	# Árvores cortáveis (CRIACAO.md): nunca em habitats de slimes nem pontos de interesse.
+	choppable = preload("res://scripts/world/choppable_trees.gd").new()
+	add_child(choppable)
+	_add_starter_trees()
+	choppable.setup([$VegetationHigh, $ExpandedForest, $VegetationHigh.get_node("StarterTrees")], func(at: Vector2) -> bool:
+		for h in Forest.habitats():
+			if at.distance_to(h.center) < float(h.radius) + 80.0: return true
+		for p in Forest.points_of_interest():
+			if at.distance_to(p.at) < 160.0: return true
+		return false)
+	choppable.apply_day(GameClock.day_number)
+	choppable.setup_scenery(self)  # tocos e troncos de cenário (playtest ID 50)
+	_add_boss_combat()
+	# Bancadas colocadas pelo jogador (CRIACAO.md, etapa 4).
+	placer = preload("res://scripts/world/station_placer.gd").new()
+	placer.open_chest = open_chest  # baús colocados no chão
+	add_child(placer)
+	var pond: Vector2 = $NaturalSpring.global_position
+	placer.blocked = func(at: Vector2) -> bool: return at.distance_to(pond) < 150.0
+	placer.setup(scene_file_path)
+	house = add_player_house("floresta")
+	placer.attach_house(house)  # a planta da casa é obra como as outras (playtest ID 40)
+	farm = add_free_farm("floresta", house)
+	var helpers: Node2D = preload("res://scripts/world/farm_helpers.gd").new()
+	helpers.farm = farm
+	helpers.placer = placer  # Construlim constrói as plantas desta região
+	add_child(helpers)
+	GameClock.day_changed.connect(choppable.apply_day)
+
+## Coleta manual na Clareira do Despertar (CRIACAO.md): fibra, graveto e pedra.
+func _spawn_forage() -> void:
+	await get_tree().physics_frame
+	forage = preload("res://scripts/world/forage_spots.gd").new()
+	$Decorations.add_child(forage)
+	var space := get_world_2d().direct_space_state
+	var probe := CircleShape2D.new()
+	probe.radius = 12
+	var pond: Vector2 = $NaturalSpring.global_position
+	var free_at := func(at: Vector2) -> bool:
+		if at.distance_to(pond) < 150.0: return false
+		var query := PhysicsShapeQueryParameters2D.new()
+		query.shape = probe
+		query.transform = Transform2D(0, at)
+		query.collision_mask = 2
+		return space.intersect_shape(query, 1).is_empty()
+	forage.setup(Forest.SPAWN, 70.0, 430.0, FORAGE_PLAN, free_at)
+	# Recursos básicos pelo mapa todo (pedido do usuário: o início tinha poucas pedras).
+	forage.setup(Vector2(3200, 3200), 480.0, 3100.0, WORLD_FORAGE, free_at, "w_", 150.0)
+	# Playtest IDs 01 e 06: gravetos e pedrinhas à beira das trilhas perto do início, onde um
+	# iniciante procura (sem bloquear a passagem: 35 a 90 px do centro da trilha).
+	var trail_paths := Forest.trails()
+	var at_trail_edge := func(at: Vector2) -> bool:
+		var d: float = preload("res://scripts/world/valley_layout.gd").route_distance(at, trail_paths)
+		return d > 35.0 and d < 90.0 and free_at.call(at)
+	forage.setup(Forest.SPAWN, 250.0, 800.0, TRAIL_FORAGE, at_trail_edge, "t_", 48.0)
+	if is_instance_valid(ground_detail):
+		forage.add_mato(ground_detail)
+		forage.add_pedrinhas(ground_detail)
+	forage.add_mato_tiles($VegetationLow, preload("res://assets/menu/environment/grass.png"))
+	forage.add_mato_props($WoodlandDetails, "")
+	forage.refresh(GameClock.day_number)
+	gathering = preload("res://scripts/world/region_gathering.gd").new()
+	add_child(gathering)
+	gathering.attach(self, choppable, forage)
+	# Pedras médias (picareta) e grandes (picareta melhor), longe do início e dos habitats.
+	var habitats: Array = Forest.habitats()
+	var trails := Forest.trails()
+	gathering.add_rocks(self, Rect2(96, 96, 6208, 6208), WORLD_ROCKS, func(at: Vector2) -> bool:
+		if at.distance_to(Forest.SPAWN) < 260.0: return false
+		if preload("res://scripts/world/valley_layout.gd").route_distance(at, trails) < 60.0: return false  # pedra não tranca trilha
+		for h in habitats:
+			if at.distance_to(h.center) < float(h.radius) + 60.0: return false
+		return free_at.call(at))
+	hide_forage_on_farm(farm, forage)
+	add_item_drops(farm, gathering)
+	if is_instance_valid(house):  # casa já construída: tira coleta e mato de baixo dela
+		_house_area = Rect2(-1, -1, 0, 0)
+		house.rebuild()
+	GameClock.day_changed.connect(forage.refresh)
 
 func _spawn_seed_patches() -> void:
 	for site in SEED_SITES:
@@ -148,6 +287,32 @@ func _on_forest_slime(slime: Node2D) -> void:
 	ecosystem.register_reactor(slime)
 	slime.tree_exiting.connect(func(): slimes.erase(slime))
 	_update_hud()
+	sync_pet.call_deferred()
+
+
+## Pet (forest_threat.gd): o amigo escolhido no disco ganha o slime_pet.gd e segue o
+## jogador; os outros voltam ao habitat.
+func sync_pet() -> void:
+	var pet := preload("res://scripts/combat/forest_threat.gd").pet_id(get_tree())
+	for slime: Node2D in slimes:
+		if not is_instance_valid(slime): continue
+		var helper := slime.get_node_or_null("SlimePet")
+		var wanted := not pet.is_empty() and str(slime.get("persistent_id")) == pet
+		if wanted and helper == null: slime.add_child(preload("res://scripts/combat/slime_pet.gd").new())
+		elif not wanted and helper != null: helper.queue_free()
+
+## V6: detalhe de chão por terreno em toda a Clareira (área vazia = Clareira inteira).
+func _add_ground_detail() -> void:
+	var detail := preload("res://scripts/world/ground_detail.gd").new()
+	for tree in $VegetationHigh.get_children():
+		if tree is Node2D and tree.visible: detail.tree_feet.append((tree as Node2D).position)
+	detail.wind_material = ecosystem.get_wind_material("plant")
+	detail.bush_parent = $Decorations
+	var pond := $NaturalSpring as Node2D
+	detail.avoid.append({"center": pond.global_position - detail.position, "radius": Vector2(86, 46)})
+	detail.build()
+	add_child(detail)
+	ground_detail = detail
 
 func _setup_ecosystem() -> void:
 	var flowers: Array[Vector2] = []
@@ -163,12 +328,52 @@ func _setup_ecosystem() -> void:
 func set_environment_conditions(period: String, rain: float=0.0, wind: float=1.0, fog: float=0.0) -> void:
 	Living.conditions(self,period,rain,wind,fog)
 
+## Primeiro boss (docs/gameplay/BOSS_BROTINHO.md): ataques do jogador e a arena no
+## Mirante Rochoso (local escolhido pelo usuário; platô ampliado para a luta).
+func _add_boss_combat() -> void:
+	var combat := preload("res://scripts/combat/player_combat.gd").new()
+	combat.player = player
+	add_child(combat)
+	var arena := preload("res://scripts/combat/boss_arena.gd").new()
+	arena.region = self
+	arena.position = BOSS_ARENA
+	add_child(arena)
+
+
+static func first_visit_habitat() -> Dictionary:
+	return {"id": "H00", "name": "Beira da Clareira", "center": Forest.SPAWN + Vector2(150, 10), "radius": 60.0,
+		"species_slots": ["brotinho"], "near_spawn": true, "requires_meta": FIRST_VISIT_KEY}
+
+
+## Libera o visitante quando a coleta da dica termina (uma vez por partida).
+var _visit_pending := false  ## o visitante chegou agora e o Aren ainda não avisou
+
+
+func _check_first_visit() -> void:
+	var tree := get_tree()
+	if not bool(tree.get_meta(FIRST_VISIT_KEY, false)):
+		if int(tree.get_meta("tutorial_step", 0)) < FIRST_VISIT_STEP: return
+		tree.set_meta(FIRST_VISIT_KEY, true)
+		_visit_pending = true
+		if is_instance_valid(habitat_manager): habitat_manager.populate()
+	# Outro balão na tela: tenta de novo no próximo quadro (o balão não empilha).
+	if _visit_pending and is_instance_valid(speech) and speech.say("first_slime", "Olha! Um Brotinho na beira da clareira. Vou chegar perto e apertar F."):
+		_visit_pending = false
+
+
 func _process(delta: float) -> void:
+	_check_first_visit()
+	if is_instance_valid(_spawn_light): _spawn_light.apply_time(GameClock.get_hour() * 60.0 + GameClock.get_minute(), delta)
 	# The base world manages interaction/friendship; skip legacy map exit coordinates.
+	if ecosystem == null: return  # _process pode rodar antes do _ready criar o ecossistema
 	var water_time: float = ecosystem.shared_wind_material.get_shader_parameter("wind_time")
 	if water_time != _last_water_time:
 		_last_water_time = water_time
 		$SouthernBrook/Water.material.set_shader_parameter("elapsed",water_time)
+		var night := preload("res://scripts/world/ambient_lights.gd").night_factor(GameClock.get_hour() * 60.0 + GameClock.get_minute())
+		for water_material: ShaderMaterial in [$NaturalSpring/Pool/Water.material, $SouthernBrook/Water.material]:
+			water_material.set_shader_parameter("elapsed", water_time)
+			water_material.set_shader_parameter("night", night)
 	var zone_name := Forest.zone(player.position)
 	if zone_name != _last_zone:
 		_last_zone = zone_name
@@ -176,21 +381,41 @@ func _process(delta: float) -> void:
 	if message_time > 0:
 		message_time -= delta
 		if message_time <= 0: popup.text = ""
+	if is_instance_valid(intro):  # despertar em andamento: nada de interações
+		hud_hint.text = ""
+		return
+	if window_open():
+		hud_hint.text = ""
+		return
+	if handle_player_house(house):
+		return
+	# Arma na mão: [F]/clique só ataca (sem abrir disco de slime nem bancada no meio da luta).
+	if preload("res://scripts/combat/player_combat.gd").is_weapon(HOTBAR.selected_item(get_tree())):
+		hud_hint.text = ""
+		return
+	if is_instance_valid(placer) and not tool_target_near():
+		var station_hint: String = placer.update(player, Input.is_action_just_pressed("interact"), func() -> void: crafting_panel.open("bancada"))
+		if not str(placer.notice).is_empty():  # planta colocada, depósito, cancelada, obra pronta
+			bag_hud.call("refresh")
+			_notify(placer.notice)
+			placer.notice = ""
+			return
+		if not station_hint.is_empty():
+			hud_hint.text = station_hint
+			return
 	var closest := _closest_slime()
 	if closest != null:
-		hud_hint.text = ("[E] Fazer amizade com " if not closest.befriended else "[E] Cumprimentar ") + closest.display_name() + "   [F] Oferecer porcao"
-		if Input.is_action_just_pressed("feed"):
+		# [F] com comida na mão dá ao amigo; senão faz amizade / cumprimenta.
+		var food := slime_food_hint(closest)
+		hud_hint.text = food if not food.is_empty() else slime_greet_hint(closest)
+		if not food.is_empty() and Input.is_action_just_pressed("interact"):
 			_offer_prototype_food(closest)
 			return
-		if Input.is_action_just_pressed("interact"):
-			if not closest.befriended:
-				closest.make_friend()
-				_update_hud()
-			_notify(closest.display_name()+" parece feliz com sua visita.")
+		if Input.is_action_just_pressed("interact"): open_slime_disc(closest)  # disco de ações
 		return
 	var seeds := _nearest_seed_patch()
 	if seeds != null:
-		hud_hint.text = "[E] Recolher sementes com ajuda do Brotinho" if BAG.has_brotinho_friend(get_tree()) else "Conheça um Brotinho para aprender a recolher estas sementes"
+		hud_hint.text = "[F] Recolher sementes com ajuda do Brotinho" if BAG.has_brotinho_friend(get_tree()) else "Conheça um Brotinho para aprender a recolher estas sementes"
 		if Input.is_action_just_pressed("interact"):
 			if bool(seeds.call("harvest")):
 				bag_hud.call("refresh")
@@ -198,29 +423,68 @@ func _process(delta: float) -> void:
 			else:
 				_notify("Primeiro, faça amizade com um Brotinho da floresta.")
 		return
-	hud_hint.text = "WASD / setas · explorar    Shift · correr    E · interagir"
+	# Cortar árvore e coletar (mato, graveto, pedra): componente compartilhado.
+	# Enxada/regador/semente ou terra arada à frente: plantio (antes do mato em volta).
+	if handle_farming(farm):
+		return
+	# A margem do lago é um ponto exato: vale mais que o mato em volta.
+	var spring := get_node("NaturalSpring")
+	if spring.can_examine(player.global_position):
+		hud_hint.text = "[F] Examinar lago"
+		if Input.is_action_just_pressed("interact"): _notify("Um pequeno lago de água cristalina repousa entre as árvores.")
+		return
+	if is_instance_valid(gathering) and gathering.update(delta):
+		return
+	hud_hint.text = "WASD / setas · explorar    Shift · correr    F · interagir    B · construir casa"
 	if player.position.distance_to(Forest.SOUTH_EXIT)<115:
-		hud_hint.text = "[E] Viajar para o Vale das Nascentes"
+		hud_hint.text = "[F] Viajar para o Vale das Nascentes"
 		if Input.is_action_just_pressed("interact"):
 			get_tree().set_meta("forest_places",found_places.duplicate())
 			var travel = preload("res://scripts/world/region_travel.gd")
 			travel.travel(self,travel.VALLEY,"valley_north")
 		return
-	var spring := get_node("NaturalSpring")
-	if spring.can_examine(player.global_position):
-		hud_hint.text = "[E] Examinar lago"
-		if Input.is_action_just_pressed("interact"): _notify("Um pequeno lago de água cristalina repousa entre as árvores.")
-		return
 	for marker in $PointsOfInterest.get_children():
 		if marker.position.distance_to(player.position)<100:
-			hud_hint.text = "[E] Observar · "+marker.get_meta("title")
+			hud_hint.text = "[F] Observar · "+marker.get_meta("title")
 			if Input.is_action_just_pressed("interact"):
 				found_places[str(marker.name)] = true
 				_notify(marker.get_meta("description"))
 				_update_hud()
 			return
+	if Input.is_action_just_pressed("interact"):
+		eat_selected()  # [F] sem nada por perto: come a comida da barra
 
+## Machado na mão perto de árvore comum ou tronco caído: golpe com [F].
 func _offer_prototype_food(slime: Node2D) -> void:
+	# [F] dá ao slime a comida selecionada na barra (colheita ou porção cozida).
+	var item: String = HOTBAR.selected_item(get_tree())
+	if FEEDING.is_food(item):
+		var stranger := not bool(slime.get("befriended"))  # comida é o que conquista a amizade
+		var fed: String = FEEDING.feed(get_tree(), str(slime.get("persistent_id")), true, item, GameClock.day_number, str(slime.get("slime_type")))
+		if fed == "fed" and stranger:
+			slime.call("make_friend")
+			_update_hud()  # conta o amigo novo
+			_notify("%s aceitou a comida e agora confia em você! Com [F] você pode fazer carinho." % slime.display_name())
+			bag_hud.call("refresh")
+			return
+		if item == COOKING.RECIPE_ID and fed == "fed":
+			FOOD.offer(get_tree(), str(slime.get("persistent_id")), true, false)  # só registra a primeira porção
+		match fed:
+			"fed":
+				if slime.has_method("react"): slime.call("react", "comer")
+				else: slime.set("_happy_time", 2.4)
+				var gift := preload("res://scripts/systems/slime_requests.gd").fulfill(get_tree(), str(slime.get("persistent_id")), str(slime.get("slime_type")), GameClock.day_number, item)
+				if not gift.is_empty():  # era o pedido do dia (balãozinho)
+					var ITEMS_ := preload("res://scripts/systems/item_catalog.gd")
+					_notify("%s queria isso! Laço extra%s." % [slime.display_name(), "" if gift == "ok" else " e ganhou " + str(ITEMS_.info(gift).name).to_lower()])
+					bag_hud.call("refresh")
+					return
+				var hearts := FEEDING.hearts(get_tree(), str(slime.get("persistent_id")))
+				_notify("%s comeu %s e %s. Laço: %d/%d corações." % [slime.display_name(), str(ITEMS.info(item).name).to_lower(), FEEDING.reaction_text(FEEDING.preference(item, str(slime.get("slime_type")))), hearts, FEEDING.MAX_HEARTS])
+			"needs_friendship": _notify("Primeiro conheça este slime usando F.")
+			"already_fed": _notify(slime.display_name() + " já comeu hoje.")
+			_: _notify("Você não tem " + str(ITEMS.info(item).name).to_lower() + ".")
+		return
 	var result: String = FOOD.offer(get_tree(), str(slime.get("persistent_id")), bool(slime.get("befriended")))
 	match result:
 		"offered":
@@ -228,7 +492,7 @@ func _offer_prototype_food(slime: Node2D) -> void:
 			slime.set("_happy_time", 2.4)
 			_notify("Uma porcao de teste foi oferecida a " + slime.display_name() + ".")
 		"needs_friendship":
-			_notify("Primeiro conheca este slime usando E.")
+			_notify("Primeiro conheca este slime usando F.")
 		"already_offered":
 			_notify("Este slime ja recebeu uma porcao nesta partida.")
 		"needs_portion":
@@ -236,14 +500,51 @@ func _offer_prototype_food(slime: Node2D) -> void:
 		_:
 			_notify("Nao foi possivel oferecer a porcao; nenhum alimento foi gasto.")
 
+## Árvores pequenas perto do início (pedido do usuário, 2026-11-23): o jogador acha
+## logo onde cortar. Cópias de uma árvore pequena da cena, em volta do início, longe das
+## trilhas, do lago, dos habitats e umas das outras. Posições fixas (mesma semente).
+const STARTER_TREES := 10
+func _add_starter_trees() -> void:
+	var holder := Node2D.new()
+	holder.name = "StarterTrees"
+	holder.y_sort_enabled = true
+	$VegetationHigh.add_child(holder)
+	var template: Node2D
+	for node in $VegetationHigh.get_children():
+		if node is Node2D and node.visible and node.get_meta("tree", false) and node.has_node("Sprite"):  # oculta pelas regras visuais não serve de modelo
+			var sprite := node.get_node("Sprite") as Sprite2D
+			if sprite.texture and sprite.texture.get_image().get_used_rect().size.y * absf(sprite.global_scale.y) <= 110.0:
+				template = node
+				break
+	if template == null: return
+	var trails := Forest.trails()
+	var pond: Vector2 = $NaturalSpring.global_position
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 4242
+	var placed: Array[Vector2] = []
+	var tries := 0
+	while placed.size() < STARTER_TREES and tries < 400:
+		tries += 1
+		var at := Forest.SPAWN + Vector2.from_angle(rng.randf() * TAU) * rng.randf_range(190.0, 520.0)
+		if at.distance_to(pond) < 170.0: continue
+		if preload("res://scripts/world/valley_layout.gd").route_distance(at, trails) < 70.0: continue
+		if Forest.habitats().any(func(h: Dictionary) -> bool: return at.distance_to(h.center) < float(h.radius) + 90.0): continue
+		if placed.any(func(p: Vector2) -> bool: return p.distance_to(at) < 90.0): continue
+		var tree := template.duplicate() as Node2D
+		tree.show()
+		tree.name = "StarterTree%d" % placed.size()
+		holder.add_child(tree)
+		tree.global_position = at.round()  # depois de entrar na cena (o grupo pode ter deslocamento)
+		placed.append(at)
+
+
 func _update_hud() -> void:
 	if hud_goal == null: return
 	# Count identities rather than spawn events: a restored friend remains one friend.
 	friends_count = 0
 	for befriended in get_tree().get_meta("forest_slime_friends",{}).values():
 		if befriended: friends_count += 1
-	var population := 10 if ResourceLoader.exists("res://assets/slimes/living_v3/musguinho/frames.tres") else 8
-	hud_goal.text = "Amizades %d/%d · recantos %d/8" % [friends_count,population,found_places.size()]
+	# Sem missões no HUD: a amizade continua contando, mas não vira objetivo na tela.
 
 func _on_exit_entered(body: Node2D, exit_name: StringName) -> void:
 	if body != player or _visited_exits.has(exit_name): return

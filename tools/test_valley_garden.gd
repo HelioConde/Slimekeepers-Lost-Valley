@@ -1,7 +1,10 @@
 extends SceneTree
-## Validacao nativa: Brotinho -> sementes -> plantar -> crescer -> colher -> viajar -> reset.
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
+## Validacao nativa: Brotinho -> sementes -> arar com a enxada no Vale -> plantar ->
+## regar -> crescer -> colher -> cozinhar -> alimentar -> viajar -> reset.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
-const GARDEN := preload("res://scripts/systems/valley_starter_garden.gd")
+const FARM := preload("res://scripts/systems/farm_state.gd")
+const HOTBAR := preload("res://scripts/systems/hotbar_state.gd")
 const COOKING := preload("res://scripts/systems/valley_cooking.gd")
 const FOOD := preload("res://scripts/systems/slime_food_session.gd")
 const PROGRESS := preload("res://scripts/systems/session_progress_session.gd")
@@ -37,11 +40,19 @@ func _press_e() -> void:
 	await _settle()
 
 func _press_f() -> void:
-	Input.action_press("feed")
+	Input.action_press("interact")
 	await process_frame
 	await process_frame
-	Input.action_release("feed")
+	Input.action_release("interact")
 	await _settle()
+
+## Seleciona o item na barra e usa [E] (espera o golpe/rega acabar).
+func _use(item: String) -> void:
+	HOTBAR.select(self, HOTBAR.slots(self).find(item))
+	await process_frame
+	await _press_e()
+	await create_timer(1.5).timeout
+
 
 func _bag_text(region: Node2D) -> String:
 	var panel: Node = region.get_node_or_null("HUD/Interface/ForagingBagPanel")
@@ -62,9 +73,6 @@ func _run() -> void:
 	clock.reset_new_game()
 	_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "A bolsa comeca sem sementes e folhas")
 	_check(PROGRESS.count(self) == 0, "Marcos da sessao iniciam vazios")
-	_check(not GARDEN.plant(self, clock, "norte"), "Nao planta sem sementes")
-	_check(not GARDEN.plant(self, clock, "invalido"), "Canteiro desconhecido nao consome sementes")
-	_check(PROGRESS.count(self) == 0, "Tentativa de plantio sem sementes nao marca progresso")
 	var forest := load(FOREST).instantiate() as Node2D
 	root.add_child(forest)
 	current_scene = forest
@@ -80,7 +88,9 @@ func _run() -> void:
 		return
 	forest.player.global_position = friend.global_position + Vector2(0, 24)
 	await _settle()
+	await _hold_food()
 	await _press_e()
+	HOTBAR.select(self, -1)
 	_check(BAG.has_brotinho_friend(self), "Amizade verdadeira libera habilidade de coleta")
 	for id in ["bosque_cogumelos", "jardim_folhas"]:
 		var patch: Node2D = null
@@ -104,127 +114,74 @@ func _run() -> void:
 	if current_scene == null or current_scene.scene_file_path != VALLEY:
 		_finish()
 		return
-	_check(current_scene.garden_beds.size() == 2, "Dois canteiros estao presentes na cena")
-	for bed in current_scene.garden_beds:
-		_check(VALLEY_LAYOUT.route_distance(bed.position, VALLEY_LAYOUT.routes()) < 80,
-			"Canteiro esta proximo do caminho percorrivel: " + str(bed.get("bed_id")))
+	_check(current_scene.get_node_or_null("StarterGarden") == null, "Vale sem canteiros de teste")
 	_check(_bag_text(current_scene).contains("2/3"), "Vale mostra sementes trazidas da floresta")
 	_check(PROGRESS.count(self) == 1, "Progresso da coleta permanece entre as regioes")
-	var cooking_station: Node2D = current_scene.get_node_or_null("CookingStation")
-	_check(cooking_station != null, "Estacao de preparo aparece na cena real do Vale")
-	if cooking_station != null:
-		_check(VALLEY_LAYOUT.route_distance(cooking_station.position, VALLEY_LAYOUT.routes()) < 80,
-			"Estacao de preparo fica proxima a trilha do Vale")
-		current_scene.player.global_position = cooking_station.global_position
+	_check(current_scene.get_node_or_null("CookingStation") == null and current_scene.get_node_or_null("FarmGate") == null,
+		"Vale sem fogueira e sem portao da fazenda (cozinhar é no fogão da casa)")
+	_check(COOKING.prepare(self) != "prepared" and COOKING.portions(self) == 0 and BAG.leaves(self) == 0,
+		"Tentar preparar sem ingredientes nao cria porcao")
+	# Plantio livre: enxada e regador (feitos na bancada) aram e regam a grama do Vale.
+	for tool in ["enxada", "regador"]: BAG.add_item(self, tool)
+	var farm: Node2D = current_scene.farm
+	var spot := Vector2i(-1, -1)
+	var here: Vector2i = farm.cell_at(current_scene.player.global_position)
+	for r in range(2, 16):
+		for dx in range(-r, r + 1):
+			var c := here + Vector2i(dx, r)
+			if farm.contains(c) and farm.contains(c + Vector2i(1, 0)) and farm.contains(c + Vector2i(0, -1)) and farm.contains(c + Vector2i(1, -1)):
+				spot = c
+				break
+		if spot.x != -1: break
+	_check(spot.x != -1, "Chao livre aravel no Vale")
+	var cells := [spot, spot + Vector2i(1, 0)]
+	current_scene.player.facing = "south"
+	for cell in cells:
+		current_scene.player.global_position = Vector2((cell + Vector2i(0, -1)) * 32) + Vector2(16, 16)
 		await _settle()
-		_check(current_scene.hud_hint.text.contains("falta"), "Sem folhas, HUD informa ingrediente faltante")
-		var recipe_panel: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
-		_check(is_instance_valid(recipe_panel), "Lista de receitas esta ligada a HUD real")
-		if is_instance_valid(recipe_panel):
-			_check(recipe_panel.visible and recipe_panel.get_node("RecipeList").text.contains("falta 1 folha"),
-				"Painel indica a receita de teste e o ingrediente faltante")
-		await _press_e()
-		_check(COOKING.portions(self) == 0 and BAG.leaves(self) == 0,
-			"Tentar preparar sem ingredientes nao cria porcao")
-	var north: Node2D = current_scene.garden_beds[0]
-	current_scene.player.global_position = north.global_position
-	await _settle()
-	_check(current_scene.hud_hint.text.contains("Plantar"), "Interface oferece plantar com E")
-	await _press_e()
-	_check(GARDEN.phase(self, clock, "norte") == "growing", "Semente plantada inicia crescimento")
+		await _use("enxada")
+		await _use("sementes_silvestres")
+	_check(FARM.is_tilled(self, cells[0], farm.field_id) and FARM.crop(self, cells[0], farm.field_id) == "folhas_silvestres",
+		"Enxada ara e semente silvestre e plantada com E")
 	_check(PROGRESS.is_marked(self, PROGRESS.GARDEN_PLANTED) and PROGRESS.count(self) == 2,
 		"Plantio real adiciona um marco sem apagar o anterior")
-	_check(BAG.seeds(self) == 1, "Plantio consome exatamente uma semente")
-	_check(_bag_text(current_scene).contains("1/3"), "Bolsa atualiza imediatamente apos plantio")
-	await _press_e()
-	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, clock, "norte") == "growing",
-		"Repetir E durante crescimento nao gasta outra semente")
-	_check(PROGRESS.count(self) == 2, "Repetir E no canteiro nao duplica o marco de plantio")
-	clock.advance_minutes(60.0)
-	_check(GARDEN.phase(self, clock, "norte") == "growing", "Uma hora ainda nao amadurece o cultivo")
-	_check(GARDEN.minutes_remaining(self, clock, "norte") <= 60, "HUD pode consultar tempo restante")
-	await _travel_to_forest()
-	_check(current_scene.scene_file_path == FOREST, "Voltar a floresta preserva o canteiro")
-	_check(BAG.seeds(self) == 1 and GARDEN.phase(self, clock, "norte") == "growing",
-		"Sementes e crescimento preservados fora do Vale")
-	clock.advance_minutes(61.0)
-	_check(GARDEN.phase(self, clock, "norte") == "ready", "Cultivo amadurece mesmo fora do Vale")
-	_check(GARDEN.harvest_record(self).get("cycles", {}).is_empty(),
-		"Registro de colheita permanece vazio ate colher pela primeira vez")
-	await _travel_to_valley()
-	_check(current_scene.scene_file_path == VALLEY, "Volta ao Vale para a colheita")
-	north = current_scene.garden_beds[0]
-	_check(str(north.call("phase")) == "ready", "Canteiro recriado exibe a planta madura")
-	current_scene.player.global_position = north.global_position
-	await _settle()
-	_check(current_scene.hud_hint.text.contains("Colher"), "HUD oferece colher o produto")
-	await _press_e()
-	_check(GARDEN.phase(self, clock, "norte") == "harvested", "Colheita atualiza canteiro")
-	_check(PROGRESS.is_marked(self, PROGRESS.GARDEN_HARVESTED) and PROGRESS.count(self) == 3,
-		"Colheita de folhas confirma o terceiro marco de sessao")
-	_check(GARDEN.harvest_record(self).get("cycles", {}).get(0, {}).has("norte"),
-		"Primeira colheita e registrada uma vez no ledger")
-	_check(BAG.leaves(self) == 1 and BAG.seeds(self) == 1, "Folhas frescas entram na bolsa sem gastar mais sementes")
-	_check(_bag_text(current_scene).contains("folhas frescas 1"), "HUD mostra a colheita")
-	await _press_e()
-	_check(BAG.leaves(self) == 1 and not GARDEN.harvest(self, clock, "norte"),
-		"Mesma plantacao nao pode ser colhida duas vezes")
-	var south: Node2D = current_scene.garden_beds[1]
-	current_scene.player.global_position = south.global_position
-	await _settle()
-	await _press_e()
-	_check(BAG.seeds(self) == 0 and GARDEN.phase(self, clock, "sul") == "growing",
-		"Segundo canteiro consome a ultima semente")
-	_check(not GARDEN.plant(self, clock, "norte") and BAG.seeds(self) == 0,
-		"Nao reutiliza canteiro antigo sem sementes")
-	clock.advance_minutes(121.0)
-	_check(GARDEN.phase(self, clock, "sul") == "ready", "Segundo cultivo cresce pelo clock")
-	await _press_e()
-	_check(BAG.leaves(self) == 2 and BAG.seeds(self) == 0, "Bolsa recebe segunda colheita")
-	_check(GARDEN.harvest_record(self).get("cycles", {}).get(0, {}).size() == 2,
-		"Ledger registra cada canteiro de forma independente")
-	_check(PROGRESS.count(self) == 3, "Dois canteiros colhidos nao duplicam marco de colheita")
-	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza segunda colheita")
-	# A troca de cenas invalida a referencia anterior. Recuperar sempre a estacao nova.
-	cooking_station = current_scene.get_node_or_null("CookingStation")
-	_check(is_instance_valid(cooking_station), "Estacao de preparo foi recriada na cena atual")
-	if is_instance_valid(cooking_station):
-		current_scene.player.global_position = cooking_station.global_position
-		await _settle()
-		_check(current_scene.hud_hint.text.contains("Preparar"), "Preparo de teste fica disponivel com folhas")
-		var recipe_panel_ready: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
-		_check(is_instance_valid(recipe_panel_ready) and recipe_panel_ready.visible,
-			"Lista de receitas aparece no ponto de preparo")
-		if is_instance_valid(recipe_panel_ready):
-			_check(recipe_panel_ready.get_node("RecipeList").text.contains("pronta para preparar"),
-				"Painel mostra receita disponivel com folhas")
-		await _press_e()
-		_check(BAG.leaves(self) == 1 and COOKING.portions(self) == 1,
-			"Primeiro preparo gasta exatamente uma folha e registra uma porcao")
-		_check(PROGRESS.is_marked(self, PROGRESS.FOOD_PREPARED) and PROGRESS.count(self) == 4,
-			"Preparo efetivo completa os quatro marcos da sessao")
-		_check(_bag_text(current_scene).contains("preparos 1"), "HUD exibe porcao realmente produzida")
-		await _travel_to_forest()
-		_check(current_scene.scene_file_path == FOREST and COOKING.portions(self) == 1 and BAG.leaves(self) == 1,
-			"Porcao e folha restante persistem na viagem ao mapa anterior")
-		_check(_bag_text(current_scene).contains("preparos 1"), "HUD da floresta reconhece preparo da sessao")
-		await _travel_to_valley()
-		_check(current_scene.scene_file_path == VALLEY, "Retorno ao Vale apos preparar refeicao")
-		cooking_station = current_scene.get_node_or_null("CookingStation")
-		_check(is_instance_valid(cooking_station), "Estacao recriada com registro intacto")
-		if is_instance_valid(cooking_station):
-			current_scene.player.global_position = cooking_station.global_position
+	_check(BAG.seeds(self) == 0, "Cada plantio consome exatamente uma semente")
+	var days := 0
+	while not FARM.is_ready(self, cells[1], farm.field_id) and days < 8:
+		for cell in cells:
+			current_scene.player.global_position = Vector2((cell + Vector2i(0, -1)) * 32) + Vector2(16, 16)
 			await _settle()
-			await _press_e()
-			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
-				"Segundo preparo consome so a ultima folha sem duplicar refeicao")
-			var recipe_panel_after: PanelContainer = current_scene.get_node_or_null("HUD/Interface/RecipePanel")
-			if is_instance_valid(recipe_panel_after):
-				_check(recipe_panel_after.get_node("RecipeList").text.contains("falta 1 folha"),
-					"Painel atualiza ingredientes imediatamente depois de cozinhar")
-			await _press_e()
-			_check(BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
-				"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
+			await _use("regador")
+		clock.advance_minutes(24 * 60.0)
+		await _settle()
+		days += 1
+	_check(FARM.is_ready(self, cells[0], farm.field_id) and FARM.is_ready(self, cells[1], farm.field_id),
+		"Regadas todo dia, as folhas ficam prontas (%d dias)" % days)
+	await _travel_to_forest()
+	_check(current_scene.scene_file_path == FOREST and FARM.is_ready(self, cells[0], "vale"), "Plantio preservado fora do Vale")
+	await _travel_to_valley()
+	for cell in cells:
+		current_scene.player.global_position = Vector2((cell + Vector2i(0, -1)) * 32) + Vector2(16, 16)
+		await _settle()
+		await _press_e()
+	current_scene.item_drops.collect_all()  # as folhas caem no chão (item_drops)
+	_check(BAG.leaves(self) == 2, "Duas colheitas de folhas frescas na bolsa")
+	_check(PROGRESS.is_marked(self, PROGRESS.GARDEN_HARVESTED) and PROGRESS.count(self) == 3,
+		"Colheita de folhas confirma o terceiro marco sem duplicar")
+	_check(_bag_text(current_scene).contains("folhas frescas 2"), "HUD atualiza a colheita")
+	# Cozinhar (no fogão da casa; a interação real está em tools/capture_house.gd).
+	_check(COOKING.prepare(self) == "prepared" and BAG.leaves(self) == 1 and COOKING.portions(self) == 1,
+		"Primeiro preparo gasta exatamente uma folha e registra uma porcao")
+	_check(PROGRESS.is_marked(self, PROGRESS.FOOD_PREPARED) and PROGRESS.count(self) == 4,
+		"Preparo efetivo completa os quatro marcos da sessao")
+	await _travel_to_forest()
+	_check(current_scene.scene_file_path == FOREST and COOKING.portions(self) == 1 and BAG.leaves(self) == 1,
+		"Porcao e folha restante persistem na viagem ao mapa anterior")
+	await _travel_to_valley()
+	_check(COOKING.prepare(self) == "prepared" and BAG.leaves(self) == 0 and COOKING.portions(self) == 2,
+		"Segundo preparo consome so a ultima folha sem duplicar refeicao")
+	_check(COOKING.prepare(self) != "prepared" and COOKING.portions(self) == 2,
+		"Tentar preparar sem folhas nao gera saldo negativo nem porcoes extras")
 	_check(BAG.count_item(self, COOKING.RECIPE_ID) == 2, "Dois preparos viram duas porcoes reais na bolsa")
 	_check(PROGRESS.count(self) == 4, "Preparo repetido e viagem preservam marcos sem duplicacao")
 	await _travel_to_forest()
@@ -238,6 +195,9 @@ func _run() -> void:
 	_check(fed_slime != null, "Brotinho amigo segue disponivel para oferta")
 	if fed_slime != null:
 		current_scene.player.global_position = fed_slime.global_position + Vector2(0, 24)
+		await _settle()
+		var hotbar := preload("res://scripts/systems/hotbar_state.gd")
+		hotbar.select(self, hotbar.slots(self).find(COOKING.RECIPE_ID))  # porção na mão
 		await _settle()
 		_check(current_scene.hud_hint.text.contains("[F]"), "HUD oferece F para alimentar slime proximo")
 		await _press_f()
@@ -257,16 +217,14 @@ func _run() -> void:
 		"Menu e acessivel apos o ciclo de cultivo")
 	if current_scene != null and current_scene.has_method("_start_game"):
 		current_scene._start_game()
+		await NEW_GAME.through_selection(self)
 		await _settle()
 		_check(current_scene.scene_file_path == FOREST, "Novo Jogo retorna a floresta")
 		_check(BAG.seeds(self) == 0 and BAG.leaves(self) == 0, "Novo Jogo limpa sementes e folhas")
 		_check(COOKING.portions(self) == 0, "Novo Jogo limpa o registro de preparos da sessao")
 		_check(BAG.count_item(self, COOKING.RECIPE_ID) == 0 and not has_meta(FOOD.OFFERS_KEY),
 			"Novo Jogo limpa porcoes e ofertas, sem conservar saldo de partida anterior")
-		_check(GARDEN.phase(self, clock, "norte") == "empty" and
-			GARDEN.phase(self, clock, "sul") == "empty", "Novo Jogo reinicia ambos os canteiros")
-		_check(GARDEN.harvest_record(self).get("cycles", {}).is_empty(),
-			"Novo Jogo limpa ledger dos ciclos anteriores")
+		_check(FARM.cells(self, "vale").is_empty(), "Novo Jogo limpa a terra arada e as plantas")
 		_check(clock.day_number == 1 and clock.get_hour() == 7, "Novo Jogo tambem reinicia o relogio")
 		_check(PROGRESS.count(self) == 0 and not has_meta(PROGRESS.KEY),
 			"Novo Jogo remove os quatro marcos sem afetar o proximo ciclo")
@@ -294,3 +252,12 @@ func _change_to_menu() -> void:
 func _finish() -> void:
 	print("VALLEY_GARDEN: %d checks; %d failures" % [checks, failures.size()])
 	quit(1 if not failures.is_empty() else 0)
+
+
+## Amizade é pela comida (2026-11-23): segura uma folha fresca na barra antes do [F].
+func _hold_food() -> void:
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var bar := preload("res://scripts/systems/hotbar_state.gd")
+	bag.add_item(self, "folhas_frescas", 1)
+	bar.select(self, bar.slots(self).find("folhas_frescas"))
+	await process_frame

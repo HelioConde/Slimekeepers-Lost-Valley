@@ -10,6 +10,17 @@ uniform float flexibility = 1.0;
 uniform float plant_reaction = 0.0;
 uniform int reactor_count = 0;
 uniform vec4 reactors[8];
+// Luz de folhagem (definida por AmbientLights conforme o GameClock). Direção em tela
+// apontando PARA a fonte (sol/lua); 0 em foliage_light desliga o efeito.
+uniform float foliage_light = 0.0;
+uniform vec2 light_dir = vec2(-0.5, -0.85);
+uniform vec3 light_color = vec3(1.0, 0.92, 0.62);
+uniform float light_strength = 0.0;
+uniform vec3 inner_shade = vec3(0.78, 0.9, 0.95);
+uniform float shade_strength = 0.0;
+uniform float glint_strength = 0.25;  // realce nos pixels mais claros (só de dia)
+uniform float tone_variation = 0.0;   // cada árvore com um tom levemente próprio
+varying float tone_seed;
 varying float phase;
 varying float active;
 varying float interaction_bend;
@@ -19,6 +30,7 @@ void vertex() {
 	sprite_tint = COLOR;
 	vec2 world_origin = MODEL_MATRIX[3].xy;
 	phase = dot(world_origin, vec2(0.017, 0.023));
+	tone_seed = fract(sin(dot(floor(world_origin), vec2(12.9898, 78.233))) * 43758.5453);
 	vec2 distance_from_view = abs(world_origin - active_center);
 	active = step(distance_from_view.x, active_half_size.x + 160.0) * step(distance_from_view.y, active_half_size.y + 160.0);
 	float bend = 0.0;
@@ -44,5 +56,31 @@ void fragment() {
 	shifted_uv = (floor(shifted_uv / TEXTURE_PIXEL_SIZE) + vec2(0.5)) * TEXTURE_PIXEL_SIZE;
 	vec4 sampled = texture(TEXTURE, shifted_uv);
 	float inside = step(0.0, shifted_uv.x) * step(shifted_uv.x, 1.0) * step(0.0, shifted_uv.y) * step(shifted_uv.y, 1.0);
-	COLOR = sprite_tint * sampled * inside;
+	vec4 lit = sampled;
+	if (foliage_light > 0.0 && sampled.a > 0.5 && light_strength + shade_strength > 0.001) {
+		// Só folhas (verde dominante): tronco, pedras e flores coloridas ficam como estão.
+		float leaf = step(sampled.r, sampled.g) * step(sampled.b * 0.85, sampled.g);
+		// Espelhamento (flip_h) inverte o UV: a luz precisa seguir a tela.
+		vec2 flip = vec2(sign(dFdx(UV.x)), sign(dFdy(UV.y)));
+		vec2 step_uv = round(light_dir * 1.4) * flip * TEXTURE_PIXEL_SIZE;
+		vec4 toward1 = texture(TEXTURE, shifted_uv + step_uv);
+		vec4 toward2 = texture(TEXTURE, shifted_uv + step_uv * 2.0);
+		float l0 = dot(sampled.rgb, vec3(0.299, 0.587, 0.114));
+		float l1 = dot(toward1.rgb, vec3(0.299, 0.587, 0.114)) * toward1.a;
+		// Borda externa voltada para a luz e topo de cada tufo (vizinho mais escuro).
+		float rim = 1.0 - toward2.a * toward1.a;
+		float crest = clamp((l0 - l1) * 12.0, 0.0, 1.0);
+		float glint = smoothstep(0.42, 0.62, l0);
+		float light = clamp(max(rim, crest * 0.85) + glint * glint_strength, 0.0, 1.0);
+		// Parte de baixo do tufo (vizinho em direção à luz mais claro): sombra interna.
+		float under = clamp((l1 - l0) * 12.0, 0.0, 1.0) * toward1.a;
+		vec3 c = sampled.rgb;
+		// Variação por árvore: umas puxam para oliva quente, outras para verde-azulado.
+		vec3 tone = mix(vec3(0.93, 0.99, 1.05), vec3(1.05, 1.0, 0.88), tone_seed) * mix(0.95, 1.03, fract(tone_seed * 7.13));
+		c = mix(c, c * tone, tone_variation * leaf * foliage_light);
+		c = mix(c, c * light_color * 1.6 + light_color * 0.06, light * light_strength * leaf * foliage_light);
+		c = mix(c, c * inner_shade, under * shade_strength * leaf * foliage_light);
+		lit.rgb = c;
+	}
+	COLOR = sprite_tint * lit * inside;
 }

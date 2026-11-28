@@ -90,3 +90,234 @@ A nova direção de fazenda substituiu a composição de clareira durante a tare
 Os PNGs são peças individuais para composição em camadas; as molduras antigas rasuradas não fazem parte desse acervo. Os arquivos `.import` são metadados do Godot, não novas gerações. A nitidez, a transparência, a escala e a composição devem ser verificadas nas capturas de runtime da entrega; status de geração concluída, dimensões e hashes não equivalem a aprovação artística.
 
 Backups da base anteriores às mudanças encontram-se em `docs/backups/`, incluindo `world.gd.txt`, `player.gd.txt` e `project_before_menu.godot.txt`. A alteração de `player.gd` restringe-se à tipagem explícita de uma variável de nome de animação necessária para a compilação no Godot 4.7.2.
+
+## Ícones de itens (barra rápida) — 2026-11-21
+
+PixelLab `create_map_object`, 32×32, fundo transparente, 1 geração cada (7 no total):
+`assets/ui/items/` — `enxada`, `regador`, `semente_cenoura`, `semente_beterraba`,
+`semente_repolho`, `sementes_silvestres`, `porcao_folhas`; depois `sopa_legumes` e `cenoura_assada`
+(pratos do fogão, 1 geração cada). Colheitas usam o último estágio das
+culturas já exportadas (recortado em `item_catalog.gd`).
+
+
+## Árvores V6 (protótipo) — 2026-11-21
+
+Geradas no PixelLab (`create_map_object`, 96×96, high top-down, detailed shading, selective outline; 4 gerações da assinatura, 2 aprovadas). Pós-processo local: removido o tufo de grama na base, tronco alinhado à base dos sprites antigos (`oak.png`/`pine_crisp.png`) e realces amarelo-lima suavizados (−32% saturação, −12% valor). Desenhadas em escala 2, como as demais árvores. Em uso só na borda oeste da Clareira (FlorestaDoDespertarV2, 9 carvalhos e 6 pinheiros) até a validação.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/forest/oak_lush.png` | `86FF4CF4AA7AECE8E69739AB8D45F7FA036829B5CF4036771EF6E3AF82D17BC5` |
+| `assets/world/forest/pine_lush.png` | `FF1B9624C8EA7718492CA71FE37C87B280C3A9ADC9AE7558370D7CCDEC9523B1` |
+
+## Detalhe de chão V6 (protótipo) — 2026-11-21
+
+Gerados no PixelLab (`create_map_object`, 32×32, high top-down; 6 gerações). Pós-processo local: as folhas caídas foram recoloridas para paleta de outono, o capim perdeu o monte de terra e as pedrinhas foram clareadas para cinza quente. Usados por `scripts/world/ground_detail.gd` só na borda oeste da Clareira. O raminho (`clover_sprig`) saiu como broto, não como trevo, e é usado assim.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/ground/wildflower_yellow.png` | `1B775FA4498B358F45A8B6E8BD0B95EAF84A7A0BA329E8AC532437996D075F50` |
+| `assets/world/ground/wildflower_lilac.png` | `25D3B4EC45B1234980AFEB073E8511258C73A6A68319B9D4435E9F38849AE507` |
+| `assets/world/ground/fallen_leaves.png` | `2DBD6E6C0DCD50A911CAE385CD8E714BC0DF14D79CC43F2E3B8C78DFE770B0FB` |
+| `assets/world/ground/pebbles.png` | `034F43C2EB3C4F973987D138C20BC36603B30DBE215B726630E81F7F4BDE7887` |
+| `assets/world/ground/clover_sprig.png` | `C51EC1E1AD1EA235C1515E171D5CE4DD191DFCDCBFF17610EEF10D0245C221D1` |
+| `assets/world/ground/grass_tuft_sunlit.png` | `3B90736BB3AAED857342468CDAEABDA81ABBFE1EBF82071CAF3F15163F4139EF` |
+
+## Árvores V6 — expansão na Floresta V2 — 2026-11-21
+
+Novas variantes geradas no PixelLab (mesmos parâmetros das árvores do protótipo; 3 gerações, 2 aprovadas, arbusto rejeitado por parecer planta em vaso). Pós-processo reproduzível com `tools/tone_lush_sprite.py`. Os pinheiros passaram a usar `--tips 0.5` para suavizar as pontas lima.
+
+| Sprite antigo (Floresta V2) | Sprite novo | SHA-256 |
+|---|---|---|
+| `oak.png` | `assets/world/forest/oak_lush.png` | `86FF4CF4AA7AECE8E69739AB8D45F7FA036829B5CF4036771EF6E3AF82D17BC5` |
+| `oak_medium.png` | `assets/world/forest/oak_lush_open.png` | `27F54165D9AC3AFA11129176649C7C16DAC3245E9EFF16E8328EDB38D1F8FFD2` |
+| `oak_young.png` | `assets/world/forest/oak_lush_tall.png` | `159ABF7F8F46A3BFBC4CC340AEC695D0B8EEEDDA7510FD46F9451056A27DAC53` |
+| `pine_crisp.png` | `assets/world/forest/pine_lush.png` | `F1A45CF9A47E75DF134FCC5CFD547B3775640568BEAE859DEB40DE8E7F3389DA` |
+
+O `wildflower_yellow.png` teve as pétalas clareadas (+25% de valor) para ler como flor ao sol.
+
+## Harmonização V8 — 2026-11-21
+
+Árvores V6 retonificadas com `tools/tone_lush_sprite.py` (`--soften 0.55`; pinheiro `--soften 0.5 --tips 0.7`) para tirar o amarelo-lima fluorescente. As versões V6 anteriores ficam no histórico (b230e32), e os sprites antigos (`oak.png`, `oak_medium.png`, `oak_young.png`, `pine_crisp.png`) continuam no repositório para comparação. Sem gerações novas.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/forest/oak_lush.png` | `D8AE4AFE0B710AAE592212E1943A9D47F4881B67E8D7E654243C878E4B2662CF` |
+| `assets/world/forest/oak_lush_open.png` | `6CED844989314B691C07404D67817DDFF40526119F85021B8C19874E6D760E54` |
+| `assets/world/forest/oak_lush_tall.png` | `7B9A7AF593A13CF5C8D04014F8667C0CE51904DA4D66C11717274BE7AC094A24` |
+| `assets/world/forest/pine_lush.png` | `9A6FBDB87C8536290A10A1328D725EA5A6D0239143C58A0401734CA9C2B46D2F` |
+
+## Chão V8 — 2026-11-21
+
+Dois tilesets Wang pro do PixelLab (`create_topdown_tileset`, 32 px, high top-down, borda orgânica; 30 gerações): chão de mata musgoso ↔ grama de campo, e terra de trilha ↔ a mesma grama (encadeados pelo tile base da grama). Organizados no atlas canônico (índice = NW·8 + NE·4 + SW·2 + SE) e harmonizados com `tools/tone_ground_tiles.py`: grama com valor ×0,8 e saturação ×0,9, para casar com a luminância do chão antigo; mata com valor ×1,2; terra com valor ×1,18 e saturação ×0,75. O atlas antigo `grass_dirt_v3_32x32.png` continua intacto.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/tilesets/v8/forest_grass_wang.png` | `70D39C80CEE071E927898448FDF6561361E6251D60D0D27F68A0167055FB8FC6` |
+| `assets/tilesets/v8/dirt_tile.png` | `AB726435DB045C86FF500B0CC5C939CF427E526345DFC7A79EB3742F41F295BB` |
+
+## Trilhas naturais V8 — 2026-11-21
+
+`assets/tilesets/v8/dirt_grass_wang.png`: atlas canônico do tileset Wang terra ↔ grama (o mesmo da seção "Chão V8"), harmonizado com `tools/tone_ground_tiles.py`. Sem gerações novas. SHA-256 `689ABCF06460488E5C3FD4149B0E2674E243110F31BCFA8E2CEFA0A9CFCEC5C2`. As trilhas viram passagens de bicho (mundo sem gente): só manchas de terra gasta no miolo do traçado, com borda Wang.
+
+## Plantas e arbustos V8 — 2026-11-21
+
+- `assets/world/forest/bush_lush.png` e `bush_lush_round.png`: recortados das copas aprovadas (`oak_lush`, `oak_lush_tall`), sem tronco, com base arredondada e borda inferior sombreada, centralizados no canvas 96×96 do arbusto antigo (mesma base). O arbusto gerado pelo PixelLab saiu cônico e foi rejeitado.
+- `assets/world/forest/plant_rosette.png`: roseta de folhas verdes (PixelLab, 48×48, 1 geração) no lugar de `crops.png`, que era uma planta azul-petróleo fora da paleta. A pedra gerada saiu em formato de ovo e foi rejeitada.
+- Tingimentos fortes das flores (azul 0.65–0.7 / 1.3–1.4, magenta 1.2 / 0.82) suavizados na cena e nos tiles alternativos: pintavam as folhas inteiras.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/forest/bush_lush.png` | `B0235FAE49E730E597B93484D48CAD550383BAA8D843ACC9B0653977B679C4C7` |
+| `assets/world/forest/bush_lush_round.png` | `3D1CF48117265DA4AC4060B372B8FD39B4768CA76BB8FC9894CA13E6AF1A2AFD` |
+| `assets/world/forest/plant_rosette.png` | `FCD50B7971BEA2F6C54C7CA95A864785FB60E30F3F2AA35A99ACEE2CF0954C3A` |
+
+## Touceira de flores V8 — 2026-11-21
+
+`assets/world/forest/wildflowers_cluster.png` (48×48): composição local de `wildflower_lilac` + `wildflower_yellow` com base alinhada à de `flowers.png`. Substitui `flowers.png` na Floresta V2 (sprites e tiles) e no Vale. Sem gerações novas. SHA-256 `80BEC0048DD400D4280F102E7CCE2E378917647F7671722F969C2EEC14386B03`.
+
+## Nenúfar com flor V9 — 2026-11-21
+
+`assets/world/valley/lily_pad_flower.png` (PixelLab, 32×32, 1 geração): nenúfares com flor rosa, no lugar de `lily_pad.png` no Vale (mesmo canvas e tamanho). SHA-256 `9A325FEF9C4543FD41E7507CDE9096BD5D37A85ECB7B6D418444BFCA4A4EFCC7`.
+
+## Lago encantado V9 — 2026-11-21
+
+PixelLab (`create_map_object`, 3 gerações): vitória-régia com flor luminosa lilás (32×32), juncos com pontas ciano luminosas (32×48; poça azul da base removida localmente) e folha de vitória-régia (32×32). Usados por `scripts/world/pond_magic.gd` no lago da Clareira.
+
+| Arquivo | SHA-256 |
+|---|---|
+| `assets/world/pond/lily_glow.png` | `186D8479C84BEA11941471429F9A028C3A4F3FAE9D937BA364BCC3F3779A50EE` |
+| `assets/world/pond/reeds_glow.png` | `D6458ADB606BCDDF2F9BAFEFD7A030123C1591C0FD455A8164A177101F5F3D49` |
+| `assets/world/pond/lily_pad.png` | `1B1D6D91E48C8DDB59C30F8516AAE212853B8D102D0964FF11C30441C783AA77` |
+
+## Margens do rio V9 — 2026-11-21
+
+`assets/world/valley/water_banks_v9.png`: tileset Wang pro do PixelLab (água ↔ grama com barranco baixo de pedra musgosa, 32 px, transition 0.25; 15 gerações), encadeado na grama do chão V8 e remapeado por cantos no layout de `water_banks.png` (mesmas células do mapa). Grama com valor ×0,8 e saturação ×0,9. O antigo (borda de terra marrom-escura) continua no repositório. SHA-256 `0A2DB4A42D922270A4907FB7E9104912F9E2256CF2F7B0398DF1F73496D14493`.
+
+## Plantas-lanterna V9 — 2026-11-21
+
+`assets/world/valley/lantern_flower.png` (PixelLab, 32×48, 1 geração): planta com frutos-lanterna dourados (tipo physalis). Fica nas cabeceiras das pontes do Vale e acende à noite (`scripts/world/lantern_flowers.gd`). Faz o papel das lanternas da referência do rio sem presença humana. SHA-256 `9AF19C67167A0A96A61EF84281FFCD87B5BE36F3C6F075D92526E476BFEBA441`.
+
+## Margens do rio V11 — 2026-11-21
+
+`assets/world/valley/water_banks_v11.png`: tileset Wang pro do PixelLab (barranco baixo de terra escura com pedrinhas e linha de espuma; 15 gerações), encadeado na grama V8 e remapeado por cantos no layout de `water_banks.png`. A água do próprio tile ficou transparente para mostrar a água animada. SHA-256 `3C8657918DA418E799AEC239225E9AEC1424BF61B52F842A1BE84A9D15E5EF9A`.
+
+### Carvalho grande das pontes (V11)
+
+| Arquivo | Tamanho | SHA-256 |
+|---|---|---|
+| `assets/world/forest/oak_grand.png` | 128×128 | `070672afb8f7f6c68de940659603e9a7a9feb052c12e50be70a772e41cbf8986` |
+
+Gerado no PixelLab (`create_map_object`, 128×128, high top-down, high detail, detailed shading, selective outline; 1 geração, aprovada). Pós-processo local: `tools/tone_lush_sprite.py --strip-ground 96 --soften 0.45`, remoção de pontinhos soltos (<6 px) abaixo da linha 90 e −20% de saturação nos verdes. Desenhado em escala 2; usado só nas árvores a até 260 px das pontes do Vale (`scripts/world/tree_glow.gd`), cuja colisão não muda.
+
+### Pontes naturais do Vale (mundo sem humanos)
+
+| Arquivo | Tamanho | SHA-256 |
+|---|---|---|
+| `assets/world/valley/natural_bridges/root_bridge.png` | 92×38 | `2244bdd95296cf760734ec51cfe1582c9abbd3365a2211ee6a9bff67ca627512` |
+| `assets/world/valley/natural_bridges/root_bridge_v.png` | 30×144 | `20630f44b573e4207b129968209ab5d63009900a9e5cc3a86b3b93dcb3b80f58` |
+
+Arco de raízes entrelaçadas gerado no PixelLab (`create_map_object`, 128×48, high top-down, high detail, detailed shading, selective outline), recortado à caixa visível. Único aprovado pelo usuário: troncos caídos, pedras, istmo e versões verticais de raízes foram rejeitados (13 gerações no total). Versão vertical (48×144) de raízes trançadas nas travessias oeste e leste: 9 tentativas; a escolhida segue o veio de madeira, o musgo discreto e as bordas escuras do arco aprovado (as outras tinham tábuas, degraus, topo de terra ou eram finas demais; o style matching com o fundo do mapa também falhou). Pontas apagadas em pontilhado Bayer 4×4 nas 18 fileiras finais, para mesclar com o chão. Desenhados por `scripts/world/natural_bridges.gd` em escala 2, espelhados em alternância.
+
+## Protagonistas Aren e Moni — 2026-11-22
+
+Origem: PixelLab, com crédito autorizado. Detalhes em `docs/gameplay/DESPERTAR.md`.
+
+- `assets/player/wake/`: poses do Aren olhando para o sul (sit_idle, sit_look_left, sit_look_right, sit_confused, stand_up). Foram geradas a partir do quadro final de "sentar" e alinhadas por `tools/pixellab/align_wake.py`.
+- `assets/player_moni/`: personagem nova, a Moni (cabelo solto, óculos de proteção, estilo do Aren, 128 px). Tem rotações, andar (48 quadros), correr (64), enxada e regador (72 cada) e o despertar.
+- `assets/menu/select/`: fundo da tela de seleção e poses sentadas de lado dos dois (neutra e olhando por cima do ombro).
+
+## Ferramentas na mão = ícones da barra — 2026-11-22
+
+Origem: PixelLab v3, com crédito autorizado.
+
+- `assets/player/tools/{axe,hoe,water}/<8 direções>/frame_000..007.png`: Aren.
+- `assets/player_moni/tools/{axe,hoe,water}/...`: Moni. Estas substituem as animações antigas de enxada e regador, que eram cinza.
+
+Como foram feitas:
+
+- O quadro inicial é a rotação 128 px com o ícone da barra (`assets/ui/items/{machado,enxada,regador}.png`) na mão. Assim o machadinho de cabo escuro, a enxada de cabo claro e o regador verde aparecem no golpe.
+- Sul, sudeste, leste, nordeste e norte foram geradas. Oeste, sudoeste e noroeste são espelhos.
+- `tools/pixellab/align_tools.py` faz o resto: canvas 192×192 com a rotação centrada (encaixe com diferença 0), sem o quadro inicial, e limpeza de rastros brancos no machado e na enxada.
+
+Evidência: `docs/gameplay/ferramentas/ferramentas_barra.png`, gerada por `tools/capture_tool_anims.gd`. As pastas antigas `assets/Create_a_Hoe_Equippe` e `assets/Create_a_Watering_Ca` não são mais usadas pelo jogador.
+
+## Golpe aprovado (sul) — machado e enxada — 2026-11-22
+
+- Modelo aprovado pelo usuário: picareta virada para o sul (estado PixelLab `Create_a_Pickaxe_Equ`), quadros 0 a 6. O impacto foi refeito com a picareta reta no chão, pés inteiros (inpaint) e a poeira original.
+- `assets/player/tools/{axe,hoe}/south/frame_000..008.png`: Aren. A ferramenta foi trocada com `edit_animation`, e a lâmina e o encaixe da enxada foram corrigidos com inpaint.
+- `assets/player_moni/tools/{axe,hoe}/south/...`: Moni, feita a partir dos quadros do Aren com `transfer_outfit`. Inpaint corrigiu o rastro, a cabeça e a mão.
+- Tempo por quadro em `scripts/player.gd` (`SWING_TIMING`): pausa no alto, descida rápida e pausa longa no impacto.
+- As outras direções e o regador ainda são as animações anteriores. Serão refeitos no mesmo padrão, com aprovação de cada um.
+
+## Regar de frente (sul) — Aren e Moni — 2026-11-22
+
+- `assets/player/tools/water/south/frame_000..007.png` e `assets/player_moni/tools/water/south/...`: regar de frente, aprovado pelo usuário.
+- Como foi feito:
+  - Base: PixelLab v3 a partir da rotação com o regador da barra na frente do corpo.
+  - Inpaint corrigiu o regador de lado e a água saindo por cima.
+  - `edit_animation` deixou o regador com o mesmo material.
+  - A sequência final usa só as poses em que o regador está de frente, para manter direção e tamanho iguais.
+  - A Moni foi feita com `transfer_outfit`; a roupa foi corrigida usando um quadro dela como referência.
+- Tempo por quadro: `WATER_TIMING` em `scripts/player.gd`.
+
+## Golpe de lado (leste e oeste) — machado e enxada — 2026-11-22
+
+- `assets/player{,_moni}/tools/{axe,hoe}/{east,west}/frame_000..007.png`: aprovados pelo usuário. Oeste é o espelho do leste.
+- Como foi feito:
+  - Base: Aren com o machadinho, PixelLab v3 em duas etapas (erguer e golpe).
+  - `edit_animation` deixou o machadinho igual em todos os quadros e trocou a poeira.
+  - O rastro de luz foi aplicado com `edit_image` e encaixado na lâmina.
+  - A enxada foi feita com `edit_animation`; o cabo atrás das mãos foi removido e a luz reposicionada na cabeça da enxada.
+  - A Moni foi feita com `transfer_outfit`, usando um quadro dela como referência de roupa.
+- Tempo por quadro: `SWING_SIDE_TIMING` em `scripts/player.gd`.
+- Evidência: `docs/gameplay/ferramentas/golpes_no_jogo.png`.
+
+## Golpe de costas (norte) — machado e enxada — 2026-11-22
+
+- `assets/player{,_moni}/tools/{axe,hoe}/north/frame_000..007.png`: aprovados pelo usuário.
+- Aren:
+  - PixelLab v3 em duas etapas (erguer e golpe).
+  - O machadinho ficou com uma lâmina só, por inpaint.
+  - O impacto foi refeito: lâmina de fio, botas inteiras e poeira pequena só na lâmina.
+  - Os quadros 2 e 3 da enxada foram editados a partir da rotação dele.
+- Moni:
+  - Gerada a partir do próprio personagem: erguer com v3; a pose acima da cabeça e o impacto com `edit_image` da rotação dela.
+  - A descida usa o rastro aprovado.
+  - As mangas ficaram creme, como no sprite dela.
+  - A enxada foi feita a partir dos quadros dela.
+- Tempo por quadro: `SWING_SIDE_TIMING`, os mesmos 8 quadros do golpe de lado.
+
+## Regar de lado (leste e oeste) e de costas (norte) — Aren e Moni — 2026-11-22
+
+- `assets/player{,_moni}/tools/water/{east,west,north}/frame_000..007.png`: aprovados pelo usuário.
+- Oeste é o espelho do leste. As diagonais usam o lado (`TOOL_FACING`).
+- Lado:
+  - PixelLab v3 a partir do quadro inicial de cada personagem (rotação dela + regador verde da barra).
+  - Aren: os quadros 1 e 8 usam o regador do quadro 2 (bico para a frente); o 8 mantém os últimos respingos.
+  - Moni: gerada de novo para manter bolsa, cinto e alça. O quadro 8 é a pose do 1 com os respingos finais, e a água clara foi recolorida para o mesmo azul.
+- Costas:
+  - Regador escondido na frente do corpo, seguro com as duas mãos (`edit_image` da rotação + v3).
+  - Bico e jato lateral apagados. A água foi desenhada caindo no chão à frente, por trás do corpo: gotas, jato entre as pernas, respingo para os lados e poça.
+- Tempo por quadro: `WATER_TIMING`, o mesmo do regar de frente.
+- Captura no jogo: `docs/gameplay/ferramentas/regar_no_jogo.png`.
+
+## Pegar no chão (uma mão e duas mãos) — Aren e Moni — 2026-11-22
+
+- `assets/player{,_moni}/actions/pick_small/{south,east,west,north}/frame_000..005.png`: pegar com uma mão, aprovado pelo usuário (itens pequenos: graveto, pedra).
+  - Ajoelha sobre um joelho, uma mão no chão e a outra no joelho.
+  - Quadros: em pé, meio agachado, ajoelhado, ajoelhado (pausa), meio agachado, em pé.
+  - As três poses vêm de `edit_image` da rotação de cada personagem. Não foi usada interpolação do v3: ela inventava braços levantados.
+  - Moni: roupa igual ao sprite (manga bufante, luvas longas, bolsa). A mão foi levada até o chão com outro `edit_image`.
+  - Tentativas reprovadas: modelo `picking-up` (cabeças duplicadas), curvar pela cintura (braço esticado demais) e agachamento aberto (pernas de sapo, mãos grandes).
+- `assets/player{,_moni}/actions/pick_big/{south,east,west,north}/frame_000..007.png`: pegar com duas mãos, agachado, aprovado para plantação e itens grandes; usado também para arrancar o mato.
+  - PixelLab v3 a partir de cada personagem. Usa só os quadros limpos 1–5 e volta pelos mesmos (sem objetos inventados).
+- Oeste é o espelho do leste. As diagonais usam o lado (`TOOL_FACING`).
+- Tempos por quadro: `ACTION_TIMING` em `scripts/player.gd`.
+- Captura no jogo: `docs/gameplay/ferramentas/pegar_no_jogo.png`.
+
+## Terra arada (plantio livre) — 2026-11-22
+
+- `assets/tilesets/farm/soil_dry.png/.json` e `soil_wet.png/.json`: PixelLab top-down tileset modo pro (15 gerações cada).
+  - Terra arada ↔ grama; a versão molhada é encadeada na mesma grama.
+  - Convertidos por `tools/pixellab/convert_soil_tilesets.py`: grama transparente e mapa de cantos para o dual-grid de `farm_field.gd`.
+- Dois tilesets do modo padrão (1 geração cada) foram descartados: tábuas e gravetos.

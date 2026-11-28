@@ -1,27 +1,104 @@
 shader_type canvas_item;
-// Only reflected light bypasses ambient tint. The water below remains shaded.
+// Reflexos de Sol e Lua (V10). Só a luz refletida ignora o tom ambiente; a água
+// por baixo continua sombreada. TUDO em coordenadas de mundo: a âncora de cada
+// reflexo vem da geometria do corpo d'água + posição do astro (Astronomy), nunca
+// da tela, da câmera ou do jogador.
 render_mode unshaded;
 uniform float elapsed = 0.0;
-uniform vec4 light_color : source_color = vec4(1.0);
-uniform float strength = 0.0;
-uniform float axis = 0.65;
-varying vec2 water_world;
-float hash(vec2 p) { return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
-void vertex() { water_world = (MODEL_MATRIX * vec4(VERTEX,0.0,1.0)).xy; }
+// Âncoras do reflexo (mundo), uma por célula do corpo d'água, sempre dentro da
+// água (WaterReflections.pick_anchors). Cada pixel usa a âncora mais próxima.
+const int MAX_ANCHORS = 16;
+uniform vec2 moon_anchors[16];
+uniform vec2 sun_anchors[16];
+uniform int anchor_count = 0;      // Lua
+uniform int sun_anchor_count = 0;  // Sol (a escolha global pode dar contagens diferentes)
+// Céu (Astronomy.sky).
+uniform float moon_strength = 0.0;
+uniform float moon_phase = 0.5;
+// Lago pequeno (ref. V9 da Clareira): disco da lua maior e inteiro, coluna curta.
+uniform float small_body = 0.0;
+uniform float sun_strength = 0.0;
+uniform vec4 sun_color : source_color = vec4(1.0);
+varying vec2 world;
+
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+
+void vertex() { world = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy; }
+
+vec2 nearest(vec2 p, bool moon) {
+	vec2 best = vec2(1e9);
+	float best_d = 1e18;
+	for (int i = 0; i < MAX_ANCHORS; i++) {
+		if (i >= (moon ? anchor_count : sun_anchor_count)) break;
+		vec2 a = moon ? moon_anchors[i] : sun_anchors[i];
+		vec2 d = p - a;
+		float dd = dot(d, d);
+		if (dd < best_d) { best_d = dd; best = a; }
+	}
+	return best;
+}
+
+// Coluna de reflexo fragmentada: linhas de 2 px a cada 4 px, cada linha com
+// largura, deslocamento e velocidade próprios; traços quebrados que derivam.
+float column(vec2 p, vec2 a, float half_width, float up, float down, float speed_scale) {
+	float dy = p.y - a.y;
+	if (dy < -up || dy > down) return 0.0;
+	float row = floor(p.y / 4.0);
+	float thin = step(mod(p.y, 4.0), 1.0);
+	float rs = (0.15 + hash(vec2(row, 7.0)) * 0.2) * speed_scale;
+	float sway = floor(sin(elapsed * rs + row * 1.7) * 2.0);
+	float taper = 1.0 - smoothstep(0.3, 1.0, dy > 0.0 ? dy / down : -dy / up);  // cheia até 30%, depois afina
+	float w = half_width * (0.35 + 0.65 * abs(sin(row * 0.9 + elapsed * rs))) * taper;
+	float inside = step(abs(p.x - a.x - sway), w);
+	float dash = step(0.42, hash(vec2(floor((p.x + elapsed * rs * 6.0) / 6.0), row)));
+	return inside * dash * thin;
+}
+
 void fragment() {
-	vec2 p = floor(water_world / 2.0) * 2.0;
-	// Broken horizontal glints, never a smooth bloom or a solid painted disc.
-	float row = floor(p.y / 5.0);
-	float drift = sin(row * .73 + elapsed * .7) * .025;
-	float distance_to_axis = abs(SCREEN_UV.x - axis - (SCREEN_UV.y-.5)*.10 + drift);
-	float band = 1.0-smoothstep(.025,.24,distance_to_axis);
-	vec2 cell = floor(vec2((p.x + sin(row+elapsed*.8)*5.0)/14.0,p.y/5.0));
-	float broken = step(.40,hash(cell));
-	float wave = sin(p.y*.63 + sin(p.x*.031)*1.8 + elapsed*1.4);
-	float streak = step(.64,wave) * broken;
-	float core = step(.93,wave) * step(.79,hash(cell+7.0));
-	float shimmer = .60+.40*sin(elapsed*1.8+hash(cell)*6.283);
-	float alpha = strength * band * (streak*.68*shimmer + core*1.15);
-	vec3 reflected_light = mix(light_color.rgb,vec3(1.0),core*.68);
-	COLOR = vec4(reflected_light,clamp(alpha,0.0,.85));
+	vec2 p = floor(world / 2.0) * 2.0;
+	vec4 outc = vec4(0.0);
+	// ---- Lua ----
+	if (moon_strength > 0.003) {
+		vec2 a = floor(nearest(p, true) / 2.0) * 2.0;
+		float c = small_body > 0.5 ? column(p, a, 22.0, 10.0, 46.0, 1.0) : column(p, a, 65.0, 24.0, 280.0, 1.0);  // coluna larga e longa (ref. da ponte)
+		// Disco estilizado e discreto, com a fase (lado iluminado pela fase).
+		vec2 q = (p - a) / (small_body > 0.5 ? vec2(16.0, 12.0) : vec2(13.0, 9.0));
+		float disk = 0.0;
+		if (dot(q, q) <= 1.0) {
+			float term = cos(TAU * moon_phase) * sqrt(max(0.0, 1.0 - q.y * q.y));
+			float lit = moon_phase < 0.5 ? step(term, q.x) : step(q.x, -term);
+			float cut = 1.0 - step(mod(p.y, 6.0), 1.0) * step(0.6, hash(vec2(floor(p.y / 6.0), floor(elapsed * 0.4))));
+			disk = lit * (small_body > 0.5 ? 1.0 : cut);
+		}
+		// Lago pequeno: halo do disco em 2 degraus (sem degradê liso).
+		float ring = 0.0;
+		if (small_body > 0.5) {
+			float r = length((p - a) / vec2(16.0, 12.0));
+			ring = (step(r, 1.45) - step(r, 1.0)) * 0.45 + (step(r, 1.9) - step(r, 1.45)) * 0.2;
+		}
+		// Pontos prateados ao redor (ondulação fina).
+		float spark = step(0.993, hash(floor(p / 4.0) + vec2(floor(elapsed * 0.6), 3.0))) * (1.0 - smoothstep(10.0, 60.0, length(p - a)));
+		// Campo de brilhos largo (ref.): traços horizontais curtos e intensos numa
+		// faixa de ~180 px que se abre rio abaixo; cada traço pisca no seu ritmo.
+		vec2 g = p - a;
+		float spread = 50.0 + max(g.y, 0.0) * 0.35;
+		float in_field = step(abs(g.x), spread) * step(-30.0, g.y) * step(g.y, 320.0);
+		vec2 gc = floor(p / vec2(10.0, 4.0));
+		float blink = step(0.55, fract(elapsed * (0.3 + hash(gc) * 0.5) + hash(gc + 9.0)));
+		float glitter = in_field * step(0.62 + abs(g.x) / spread * 0.3, hash(gc + 5.0)) * blink * step(mod(p.y, 4.0), 1.0)
+			* (1.0 - smoothstep(180.0, 320.0, g.y));
+		glitter *= 1.0 - small_body;  // o campo largo não cabe num lago pequeno
+		float lum = clamp(disk * 0.95 + ring + c * 0.75 + spark * 0.8 + glitter * 0.85, 0.0, 1.0) * moon_strength;
+		vec3 col = mix(vec3(0.62, 0.8, 1.0), vec3(0.94, 0.97, 1.0), clamp(disk + spark + glitter, 0.0, 1.0));
+		outc = vec4(col, lum);
+	}
+	// ---- Sol ----
+	if (sun_strength > 0.003) {
+		vec2 a = floor(nearest(p, false) / 2.0) * 2.0;
+		float c = column(p, a, 26.0, 20.0, 120.0, 1.3);
+		float glint = step(0.988, hash(floor(p / 4.0) + vec2(floor(elapsed * 1.2), 9.0))) * (1.0 - smoothstep(20.0, 90.0, length(p - a)));
+		float lum = clamp(c * 0.9 + glint, 0.0, 1.0) * sun_strength;
+		if (lum > outc.a) outc = vec4(mix(sun_color.rgb * 1.15, vec3(1.0), 0.35 + glint * 0.5), lum);
+	}
+	COLOR = vec4(outc.rgb, clamp(outc.a, 0.0, 0.9));
 }

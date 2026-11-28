@@ -1,4 +1,5 @@
 extends SceneTree
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
 ## Clock contract and real scene lifecycle. No visual claims from headless checks.
 const ClockScript = preload("res://scripts/systems/game_clock.gd")
 const Travel = preload("res://scripts/world/region_travel.gd")
@@ -76,7 +77,8 @@ func run():
  for minute in 1440:
   var tint:Color=model.lighting_at(minute)
   if distance(tint,model.lighting_at(minute+1))>.015:continuous=false
-  if tint.r*.2126+tint.g*.7152+tint.b*.0722<.48:readable=false
+  # Piso 0.38 (antes 0.48): noite mais escura compensada pela luz de visibilidade do jogador (AmbientLights).
+  if tint.r*.2126+tint.g*.7152+tint.b*.0722<.38:readable=false
  check(continuous,"All lighting minutes interpolate continuously, including midnight")
  check(readable,"Night palette retains minimum ambient luminance")
  check(model.lighting_at(720)==Color.WHITE,"Midday preserves original sprite palette")
@@ -85,22 +87,22 @@ func run():
  var clock=root.get_node("GameClock")
  clock.reset_new_game()
  # Legacy and current playable scenes all share the same installation.
- for path in ["res://scenes/world.tscn","res://scenes/regions/ClareiraDoDespertar.tscn",Travel.CLEARING,Travel.VALLEY]:
+ for path in [Travel.CLEARING,Travel.VALLEY]:  # ClareiraDoDespertar.tscn e world.tscn são obsoletas
   var region=await switch_to(path)
   if not region:quit(1);return
   check(region.find_children("*","CanvasModulate",true,false).size()==1,"Exactly one ambient controller: "+path)
   var widget:Control=region.get_node("HUD/Interface/DayClock")
   check(widget.get_canvas()!=region.get_canvas(),"Clock uses independent HUD canvas")
-  check(widget.get_node("ClockText").get_theme_font("font").resource_path.ends_with("PixelifySans.ttf"),"HUD theme available")
+  check(widget.find_child("ClockText", true, false).get_theme_font("font").resource_path.ends_with("ui_font.tres"),"HUD theme available (fonte da UI com dígitos legíveis, ID 33)")
   clock.set_time(22)
   await settle()
   check(distance(region.get_node("DayNightLighting").color,clock.get_lighting_color())<.001,"Region applies current time without entry flash")
-  check(widget.get_node("ClockText").text.contains("22:00") and widget.get_node("ClockText").text.contains("Noite"),"HUD updates from global clock")
+  check(widget.find_child("ClockText", true, false).text.contains("22:00") and widget.find_child("PeriodText", true, false).text.contains("Noite"),"HUD updates from global clock")
   for resolution in [Vector2i(960,540),Vector2i(1280,720),Vector2i(1920,1080)]:
    root.size=resolution
    root.content_scale_size=Vector2i(960,540)
    await settle()
-   check(not widget.get_global_rect().intersects(region.get_node("HUD/Interface/ReturnToMenu").get_global_rect()),"Clock does not cover Menu at "+str(resolution))
+   check(not region.has_node("HUD/Interface/ReturnToMenu"),"No Menu button under the clock at "+str(resolution))
  clock.set_time(18,35)
  var before:Dictionary=clock.get_save_data()
  var valley=await switch_to(Travel.VALLEY)
@@ -120,6 +122,7 @@ func run():
  await create_timer(.2,true).timeout
  check(not clock.is_running() and clock.get_save_data()==before,"Main menu consumes no game time")
  current_scene._start_game()
+ await NEW_GAME.through_selection(self)
  for i in 120:
   await process_frame
   if is_instance_valid(current_scene) and current_scene.scene_file_path==Travel.CLEARING:break

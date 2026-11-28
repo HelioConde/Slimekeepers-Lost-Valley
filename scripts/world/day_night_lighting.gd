@@ -10,6 +10,19 @@ func _ready() -> void:
 	call_deferred("_sync_environment", GameClock.get_period())
 	call_deferred("_install_reflections")
 	call_deferred("_install_shadows")
+	call_deferred("_install_ambient_lights")
+	call_deferred("_install_grade")
+
+
+func _install_grade() -> void:
+	# Grade de cor encantada sobre o mundo, abaixo do HUD (camada 2).
+	if not is_inside_tree() or is_queued_for_deletion() or get_parent().has_node("WorldGrade"): return
+	get_parent().add_child(preload("res://scripts/world/world_grade.gd").new())
+
+
+func _install_ambient_lights() -> void:
+	if not is_inside_tree() or is_queued_for_deletion() or has_node("AmbientLights"): return
+	add_child(preload("res://scripts/world/ambient_lights.gd").new())
 
 
 func _process(delta: float) -> void:

@@ -1,4 +1,5 @@
 extends SceneTree
+const NEW_GAME := preload("res://tools/new_game_helper.gd")
 ## End-to-end Godot 4.7.2 test: amizade -> coleta -> bolsa -> viagem -> Novo Jogo.
 const BAG := preload("res://scripts/systems/forest_bag.gd")
 const FOREST := "res://scenes/regions/FlorestaDoDespertarV2.tscn"
@@ -74,7 +75,9 @@ func _run() -> void:
 		return
 	forest.player.global_position = friend.global_position + Vector2(0, 24)
 	await _settle()
+	await _hold_food()
 	await _press_e()
+	preload("res://scripts/systems/hotbar_state.gd").select(self, -1)
 	_check(friend.befriended and BAG.has_brotinho_friend(self),
 		"E really befriends Brotinho in gameplay")
 	forest.player.global_position = patch.global_position
@@ -132,6 +135,7 @@ func _run() -> void:
 	_check(menu != null and menu.scene_file_path == "res://scenes/start_menu.tscn",
 		"Returning to title opens the real menu")
 	menu._start_game()
+	await NEW_GAME.through_selection(self)
 	await _settle()
 	_check(current_scene != null and current_scene.scene_file_path == FOREST,
 		"New Game begins at the correct forest scene")
@@ -148,3 +152,12 @@ func _run() -> void:
 func _finish() -> void:
 	print("FORAGING_LOOP: %d checks; %d failures" % [checks, failures.size()])
 	quit(0 if failures.is_empty() else 1)
+
+
+## Amizade é pela comida (2026-11-23): segura uma folha fresca na barra antes do [F].
+func _hold_food() -> void:
+	var bag := preload("res://scripts/systems/forest_bag.gd")
+	var bar := preload("res://scripts/systems/hotbar_state.gd")
+	bag.add_item(self, "folhas_frescas", 1)
+	bar.select(self, bar.slots(self).find("folhas_frescas"))
+	await process_frame

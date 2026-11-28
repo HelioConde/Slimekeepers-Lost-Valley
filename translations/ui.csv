@@ -1,0 +1,172 @@
+keys,pt_BR,en
+Novo Jogo,Novo Jogo,New Game
+Continuar,Continuar,Continue
+Multijogador,Multijogador,Multiplayer
+Como jogar,Como jogar,How to Play
+Configurações,Configurações,Settings
+Créditos,Créditos,Credits
+Sair,Sair,Quit
+Voltar,Voltar,Back
+Novo jogo,Novo jogo,New game
+Escolha o espaço da partida.,Escolha o espaço da partida.,Choose the save slot.
+Substituir?,Substituir?,Replace?
+Substituir e começar,Substituir e começar,Replace and start
+A partida deste espaço será substituída pela nova quando o jogo salvar. As outras não mudam.,A partida deste espaço será substituída pela nova quando o jogo salvar. As outras não mudam.,This slot's game will be replaced by the new one when the game saves. The others won't change.
+O jogo salva sozinho a cada amanhecer.,O jogo salva sozinho a cada amanhecer.,The game saves by itself every dawn.
+Reduzir movimento ambiental,Reduzir movimento ambiental,Reduce ambient motion
+Tela cheia,Tela cheia,Fullscreen
+Volume do ambiente,Volume do ambiente,Ambient volume
+Volume da música,Volume da música,Music volume
+Silenciar tudo,Silenciar tudo,Mute all
+Disco do slime: segurar F e soltar,Disco do slime: segurar F e soltar,Slime wheel: hold F and release
+Idioma,Idioma,Language
+Hospedar pela Steam,Hospedar pela Steam,Host via Steam
+Hospedar na rede local,Hospedar na rede local,Host on local network
+Entrar,Entrar,Join
+Quem hospeda abre a sala; os dois escolhem Aren ou Moni e ficam prontos para começar.,Quem hospeda abre a sala; os dois escolhem Aren ou Moni e ficam prontos para começar.,The host opens the room; both pick Aren or Moni and get ready to start.
+"Pela Steam: aceite o convite do amigo com esta janela aberta, ou digite o ID da sala acima e clique em Entrar.","Pela Steam: aceite o convite do amigo com esta janela aberta, ou digite o ID da sala acima e clique em Entrar.","Via Steam: accept your friend's invite with this window open, or type the room ID above and click Join."
+Primeiros passos,Primeiros passos,First steps
+Jogo pausado,Jogo pausado,Game paused
+Menu — a partida continua,Menu — a partida continua,Menu — the game keeps going
+Opções,Opções,Options
+Tutorial,Tutorial,Tutorial
+Voltar ao menu principal,Voltar ao menu principal,Back to main menu
+Voltar ao menu principal?,Voltar ao menu principal?,Back to main menu?
+Sair para o menu,Sair para o menu,Quit to menu
+Cancelar,Cancelar,Cancel
+Esc para voltar ao jogo,Esc para voltar ao jogo,Esc to return to the game
+Esc para voltar ao menu,Esc para voltar ao menu,Esc to return to the menu
+Esc para cancelar,Esc para cancelar,Esc to cancel
+"Andar: [W] [A] [S] [D] (segure [Shift] para correr)
+Pegar, arrancar, abrir e usar: [F] ou clique esquerdo
+Mochila: [E]  ·  Fabricação e construções: [B]
+Barra de itens: [1] a [0] ou a roda do mouse
+Este menu: [Esc]
+
+Como o jogo anda: junte gravetos, pedrinhas e fibras, faça cordas no [B], monte a bancada e faça o machado para cortar árvores.
+
+Slimes: escolha uma comida na barra e aperte [F] perto de um slime para criar amizade.
+
+Multijogador: pelo menu principal.","Andar: [W] [A] [S] [D] (segure [Shift] para correr)
+Pegar, arrancar, abrir e usar: [F] ou clique esquerdo
+Mochila: [E]  ·  Fabricação e construções: [B]
+Barra de itens: [1] a [0] ou a roda do mouse
+Este menu: [Esc]
+
+Como o jogo anda: junte gravetos, pedrinhas e fibras, faça cordas no [B], monte a bancada e faça o machado para cortar árvores.
+
+Slimes: escolha uma comida na barra e aperte [F] perto de um slime para criar amizade.
+
+Multijogador: pelo menu principal.","Walk: [W] [A] [S] [D] (hold [Shift] to run)
+Pick up, pull, open and use: [F] or left click
+Backpack: [E]  ·  Crafting and buildings: [B]
+Item bar: [1] to [0] or the mouse wheel
+This menu: [Esc]
+
+How the game goes: gather twigs, pebbles and fibers, make ropes in [B], build the workbench and craft the axe to cut trees.
+
+Slimes: pick a food on the bar and press [F] near a slime to make friends.
+
+Multiplayer: from the main menu."
+Escolha seu protagonista,Escolha seu protagonista,Choose your protagonist
+Confirmar,Confirmar,Confirm
+Escolha seu protagonista e aperte Pronto.,Escolha seu protagonista e aperte Pronto.,Choose your protagonist and press Ready.
+Cancelar pronto,Cancelar pronto,Cancel ready
+Os dois prontos! Começando...,Os dois prontos! Começando...,Both ready! Starting...
+"Curioso, determinado e com um grande coração.","Curioso, determinado e com um grande coração.","Curious, determined and big-hearted."
+"Inventiva, corajosa e sempre pronta para explorar.","Inventiva, corajosa e sempre pronta para explorar.","Inventive, brave and always ready to explore."
+Mão livre,Mão livre,Empty hand
+[Tab] pular dica,[Tab] pular dica,[Tab] skip tip
+Vamos começar pelo básico!,Vamos começar pelo básico!,Let's start with the basics!
+Use as teclas [W] [A] [S] [D] para andar. Segure [Shift] para correr.,Use as teclas [W] [A] [S] [D] para andar. Segure [Shift] para correr.,Use [W] [A] [S] [D] to walk. Hold [Shift] to run.
+Coletando recursos,Coletando recursos,Gathering resources
+Junte 8 gravetos e 6 pedrinhas: chegue perto e aperte [F] ou [esq] (andar cancela),Junte 8 gravetos e 6 pedrinhas: chegue perto e aperte [F] ou [esq] (andar cancela),Gather 8 twigs and 6 pebbles: get close and press [F] or [esq] (walking cancels)
+Arrancando mato,Arrancando mato,Pulling weeds
+Aperte [F] perto de um tufo de mato e espere arrancar. Junte 9 fibras.,Aperte [F] perto de um tufo de mato e espere arrancar. Junte 9 fibras.,Press [F] near a tuft of weeds and wait for it to come out. Gather 9 fibers.
+Sua mochila,Sua mochila,Your backpack
+Aperte [E] para ver a mochila. [E] de novo fecha.,Aperte [E] para ver a mochila. [E] de novo fecha.,Press [E] to see the backpack. [E] again closes it.
+Fabricando corda,Fabricando corda,Making rope
+Aperte [B] e clique [esq] na corda até ter 3 cordas (3 fibras cada).,Aperte [B] e clique [esq] na corda até ter 3 cordas (3 fibras cada).,Press [B] and click [esq] on the rope until you have 3 ropes (3 fibers each).
+A planta da bancada,A planta da bancada,The workbench blueprint
+"No [B], escolha a bancada e clique no chão para colocar a planta. Ela não gasta nada.","No [B], escolha a bancada e clique no chão para colocar a planta. Ela não gasta nada.","In [B], pick the workbench and click the ground to place the blueprint. It costs nothing."
+Levando os materiais,Levando os materiais,Bringing the materials
+"Leve 6 gravetos, 4 pedrinhas e 2 cordas até a planta e aperte [F] ou [esq] nela para depositar.","Leve 6 gravetos, 4 pedrinhas e 2 cordas até a planta e aperte [F] ou [esq] nela para depositar.","Bring 6 twigs, 4 pebbles and 2 ropes to the blueprint and press [F] or [esq] on it to deposit."
+Construindo a bancada,Construindo a bancada,Building the workbench
+Com tudo depositado a planta fica verde: aperte [F] ou [esq] nela. Leva 10 segundos (andar pausa; em dupla vai mais rápido).,Com tudo depositado a planta fica verde: aperte [F] ou [esq] nela. Leva 10 segundos (andar pausa; em dupla vai mais rápido).,With everything deposited the blueprint turns green: press [F] or [esq] on it. It takes 10 seconds (walking pauses; faster in pairs).
+Usando a bancada,Usando a bancada,Using the workbench
+Chegue perto da bancada e aperte [F] ou [esq] para abrir,Chegue perto da bancada e aperte [F] ou [esq] para abrir,Get close to the workbench and press [F] or [esq] to open it
+Seu primeiro machado,Seu primeiro machado,Your first axe
+"Na bancada, aba Ferramentas: faça o machado (2 gravetos, 2 pedrinhas e 1 corda).","Na bancada, aba Ferramentas: faça o machado (2 gravetos, 2 pedrinhas e 1 corda).","At the workbench, Tools tab: craft the axe (2 twigs, 2 pebbles and 1 rope)."
+Cortando árvores,Cortando árvores,Cutting trees
+"Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]","Escolha o machado na barra com [1] a [0] ou [roda] e, perto de uma árvore pequena, segure [F] ou [esq]","Pick the axe on the bar with [1] to [0] or [roda] and, near a small tree, hold [F] or [esq]"
+Pronto!,Pronto!,Done!
+"Na bancada você fabrica as ferramentas; no [B], construções. Bom começo!","Na bancada você fabrica as ferramentas; no [B], construções. Bom começo!","At the workbench you craft tools; in [B], buildings. Great start!"
+Em dupla a bancada é uma só: o que um fizer nela vale para os dois.,Em dupla a bancada é uma só: o que um fizer nela vale para os dois.,In pairs there is one workbench: what one does on it counts for both.
+Gravetos %d/8,Gravetos %d/8,Twigs %d/8
+Pedrinhas %d/6,Pedrinhas %d/6,Pebbles %d/6
+Fibras %d/9,Fibras %d/9,Fibers %d/9
+Cordas %d/3,Cordas %d/3,Ropes %d/3
+Gravetos %d/6,Gravetos %d/6,Twigs %d/6
+Pedrinhas %d/4,Pedrinhas %d/4,Pebbles %d/4
+Cordas %d/2,Cordas %d/2,Ropes %d/2
+Bancada de trabalho,Bancada de trabalho,Workbench
+Baú,Baú,Chest
+Beterraba,Beterraba,Beet
+Cenoura assada,Cenoura assada,Roasted carrot
+Cenoura,Cenoura,Carrot
+Corda,Corda,Rope
+Enxada,Enxada,Hoe
+Fibra vegetal,Fibra vegetal,Plant fiber
+Foice rudimentar,Foice rudimentar,Crude sickle
+Folhas frescas,Folhas frescas,Fresh leaves
+Graveto,Graveto,Twig
+Machado de pedra polida,Machado de pedra polida,Polished stone axe
+Machado rudimentar,Machado rudimentar,Crude axe
+Madeira,Madeira,Wood
+Pedra pequena,Pedra pequena,Small stone
+Pedra polida,Pedra polida,Polished stone
+Picareta de pedra polida,Picareta de pedra polida,Polished stone pickaxe
+Picareta rudimentar,Picareta rudimentar,Crude pickaxe
+Porção de folhas,Porção de folhas,Leaf portion
+Pá,Pá,Shovel
+Regador,Regador,Watering can
+Repolho,Repolho,Cabbage
+Sementes de beterraba,Sementes de beterraba,Beet seeds
+Sementes de cenoura,Sementes de cenoura,Carrot seeds
+Sementes de repolho,Sementes de repolho,Cabbage seeds
+Sementes silvestres,Sementes silvestres,Wild seeds
+Sopa de legumes,Sopa de legumes,Vegetable soup
+Ferramenta,Ferramenta,Tool
+Semente,Semente,Seed
+Colheita,Colheita,Crop
+Comida,Comida,Food
+Material,Material,Material
+Estação de trabalho,Estação de trabalho,Workstation
+Item,Item,Item
+Comer: +%d de energia,Comer: +%d de energia,Eat: +%d energy
+Plante em terra arada,Plante em terra arada,Plant in tilled soil
+Dia %02d,Dia %02d,Day %02d
+Madrugada,Madrugada,Late night
+Manhã,Manhã,Morning
+Dia,Dia,Day
+Tarde,Tarde,Afternoon
+Anoitecendo,Anoitecendo,Dusk
+Noite,Noite,Night
+Primavera,Primavera,Spring
+Verão,Verão,Summer
+Outono,Outono,Autumn
+Inverno,Inverno,Winter
+Abrir para amigo,Abrir para amigo,Open to a friend
+Abrir pela Steam,Abrir pela Steam,Open via Steam
+Abrir na rede local,Abrir na rede local,Open on local network
+Continuar partida pela Steam,Continuar partida pela Steam,Continue game via Steam
+Continuar partida na rede local,Continuar partida na rede local,Continue game on local network
+O amigo entra com o outro protagonista. A bolsa dele fica guardada neste save.,O amigo entra com o outro protagonista. A bolsa dele fica guardada neste save.,Your friend joins as the other protagonist. Their bag is kept in this save.
+Sala aberta! Seu amigo já pode entrar.,Sala aberta! Seu amigo já pode entrar.,Room open! Your friend can join now.
+Espada de madeira,Espada de madeira,Wooden sword
+Arco simples,Arco simples,Simple bow
+Flecha,Flecha,Arrow
+Orbe de energia,Orbe de energia,Energy orb
+Gosma de Brotinho,Gosma de Brotinho,Brotinho goo
+Gosma de Bolhinha,Gosma de Bolhinha,Bolhinha goo
+Gosma de Musguinho,Gosma de Musguinho,Musguinho goo

@@ -1,0 +1,399 @@
+extends Node
+## Árvores cortáveis (CRIACAO.md, etapa 3). Com o machado selecionado, [F] perto do
+## tronco dá um golpe; após HITS_TO_FELL golpes a árvore cai: fica um toco e um
+## tronco caído ao lado. [F] com o machado no tronco o processa em madeira. A árvore
+## volta a crescer após REGROW_DAYS dias. Não podem ser cortadas: árvores perto de
+## habitats de slimes, pontos de interesse (inclui a Árvore Centenária) e as que o
+## `protected` da região marcar. Estado salvo em CHOPPED_KEY (sessão + save).
+
+const BAG := preload("res://scripts/systems/forest_bag.gd")
+const CHOPPED_KEY := "chopped_trees"
+const HITS_TO_FELL := 3
+const HITS_TO_PROCESS := 2
+const WOOD_PER_LOG := 4
+const REGROW_DAYS := 3
+const REACH := 46.0
+const CELL := 128.0
+const STUMP := preload("res://assets/objects/tree_stump_small_cut_oak_stu/rotations/tree_stump_small_cut_oak_stu.png")
+const LOG := preload("res://assets/sprites/objects/fallen_log_mossy_fallen_oak/rotations/fallen_log_mossy_fallen_oak.png")
+const LOG_OFFSET := Vector2(54, 10)  # tronco cai ao lado do toco (árvore escala 2)
+## Altura visível (px) até a qual a árvore é pequena: o machado de pedra só corta
+## estas (pedido do usuário, 2026-11-22); as grandes pedem machados futuros.
+const SMALL_TREE_MAX_HEIGHT := 120.0
+## Toco e tronco proporcionais à árvore: fração da escala do sprite da árvore.
+const STUMP_SCALE := 0.48
+## Comprimento do tronco caído = esta fração da altura visível da árvore (playtest ID 44:
+## o tronco não pode parecer maior que a árvore).
+const LOG_LENGTH_OF_TREE := 0.45
+const LOG_ART_LENGTH := 83.0  ## largura visível da arte do tronco (px)
+
+var trees: Dictionary = {}  # key -> Node2D
+## Solta a madeira no chão (item, quantidade, ponto); vazio = direto na bolsa.
+var drop: Callable
+var _grid: Dictionary = {}  # Vector2i -> Array[key]
+var _hits: Dictionary = {}  # key -> golpes nesta árvore/tronco (não salvo)
+var _extras: Dictionary = {}  # key -> [stump, log]
+
+
+## prefix separa o estado salvo de cada mapa ("" = Floresta, chaves antigas).
+## all_children: grupos só de árvores (Vale), sem a marca metadata/tree.
+## Tocos e troncos de cenário (playtest ID 50): o machado processa o tronco caído em
+## madeira e a pá arranca o toco; somem de vez (estado em CHOPPED_KEY com "scenery").
+const SCENERY_ART := {"fallen_log": "log", "environment/stump.png": "stump"}
+var scenery: Dictionary = {}  # chave "cena:<caminho>" -> {node, kind}
+
+
+func setup_scenery(root: Node) -> void:
+	for sprite: Sprite2D in root.find_children("*", "Sprite2D", true, false):
+		if sprite.texture == null or not sprite.is_visible_in_tree(): continue
+		var path := sprite.texture.resource_path
+		for art: String in SCENERY_ART:
+			if not art in path or _is_tree_extra(sprite): continue
+			var holder: Node2D = sprite.get_parent() if sprite.name == &"Sprite" else sprite
+			var key := "cena:%s" % root.get_path_to(holder)
+			scenery[key] = {"node": holder, "kind": SCENERY_ART[art]}
+			var at := holder.global_position
+			var cell := Vector2i((at / CELL).floor())
+			if not _grid.has(cell): _grid[cell] = []
+			_grid[cell].append(key)
+			if state(get_tree()).has(key): _hide_scenery(key)
+
+
+## Toco/tronco que esta classe pôs ao derrubar uma árvore (não é cenário).
+func _is_tree_extra(sprite: Node) -> bool:
+	for parts in _extras.values():
+		if sprite in parts: return true
+	return false
+
+
+func _hide_scenery(key: String) -> void:
+	var node: Node2D = scenery[key].node
+	node.hide()
+	for body in node.find_children("*", "StaticBody2D", true, false): (body as StaticBody2D).collision_layer = 0
+
+
+func setup(groups: Array, protected: Callable, prefix: String = "", all_children: bool = false) -> void:
+	name = "ChoppableTrees"
+	for group: Node in groups:
+		for node in group.get_children():  # marca metadata/tree do próprio nó da árvore
+			if not (node is Node2D) or not node.has_node("Sprite"): continue
+			if not all_children and not node.get_meta("tree", false): continue
+			if not (node as Node2D).visible:  # oculta na cena ou pelas regras visuais: sem colisão nem alvo (playtest IDs 05 e 28)
+				for body in node.find_children("*", "StaticBody2D", true, false): (body as StaticBody2D).collision_layer = 0
+				continue
+			var at: Vector2 = (node as Node2D).global_position
+			if protected.call(at): continue
+			var key := "%s%s/%s" % [prefix, group.name, node.name]
+			trees[key] = node
+			var cell := Vector2i((at / CELL).floor())
+			if not _grid.has(cell): _grid[cell] = []
+			_grid[cell].append(key)
+
+
+static func state(tree: SceneTree) -> Dictionary:
+	return tree.get_meta(CHOPPED_KEY, {})
+
+
+## Aplica o estado salvo: árvores cortadas viram toco (+ tronco se não processado);
+## as que já cresceram de novo voltam e saem do registro.
+func apply_day(day: int) -> void:
+	var chopped: Dictionary = state(get_tree()).duplicate(true)
+	var changed := false
+	for key in chopped.keys():
+		if not trees.has(key):
+			continue
+		if bool(chopped[key].get("stump_removed", false)):  # toco arrancado com a pá: não volta a crescer
+			_fell_visual(key, bool(chopped[key].get("processed", false)))
+		elif day - int(chopped[key].day) >= REGROW_DAYS:
+			chopped.erase(key)
+			changed = true
+			_restore(key)
+		else:
+			_fell_visual(key, bool(chopped[key].get("processed", false)))
+	if changed:
+		get_tree().set_meta(CHOPPED_KEY, chopped)
+
+
+## Alvo ao alcance dos pés: {"key", "kind": "tree"|"log"} ou {}.
+func target(at: Vector2) -> Dictionary:
+	var chopped := state(get_tree())
+	var best: Dictionary = {}
+	var best_d := REACH
+	var base := Vector2i((at / CELL).floor())
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			for key: String in _grid.get(base + Vector2i(dx, dy), []):
+				if scenery.has(key):
+					if scenery[key].kind == "log" and not chopped.has(key):
+						var d_scene := at.distance_to((scenery[key].node as Node2D).global_position)
+						if d_scene < best_d:
+							best = {"key": key, "kind": "log"}
+							best_d = d_scene
+					continue
+				var tree: Node2D = trees[key]
+				if not tree.is_visible_in_tree(): continue  # oculta (penhasco, debaixo da casa): sem alvo fantasma (ID 05)
+				if chopped.has(key):
+					if bool(chopped[key].get("processed", false)): continue
+					var d_log := at.distance_to(log_position(key))
+					if d_log < best_d:
+						best = {"key": key, "kind": "log"}
+						best_d = d_log
+				else:
+					var d := at.distance_to(tree.global_position)
+					if d < best_d:
+						best = {"key": key, "kind": "tree"}
+						best_d = d
+	return best
+
+
+## Escala do desenho da árvore (1 = pequena, 2 = grande nos mapas atuais).
+func tree_scale(key: String) -> float:
+	var sprite := (trees[key] as Node2D).get_node("Sprite") as Node2D
+	return absf(sprite.global_scale.y) / absf((trees[key] as Node2D).global_scale.y)
+
+
+var _used_height := {}  # textura -> altura visível (get_image é caro)
+
+
+## Altura visível da árvore no mundo (px).
+func visible_height(key: String) -> float:
+	var sprite := (trees[key] as Node2D).get_node("Sprite") as Sprite2D
+	if not _used_height.has(sprite.texture):
+		_used_height[sprite.texture] = sprite.texture.get_image().get_used_rect().size.y
+	return float(_used_height[sprite.texture]) * absf(sprite.global_scale.y)
+
+
+## Pequena = cortável com o machado de pedra.
+func is_small(key: String) -> bool:
+	return visible_height(key) <= SMALL_TREE_MAX_HEIGHT
+
+
+## Escala local do tronco caído: comprimento proporcional à altura da árvore.
+func log_scale(key: String) -> float:
+	var node_scale := absf((trees[key] as Node2D).global_scale.x)
+	return visible_height(key) * LOG_LENGTH_OF_TREE / (LOG_ART_LENGTH * maxf(node_scale, 0.001))
+
+
+## Onde o tronco cai: ao lado do toco, no lado da queda (proporcional ao tamanho da árvore).
+func log_position(key: String) -> Vector2:
+	if scenery.has(key): return (scenery[key].node as Node2D).global_position
+	var side := float((state(get_tree()).get(key, {}) as Dictionary).get("side", 1))
+	return (trees[key] as Node2D).global_position + Vector2(LOG_OFFSET.x * side, LOG_OFFSET.y) * (tree_scale(key) * 0.5)
+
+
+## Lado da queda (playtest ID 29): cortando pela esquerda cai à direita (+1) e vice-versa;
+## por cima ou por baixo, sorteia. `from` = posição de quem deu o golpe final.
+static func fall_side(tree_at: Vector2, from: Vector2) -> int:
+	if not from.is_finite() or absf(from.x - tree_at.x) < 10.0:
+		return 1 if randf() < 0.5 else -1
+	return 1 if from.x < tree_at.x else -1
+
+
+func hits(key: String) -> int:
+	return int(_hits.get(key, 0))
+
+
+## Golpes para derrubar: a árvore grande (só machado de pedra polida) pede o dobro.
+func fell_hits(key: String) -> int:
+	return HITS_TO_FELL * (1 if is_small(key) else 2)
+
+
+## Madeira por tronco: a árvore grande rende o dobro.
+func wood(key: String) -> int:
+	if scenery.has(key): return WOOD_PER_LOG
+	return WOOD_PER_LOG * (1 if is_small(key) else 2)
+
+
+## Um golpe de machado (power: quantos golpes vale; pedra polida = 2).
+## Devolve "hit", "felled" ou "processed".
+func strike(t: Dictionary, day: int, power: int = 1, from: Vector2 = Vector2.INF) -> String:
+	var key: String = t.key
+	_hits[key] = hits(key) + power
+	if scenery.has(key):  # tronco de cenário: processa direto em madeira
+		_shake(scenery[key].node)
+		_send_fx(key, "log")
+		if hits(key) < HITS_TO_PROCESS: return "hit"
+		_hits.erase(key)
+		var done := state(get_tree()).duplicate(true)
+		done[key] = {"day": day, "processed": true, "scenery": true}
+		get_tree().set_meta(CHOPPED_KEY, done)
+		if drop.is_valid(): drop.call("madeira", wood(key), log_position(key))
+		else: BAG.add_item(get_tree(), "madeira", wood(key))
+		_hide_scenery(key)
+		return "processed"
+	var tree: Node2D = trees[key]
+	_shake(tree.get_node("Sprite") if t.kind == "tree" else _extras[key][1])
+	if t.kind == "tree":
+		if hits(key) < fell_hits(key):
+			_send_fx(key, "tree")
+			return "hit"
+		_hits.erase(key)
+		var chopped := state(get_tree()).duplicate(true)
+		var side := fall_side(tree.global_position, from)
+		chopped[key] = {"day": day, "processed": false, "side": side}
+		get_tree().set_meta(CHOPPED_KEY, chopped)
+		_fall_animation(tree, side)
+		_fell_visual(key, false)
+		_send_fx(key, "tree", side)
+		return "felled"
+	_send_fx(key, "log")
+	if hits(key) < HITS_TO_PROCESS: return "hit"
+	_hits.erase(key)
+	var chopped := state(get_tree()).duplicate(true)
+	chopped[key]["processed"] = true
+	get_tree().set_meta(CHOPPED_KEY, chopped)
+	if drop.is_valid(): drop.call("madeira", wood(key), log_position(key))  # cai no chão
+	else: BAG.add_item(get_tree(), "madeira", wood(key))
+	_fell_visual(key, true)
+	return "processed"
+
+
+func _fell_visual(key: String, processed: bool) -> void:
+	var tree: Node2D = trees[key]
+	for part in ["Sprite", "ContactShadow"]:
+		if tree.has_node(part): (tree.get_node(part) as CanvasItem).visible = false
+	var body := tree.get_node_or_null("SolidBase")
+	if body is CollisionObject2D: (body as CollisionObject2D).collision_layer = 0
+	if not _extras.has(key):
+		var s := tree_scale(key)
+		var stump := _sprite(tree, STUMP, Vector2(0, -22), STUMP_SCALE * s)
+		stump.name = "Stump"
+		var log := _sprite(tree, LOG, Vector2(0, -20), log_scale(key))
+		log.position = log_position(key) - tree.global_position
+		_extras[key] = [stump, log]
+	(_extras[key][1] as Sprite2D).visible = not processed
+	(_extras[key][0] as Sprite2D).visible = not bool((state(get_tree()).get(key, {}) as Dictionary).get("stump_removed", false))
+
+
+## Toco ao alcance com a pá (playtest ID 30): árvore derrubada cujo toco ainda está lá.
+func stump_target(at: Vector2) -> String:
+	var chopped := state(get_tree())
+	var best := ""
+	var best_d := REACH
+	var base := Vector2i((at / CELL).floor())
+	for dy in range(-1, 2):
+		for dx in range(-1, 2):
+			for key: String in _grid.get(base + Vector2i(dx, dy), []):
+				if scenery.has(key):
+					if scenery[key].kind != "stump" or chopped.has(key): continue
+				elif not chopped.has(key) or bool(chopped[key].get("stump_removed", false)): continue
+				var d := at.distance_to(spot_of(key))
+				if d < best_d:
+					best = key
+					best_d = d
+	return best
+
+
+## Posição de uma árvore ou peça de cenário.
+func spot_of(key: String) -> Vector2:
+	return (scenery[key].node as Node2D).global_position if scenery.has(key) else (trees[key] as Node2D).global_position
+
+
+## Arranca o toco: o lugar fica livre de vez (a árvore não volta a crescer).
+func remove_stump(key: String) -> void:
+	if scenery.has(key):
+		var done := state(get_tree()).duplicate(true)
+		done[key] = {"day": 0, "stump_removed": true, "scenery": true}
+		get_tree().set_meta(CHOPPED_KEY, done)
+		_hide_scenery(key)
+		return
+	var chopped := state(get_tree()).duplicate(true)
+	if not chopped.has(key): return
+	chopped[key]["stump_removed"] = true
+	get_tree().set_meta(CHOPPED_KEY, chopped)
+	_fell_visual(key, bool(chopped[key].get("processed", false)))
+
+
+func _restore(key: String) -> void:
+	var tree: Node2D = trees[key]
+	for part in ["Sprite", "ContactShadow"]:
+		if tree.has_node(part): (tree.get_node(part) as CanvasItem).visible = true
+	var body := tree.get_node_or_null("SolidBase")
+	if body is CollisionObject2D: (body as CollisionObject2D).collision_layer = 2
+	if _extras.has(key):
+		for extra in _extras[key]: (extra as Node).queue_free()
+		_extras.erase(key)
+
+
+func _sprite(parent: Node2D, texture: Texture2D, offset: Vector2, size: float = 1.0) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.scale = Vector2.ONE * size
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.offset = offset
+	sprite.set_meta("no_shadow", true)
+	parent.add_child(sprite)
+	return sprite
+
+
+## Queda animada: uma cópia da copa gira em torno da base para o lado e some; o tronco
+## aparece no destino (o _fell_visual já o pôs lá).
+func _fall_animation(tree: Node2D, side: int) -> void:
+	var sprite := tree.get_node_or_null("Sprite") as Sprite2D
+	if sprite == null: return
+	var ghost := Sprite2D.new()  # cópia limpa: duplicate() levaria o script que esconde a copa
+	ghost.name = "Falling"
+	for prop in ["texture", "offset", "centered", "flip_h", "region_enabled", "region_rect", "modulate", "texture_filter", "z_index"]:
+		ghost.set(prop, sprite.get(prop))
+	ghost.set_meta("no_shadow", true)
+	tree.get_parent().add_child(ghost)  # no pai: algumas árvores (StarterTrees) ficam com o nó oculto
+	ghost.global_position = sprite.global_position
+	ghost.global_scale = sprite.global_scale
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "rotation", deg_to_rad(84.0) * side, 0.55).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(ghost, "modulate:a", 0.0, 0.25).set_delay(0.4)
+	tween.tween_callback(ghost.queue_free)
+
+
+func _shake(item: CanvasItem) -> void:
+	if not (item is Node2D): return
+	var node := item as Node2D
+	var origin := node.position
+	var tween := node.create_tween()
+	for i in 3:
+		tween.tween_property(node, "position", origin + Vector2(2 if i % 2 == 0 else -2, 0), 0.04)
+	tween.tween_property(node, "position", origin, 0.04)
+
+
+## Multijogador (playtest ID 36): o golpe de quem cortou chega ao outro jogador como
+## "chop_fx" (balanço e, no golpe final, a queda). Quem golpeou já animou localmente e
+## não recebe a própria mensagem. O estado (toco/tronco) segue pelo net_world.
+const FX_MESSAGE := "chop_fx"
+
+
+func _ready() -> void:
+	var session := get_node_or_null("/root/NetSession")
+	if session != null and not session.message.is_connected(_on_net_message):
+		session.message.connect(_on_net_message)
+
+
+func _send_fx(key: String, kind: String, side: int = 0) -> void:
+	var session := get_node_or_null("/root/NetSession")
+	if session == null or not bool(session.get("connected")): return
+	session.send({"t": FX_MESSAGE, "key": key, "kind": kind, "side": side})
+
+
+func _on_net_message(data: Dictionary) -> void:
+	if str(data.get("t", "")) == FX_MESSAGE: remote_fx(data)
+
+
+## Reproduz o golpe do outro jogador. side != 0 = golpe final: a árvore cai para esse lado.
+## Árvore de outro mapa (chave desconhecida aqui) é ignorada.
+func remote_fx(data: Dictionary) -> void:
+	var key := str(data.get("key", ""))
+	var side := int(data.get("side", 0))
+	if scenery.has(key):
+		_shake(scenery[key].node)
+		return
+	if not trees.has(key): return
+	var tree: Node2D = trees[key]
+	if str(data.get("kind", "")) == "log":
+		if _extras.has(key): _shake(_extras[key][1])
+		return
+	var sprite := tree.get_node_or_null("Sprite") as CanvasItem
+	if side == 0 or sprite == null or not sprite.visible:
+		if sprite != null: _shake(sprite)
+		return
+	_fall_animation(tree, signi(side))
+	for part in ["Sprite", "ContactShadow"]:  # a copa sai já; toco e tronco vêm com o estado
+		if tree.has_node(part): (tree.get_node(part) as CanvasItem).visible = false

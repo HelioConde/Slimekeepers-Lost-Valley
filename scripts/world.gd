@@ -4,7 +4,7 @@ extends Node2D
 const PLAYER_SCENE: PackedScene = preload("res://scenes/player.tscn")
 const SLIME_SCENE: PackedScene = preload("res://scenes/slime.tscn")
 const TERRAIN_SCRIPT: Script = preload("res://scripts/terrain.gd")
-const FONT: FontFile = preload("res://assets/fonts/PixelifySans.ttf")
+const FONT: Font = preload("res://assets/fonts/ui_font.tres")  # dígitos legíveis (playtest ID 33)
 const DAY_LIGHT_SCRIPT: Script = preload("res://scripts/world/day_night_lighting.gd")
 const CLOCK_WIDGET: PackedScene = preload("res://scenes/ui/day_clock.tscn")
 
@@ -43,7 +43,7 @@ func _process(delta: float) -> void:
     var closest := _closest_slime()
     if closest != null:
         var name_slime: String = str(closest.call("display_name"))
-        hud_hint.text = "[E] %s: %s" % [("Conversar novamente" if bool(closest.get("befriended")) else "Fazer amizade"), name_slime]
+        hud_hint.text = "[F] %s: %s" % [("Conversar novamente" if bool(closest.get("befriended")) else "Fazer amizade"), name_slime]
         if Input.is_action_just_pressed("interact"):
             if bool(closest.call("make_friend")):
                 friends_count += 1
@@ -52,15 +52,18 @@ func _process(delta: float) -> void:
             else:
                 _notify("%s já é seu amigo!" % name_slime)
     else:
-        hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   E: interagir"
+        hud_hint.text = "WASD / Setas: andar   •   Shift: correr   •   F: interagir"
     if message_time > 0.0:
         message_time -= delta
         if message_time <= 0.0:
             popup.text = ""
 
+## Alcance para falar com um slime: perto do personagem, como a bancada (playtest ID 26; era 90).
+const SLIME_REACH := 48.0
+
 func _closest_slime() -> Node2D:
     var closest: Node2D = null
-    var distance := 90.0
+    var distance := SLIME_REACH
     for slime in slimes:
         var new_distance := player.global_position.distance_to(slime.global_position)
         if new_distance < distance:
@@ -99,6 +102,7 @@ func _create_hud() -> void:
     _install_day_night_lighting()
     var layer := CanvasLayer.new()
     layer.name = "HUD"
+    layer.layer = 2  # acima da grade de cor do mundo (WorldGrade, camada 1)
     add_child(layer)
 
     var interface := Control.new()
@@ -145,38 +149,6 @@ func _create_hud() -> void:
     hud_goal.add_theme_font_size_override("font_size", 18)
     hud_goal.add_theme_color_override("font_color", Color("3e5c43"))
     contents.add_child(hud_goal)
-
-    var menu_button := Button.new()
-    menu_button.name = "ReturnToMenu"
-    menu_button.text = "Menu"
-    menu_button.tooltip_text = "Voltar à tela inicial. O protótipo ainda não salva a partida."
-    menu_button.add_theme_font_override("font", FONT)
-    menu_button.add_theme_font_size_override("font_size", 20)
-    menu_button.add_theme_color_override("font_color", Color("fff3d2"))
-    menu_button.add_theme_color_override("font_hover_color", Color("fff3d2"))
-    menu_button.add_theme_color_override("font_pressed_color", Color("fff3d2"))
-    menu_button.add_theme_color_override("font_focus_color", Color("fff3d2"))
-    interface.add_child(menu_button)
-    menu_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-    menu_button.offset_left = -116
-    menu_button.offset_right = -18
-    menu_button.offset_top = 16
-    menu_button.offset_bottom = 58
-    for state in ["normal", "hover", "pressed", "focus"]:
-        var button_style := StyleBoxFlat.new()
-        button_style.bg_color = Color("986841") if state == "normal" else Color("aa7747")
-        if state == "pressed":
-            button_style.bg_color = Color("765036")
-        button_style.border_color = Color("694657") if state == "normal" else Color("a7cf87")
-        button_style.set_border_width_all(2)
-        button_style.set_corner_radius_all(4)
-        button_style.set_content_margin_all(8)
-        if state == "focus":
-            button_style.draw_center = false
-        menu_button.add_theme_stylebox_override(state, button_style)
-    menu_button.pressed.connect(func() -> void:
-        get_tree().change_scene_to_file("res://scenes/start_menu.tscn")
-    )
 
     var hint_panel := PanelContainer.new()
     hint_panel.name = "InteractionHint"

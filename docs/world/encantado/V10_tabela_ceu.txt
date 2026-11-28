@@ -1,0 +1,20 @@
+D1 22h fase=Lua cheia f=1.00 lua_alt=0.90 az=0.44 luar=1.00 reflexo=1.00
+D2 22h fase=Lua cheia f=1.00 lua_alt=0.80 az=0.60 luar=1.00 reflexo=1.00
+D3 22h fase=Lua cheia f=0.98 lua_alt=0.68 az=0.73 luar=0.98 reflexo=0.98
+D7 22h fase=Lua gibosa minguante f=0.70 lua_alt=0.02 az=1.00 luar=0.01 reflexo=0.01
+D14 22h fase=Lua minguante fina f=0.06 lua_alt=-0.98 az=-0.19 luar=0.00 reflexo=0.00
+D21 22h fase=Lua crescente fina f=0.23 lua_alt=0.29 az=-0.96 luar=0.23 reflexo=0.23
+D29 22h fase=Lua gibosa crescente f=0.95 lua_alt=0.98 az=0.18 luar=0.95 reflexo=0.95
+D30 22h fase=Lua cheia f=0.99 lua_alt=0.94 az=0.35 luar=0.99 reflexo=0.99
+C 18h sol_alt=0.33 sol_az=-0.94 lua_alt=-0.17 lua_az=0.99 visivel=false reflexo_lua=0.00 reflexo_sol=0.63
+C 19h sol_alt=0.11 sol_az=-0.99 lua_alt=0.10 lua_az=1.00 visivel=true reflexo_lua=0.10 reflexo_sol=0.51
+C 20h sol_alt=-0.16 sol_az=-0.99 lua_alt=0.31 lua_az=0.95 visivel=true reflexo_lua=0.98 reflexo_sol=0.00
+C 21h sol_alt=-0.45 sol_az=-0.89 lua_alt=0.51 lua_az=0.86 visivel=true reflexo_lua=0.98 reflexo_sol=0.00
+C 22h sol_alt=-0.71 sol_az=-0.71 lua_alt=0.68 lua_az=0.73 visivel=true reflexo_lua=0.98 reflexo_sol=0.00
+C 23h sol_alt=-0.89 sol_az=-0.45 lua_alt=0.82 lua_az=0.57 visivel=true reflexo_lua=0.98 reflexo_sol=-0.00
+C 00h sol_alt=-0.99 sol_az=-0.16 lua_alt=0.98 lua_az=0.21 visivel=true reflexo_lua=1.00 reflexo_sol=-0.00
+C 03h sol_alt=-0.71 sol_az=0.71 lua_alt=0.90 lua_az=-0.43 visivel=true reflexo_lua=1.00 reflexo_sol=0.00
+C 06h sol_alt=0.11 sol_az=0.99 lua_alt=0.46 lua_az=-0.89 visivel=true reflexo_lua=0.29 reflexo_sol=0.43
+C 09h sol_alt=0.71 sol_az=0.71 lua_alt=-0.24 lua_az=-0.97 visivel=false reflexo_lua=0.00 reflexo_sol=0.71
+C 12h sol_alt=0.99 sol_az=0.11 lua_alt=-0.91 lua_az=-0.41 visivel=false reflexo_lua=0.00 reflexo_sol=0.85
+C 16h sol_alt=0.71 sol_az=-0.71 lua_alt=-0.70 lua_az=0.71 visivel=false reflexo_lua=0.00 reflexo_sol=0.84
