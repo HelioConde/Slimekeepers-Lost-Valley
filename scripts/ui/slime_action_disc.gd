@@ -72,7 +72,7 @@ func open(target: Node2D) -> void:
 	]
 	# Pet da Floresta (forest_threat.gd): o amigo segue o jogador e ajuda contra o boss.
 	var pet_id := str(slime.get("persistent_id"))
-	if friend and not pet_id.is_empty() and slime.get("_session_key") == THREAT.FRIENDS_KEY:
+	if friend and not pet_id.is_empty() and not THREAT.area_of(str(slime.get("_session_key"))).is_empty():
 		var is_pet := THREAT.pet_id(get_tree()) == pet_id
 		actions.append({"id": "pet", "name": "Deixar aqui" if is_pet else "Levar comigo", "icon": ITEMS.icon("espada"), "enabled": is_pet or not THREAT.pet_resting(get_tree(), pet_id)})
 	# Playtest ID 60: só as ações disponíveis agora (o slime ainda desconfiado só aceita comida).

@@ -73,7 +73,7 @@ func _k(point: Vector2) -> float:
 
 static func unlocked(tree: SceneTree) -> bool:
 	if bool(tree.get_meta(UNLOCK_KEY, false)): return true
-	return THREAT.points(tree) >= THREAT.UNLOCK_POINTS  # regra provisória: matar 1, domar 5, total 20
+	return THREAT.points(tree, AREA) >= THREAT.UNLOCK_POINTS  # regra provisória: matar 1, domar 5, total 20
 
 
 static func defeated_here(tree: SceneTree) -> bool:
@@ -101,7 +101,7 @@ func start(player: Node2D) -> void:
 	var net := get_node_or_null("/root/NetSession")
 	var duo := net != null and bool(net.get("connected"))
 	boss = BOSS.new()
-	boss.configure(player, global_position, radius, "musguinho" if rng.randf() < MUSGUINHO_CHANCE else "brotinho", duo, float(THREAT.BOSS_HP[THREAT.difficulty(get_tree())]))
+	boss.configure(player, global_position, radius, "musguinho" if rng.randf() < MUSGUINHO_CHANCE else "brotinho", duo, float(THREAT.BOSS_HP[THREAT.difficulty(get_tree(), AREA)]))
 	boss.position = global_position + CRYSTAL_OFFSET + Vector2(0, 40) - region.global_position  # sai do cristal
 	region.add_child(boss)
 	boss.hp_changed.connect(_on_hp)

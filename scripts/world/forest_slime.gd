@@ -94,7 +94,7 @@ func _ready() -> void:
 		sprite.material = _water_material
 	var friends: Dictionary = get_tree().get_meta(_session_key, {})
 	befriended = bool(friends.get(persistent_id, false))
-	if not befriended and _session_key == THREAT.FRIENDS_KEY: add_to_group("combat_target")
+	if not befriended and not THREAT.area_of(_session_key).is_empty(): add_to_group("combat_target")
 	_play_animation("idle")
 	if variant != VARIANTS.COMMON: _add_variant_glow()
 
@@ -333,8 +333,9 @@ func _physics_process(delta: float) -> void:
 ## Agressivo agora? Não amigo, Floresta sem boss vencido, fora do tutorial perto da casa
 ## e o jogador sem comida na mão.
 func aggressive() -> bool:
-	if befriended or _session_key != THREAT.FRIENDS_KEY or habitat.get("near_spawn", false): return false
-	if THREAT.pacified(get_tree()): return false
+	var area := THREAT.area_of(_session_key)
+	if befriended or area.is_empty() or habitat.get("near_spawn", false): return false
+	if THREAT.pacified(get_tree(), area): return false
 	var held: String = preload("res://scripts/systems/hotbar_state.gd").selected_item(get_tree())
 	return not preload("res://scripts/systems/slime_feeding.gd").is_food(held)
 
@@ -407,7 +408,8 @@ func take_hit(amount: int, from: Vector2) -> void:
 func _die() -> void:
 	_dead = true
 	remove_from_group("combat_target")
-	THREAT.record_kill(get_tree(), persistent_id)
+	var area := THREAT.area_of(_session_key)
+	THREAT.record_kill(get_tree(), persistent_id, area)
 	var region: Node = manager.get("region")
 	var drops: Node = region.get("item_drops") if region else null
 	var item := "gosma_" + slime_type
@@ -415,8 +417,8 @@ func _die() -> void:
 		if drops: drops.call("spawn", item, 1, global_position)
 		else: preload("res://scripts/systems/forest_bag.gd").add_item(get_tree(), item, 1)
 	if region and region.has_method("_notify"):
-		var points := THREAT.points(get_tree())
-		region.call("_notify", "%s derrotado. Magia no Mirante: %d/%d." % [display_name(), mini(points, THREAT.UNLOCK_POINTS), THREAT.UNLOCK_POINTS] if points < THREAT.UNLOCK_POINTS + THREAT.KILL_POINTS else "%s derrotado." % display_name())
+		var points := THREAT.points(get_tree(), area)
+		region.call("_notify", "%s derrotado. Magia no %s: %d/%d." % [display_name(), THREAT.AREAS[area].spot, mini(points, THREAT.UNLOCK_POINTS), THREAT.UNLOCK_POINTS] if points < THREAT.UNLOCK_POINTS + THREAT.KILL_POINTS else "%s derrotado." % display_name())
 	var fade := create_tween()
 	fade.tween_property(sprite, "scale", sprite.scale * Vector2(1.4, 0.2), 0.25)
 	fade.parallel().tween_property(sprite, "modulate:a", 0.0, 0.3)
